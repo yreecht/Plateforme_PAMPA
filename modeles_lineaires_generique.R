@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: comparaison_distri_generique.R
-### Time-stamp: <2010-09-01 11:37:49 yreecht>
+### Time-stamp: <2010-09-01 18:51:12 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -87,8 +87,8 @@ print.anova.fr <- function(x, digits = max(getOption("digits") - 2, 3), signif.s
                                               "Terms added sequentially \\(first to last\\)",
                                               "Response:",
                                               "link:"),
-                                    replacement=c("Table d'analyse de la déviance :",
-                                                  "Table d'analyse de la variance :",
+                                    replacement=c("\n---------------------------------------------------------------------------\nTable d'analyse de la déviance :",
+                                                  "\n---------------------------------------------------------------------------\nTable d'analyse de la variance :",
                                                   "Modèle :",
                                                   "Binomiale négative",
                                                   "Termes ajoutés séquentiellement (premier au dernier)",
@@ -184,12 +184,6 @@ selRowCoefmat <- function(coefsMat, anovaLM, objLM)
         }
 
 
-
-
-        if (has.interactions)
-        {
-
-        }else{}
 
         ## type de coef (facteur et intéractions) par ligne de la matrice de coef :
         rows <- c("(Intercept)",
@@ -611,7 +605,7 @@ choixDistri.f <- function(metrique, data)
 
 
 ########################################################################################################################
-sortiesLM.f <- function(lm, formula, metrique, factAna, modSel, listFact, Log=FALSE)
+sortiesLM.f <- function(lm, formula, metrique, factAna, modSel, listFact, data, Log=FALSE)
 {
     ## Purpose: Formater les résultats de lm et les écrire dans un fichier
     ## ----------------------------------------------------------------------
@@ -621,6 +615,7 @@ sortiesLM.f <- function(lm, formula, metrique, factAna, modSel, listFact, Log=FA
     ##            factAna : le facteur de séparation des analyses.
     ##            modSel : la modalité courante.
     ##            listFact : liste du (des) facteur(s) de regroupement.
+    ##            data : les données utilisées.
     ##            Log : données log-transformées ou non (booléen).
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 25 août 2010, 16:19
@@ -692,6 +687,64 @@ sortiesLM.f <- function(lm, formula, metrique, factAna, modSel, listFact, Log=FA
     ## row.names(attr(res$terms, "factors"))[1]
     ## names(attr(res$terms, "dataClasses"))
 
+    ## ##################################################
+    ## À améliorer : valeurs prédites :
+    OrdreNivFact <- sapply(unique(data[ , listFact]), as.numeric)
+
+    if (!is.matrix(OrdreNivFact))
+    {
+        nomCoefs <- levels(data[ , listFact])[OrdreNivFact]
+    }else{
+        nomCoefs <- apply(sapply(colnames(OrdreNivFact), function(i){levels(data[ , i])[OrdreNivFact[ , i]]}),
+                          1, paste, collapse=":")
+    }
+
+    if (length(grep("^glm", lm$call)) > 0)
+    {
+        valPredites <- unique(round(predict(lm, type="response"), digits=6))
+    }else{
+        valPredites <- unique(round(predict(lm), digits=6))
+    }
+    names(valPredites) <- nomCoefs
+
+    ## On remet les modalités en ordre :
+    valPredites <- valPredites[eval(parse(text=paste("order(",
+                                          paste("OrdreNivFact[ , ", 1:ncol(OrdreNivFact), "]", sep="", collapse=", "),
+                                          ")", sep="")))]
+
+    cat("\n\n\n---------------------------------------------------------------------------",
+        "\nValeurs prédites par le modèle :\n\n",
+        file=resFile)
+
+    capture.output(print(valPredites), file=resFile)
+
+
+    ## ##################################################
+    ## Temporaire : démo comparaisons multiples avec les facteurs 'an' et 'statut_protection' avec respectivement 5 et 2
+    ##              modalités (particulièrement adapté pour les données CB).
+    if (all(is.element(listFact, c("an", "statut_protection"))))
+    {
+        if (all(listFact == c("an", "statut_protection")) &
+            all(sapply(data[ , listFact], nlevels) == c(5, 2)))
+        {
+            cat("\n\n\n---------------------------------------------------------------------------",
+                "\nComparaisons multiples :",
+                "\n\nComparaisons pour les différences spatiales (statut de protection) par année :\n",
+                file=resFile)
+
+            capture.output(print.summary.glht.red(compMultSt.tmp.f(lm, data)), file=resFile)
+
+            cat("\n\nComparaisons pour les différences temporelles par statut de protection :\n",
+                file=resFile)
+
+            capture.output(print.summary.glht.red(compMultAn.tmp.f(lm, data)), file=resFile)
+
+            with(data,
+                 interaction.plot(an, statut_protection, data[ , metrique],
+                                  ylab=paste(Capitalize.f(varNames[metrique, "nom"]), "moyenne")))
+        }else{}
+    }else{}
+
     flush.console()
     ## close(resFile)
 
@@ -746,6 +799,10 @@ modeleLineaireWP2.f <- function(metrique, factAna, factAnaSel, listFact, listFac
     exprML <- eval(parse(text=paste(metrique, "~", paste(listFact, collapse=" * "))))
     logExprML <- eval(parse(text=paste("log(", metrique, ") ~", paste(listFact, collapse=" * "))))
 
+    ## Sauvegarde temporaire des données utilisées pour les analyses (attention : écrasée à chaque nouvelle série de
+    ## graphiques) :
+    DataBackup <<- list()
+
     ## Boucle sur les modalités de séparation des analyses :
     for (modSel in iFactGraphSel)
     {
@@ -756,6 +813,12 @@ modeleLineaireWP2.f <- function(metrique, factAna, factAnaSel, listFact, listFac
         }else{                          # ...sinon.
             tmpDataMod <- subset(tmpData, tmpData[ , factAna] == modSel) # Subset des données pour la modalité.
         }
+
+        ## Suppression des 'levels' non utilisés :
+        tmpDataMod <- dropLevels.f(tmpDataMod)
+
+        ## Sauvegarde temporaire des données :
+        DataBackup[[modSel]] <<- tmpDataMod
 
         ## Aide au choix du type d'analyse :
         loiChoisie <- choixDistri.f(metrique=metrique, data=tmpDataMod[ , metrique, drop=FALSE])
@@ -800,7 +863,7 @@ modeleLineaireWP2.f <- function(metrique, factAna, factAnaSel, listFact, listFac
 
             res <<- res
 
-            sortiesLM.f(lm=res, formula=formule, metrique, factAna, modSel, listFact, Log=Log)
+            sortiesLM.f(lm=res, formula=formule, metrique, factAna, modSel, listFact, tmpDataMod, Log=Log)
 
 
         }else{

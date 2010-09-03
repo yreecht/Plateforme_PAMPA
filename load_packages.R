@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: test_load_packages.R
-### Time-stamp: <2010-09-03 14:34:29 yreecht>
+### Time-stamp: <2010-09-03 14:40:13 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -40,7 +40,7 @@ installPack.f <- function(pack)
     ## Installation des packages disponibles :
     if (any(is.element(pack, packDispo)))
     {
-        install.packages(pack[is.element(pack, packDispo)], dependencies=TRUE)
+        install.packages(pack[is.element(pack, packDispo)], dependencies="Depends")
     }else{}
 
     return(res)
@@ -121,7 +121,7 @@ loadPackages.f <- function()
 
     ## Traitement en fonction du statut de sortie :
     switch(res,
-           ok = library(requiredPack, character.only=TRUE),
+           ok = invisible(sapply(requiredPack, library, character.only=TRUE)),
            stop(paste("Vous devez installer manuellement le(s) package(s) :\n\n    * '",
                       paste(requiredPack[!is.element(requiredPack, installed.packages()[ , "Package"])],
                             collapse="\n    * '"),

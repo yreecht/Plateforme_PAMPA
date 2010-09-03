@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: test_load_packages.R
-### Time-stamp: <2010-09-03 14:26:09 yreecht>
+### Time-stamp: <2010-09-03 14:34:29 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -128,7 +128,8 @@ loadPackages.f <- function()
                       "'", sep="")))
 }
 
-
+## On lance le chargement :
+loadPackages.f()
 
 
 

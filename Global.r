@@ -45,23 +45,6 @@ basePath <- getwd()
 ## ######################### Chargement des librairies ############################
 ## ! conseillé : que la version de R et les packages soient fournis avec toute mise à jour
 
-## librairie graphique
-require(tcltk)
-library(tkrplot)
-## packages pour les indices de diversite taxonomique
-library(vegan)
-library(MASS)
-## package arbre de regression multivariee
-library(rpart)
-library(mvpart)
-## package analyse statistique
-library(multcomp)
-library(gamlss)
-## package de cartographie
-library(maps)
-library(maptools)
-
-
 
 ## !Messages d'avis :
 ## !1: le package 'vegan' a été compilé sous R version 2.7.2 et l'aide ne fonctionnera pas correctement
@@ -73,6 +56,7 @@ library(maptools)
 
                                                            # Mise en forme du code :
                                                            # -----------------------
+source("./Exec/load_packages.R", encoding="latin1")
 source("./Exec/config.r", encoding="latin1")               # faite
 source("./Exec/gestionmessages.r", encoding="latin1")      # faite
 source("./Exec/mkfilegroupe.r", encoding="latin1")         # faite

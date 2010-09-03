@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: comparaison_distri_generique.R
-### Time-stamp: <2010-09-02 09:38:17 yreecht>
+### Time-stamp: <2010-09-03 16:14:07 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -705,15 +705,17 @@ sortiesLM.f <- function(lm, formula, metrique, factAna, modSel, listFact, data, 
         OrdreNivFact <- matrix(OrdreNivFact, ncol=1, dimnames=list(NULL, listFact))
     }else{}
 
-    nomCoefs <- apply(sapply(colnames(OrdreNivFact), function(i){levels(data[ , i])[OrdreNivFact[ , i]]}),
-                      1, paste, collapse=":")
+    ## nomCoefs <- apply(sapply(colnames(OrdreNivFact), function(i){levels(data[ , i])[OrdreNivFact[ , i]]}),
+    ##                   1, paste, collapse=":")
+
+    nomCoefs <- unique(apply(data[ , listFact, drop=FALSE], 1, paste, collapse=":"))
 
 
     if (length(grep("^glm", lm$call)) > 0)
     {
-        valPredites <- unique(round(predict(lm, type="response"), digits=6))
+        valPredites <- predict(lm, newdata=unique(data[ , listFact]), type="response")
     }else{
-        valPredites <- unique(round(predict(lm), digits=6))
+        valPredites <- predict(lm, newdata=unique(data[ , listFact]))
     }
     names(valPredites) <- nomCoefs
 

@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: comparaison_distri_generique.R
-### Time-stamp: <2010-09-01 18:51:12 yreecht>
+### Time-stamp: <2010-09-02 09:38:17 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -629,6 +629,7 @@ sortiesLM.f <- function(lm, formula, metrique, factAna, modSel, listFact, data, 
 
     ## Formule de modèle lisible:
     lm$call$formula <- formula
+    formule <<- formula
 
     ## lm <<- lm
 
@@ -641,7 +642,15 @@ sortiesLM.f <- function(lm, formula, metrique, factAna, modSel, listFact, data, 
     sumLM <- summary(lm)
 
     ## Chemin et nom de fichier :
-    filename <- paste(nameWorkspace, "/FichiersSortie/LM", ifelse(Log, "-log", ""), "_",
+    prefix <- ifelse(length(grep("^lm\\(", deparse(lm$call), perl=TRUE)) > 0,
+                     paste("LM", ifelse(Log, "-log", ""), sep=""),
+                     ifelse(length(grep("^glm\\.nb", deparse(lm$call), perl=TRUE)) > 0,
+                            "GLM-NB",
+                            ifelse(length(grep("^glm.*poisson", deparse(lm$call), perl=TRUE)) > 0,
+                                   "GLM-P",
+                                   "Unknown-model")))
+
+    filename <- paste(nameWorkspace, "/FichiersSortie/", prefix, "_",
                       metrique, "_",
                       ifelse(factAna == "",
                              "",
@@ -691,13 +700,14 @@ sortiesLM.f <- function(lm, formula, metrique, factAna, modSel, listFact, data, 
     ## À améliorer : valeurs prédites :
     OrdreNivFact <- sapply(unique(data[ , listFact]), as.numeric)
 
-    if (!is.matrix(OrdreNivFact))
+    if (!is.matrix(OrdreNivFact))       # Si un seul facteur, on transforme le vecteur d'ordre des niveaux en matrice.
     {
-        nomCoefs <- levels(data[ , listFact])[OrdreNivFact]
-    }else{
-        nomCoefs <- apply(sapply(colnames(OrdreNivFact), function(i){levels(data[ , i])[OrdreNivFact[ , i]]}),
-                          1, paste, collapse=":")
-    }
+        OrdreNivFact <- matrix(OrdreNivFact, ncol=1, dimnames=list(NULL, listFact))
+    }else{}
+
+    nomCoefs <- apply(sapply(colnames(OrdreNivFact), function(i){levels(data[ , i])[OrdreNivFact[ , i]]}),
+                      1, paste, collapse=":")
+
 
     if (length(grep("^glm", lm$call)) > 0)
     {
@@ -722,7 +732,8 @@ sortiesLM.f <- function(lm, formula, metrique, factAna, modSel, listFact, data, 
     ## ##################################################
     ## Temporaire : démo comparaisons multiples avec les facteurs 'an' et 'statut_protection' avec respectivement 5 et 2
     ##              modalités (particulièrement adapté pour les données CB).
-    if (all(is.element(listFact, c("an", "statut_protection"))))
+    if (all(is.element(listFact, c("an", "statut_protection"))) &
+        all(is.element(c("an", "statut_protection"), listFact)))
     {
         if (all(listFact == c("an", "statut_protection")) &
             all(sapply(data[ , listFact], nlevels) == c(5, 2)))

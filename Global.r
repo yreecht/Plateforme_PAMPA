@@ -90,6 +90,7 @@ source("./Exec/boxplot_generique_calc.R", encoding="latin1")
 
 ##################################################
 ## Analyses statistiques :
+source("./Exec/modeles_lineaires_interface.R", encoding="latin1")
 source("./Exec/modeles_lineaires_generique.R", encoding="latin1")
 source("./Exec/comp_mult_pas_generiques.R", encoding="latin1")
 

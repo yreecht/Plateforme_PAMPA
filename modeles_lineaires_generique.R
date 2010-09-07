@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: comparaison_distri_generique.R
-### Time-stamp: <2010-09-03 16:14:07 yreecht>
+### Time-stamp: <2010-09-06 13:36:12 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -30,13 +30,29 @@ iter.gsub <- function(pattern, replacement, x,...)
 {
     ## Purpose: écraser la définition de .my.tkdev du packages tkrplot pour
     ##          permettre de passer des options supplémentaires au
-    ##          périphérique graphique.
+    ##          périphérique graphique + gestion des différents systèmes
+    ##          d'exploitation/versions de R.
     ## ----------------------------------------------------------------------
     ## Arguments: ceux de .my.tkdev original + ...
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 23 août 2010, 12:41
 
-    win.metafile(width = 4 * hscale, height = 4 * vscale,...)
+    if (Sys.info()["sysname"] == "Windows") # Système Windows
+    {
+        if(R.version$major == 2 && R.version$minor < 3)
+        {
+            win.metafile(width=4*hscale, height=4*vscale,...)
+        }else{
+            win.metafile(width=4*hscale, height=4*vscale, restoreConsole=FALSE,...)
+        }
+    }else{                              # Systèmes Unix(-like).
+        if (exists("X11", env=.GlobalEnv))
+        {
+            X11("XImage", 480*hscale, 480*vscale,...)
+        }else{
+            stop("tkrplot only supports Windows and X11")
+        }
+    }
 }
 
 tkrplot <- function(parent, fun, hscale = 1, vscale = 1,...)
@@ -48,18 +64,22 @@ tkrplot <- function(parent, fun, hscale = 1, vscale = 1,...)
     ## Arguments: ceux de tkrplot original + ...
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 23 août 2010, 12:46
+
     image <- paste("Rplot", .make.tkindex(), sep = "")
+
+    ## Périphérique graphique :
     .my.tkdev(hscale, vscale,...)
+
     try(fun())
     .Tcl(paste("image create Rplot", image))
+
     lab <- tklabel(parent, image = image)
-    tkbind(lab, "<Destroy>", function() .Tcl(paste("image delete",
-        image)))
+    tkbind(lab, "<Destroy>", function() {.Tcl(paste("image delete", image))})
     lab$image <- image
     lab$fun <- fun
     lab$hscale <- hscale
     lab$vscale <- vscale
-    lab
+    return(lab)
 }
 
 ########################################################################################################################
@@ -75,11 +95,7 @@ print.anova.fr <- function(x, digits = max(getOption("digits") - 2, 3), signif.s
 
     attr(x, "row.names")[attr(x, "row.names") == "Residuals"] <- "Résidus"
 
-    ## if (length(attr(x, "heading")) == 2)
-    ## {
-    ##     attr(x, "heading") <- c("Table d'analyse de la variance :\n",
-    ##                             sub("^Response:", "Réponse :", attr(x, "heading")[2]))
-    ## }else{
+    ## Françisation des en-têtes (gsub itératif) :
     attr(x, "heading") <- iter.gsub(pattern=c("Analysis of Deviance Table",
                                               "Analysis of Variance Table",
                                               "Model:",
@@ -95,8 +111,8 @@ print.anova.fr <- function(x, digits = max(getOption("digits") - 2, 3), signif.s
                                                   "Réponse :",
                                                   "lien :"),
                                     x=attr(x, "heading"), fixed=TRUE)
-    ## }
 
+    ## Définitions issues de la fonction originale :
     if (!is.null(heading <- attr(x, "heading")))
     {
         cat(heading, sep = "\n")
@@ -120,11 +136,13 @@ print.anova.fr <- function(x, digits = max(getOption("digits") - 2, 3), signif.s
     {
         zap.i <- zap.i[!(zap.i %in% i)]
     }else{}
+
     tst.i <- i
     if (length(i <- grep("Df$", cn)))
     {
         zap.i <- zap.i[!(zap.i %in% i)]
     }else{}
+
     printCoefmat(x, digits = digits, signif.stars = signif.stars,
                  signif.legend=FALSE,
                  has.Pvalue = has.P, P.values = has.P, cs.ind = NULL,
@@ -135,8 +153,8 @@ print.anova.fr <- function(x, digits = max(getOption("digits") - 2, 3), signif.s
 
 selRowCoefmat <- function(coefsMat, anovaLM, objLM)
 {
-    ## Purpose: Retourne un vecteur de booléen donnat les indices de ligne de
-    ##          la matrice de coefs correspondant à des facteurs ou
+    ## Purpose: Retourne un vecteur de booléen donnant les indices de ligne
+    ##          de la matrice de coefs correspondant à des facteurs ou
     ##          intéractions significatifs (les autres coefs n'ont pas
     ##          d'intéret).
     ## ----------------------------------------------------------------------
@@ -219,11 +237,6 @@ selRowCoefmat <- function(coefsMat, anovaLM, objLM)
                                 })))
         }else{}
 
-        ## ! unlist(strsplit(selectedFact[c(interactions)], ":")) %in% selectedFact[-c(interactions)]
-        ## ! selectedFact[-c(interactions)] %in% unlist(strsplit(selectedFact[c(interactions)], ":"))
-        ## Merdique pour les motifs courants (e.g. "an") : plutôt utiliser les nombres de nivaux pour calculer les
-        ## positions des coefs à conserver.
-
         ## Lignes conservées :
         return(is.element(rows, c("(Intercept)", selectedFactInt))[!is.na(objLM$coefficients)])
     }else{
@@ -250,13 +263,14 @@ printCoefmat.red <- function(x, digits = max(3, getOption("digits") - 2),
     ## Arguments: ceux de printCoefmat
     ##            + anovaLM : résultat d'anova globale du modèle (pour les
     ##                        facteurs et intéractions significatifs).
+    ##            objLM : objet de classe 'lm' ou 'glm'
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 31 août 2010, 10:46
 
+    ## Sélection des coefficients à montrer (pour effets/interactions significatifs) :
     x <- x[selRowCoefmat(x, anovaLM, objLM), , drop=FALSE]
 
-
-
+    ## Définitions issues de la fonction originale :
     if (is.null(d <- dim(x)) || length(d) != 2L)
         stop("'x' must be coefficient matrix/data frame")
     nc <- d[2L]
@@ -395,12 +409,10 @@ plotDist.f <- function(y, family, metrique, env=NULL,...)
                              paste(names(coefLoi$estimate), coefLoi$estimate, sep="=", collapse=", "), # coefs estimés.
                              ")", sep=""))
 
-    yi <- eval(expr)
-
-    ## if (family == "NBI") {xitmp <<- xi ; yitmp <<- yi ; coeftmp <<- coefLoi}
+    yi <- eval(expr)                    # valeurs pour la loi de distribution théorique ajustée.
 
     ## Représentation graphique :
-    nbreaks <- 60                       # Nombre de barres
+    nbreaks <- 60                       # Nombre de barres.
 
     histTmp <- hist(y, breaks=nbreaks, plot=FALSE) # pour connaitre la fréquence maximale de la distribution observée.
 
@@ -426,7 +438,7 @@ plotDist.f <- function(y, family, metrique, env=NULL,...)
 
     res <- gamlss(y ~ 1, family=fname)
 
-    ## Si un environnement est précisé, la valeur est sauvegardée dans une liste :
+    ## Si un environnement est précisé, la valeur est sauvegardée dans une liste 'distList' :
     if (!is.null(env))
     {
         eval(substitute(evalq(distList[[family]] <- res, envir=env), list(family=eval(family), res=eval(res))))
@@ -587,10 +599,9 @@ choixDistri.f <- function(metrique, data)
     ## Autres évènements :
     tkbind(WinDistri, "<Destroy>", function(){tclvalue(Done) <- "2"}) # en cas de destruction de la fenêtre.
 
-    ## tkgrid.configure(T.help, sticky="")
-    ## tkgrid.configure(FrameHelp, sticky="")
-
+    ## Présélection de la distribution avec le plus petit AIC :
     tclvalue(LoiChoisie) <- names(distList)[which.min(sapply(distList, function(x){x$aic}))]
+    flush.console()
 
     tkwait.variable(Done)               # Attente d'une action de l'utilisateur.
 
@@ -713,9 +724,9 @@ sortiesLM.f <- function(lm, formula, metrique, factAna, modSel, listFact, data, 
 
     if (length(grep("^glm", lm$call)) > 0)
     {
-        valPredites <- predict(lm, newdata=unique(data[ , listFact]), type="response")
+        valPredites <- predict(lm, newdata=unique(data[ , listFact, drop=FALSE]), type="response")
     }else{
-        valPredites <- predict(lm, newdata=unique(data[ , listFact]))
+        valPredites <- predict(lm, newdata=unique(data[ , listFact, drop=FALSE]))
     }
     names(valPredites) <- nomCoefs
 

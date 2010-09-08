@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: comparaison_distri_generique.R
-### Time-stamp: <2010-09-06 13:36:12 yreecht>
+### Time-stamp: <2010-09-08 17:39:22 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -358,7 +358,52 @@ printCoefmat.red <- function(x, digits = max(3, getOption("digits") - 2),
     invisible(x)
 }
 
-
+########################################################################################################################
+print.summary.glht.red <- function (x, digits = max(3, getOption("digits") - 3), ...)
+{
+    ## cat("\n\t", "Simultaneous Tests for General Linear Hypotheses\n\n")
+    if (!is.null(x$type))
+        cat("Comparaisons multiples de moyennes :", x$type, "Contrastes\n\n\n")
+    call <- if (isS4(x$model))
+        x$model@call
+    else x$model$call
+    ## if (!is.null(call)) {
+    ##     cat("Fit: ")
+    ##     print(call)
+    ##     cat("\n")
+    ## }
+    cat("\n")
+    pq <- x$test
+    mtests <- cbind(pq$coefficients, pq$sigma, pq$tstat, pq$pvalues)
+    error <- attr(pq$pvalues, "error")
+    pname <- switch(x$alternativ, less = paste("Pr(<", ifelse(x$df ==
+        0, "z", "t"), ")", sep = ""), greater = paste("Pr(>",
+        ifelse(x$df == 0, "z", "t"), ")", sep = ""), two.sided = paste("Pr(>|",
+        ifelse(x$df == 0, "z", "t"), "|)", sep = ""))
+    colnames(mtests) <- c("Estimate", "Std. Error", ifelse(x$df ==
+        0, "z value", "t value"), pname)
+    type <- pq$type
+    if (!is.null(error) && error > .Machine$double.eps) {
+        sig <- which.min(abs(1/error - (10^(1:10))))
+        sig <- 1/(10^sig)
+    }
+    else {
+        sig <- .Machine$double.eps
+    }
+    cat("Hypothèses linéaires :\n")
+    alt <- switch(x$alternative, two.sided = "==", less = ">=",
+        greater = "<=")
+    rownames(mtests) <- paste(rownames(mtests), alt, x$rhs)
+    printCoefmat(mtests, digits = digits, has.Pvalue = TRUE,
+        P.values = TRUE, eps.Pvalue = sig)
+    switch(type, univariate = cat("(P-valeurs univariées)"),
+        `single-step` = cat("(P-valeurs ajustées -- méthode 'single-step')"),
+        Shaffer = cat("(P-valeurs ajustées -- méthode de Shaffer)"),
+        Westfall = cat("(P-valeurs ajustées -- méthode de Westfall)"),
+        cat("(P-valeurs ajustées --", type, "method)"))
+    cat("\n\n")
+    invisible(x)
+}
 
 ########################################################################################################################
 plotDist.f <- function(y, family, metrique, env=NULL,...)
@@ -449,234 +494,409 @@ plotDist.f <- function(y, family, metrique, env=NULL,...)
 }
 
 
+
 ########################################################################################################################
-choixDistri.f <- function(metrique, data)
+diffSpatiales.f <- function(objLM, factSpatial, factTemp, Data)
 {
-    ## Purpose: Aider l'utilisateur dans le choix d'une distribution de la
-    ##          métrique et lancer les analyses adéquates.
+    ## Purpose: Calcule et retourne la matrice de différences spatiales par
+    ##          année (pour une utilisation avec la fonction 'glht').
     ## ----------------------------------------------------------------------
-    ## Arguments: metrique : le nom de la métrique (variable dépendant)
-    ##                       choisie.
-    ##            data : le jeu de données contenant la métrique.
+    ## Arguments: objLM : un objet de classe 'lm' ou 'glm'.
+    ##            factSpatial : nom du facteur spatial.
+    ##            factTemp : nom du facteur temporel.
+    ##            Data : données utilisées pour ajuster le modèle.
     ## ----------------------------------------------------------------------
-    ## Author: Yves Reecht, Date: 18 août 2010, 16:19
+    ## Author: Yves Reecht, Date:  7 sept. 2010, 16:15
 
-    ## Systématiquement détruire la fenêtre en quitant :
-    on.exit(tkdestroy(WinDistri))
-    ## on.exit(print("WinDistri détruite !"), add=TRUE)
+    ## Coefficients :
+    theta <- coef(objLM)
 
-    ## ##################################################
-    ## Variables :
-    env <- environment()                # environnement courant.
-    Done <- tclVar(0)                   # État d'exécution.
-    LoiChoisie <- tclVar("NO")          # Variable pour le choix de distribution théorique.
-    vscale <- 0.75                      # dimension verticale des graphiques.
-    hscale <- 1.2                       # dimension horizontale des graphiques.
-    pointsize <- 10                     # taille du point pour les graphiques
-    distList <- list()                  # liste pour le stockage des AIC et autres.
+    ## Nom des différences spatiales (statut de protection) :
+    sDiff <- apply(combn(levels(Data[ , factSpatial]), 2),
+                   2,
+                   function(x){paste(rev(x), collapse = " - ")})
 
+    ## Matrice pour construire les différences entre coefficients :
+    Dspat <- matrix(0,
+                    nrow=nlevels(Data[ , factTemp]) * choose(nlevels(Data[ , factSpatial]), 2),
+                    ncol=length(theta))
 
-    ## ##################################################
-    ## Éléments graphiques :
-    WinDistri <- tktoplevel()           # Fenêtre principale.
-    tkwm.title(WinDistri, paste("Choix de distribution théorique de la métrique '", metrique, "'", sep=""))
+    ## Noms des colonnes (pas obligatoire mais utile pour vérification) :
+    row.names(Dspat) <- paste(levels(Data[ , factTemp]),
+                              rep(sDiff, each=nlevels(Data[ , factTemp])), sep=" : ")
+    colnames(Dspat) <- names(theta)
 
-    ## Frame d'aide :
-    FrameHelp <- tkframe(WinDistri)
-    T.help <- tktext(FrameHelp, bg="#fae18d", font="arial", width=100,
-                     height=4, relief="groove", borderwidth=2)
+    ## Calculs des nombres de colonnes des facteurs et intéraction :
+    nlev <- combn(sapply(Data, function(x)
+                     {
+                         ifelse(is.factor(x),
+                                nlevels(x) - 1,
+                                1)
+                     }),
+                  2)
 
+    ## Nombre de colonnes par type de facteur/interaction :
+    nCol <- apply(nlev, 2, prod)
 
+    ## Position de la première colonne
+    premiereCol <- cumsum(c(1, nCol[- length(nCol)])) + 1
 
-    ## Frame pour la loi Normale :
-    FrameN <- tkframe(WinDistri, borderwidth=2, relief="groove")
-    Img.N <- tkrplot(FrameN,            # Création de l'image.
-                     fun=function()
-                 {
-                     plotDist.f(y=data[ , metrique], family="NO", metrique=metrique, env=env)
-                 },
-                     vscale=vscale, hscale=hscale, pointsize=pointsize)
+    ## Position des facteurs d'intérêt et leur interaction,
+    ## dans l'ordre de l'ensemble des facteurs et interactions :
+    facts <- c(factSpatial, factTemp)
+    posTemp <- which(attr(res$terms, "term.labels") == factTemp)
+    posSpatial <- which(attr(res$terms, "term.labels") == factSpatial)
+    posInteraction <- which(is.element(attr(res$terms, "term.labels"),
+                                       paste(facts, rev(facts), sep=":")))
 
-    RB.N <- tkradiobutton(FrameN, variable=LoiChoisie, value="NO", # bouton de sélection.
-                          text=paste("loi Normale (AIC=", round(distList[["NO"]]$aic, 0), "). ", sep=""))
+    ## Différences entres les effets statuts (sans intéraction temporelles) :
+    tmp <- sapply(as.data.frame(combn(1:nlevels(Data[ , factSpatial]), 2)),
+                  function(x)
+              {
+                  m <- matrix(0,
+                              ncol=nlevels(Data[ , factSpatial]),
+                              nrow=nlevels(Data[ , factTemp]))
+                  m[ , x] <- matrix(c(-1, 1),
+                                    nrow=nlevels(Data[ , factTemp]),
+                                    ncol=2,
+                                    byrow=TRUE)
+                  return(m)
+              }, simplify=FALSE)
 
-
-    ## Frame pour la loi log-Normale :
-    FrameLogN <- tkframe(WinDistri, borderwidth=2, relief="groove")
-    Img.LogN <- tkrplot(FrameLogN, fun=function() # Création de l'image.
-                    {
-                        plotDist.f(y=data[ , metrique], family="LOGNO", metrique=metrique, env=env)
-                    },
-                        vscale=vscale, hscale=hscale, pointsize=pointsize)
-
-    RB.LogN <- tkradiobutton(FrameLogN, variable=LoiChoisie, value="LOGNO", # bouton de sélection.
-                             text=paste("loi log-Normale (AIC=", round(distList[["LOGNO"]]$aic, 0), "). ", sep=""))
-
-    if (is.integer(data[ , metrique]))
+    m <- tmp[[1]][NULL, ]
+    for(i in 1:length(tmp))
     {
-        ## Frame pour la loi de Poisson :
-        FramePois <- tkframe(WinDistri, borderwidth=2, relief="groove")
-        Img.Pois <- tkrplot(FramePois,  # Création de l'image.
-                            fun=function()
-                        {
-                            plotDist.f(y=data[ , metrique], family="PO", metrique=metrique, env=env)
-                        },
-                            vscale=vscale, hscale=hscale, pointsize=pointsize)
-
-        RB.Pois <- tkradiobutton(FramePois, variable=LoiChoisie, value="PO", # bouton de sélection.
-                                 text=paste("loi de Poisson (AIC=", round(distList[["PO"]]$aic, 0), "). ", sep=""))
-
-        ## Frame pour la loi bionomiale négative :
-        FrameNBinom <- tkframe(WinDistri, borderwidth=2, relief="groove")
-        Img.NBinom <- tkrplot(FrameNBinom, # Création de l'image.
-                              fun=function()
-                          {
-                              plotDist.f(y=data[ , metrique], family="NBI", metrique=metrique, env=env)
-                          },
-                              vscale=vscale, hscale=hscale, pointsize=pointsize)
-
-        RB.NBinom <- tkradiobutton(FrameNBinom, variable=LoiChoisie, value="NBI", # bouton de sélection.
-                                   text=paste("loi Binomiale négative (AIC=",
-                                              round(distList[["NBI"]]$aic, 0), "). ", sep=""))
-    }else{}
-
-    ## Boutons :
-    FrameB <- tkframe(WinDistri)
-    B.OK <- tkbutton(FrameB, text="     OK     ", command=function(){tclvalue(Done) <- "1"})
-    B.Cancel <- tkbutton(FrameB, text="   Annuler   ", command=function(){tclvalue(Done) <- "2"})
-
-    ## ##################################################
-    ## Placement des éléments sur la grille :
-
-    tkgrid(tklabel(WinDistri, text=" "))
-    tkinsert(T.help, "end", paste("INFO :\n", # texte de l'aide.
-                                  "Cette fenêtre vous permet de choisir la distribution",
-                                  " la plus adaptée pour faire vos analyses.\n",
-                                  "La distribution (courbe rouge) s'ajustant le mieux à vos données (histogramme) d'après \n",
-                                  "le critère d'information de Akaike (AIC ; doit être le plus petit possible) est pré-sélectionnée.", sep=""))
-    tkgrid(T.help)
-    tkgrid(FrameHelp, column=1, columnspan=3)
-
-    tkgrid(tklabel(WinDistri, text=" "))
-    tkgrid(Img.N, columnspan=2)
-    tkgrid(RB.N, row=1, sticky="e")
-    tkgrid(tklabel(FrameN, text=" Modèle : ANOVA", fg="red"), row=1, column=1, sticky="w")
-    tkgrid(Img.LogN, columnspan=2)
-    tkgrid(RB.LogN, sticky="e")
-    tkgrid(tklabel(FrameLogN, text=" Modèle : ANOVA, données log-transformées", fg="red"), row=1, column=1, sticky="w")
-    tkgrid(tklabel(WinDistri, text=" "), FrameN, tklabel(WinDistri, text=" "), FrameLogN, tklabel(WinDistri, text=" "),
-           sticky="ew")
-    tkgrid(tklabel(WinDistri, text=" "))
-
-    ## Évènements : sélections en cliquant sur les graphiques :
-    tkbind(Img.N, "<Button-1>", function(){tclvalue(LoiChoisie) <- "NO"})
-    tkbind(Img.LogN, "<Button-1>", function(){tclvalue(LoiChoisie) <- "LOGNO"})
-
-    ## Pour les données entières seulement :
-    if (is.integer(data[ , metrique]))
-    {
-        tkgrid(Img.Pois, columnspan=2)
-        tkgrid(RB.Pois, sticky="e")
-        tkgrid(tklabel(FramePois, text=" Modèle : GLM, famille 'Poisson'", fg="red"), row=1, column=1, sticky="w")
-        tkgrid(Img.NBinom, columnspan=2)
-        tkgrid(RB.NBinom, sticky="e")
-        tkgrid(tklabel(FrameNBinom, text=" Modèle : GLM, famille 'Binomiale négative'", fg="red"), row=1, column=1, sticky="w")
-        tkgrid(tklabel(WinDistri, text=" "), FramePois, tklabel(WinDistri, text=" "), FrameNBinom,
-               tklabel(WinDistri, text=" "), sticky="ew")
-        tkgrid(tklabel(WinDistri, text=" "))
-
-        ## Évènements : sélections en cliquant sur les graphiques :
-        tkbind(Img.Pois, "<Button-1>", function(){tclvalue(LoiChoisie) <- "PO"})
-        tkbind(Img.NBinom, "<Button-1>", function(){tclvalue(LoiChoisie) <- "NBI"})
-    }else{}
-
-    ## Boutons :
-    tkgrid(FrameB, column=1, columnspan=3)
-    tkgrid(B.OK, tklabel(FrameB, text="                         "), B.Cancel)
-    tkgrid(tklabel(WinDistri, text=" "))
-
-    ## ##################################################
-    ## Autres évènements :
-    tkbind(WinDistri, "<Destroy>", function(){tclvalue(Done) <- "2"}) # en cas de destruction de la fenêtre.
-
-    ## Présélection de la distribution avec le plus petit AIC :
-    tclvalue(LoiChoisie) <- names(distList)[which.min(sapply(distList, function(x){x$aic}))]
-    flush.console()
-
-    tkwait.variable(Done)               # Attente d'une action de l'utilisateur.
-
-    if (tclvalue(Done) == "1")
-    {
-        return(tclvalue(LoiChoisie))
-    }else{
-        return(NULL)
+        m <- rbind(m, tmp[[i]])
     }
+
+    Dspat[ , premiereCol[posSpatial] - 1 + 1:nCol[posSpatial]] <- m[ , -1]
+
+    ## Ajout des intéractions :
+    tmp2 <- Dspat[ , seq(from=premiereCol[posInteraction], length.out=nCol[posInteraction])]
+
+    l <- 1
+    for (i in as.data.frame(combn(0:nCol[posSpatial], 2))) # pour chaque combinaison de statut :
+    {
+        if(i[1] != 0)
+        {
+            d1 <- rbind(0, diag(-1, nrow=nCol[posTemp]))
+            if (posSpatial > posTemp)   # facteur spatial après le facteur temporel...
+            {
+                tmp2[seq(from=l, length.out=nlevels(Data[ , factTemp])),
+                     seq(from=(i[1] - 1) * nCol[posTemp] + 1, length.out=nCol[posTemp])] <- d1
+            }else{                      # ... avant le facteur temporel.
+                tmp2[seq(from=l, length.out=nlevels(Data[ , factTemp])),
+                     seq(from=i[1], by=nCol[posSpatial] , length.out=nCol[posTemp])] <- d1
+            }
+        }else{}
+
+        d2 <- rbind(0, diag(1, nrow=nCol[posTemp]))
+
+        if (posSpatial > posTemp)       # facteur spatial après le facteur temporel...
+        {
+            tmp2[seq(from=l, length.out=nlevels(Data[ , factTemp])),
+                 seq(from=(i[2] - 1) * nCol[posTemp] + 1, length.out=nCol[posTemp])] <- d2
+        }else{                          # ... avant le facteur temporel.
+            tmp2[seq(from=l, length.out=nlevels(Data[ , factTemp])),
+                 seq(from=i[2], by=nCol[posSpatial], length.out=nCol[posTemp])] <- d2
+        }
+
+        l <- l + nlevels(Data[ , factTemp])
+    }
+
+    ## Stockage des différences d'interactions :
+    Dspat[ , seq(from=premiereCol[posInteraction], length.out=nCol[posInteraction])] <- tmp2
+
+    return(Dspat)
+}
+
+
+########################################################################################################################
+diffTemporelles.f <- function(objLM, factSpatial, factTemp, Data)
+{
+    ## Purpose: Calcule et retourne la matrice de différences temporelles par
+    ##          statut(pour une utilisation avec la fonction 'glht').
+    ## ----------------------------------------------------------------------
+    ## Arguments: objLM : un objet de classe 'lm' ou 'glm'.
+    ##            factSpatial : nom du facteur spatial.
+    ##            factTemp : nom du facteur temporel.
+    ##            Data : données utilisées pour ajuster le modèle.
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date:  8 sept. 2010, 11:11
+
+    ## Coefficients :
+    theta <- coef(objLM)
+
+    tDiff <- paste(c(head(rev(levels(Data[ , factTemp])), 1), head(rev(levels(Data[ , factTemp])),  - 1)),
+                   c(tail(rev(levels(Data[ , factTemp])), 1), tail(rev(levels(Data[ , factTemp])),  - 1)),
+                   sep=" - ")
+
+    ## Matrice pour construire les différences entre coefficients :
+    Dtemp <- matrix(0,
+                    ## Il y a autant de différences temporelles que de niveaux pour la variable temporelle (en raison de
+                    ## la différence supplémentaire final - initial) :
+                    nrow=nlevels(Data[ , factTemp]) * nlevels(Data[ , factSpatial]),
+                    ncol=length(theta))
+
+    ## Noms des colonnes (pas obligatoire mais utile pour vérification) :
+    row.names(Dtemp) <- paste(rep(levels(Data[ , factSpatial]), each=nlevels(Data[ , factTemp])),
+                              tDiff,
+                              sep=" : ")
+
+
+    colnames(Dtemp) <- names(theta)
+
+    ## Calculs des nombres de colonnes des facteurs et intéraction :
+    nlev <- combn(sapply(Data, function(x)
+                     {
+                         ifelse(is.factor(x),
+                                nlevels(x) - 1,
+                                1)
+                     }),
+                  2)
+
+    ## Nombre de colonnes par type de facteur/interaction :
+    nCol <- apply(nlev, 2, prod)
+
+    ## Position de la première colonne
+    premiereCol <- cumsum(c(1, nCol[- length(nCol)])) + 1
+
+    ## Position des facteurs d'intérêt et leur interaction,
+    ## dans l'ordre de l'ensemble des facteurs et interactions :
+    facts <- c(factSpatial, factTemp)
+    posTemp <- which(attr(res$terms, "term.labels") == factTemp)
+    posSpatial <- which(attr(res$terms, "term.labels") == factSpatial)
+    posInteraction <- which(is.element(attr(res$terms, "term.labels"),
+                                       paste(facts, rev(facts), sep=":")))
+
+    ## Différences sur l'effet temporel seul :
+    d1 <- rbind(c(-1, rep(0, nCol[posTemp] - 1), 1),
+                cbind(0, diag(1, nCol[posTemp])[ , seq(nCol[posTemp], 1)]) +
+                cbind(diag(-1, nCol[posTemp])[ , seq(nCol[posTemp], 1)], 0))[ , -1]
+
+    Dtemp[ , seq(from=premiereCol[posTemp],
+                 length.out=nCol[posTemp])] <- sapply(as.data.frame(d1), rep, nlevels(Data[ , factSpatial]))
+
+    ## Différences sur les interactions :
+    d2 <- Dtemp[ , seq(from=premiereCol[posInteraction],
+                        length.out=nCol[posInteraction])]
+
+    l <- nlevels(Data[ , factTemp]) + 1
+    for (i in seq(from=0, length.out=nCol[posSpatial]))
+    {
+        if (posSpatial > posTemp)       # traitement différent selon l'imbrication des facteurs :
+        {                               # Cas où le facteur temporel est en premier :
+            d2[seq(from=l, length.out=nlevels(Data[ , factTemp])) ,
+               seq(from=1, length.out=nCol[posTemp]) + i * nCol[posTemp]] <- d1
+        }else{                          #... cas où il est en second :
+            d2[seq(from=l, length.out=nlevels(Data[ , factTemp])) ,
+               seq(from=1 + i, by=nCol[posSpatial], length.out=nCol[posTemp])] <- d1
+        }
+
+        l <- l + nlevels(Data[ , factTemp])
+    }
+
+    Dtemp[ , seq(from=premiereCol[posInteraction],
+                 length.out=nCol[posInteraction])] <- d2
+
+    return(Dtemp)
 
 }
 
 
 ########################################################################################################################
-sortiesLM.f <- function(lm, formula, metrique, factAna, modSel, listFact, data, Log=FALSE)
+resFileLM.f <- function(objLM, metrique, factAna, modSel, listFact, Log=FALSE,  prefix=NULL, ext="txt")
 {
-    ## Purpose: Formater les résultats de lm et les écrire dans un fichier
+    ## Purpose: Définit les noms du fichiers pour les résultats des modèles
+    ##          linéaires. L'extension et un prefixe peuvent êtres précisés,
+    ##          mais par défaut, c'est le fichier de sorties texte qui est
+    ##          créé.
     ## ----------------------------------------------------------------------
-    ## Arguments: lm : un objet de classe lm
-    ##            formula : la formule utilisée (pas lisible dans le call).
-    ##            metrique : la métrique choisie.
-    ##            factAna : le facteur de séparation des analyses.
-    ##            modSel : la modalité courante.
-    ##            listFact : liste du (des) facteur(s) de regroupement.
-    ##            data : les données utilisées.
-    ##            Log : données log-transformées ou non (booléen).
+    ## Arguments: objLM : un objet de classe 'lm' ou 'glm'.
+    ##            metrique : nom de la métrique analysée.
+    ##            factAna : nom du facteur de séprataion des analyses.
+    ##            modSel : modalité de factAna sélectionnée.
+    ##            listFact : vecteur des noms de facteurs de l'analyse.
+    ##            Log : Est-ce que les données sont log-transformées.
+    ##            prefix : préfixe du nom de fichier.
+    ##            ext : extension du fichier.
     ## ----------------------------------------------------------------------
-    ## Author: Yves Reecht, Date: 25 août 2010, 16:19
+    ## Author: Yves Reecht, Date:  8 sept. 2010, 15:48
 
-    on.exit(close(resFile))
-    on.exit(options(oOpt), add=TRUE)
-
-    oOpt <- options()
-    options(width=120)
-
-
-    ## Formule de modèle lisible:
-    lm$call$formula <- formula
-    formule <<- formula
-
-    ## lm <<- lm
-
-    if (length(grep("^glm", lm$call)) > 0) # Pour les GLMs.
+    ## si pas de préfix fourni :
+    if (is.null(prefix))
     {
-        anovaLM <- anova(lm, test="Chisq") # Pour les LMs.
-    }else{
-        anovaLM <- anova(lm)
-    }
-    sumLM <- summary(lm)
+        prefix <- ifelse(length(grep("^lm\\(", deparse(objLM$call), perl=TRUE)) > 0,
+                         paste("LM", ifelse(Log, "-log", ""), sep=""),
+                         ifelse(length(grep("^glm\\.nb", deparse(objLM$call), perl=TRUE)) > 0,
+                                "GLM-NB",
+                                ifelse(length(grep("^glm.*poisson", deparse(objLM$call), perl=TRUE)) > 0,
+                                       "GLM-P",
+                                       "Unknown-model")))
+    }else{}
 
-    ## Chemin et nom de fichier :
-    prefix <- ifelse(length(grep("^lm\\(", deparse(lm$call), perl=TRUE)) > 0,
-                     paste("LM", ifelse(Log, "-log", ""), sep=""),
-                     ifelse(length(grep("^glm\\.nb", deparse(lm$call), perl=TRUE)) > 0,
-                            "GLM-NB",
-                            ifelse(length(grep("^glm.*poisson", deparse(lm$call), perl=TRUE)) > 0,
-                                   "GLM-P",
-                                   "Unknown-model")))
-
+    ## Nom de fichier :
     filename <- paste(nameWorkspace, "/FichiersSortie/", prefix, "_",
+                      ## Métrique analysée :
                       metrique, "_",
+                      ## si facteur de séparation des analyses :
                       ifelse(factAna == "",
                              "",
                              paste(factAna, "(", ifelse(modSel != "", modSel, "toutes"), ")_", sep="")),
-                      paste(listFact, collapse="-"), ".txt", sep="")
+                      ## liste des facteurs de l'analyse
+                      paste(listFact, collapse="-"),
+                      ## Extension du fichier :
+                      ".", gsub("^\\.([^.]*)", "\\1", ext[1], perl=TRUE), # nettoyage de l'extension si besoin.
+                      sep="")
 
-    ## Ouverture de la connection :
-    resFile <- file(filename, open="w")
+    ## Ouverture de la connection (retourne l'objet de type 'connection') si pas un fichier avec extension graphique,
+    ## retourne le nom de fichier sinon :
+    if (!is.element(gsub("^\\.([^.]*)", "\\1", ext[1], perl=TRUE),
+                    c("pdf", "PDF", "png", "PNG", "jpg", "JPG")))
+    {
+        return(resFile <- file(filename, open="w"))
+    }else{
+        return(filename)
+    }
+}
+
+########################################################################################################################
+valPreditesLM.f <- function(objLM, Data, listFact, resFile)
+{
+    ## Purpose:
+    ## ----------------------------------------------------------------------
+    ## Arguments: objLM : objet de classe 'lm' ou 'glm'.
+    ##            Data : les données utilisées pour ajuster le modèle.
+    ##            listFact : un vecteur donnant la liste des noms de
+    ##                       facteurs.
+    ##            resFile : la connection au fichier résultat
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date:  8 sept. 2010, 16:12
+
+
+    ## ##################################################
+    ## Valeurs prédites :
+    OrdreNivFact <- sapply(unique(Data[ , listFact]), as.numeric)
+
+    if (!is.matrix(OrdreNivFact))       # Si un seul facteur, on transforme le vecteur d'ordre des niveaux en matrice.
+    {
+        OrdreNivFact <- matrix(OrdreNivFact, ncol=1, dimnames=list(NULL, listFact))
+    }else{}
+
+    ## Valeurs prédites pour chaque combinaison réalisée des facteurs :
+    if (length(grep("^glm", objLM$call)) > 0)
+    {
+        valPredites <- predict(objLM, newdata=unique(Data[ , listFact, drop=FALSE]), type="response")
+    }else{
+        valPredites <- predict(objLM, newdata=unique(Data[ , listFact, drop=FALSE]))
+    }
+
+    ## Noms des valeurs prédites (combinaisons des différents niveaux de facteurs) :
+    nomCoefs <- unique(apply(Data[ , listFact, drop=FALSE], 1, paste, collapse=":"))
+    names(valPredites) <- nomCoefs
+
+    ## On remet les modalités en ordre :
+    valPredites <- valPredites[eval(parse(text=paste("order(",
+                                          paste("OrdreNivFact[ , ", 1:ncol(OrdreNivFact), "]", sep="", collapse=", "),
+                                          ")", sep="")))]
+
+    ## Écriture de l'en-tête :
+    cat("\n\n\n---------------------------------------------------------------------------",
+        "\nValeurs prédites par le modèle :\n\n",
+        file=resFile)
+
+    ## Écriture du résultat :
+    capture.output(print(valPredites), file=resFile)
+
+}
+
+
+########################################################################################################################
+compMultiplesLM.f <- function(objLM, Data, factSpatial, factTemp, resFile)
+{
+    ## Purpose: Calculer et écrire les résultats des comparaisons multiples.
+    ## ----------------------------------------------------------------------
+    ## Arguments: objLM : objet de classe 'lm' ou 'glm'.
+    ##            Data : les données utilisées pour ajuster le modèle.
+    ##            factSpatial : le nom du facteur utilisé pour les
+    ##                          comparaisons spatiales/de statut.
+    ##            factTemp : le nom du facteur utilisé pour les comparaisons
+    ##                       temporelles.
+    ##            resFile : la connection pour les sorties textes.
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date:  8 sept. 2010, 16:38
+
+    ## écriture des en-têtes :
+    cat("\n\n\n---------------------------------------------------------------------------",
+        "\nComparaisons multiples :",
+        file=resFile)
+
+    ## Calcul de la matrice de différences spatiales/de statut :
+    Dspat <- diffSpatiales.f(objLM=objLM,
+                             factSpatial="statut_protection",
+                             factTemp="an",
+                             Data=Data)
+
+    ## Calcul de la matrice de différences temporelles :
+    Dtemp <- diffTemporelles.f(objLM=objLM,
+                               factSpatial="statut_protection",
+                               factTemp="an",
+                               Data=Data)
+
+    ## Si des coefs n'ont pu être calculés, glht plante... à moins que :
+    if (any(is.na(coef(objLM))))
+    {
+        ## Avertissement :
+        cat("\n\n\tAttention : les matrices de différences ont été réduites en raison de ",
+            "\n\tcoefficients non calculables (absence de données pour certains ",
+            "\n\tniveaux de facteurs/interactions).\n",
+            file=resFile)
+
+        ## Réduction des matrices de différences :
+        Dspat <- Dspat[ , !is.na(coef(objLM))]
+        Dtemp <- Dtemp[ , !is.na(coef(objLM))]
+
+        objLM$coefficients <- objLM$coefficients[!is.na(coef(objLM))]
+    }
+
+    ## Résultats des comparaisons spatiales/de statut :
+    cat("\n\nComparaisons pour les différences spatiales (statut de protection) par année :\n",
+        file=resFile)
+
+    capture.output(print.summary.glht.red(summary(glht(objLM, linfct=Dspat, alternative="two.sided"))),
+                   file=resFile)
+
+    ## Résultats des comparaisons temporelles :
+    cat("\n\nComparaisons pour les différences temporelles par statut de protection :\n",
+        file=resFile)
+
+    capture.output(print.summary.glht.red(summary(glht(objLM, linfct=Dtemp, alternative="two.sided"))),
+                   file=resFile)
+
+
+
+}
+
+
+########################################################################################################################
+infoStatLM.f <- function(objLM, resFile)
+{
+    ## Purpose: Écrit les informations sur le modèle insi que les
+    ##          statistiques globale dans un fichier résultat
+    ## ----------------------------------------------------------------------
+    ## Arguments: objLM un objet de classe 'lm' ou 'glm'.
+    ##            resFile : une connection pour les sorties.
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date:  8 sept. 2010, 16:57
+
+    sumLM <- summary(objLM)
 
     ## Informations sur le modèle :
     cat("Modèle ajusté :", file=resFile, fill=1)
-    cat("\t", deparse(lm$call), "\n\n\n", file=resFile, sep="")
+    cat("\t", deparse(objLM$call), "\n\n\n", file=resFile, sep="")
 
     ## Stats globales :
-    if (length(grep("^glm", lm$call)) == 0)
+    if (length(grep("^glm", objLM$call)) == 0)
     {
         cat("Statistique de Fisher Globale et R^2 :\n\n", file=resFile)
         cat("\tR^2 multiple : ", format(sumLM$r.squared, digits=3),
@@ -690,10 +910,30 @@ sortiesLM.f <- function(lm, formula, metrique, factAna, modSel, listFact, data, 
     }else{
     }
 
+}
+
+
+########################################################################################################################
+signifParamLM.f <- function(objLM, resFile)
+{
+    ## Purpose: Écrire les résultats de l'anova globale du modèle et
+    ##          l'estimation de significativités des coefficients du modèle.
+    ## ----------------------------------------------------------------------
+    ## Arguments: objLM un objet de classe 'lm' ou 'glm'.
+    ##            resFile : une connection pour les sorties.
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date:  8 sept. 2010, 17:07
+
+    ## Anovas et résumés :
+    if (length(grep("^glm", objLM$call)) > 0) # Pour les GLMs.
+    {
+        anovaLM <- anova(objLM, test="Chisq") # Pour les LMs.
+    }else{
+        anovaLM <- anova(objLM)
+    }
+    sumLM <- summary(objLM)
 
     ## Anova globale du modèle :
-    ## cat("Table d'analyse de la variance :", file=resFile, fill=2)
-    ## cat("\n\tRéponse : ", row.names(attr(lm$terms, "factors"))[1], "\n", file=resFile)
     capture.output(print.anova.fr(anovaLM), file=resFile)
 
     ## Significativités des paramètres :
@@ -701,77 +941,66 @@ sortiesLM.f <- function(lm, formula, metrique, factAna, modSel, listFact, data, 
         "\n(seuls ceux correspondant à des facteurs/intéractions significatifs sont représentés) :\n\n",
         file=resFile)
 
-    capture.output(printCoefmat.red(sumLM$coef, anovaLM=anovaLM, objLM=lm), file=resFile)
+    capture.output(printCoefmat.red(sumLM$coef, anovaLM=anovaLM, objLM=objLM), file=resFile)
+}
 
-    ## print(sapply(anova(res), function(x)x), file="", na.print=NULL)
-    ## row.names(attr(res$terms, "factors"))[1]
-    ## names(attr(res$terms, "dataClasses"))
+
+########################################################################################################################
+sortiesLM.f <- function(lm, formule, metrique, factAna, modSel, listFact, data, Log=FALSE)
+{
+    ## Purpose: Formater les résultats de lm et les écrire dans un fichier
+    ## ----------------------------------------------------------------------
+    ## Arguments: lm : un objet de classe lm
+    ##            formule : la formule utilisée (pas lisible dans le call).
+    ##            metrique : la métrique choisie.
+    ##            factAna : le facteur de séparation des analyses.
+    ##            modSel : la modalité courante.
+    ##            listFact : liste du (des) facteur(s) de regroupement.
+    ##            data : les données utilisées.
+    ##            Log : données log-transformées ou non (booléen).
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date: 25 août 2010, 16:19
+
+    ## longueur des lignes pour les sorties textes :
+    oOpt <- options()
+    on.exit(options(oOpt))
+
+    options(width=120)
+
+    ## Formule de modèle lisible:
+    lm$call$formula <- formule
+    formule <<- formule
+
+    ## Chemin et nom de fichier :
+    resFile <- resFileLM.f(objLM=lm, metrique=metrique, factAna=factAna, modSel=modSel, listFact=listFact, Log=Log)
+    on.exit(close(resFile), add=TRUE)
+
+
+    ## Informations et statistiques globales sur le modèle :
+    infoStatLM.f(objLM=lm, resFile=resFile)
+
+    ## Anova globale du modèle + significativité des coefficients :
+    signifParamLM.f(objLM=lm, resFile=resFile)
+
 
     ## ##################################################
-    ## À améliorer : valeurs prédites :
-    OrdreNivFact <- sapply(unique(data[ , listFact]), as.numeric)
-
-    if (!is.matrix(OrdreNivFact))       # Si un seul facteur, on transforme le vecteur d'ordre des niveaux en matrice.
-    {
-        OrdreNivFact <- matrix(OrdreNivFact, ncol=1, dimnames=list(NULL, listFact))
-    }else{}
-
-    ## nomCoefs <- apply(sapply(colnames(OrdreNivFact), function(i){levels(data[ , i])[OrdreNivFact[ , i]]}),
-    ##                   1, paste, collapse=":")
-
-    nomCoefs <- unique(apply(data[ , listFact, drop=FALSE], 1, paste, collapse=":"))
-
-
-    if (length(grep("^glm", lm$call)) > 0)
-    {
-        valPredites <- predict(lm, newdata=unique(data[ , listFact, drop=FALSE]), type="response")
-    }else{
-        valPredites <- predict(lm, newdata=unique(data[ , listFact, drop=FALSE]))
-    }
-    names(valPredites) <- nomCoefs
-
-    ## On remet les modalités en ordre :
-    valPredites <- valPredites[eval(parse(text=paste("order(",
-                                          paste("OrdreNivFact[ , ", 1:ncol(OrdreNivFact), "]", sep="", collapse=", "),
-                                          ")", sep="")))]
-
-    cat("\n\n\n---------------------------------------------------------------------------",
-        "\nValeurs prédites par le modèle :\n\n",
-        file=resFile)
-
-    capture.output(print(valPredites), file=resFile)
-
+    ## Valeurs prédites par le modèle :
+    valPreditesLM.f(objLM=lm, Data=data, listFact=listFact, resFile=resFile)
 
     ## ##################################################
-    ## Temporaire : démo comparaisons multiples avec les facteurs 'an' et 'statut_protection' avec respectivement 5 et 2
-    ##              modalités (particulièrement adapté pour les données CB).
-    if (all(is.element(listFact, c("an", "statut_protection"))) &
-        all(is.element(c("an", "statut_protection"), listFact)))
+    ## Comparaisons multiples :
+
+    if (all(is.element(c("an", "statut_protection"), listFact)))
     {
-        if (all(listFact == c("an", "statut_protection")) &
-            all(sapply(data[ , listFact], nlevels) == c(5, 2)))
-        {
-            cat("\n\n\n---------------------------------------------------------------------------",
-                "\nComparaisons multiples :",
-                "\n\nComparaisons pour les différences spatiales (statut de protection) par année :\n",
-                file=resFile)
+        compMultiplesLM.f(objLM=lm, Data=data, factSpatial="statut_protection", factTemp="an", resFile=resFile)
 
-            capture.output(print.summary.glht.red(compMultSt.tmp.f(lm, data)), file=resFile)
-
-            cat("\n\nComparaisons pour les différences temporelles par statut de protection :\n",
-                file=resFile)
-
-            capture.output(print.summary.glht.red(compMultAn.tmp.f(lm, data)), file=resFile)
-
-            with(data,
-                 interaction.plot(an, statut_protection, data[ , metrique],
-                                  ylab=paste(Capitalize.f(varNames[metrique, "nom"]), "moyenne")))
-        }else{}
+        ## Représentation des interactions
+        with(Data,
+             interaction.plot(an, statut_protection, eval(parse(text=metrique)),
+                              ylab=paste(Capitalize.f(varNames[metrique, "nom"]), "moyenne")))
     }else{}
 
     flush.console()
-    ## close(resFile)
-
 }
 
 
@@ -859,7 +1088,7 @@ modeleLineaireWP2.f <- function(metrique, factAna, factAnaSel, listFact, listFac
                    NO={
                        res <- lm(exprML, data=tmpDataMod)
                        ## Mise en forme :
-                       ## sortiesLM.f(lm=res, formula=exprML, metrique, factAna, modSel, listFact)
+                       ## sortiesLM.f(lm=res, formule=exprML, metrique, factAna, modSel, listFact)
                    },
                    ## Modèle linéaire, données log-transformées :
                    LOGNO={
@@ -874,7 +1103,7 @@ modeleLineaireWP2.f <- function(metrique, factAna, factAnaSel, listFact, listFac
                        ## Mise en forme :
                        Log <- TRUE
                        formule <- logExprML
-                       ## sortiesLM.f(lm=res, formula=logExprML, metrique, factAna, modSel, listFact, Log=TRUE)
+                       ## sortiesLM.f(lm=res, formule=logExprML, metrique, factAna, modSel, listFact, Log=TRUE)
                    },
                    ## GLM, distribution de Poisson :
                    PO={
@@ -887,7 +1116,7 @@ modeleLineaireWP2.f <- function(metrique, factAna, factAnaSel, listFact, listFac
 
             res <<- res
 
-            sortiesLM.f(lm=res, formula=formule, metrique, factAna, modSel, listFact, tmpDataMod, Log=Log)
+            sortiesLM.f(lm=res, formule=formule, metrique, factAna, modSel, listFact, tmpDataMod, Log=Log)
 
 
         }else{

@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: modeles_lineaires_interface.R
-### Time-stamp: <2010-09-08 13:53:31 yreecht>
+### Time-stamp: <2010-09-09 13:56:02 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -97,6 +97,7 @@ choixDistri.f <- function(metrique, data)
     on.exit(tkdestroy(WinDistri))
     ## on.exit(print("WinDistri détruite !"), add=TRUE)
 
+
     ## ##################################################
     ## Variables :
     env <- environment()                # environnement courant.
@@ -113,11 +114,15 @@ choixDistri.f <- function(metrique, data)
     WinDistri <- tktoplevel()           # Fenêtre principale.
     tkwm.title(WinDistri, paste("Choix de distribution théorique de la métrique '", metrique, "'", sep=""))
 
+    tmp <- tktoplevel(WinDistri)
+    tkfocus(tmp)
+    tkdestroy(tmp)
+    ## tkfocus(WinDistri)
+
     ## Frame d'aide :
     FrameHelp <- tkframe(WinDistri)
     T.help <- tktext(FrameHelp, bg="#fae18d", font="arial", width=100,
                      height=4, relief="groove", borderwidth=2)
-
 
 
     ## Frame pour la loi Normale :
@@ -160,6 +165,7 @@ choixDistri.f <- function(metrique, data)
 
         ## Frame pour la loi bionomiale négative :
         FrameNBinom <- tkframe(WinDistri, borderwidth=2, relief="groove")
+
         Img.NBinom <- tkrplot(FrameNBinom, # Création de l'image.
                               fun=function()
                           {
@@ -204,6 +210,7 @@ choixDistri.f <- function(metrique, data)
     tkbind(Img.N, "<Button-1>", function(){tclvalue(LoiChoisie) <- "NO"})
     tkbind(Img.LogN, "<Button-1>", function(){tclvalue(LoiChoisie) <- "LOGNO"})
 
+
     ## Pour les données entières seulement :
     if (is.integer(data[ , metrique]))
     {
@@ -233,7 +240,7 @@ choixDistri.f <- function(metrique, data)
 
     ## Présélection de la distribution avec le plus petit AIC :
     tclvalue(LoiChoisie) <- names(distList)[which.min(sapply(distList, function(x){x$aic}))]
-    flush.console()
+    ## flush.console()
 
     tkwait.variable(Done)               # Attente d'une action de l'utilisateur.
 

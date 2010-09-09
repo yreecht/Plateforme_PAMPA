@@ -44,12 +44,12 @@
 
 #### RUN :
 SiteEtudie <- "RUN"
-fileName1 <- "unitobspampaGCRMNpoisson-100810.txt"
-fileName2 <- "obspampaGCRMNpoisson-100810.txt"
+## fileName1 <- "unitobspampaGCRMNpoisson-100810.txt"
+## fileName2 <- "obspampaGCRMNpoisson-100810.txt"
 ## fileName1 <- "unitobsGCRMNPoissons.txt"
 ## fileName2 <- "obsGCRMNPoissons.txt"
-## fileName1 <- "unitobsGCRMNBenthos.txt"
-## fileName2 <- "obsGCRMNBenthos.txt"
+fileName1 <- "unitobsGCRMNBenthos.txt"
+fileName2 <- "obsGCRMNBenthos.txt"
 fileName3 <- "PAMPA-WP1-Meth-4-RefSpOM 110810.txt"
 fileNameRefSpa <- "refSpatialRUN.txt"
 

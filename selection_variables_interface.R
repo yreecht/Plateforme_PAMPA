@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: Selection_variables_interface.R
-### Time-stamp: <2010-08-27 14:14:20 yreecht>
+### Time-stamp: <2010-09-09 13:53:38 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -827,6 +827,7 @@ selectionVariables.f <- function(nextStep)
     tkgrid(B.OK, tklabel(FrameBT, text="      "), B.Cancel,
            tklabel(FrameBT, text="               "), B.optGraph, tklabel(FrameBT, text="\n"))
 
+    ## tkfocus(WinSelection)
     ## Tant que l'utilisateur ne ferme pas la fenêtre... :
     repeat
     {

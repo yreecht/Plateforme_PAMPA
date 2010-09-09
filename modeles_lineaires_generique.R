@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: comparaison_distri_generique.R
-### Time-stamp: <2010-09-08 17:39:22 yreecht>
+### Time-stamp: <2010-09-09 14:14:26 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -445,9 +445,10 @@ plotDist.f <- function(y, family, metrique, env=NULL,...)
         xi <- seq(from=min(y, na.rm=TRUE), to=max(y, na.rm=TRUE), length.out=5000)
     }
 
-
+    ## browser(condition=(family == "NBI"))  ## [!!!] attention, il arrive que les calculs bloquent ici lors du premier
+    ## lancement. (origine inconnue)
     ## On ajuste la distribution :
-    coefLoi <- fitdistr(y, densfun=loi$densfunName)
+    try(coefLoi <- fitdistr(y, densfun=loi$densfunName))
 
     ## Calcul des points théoriques à représenter :
     expr <- parse(text=paste(loi$densfun, "(xi, ",       # points à représenter.
@@ -874,7 +875,6 @@ compMultiplesLM.f <- function(objLM, Data, factSpatial, factTemp, resFile)
                    file=resFile)
 
 
-
 }
 
 
@@ -889,7 +889,12 @@ infoStatLM.f <- function(objLM, resFile)
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date:  8 sept. 2010, 16:57
 
-    sumLM <- summary(objLM)
+    ## [!!!] Attention, il arrive que les calculs bloquent ici lors du premier lancement (origine inconnue)
+    sumLM <- switch(class(objLM)[1],
+                    lm = summary.lm(objLM),
+                    glm = summary.glm(objLM),
+                    negbin = MASS:::summary.negbin(objLM),
+                    summary(objLM))
 
     ## Informations sur le modèle :
     cat("Modèle ajusté :", file=resFile, fill=1)
@@ -901,6 +906,7 @@ infoStatLM.f <- function(objLM, resFile)
         cat("Statistique de Fisher Globale et R^2 :\n\n", file=resFile)
         cat("\tR^2 multiple : ", format(sumLM$r.squared, digits=3),
             " ;\tR^2 ajusté : ", format(sumLM$adj.r.squared, digits=3), "\n", file=resFile, sep="")
+
         cat("\tF-statistique : ",
             paste(sapply(sumLM$fstatistic, format, digits=4, nsmall=0),
                   c(" sur ", " et ", " DL,"), sep=""),
@@ -909,7 +915,6 @@ infoStatLM.f <- function(objLM, resFile)
             "\n\n\n", file=resFile, sep="")
     }else{
     }
-
 }
 
 
@@ -946,17 +951,17 @@ signifParamLM.f <- function(objLM, resFile)
 
 
 ########################################################################################################################
-sortiesLM.f <- function(lm, formule, metrique, factAna, modSel, listFact, data, Log=FALSE)
+sortiesLM.f <- function(objLM, formule, metrique, factAna, modSel, listFact, Data, Log=FALSE)
 {
     ## Purpose: Formater les résultats de lm et les écrire dans un fichier
     ## ----------------------------------------------------------------------
-    ## Arguments: lm : un objet de classe lm
+    ## Arguments: objLM : un objet de classe lm
     ##            formule : la formule utilisée (pas lisible dans le call).
     ##            metrique : la métrique choisie.
     ##            factAna : le facteur de séparation des analyses.
     ##            modSel : la modalité courante.
     ##            listFact : liste du (des) facteur(s) de regroupement.
-    ##            data : les données utilisées.
+    ##            Data : les données utilisées.
     ##            Log : données log-transformées ou non (booléen).
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 25 août 2010, 16:19
@@ -968,31 +973,32 @@ sortiesLM.f <- function(lm, formule, metrique, factAna, modSel, listFact, data, 
     options(width=120)
 
     ## Formule de modèle lisible:
-    lm$call$formula <- formule
+    objLM$call$formula <- formule
     formule <<- formule
 
     ## Chemin et nom de fichier :
-    resFile <- resFileLM.f(objLM=lm, metrique=metrique, factAna=factAna, modSel=modSel, listFact=listFact, Log=Log)
+    resFile <- resFileLM.f(objLM=objLM, metrique=metrique, factAna=factAna, modSel=modSel, listFact=listFact, Log=Log)
     on.exit(close(resFile), add=TRUE)
 
 
     ## Informations et statistiques globales sur le modèle :
-    infoStatLM.f(objLM=lm, resFile=resFile)
+    infoStatLM.f(objLM=objLM, resFile=resFile)
+
 
     ## Anova globale du modèle + significativité des coefficients :
-    signifParamLM.f(objLM=lm, resFile=resFile)
+    signifParamLM.f(objLM=objLM, resFile=resFile)
 
 
     ## ##################################################
     ## Valeurs prédites par le modèle :
-    valPreditesLM.f(objLM=lm, Data=data, listFact=listFact, resFile=resFile)
+    valPreditesLM.f(objLM=objLM, Data=Data, listFact=listFact, resFile=resFile)
 
     ## ##################################################
     ## Comparaisons multiples :
 
     if (all(is.element(c("an", "statut_protection"), listFact)))
     {
-        compMultiplesLM.f(objLM=lm, Data=data, factSpatial="statut_protection", factTemp="an", resFile=resFile)
+        compMultiplesLM.f(objLM=objLM, Data=Data, factSpatial="statut_protection", factTemp="an", resFile=resFile)
 
         ## Représentation des interactions
         with(Data,
@@ -1000,7 +1006,7 @@ sortiesLM.f <- function(lm, formule, metrique, factAna, modSel, listFact, data, 
                               ylab=paste(Capitalize.f(varNames[metrique, "nom"]), "moyenne")))
     }else{}
 
-    flush.console()
+    ## flush.console()
 }
 
 
@@ -1116,8 +1122,9 @@ modeleLineaireWP2.f <- function(metrique, factAna, factAnaSel, listFact, listFac
 
             res <<- res
 
-            sortiesLM.f(lm=res, formule=formule, metrique, factAna, modSel, listFact, tmpDataMod, Log=Log)
-
+            sortiesLM.f(objLM=res, formule=formule, metrique=metrique,
+                        factAna=factAna, modSel=modSel, listFact=listFact,
+                        Data=tmpDataMod, Log=Log)
 
         }else{
             message("Annulé !")

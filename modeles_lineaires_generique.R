@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: comparaison_distri_generique.R
-### Time-stamp: <2010-09-13 17:52:35 yreecht>
+### Time-stamp: <2010-09-13 18:01:01 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -545,9 +545,9 @@ diffSpatiales.f <- function(objLM, factSpatial, factTemp, Data)
     ## Position des facteurs d'intérêt et leur interaction,
     ## dans l'ordre de l'ensemble des facteurs et interactions :
     facts <- c(factSpatial, factTemp)
-    posTemp <- which(attr(res$terms, "term.labels") == factTemp)
-    posSpatial <- which(attr(res$terms, "term.labels") == factSpatial)
-    posInteraction <- which(is.element(attr(res$terms, "term.labels"),
+    posTemp <- which(attr(objLM$terms, "term.labels") == factTemp)
+    posSpatial <- which(attr(objLM$terms, "term.labels") == factSpatial)
+    posInteraction <- which(is.element(attr(objLM$terms, "term.labels"),
                                        paste(facts, rev(facts), sep=":")))
 
     ## Différences entres les effets statuts (sans intéraction temporelles) :

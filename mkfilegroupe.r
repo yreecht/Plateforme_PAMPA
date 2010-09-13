@@ -1333,7 +1333,8 @@ unitesp.f <- function(){
 
         ## Pourcentage de recouvrement de chaque espece/categorie pour les couvertures biotiques et abiotiques
         s <- tapply(unitesp$nombre, unitesp$unite_observation, sum, na.rm=TRUE)
-        unitesp$recouvrement <- as.vector(100 * unitesp$nombre / s[match(unitesp$unite_observation, rownames(s))])
+        unitesp$recouvrement <- as.vector(100 * unitesp$nombre /
+                                          s[match(unitesp$unite_observation, rownames(s))]) ## [!!!] ajout 100 * [???]
         rm(s)
 
         ## Nombre de colonies

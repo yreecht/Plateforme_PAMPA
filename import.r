@@ -11,10 +11,10 @@ openfile.f = function()
         {
             # tkmessageBox(message="Aucun espace de travail n'a ete selectionné!")
         }else{
+            assign("nameWorkspace", nameWorkspace, envir=.GlobalEnv)
             setwd(nameWorkspace)
             tkconfigure(ResumerEspaceTravail, text=paste("Espace de travail : ",nameWorkspace))
             tkinsert(helpframe,"end","\n Choisissez maintenant votre fichier d'unités d'observations")
-            assign("nameWorkspace", nameWorkspace, envir=.GlobalEnv)
         }
     }
 

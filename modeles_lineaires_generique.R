@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: comparaison_distri_generique.R
-### Time-stamp: <2010-09-13 18:01:01 yreecht>
+### Time-stamp: <2010-09-16 10:37:57 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -998,12 +998,24 @@ sortiesLM.f <- function(objLM, formule, metrique, factAna, modSel, listFact, Dat
 
     if (all(is.element(c("an", "statut_protection"), listFact)))
     {
+        WinInfo <- tktoplevel()
+        on.exit(tkdestroy(WinInfo))
+        tkwm.title(WinInfo, "Information")
+
+        tkgrid(tklabel(WinInfo, text="\n\tComparaisons multiples en cours...\t\n"), sticky="w")
+        tkgrid(tklabel(WinInfo,
+                       text=paste("\tVeuillez pattienter, ceci peut prendre",
+                       " un peu de temps (cette fenêtre se fermera automatiquement)\t \n", sep="")),
+               sticky="w")
+        tkfocus(WinInfo)
+
         compMultiplesLM.f(objLM=objLM, Data=Data, factSpatial="statut_protection", factTemp="an", resFile=resFile)
 
         ## Représentation des interactions
         with(Data,
              interaction.plot(an, statut_protection, eval(parse(text=metrique)),
                               ylab=paste(Capitalize.f(varNames[metrique, "nom"]), "moyenne")))
+        tkdestroy(WinInfo)
     }else{}
 
     ## flush.console()

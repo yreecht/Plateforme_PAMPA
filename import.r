@@ -8,10 +8,11 @@ openfile.f = function()
         nameWorkspace = setwd(tclvalue(tkchooseDirectory()))
         if (!nchar(nameWorkspace))
         {
-            tkmessageBox(message="Aucun espace de travail n'a ete selectionné!")
+            # tkmessageBox(message="Aucun espace de travail n'a ete selectionné!")
+        }else{
+            tkconfigure(ResumerEspaceTravail, text=paste("Espace de travail : ",nameWorkspace))
+            tkinsert(helpframe,"end","\n Choisissez maintenant votre fichier d'unités d'observations")
         }
-        tkconfigure(ResumerEspaceTravail, text=paste("Espace de travail : ",nameWorkspace))
-        tkinsert(helpframe,"end","\n Choisissez maintenant votre fichier d'unités d'observations")
     }
 
 ####  Choix des fichiers de donnees source en .txt
@@ -23,15 +24,16 @@ openfile.f = function()
         nameUnitobs<-sub(paste(nameWorkspace,"/Data/",sep=""),'',nameUnitobs)   #ici, on enlève le nom de chemin pour ne conserver que le nom du fichier
         if (!nchar(nameUnitobs))
         {
-            tkmessageBox(message="Aucun fichier n'a ete selectionne!")
-        }
-        print(nameUnitobs)
+            ## tkmessageBox(message="Aucun fichier n'a ete selectionne!")
+        }else{
+            print(nameUnitobs)
 
-        tkconfigure(ResumerSituationFichierUnitesObs, text=paste("Fichier d'unités d'observations : ",nameUnitobs))
-        tkinsert(helpframe,"end","\n Choisissez maintenant votre fichier d'observations")
-        ## nameUnitobs
-        assign("fileNameUnitObs",paste(nameWorkspace,"/Data/",nameUnitobs,sep=""),envir=.GlobalEnv)
-        assign("fileName1",paste(nameWorkspace,"/Data/",nameUnitobs,sep=""),envir=.GlobalEnv)
+            tkconfigure(ResumerSituationFichierUnitesObs, text=paste("Fichier d'unités d'observations : ",nameUnitobs))
+            tkinsert(helpframe,"end","\n Choisissez maintenant votre fichier d'observations")
+            ## nameUnitobs
+            ## assign("fileNameUnitObs",paste(nameWorkspace,"/Data/",nameUnitobs,sep=""),envir=.GlobalEnv)
+            assign("fileName1", nameUnitobs, envir=.GlobalEnv)
+        }
     }
 
     openObservations.f = function() # [imb]
@@ -41,13 +43,16 @@ openfile.f = function()
         namefileObs<-tclvalue(tkgetOpenFile())
         namefileObs<-sub(paste(nameWorkspace,"/Data/",sep=""),'',namefileObs)   #ici, on enlève le nom de chemin pour ne conserver que le nom du fichier
         if (!nchar(namefileObs))
-            tkmessageBox(message="Aucun fichier n'a ete selectionne!")
-        print(namefileObs)
-        assign("fileNameObs",namefileObs,envir=.GlobalEnv)
-        assign("fileName2",paste(nameWorkspace,"/Data/",namefileObs,sep=""),envir=.GlobalEnv)
-        ## ici du coup, on peut y mettre un choix ou reconnaitre le référenciel automatiquement
-        tkconfigure(ResumerSituationFichierObs, text=paste("Fichier d'observations : ",namefileObs))
-        tkinsert(helpframe,"end","\n Sélectionnez votre référenciel espèce")
+        {
+            ## tkmessageBox(message="Aucun fichier n'a ete selectionne!")
+        }else{
+            print(namefileObs)
+            ## assign("fileNameObs",paste(nameWorkspace, "/Data/", namefileObs, sep=""), envir=.GlobalEnv)
+            assign("fileName2", namefileObs, envir=.GlobalEnv)
+            ## ici du coup, on peut y mettre un choix ou reconnaitre le référenciel automatiquement
+            tkconfigure(ResumerSituationFichierObs, text=paste("Fichier d'observations : ",namefileObs))
+            tkinsert(helpframe,"end","\n Sélectionnez votre référenciel espèce")
+        }
     }
 
     openListespeces.f = function() # [imb]
@@ -58,11 +63,12 @@ openfile.f = function()
         namefileRef<-sub(paste(nameWorkspace,"/Data/",sep=""),'',namefileRef)   #ici, on enlève le nom de chemin pour ne conserver que le nom du fichier
         if (!nchar(namefileRef))
         {
-            tkmessageBox(message="Aucun fichier n'a ete selectionne!")
+            ## tkmessageBox(message="Aucun fichier n'a ete selectionne!")
+        }else{
+            print(namefileRef)
+            tkconfigure(ResumerSituationReferencielEspece, text=paste("Fichier référenciel espèce : ",namefileRef))
+            assign("fileName3", namefileRef, envir=.GlobalEnv)
         }
-        print(namefileRef)
-        tkconfigure(ResumerSituationReferencielEspece, text=paste("Fichier référenciel espèce : ",namefileRef))
-        assign("fileName3",paste(nameWorkspace,"/Data/",namefileRef,sep=""),envir=.GlobalEnv)
     }
 
     tt <- tktoplevel(height=50,width=300)
@@ -88,9 +94,9 @@ openfile.f = function()
     tkfocus(tt)
     tkwait.window(tt)
     ## Changement des variables globales
-    assign("fileNameUnitObs",fileName1,envir=.GlobalEnv)
-    assign("fileNameObs",fileName2,envir=.GlobalEnv)
-    assign("fileNameRefEsp",fileName3,envir=.GlobalEnv)
+    assign("fileNameUnitObs", paste(nameWorkspace, "/Data/", fileName1, sep=""), envir=.GlobalEnv)
+    assign("fileNameObs", paste(nameWorkspace, "/Data/", fileName2, sep=""),envir=.GlobalEnv)
+    assign("fileNameRefEsp", paste(nameWorkspace, "/Data/", fileName3, sep=""),envir=.GlobalEnv)
 
     opendefault.f()
 }

@@ -92,7 +92,7 @@ lectureFichierEspeces.f <- function ()
     }
 
     ## Ajout de cathégories benthiques supplémentaires lues dans un fichier de correspondance :
-    correspCatBenthique <- read.csv("./Exec/corresp-cat-benth.csv", row.names=1)
+    correspCatBenthique <- read.csv(paste(basePath, "/Exec/corresp-cat-benth.csv", sep=""), row.names=1)
 
     especes <- cbind(especes, correspCatBenthique[as.character(especes$Cath_benthique), , drop=FALSE])
 

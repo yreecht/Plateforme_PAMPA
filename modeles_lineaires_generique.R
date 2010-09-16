@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: comparaison_distri_generique.R
-### Time-stamp: <2010-09-16 10:56:12 yreecht>
+### Time-stamp: <2010-09-16 16:55:12 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -1021,6 +1021,17 @@ sortiesLM.f <- function(objLM, formule, metrique, factAna, modSel, listFact, Dat
                               ylab=paste(Capitalize.f(varNames[metrique, "nom"]), "moyenne")))
         tkdestroy(WinInfo)
     }else{}
+
+    X11(width=40, height=40)
+    par(mfrow=c(2, 2))
+    hist(objLM$residuals, xlab="valeur des résidus ", ylab= "Fréquence ", main=NULL)
+
+    diagCaptions <- list("Résidus vs valeurs prédites",
+                         "'Normal Q-Q plot': quantiles des résidus standardisés vs quantiles théoriques",
+                         "Scale-Location", "distance de Cook", "Résidus vs Leverage",
+                         expression("Cook's dist vs Leverage  " * h[ii]/(1 - h[ii])))
+    plot(objLM,caption=diagCaptions, which=2)
+    plot(objLM,caption=diagCaptions, which=c(1, 4))
 
     ## flush.console()
 }

@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: comparaison_distri_generique.R
-### Time-stamp: <2010-09-16 10:37:57 yreecht>
+### Time-stamp: <2010-09-16 10:56:12 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -1002,10 +1002,14 @@ sortiesLM.f <- function(objLM, formule, metrique, factAna, modSel, listFact, Dat
         on.exit(tkdestroy(WinInfo))
         tkwm.title(WinInfo, "Information")
 
-        tkgrid(tklabel(WinInfo, text="\n\tComparaisons multiples en cours...\t\n"), sticky="w")
-        tkgrid(tklabel(WinInfo,
-                       text=paste("\tVeuillez pattienter, ceci peut prendre",
-                       " un peu de temps (cette fenêtre se fermera automatiquement)\t \n", sep="")),
+        tkgrid(tklabel(WinInfo, text="\t "),
+               tklabel(WinInfo, text="\nComparaisons multiples en cours...\n"),
+               tklabel(WinInfo, text="\t "),
+               sticky="w")
+        tkgrid(tklabel(WinInfo, text="\t "),
+               tklabel(WinInfo,
+                       text=paste("Veuillez pattienter, ceci peut prendre",
+                       " un peu de temps (cette fenêtre se fermera automatiquement)\n", sep="")),
                sticky="w")
         tkfocus(WinInfo)
 

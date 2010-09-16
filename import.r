@@ -5,13 +5,16 @@ openfile.f = function()
     ## Choix de l'espace de travail
     chercheEspaceTravail.f = function() # [imb]
     {
-        nameWorkspace = setwd(tclvalue(tkchooseDirectory()))
+        nameWorkspace <- tclvalue(tkchooseDirectory())
+
         if (!nchar(nameWorkspace))
         {
             # tkmessageBox(message="Aucun espace de travail n'a ete selectionné!")
         }else{
+            setwd(nameWorkspace)
             tkconfigure(ResumerEspaceTravail, text=paste("Espace de travail : ",nameWorkspace))
             tkinsert(helpframe,"end","\n Choisissez maintenant votre fichier d'unités d'observations")
+            assign("nameWorkspace", nameWorkspace, envir=.GlobalEnv)
         }
     }
 
@@ -98,6 +101,8 @@ openfile.f = function()
     assign("fileNameObs", paste(nameWorkspace, "/Data/", fileName2, sep=""),envir=.GlobalEnv)
     assign("fileNameRefEsp", paste(nameWorkspace, "/Data/", fileName3, sep=""),envir=.GlobalEnv)
 
+    print(nameWorkspace)
+    environnementdefault.f(nameWorkspace)
     opendefault.f()
 }
 

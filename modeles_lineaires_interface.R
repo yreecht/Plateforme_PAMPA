@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: modeles_lineaires_interface.R
-### Time-stamp: <2010-09-09 13:56:02 yreecht>
+### Time-stamp: <2010-09-17 15:38:45 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -253,6 +253,74 @@ choixDistri.f <- function(metrique, data)
 
 }
 
+########################################################################################################################
+supprimeObs.f <- function(residus)
+{
+    ## Purpose: Choisir des observations à supprimer d'après leur résidus.
+    ## ----------------------------------------------------------------------
+    ## Arguments: residus : un vecteur de résidus avec les numéros
+    ##                        d'observations en noms (obtenus par la fonction
+    ##                        'boxplot(...)$out' par exemple).
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date: 17 sept. 2010, 13:52
+
+    Done <- tclVar("0")
+    res <- NULL
+
+    WinSuppr <- tktoplevel()
+    tkwm.title(WinSuppr, "Suppression d'outliers ?")
+
+    FrameB <- tkframe(WinSuppr)
+    B.Oui <- tkbutton(FrameB, text="    Oui    ", command=function(){tclvalue(Done) <- "1"})
+    B.Non <- tkbutton(FrameB, text="    Non    ", command=function(){tclvalue(Done) <- "2"})
+
+    tkgrid(tklabel(WinSuppr, text="\t"),
+           tklabel(WinSuppr, text=paste("\nSouhaitez vous supprimer des observations présentant de forts résidus ?",
+                             "\n(Vous devrez choisir les observations à supprimer).\n", sep="")),
+           tklabel(WinSuppr, text="\t"),
+           sticky="w")
+
+    tkgrid(FrameB, column=1)
+    tkgrid(B.Oui, tklabel(FrameB, text="\t\t\n"), B.Non)
+
+
+    tkbind(WinSuppr, "<Destroy>", function(){tclvalue(Done) <- "2"})
+
+    tkfocus(WinSuppr)
+
+    tkwait.variable(Done)
+
+    if (tclvalue(Done) == "1")
+    {
+        tkdestroy(WinSuppr)
+        ## Sélection des observations par l'utilisateur :
+        select <-
+            selectModWindow.f("residus",
+                              data=data.frame(residus=paste("Obs. ",
+                                              format(as.integer(names(sort(abs(residus), decreasing=TRUE))),
+                                                     width=ceiling(log(max(as.integer(names(residus))), 10)),
+                                                     justify="right"),
+                                              "  (",
+                                              format(residus[order(abs(residus), decreasing=TRUE)],
+                                                     digits=3),
+                                              ")",
+                                              sep="")),
+                              sort=FALSE, selectmode="extended",
+                              title="Sélection des observations à supprimer",
+                              label=paste("\n'Observations (résidu)' triés par ordre décroissant",
+                              "\nde la valeur absolue des résidus.", sep=""))
+
+        if (length(select))
+        {
+            ## numéro des observations à supprimer :
+            res <- as.integer(sub("^Obs.[[:blank:]]+([[:digit:]]+)[[:blank:]]+.*", "\\1", select, perl=TRUE))
+        }else{}
+    }else{
+         tkdestroy(WinSuppr)
+     }
+
+    return(res)
+}
 
 
 

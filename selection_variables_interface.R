@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: Selection_variables_interface.R
-### Time-stamp: <2010-09-09 13:53:38 yreecht>
+### Time-stamp: <2010-09-17 13:40:04 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -200,7 +200,7 @@ choixOptionsGraphiques.f <- function()
 
 
 ########################################################################################################################
-selectModWindow.f <- function(champ, data, selectmode="multiple", sort=TRUE, preselect=NULL)
+selectModWindow.f <- function(champ, data, selectmode="multiple", sort=TRUE, preselect=NULL, title=NULL, label=NULL)
 {
     ## Purpose: Ouvre une fenêtre pour le choix des modalités d'un facteur
     ## ----------------------------------------------------------------------
@@ -211,6 +211,8 @@ selectModWindow.f <- function(champ, data, selectmode="multiple", sort=TRUE, pre
     ##            sort : ordonner les modalités ? (booléen)
     ##            preselect : un vecteur de modalités à présélectionner (pour
     ##                        des sélections persistantes).
+    ##            title : titre de la fenêtre.
+    ##            label : texte d'explication.
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date:  5 août 2010, 09:38
 
@@ -227,7 +229,13 @@ selectModWindow.f <- function(champ, data, selectmode="multiple", sort=TRUE, pre
 
     ## ########## Définition des éléments graphiques ##########
     winfac <- tktoplevel(width = 80)
-    tkwm.title(winfac, paste("Selection des valeurs de ", champ, sep=""))
+
+    if (is.null(title))
+    {
+        tkwm.title(winfac, paste("Selection des valeurs de ", champ, sep=""))
+    }else{
+        tkwm.title(winfac, title)
+    }
 
     ## Assenceur vertical :
     SCR.y <- tkscrollbar(winfac, repeatinterval=5, command=function(...){tkyview(LB, ...)})
@@ -251,13 +259,32 @@ selectModWindow.f <- function(champ, data, selectmode="multiple", sort=TRUE, pre
                      })
 
     ## ########## Placement des éléments sur la grille ##########
-    tkgrid(tklabel(winfac, text=paste("Liste des valeurs de '", champ, "' présentes.\n Plusieurs sélections POSSIBLES.\n",
-                           sep="")), columnspan=2)
-    tkgrid(tklabel(winfac,
-                   text=paste("!!Nouveau!! mode de sélection étendu : \n",
-                   "*  utilisez Ctrl et Maj pour les sélections multiples.\n", "*  Ctrl+a pour tout sélectionner\n", sep=""),
-                   fg="red"), columnspan=2, rowspan=2)
-    ## tkgrid(tklabel(winfac, text=paste("ATTENTION : première valeur sélectionnée par défaut", sep="")), columnspan=2)
+    ## Explications :
+    if (is.null(label))
+    {
+        tkgrid(tklabel(winfac, text=paste("Liste des valeurs de '", champ,
+                               "' présentes.\n ",
+                               sep="")), columnspan=2)
+    }else{
+        tkgrid(tklabel(winfac, text=label), columnspan=2)
+    }
+
+    ## Avertissement 'plusieurs sélections possibles' :
+    if (is.element(selectmode, c("extended", "multiple")))
+    {
+        tkgrid(tklabel(winfac, text="Plusieurs sélections POSSIBLES.\n"), columnspan=2)
+    }else{}
+
+    ## Avertissement mode de sélection étendu :
+    if (selectmode == "extended")
+    {
+        tkgrid(tklabel(winfac,
+                       text=paste("!!Nouveau!! mode de sélection étendu : \n",
+                       "*  utilisez Ctrl et Maj pour les sélections multiples.\n",
+                       "*  Ctrl+a pour tout sélectionner\n", sep=""),
+                       fg="red"), columnspan=2, rowspan=2)
+    }else{}
+
     tkgrid(LB, SCR.y)
     tkgrid.configure(SCR.y, rowspan=4, sticky="nsw")
     tkgrid(FrameB, columnspan=2, sticky="")

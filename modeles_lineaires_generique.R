@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: comparaison_distri_generique.R
-### Time-stamp: <2010-09-16 17:16:28 yreecht>
+### Time-stamp: <2010-09-17 15:52:58 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -148,6 +148,325 @@ print.anova.fr <- function(x, digits = max(getOption("digits") - 2, 3), signif.s
                  has.Pvalue = has.P, P.values = has.P, cs.ind = NULL,
                  zap.ind = zap.i, tst.ind = tst.i, na.print = "", ...)
     invisible(x)
+}
+
+########################################################################################################################
+plot.lm.fr <- function (x, which = c(1L:3L, 5L),
+                         caption = list("Résidus vs valeurs prédites",
+                         "'Normal Q-Q plot': quantiles des résidus standardisés vs quantiles théoriques",
+                         "Scale-Location", "Distance de Cook", "Résidus vs Leverage",
+                         expression("Distance de Cook vs Leverage  " * h[ii]/(1 - h[ii]))),
+                         panel = if (add.smooth) panel.smooth else points, sub.caption = NULL,
+                         main = "", ask = prod(par("mfcol")) < length(which) && dev.interactive(),
+                         ..., id.n = 3, labels.id = names(residuals(x)), cex.id = 0.75,
+                         qqline = TRUE, cook.levels = c(0.5, 1), add.smooth = getOption("add.smooth"),
+                         label.pos = c(4, 2), cex.caption = 1)
+{
+    ## Purpose:
+    ## ----------------------------------------------------------------------
+    ## Arguments:
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date: 17 sept. 2010, 09:46
+
+    dropInf <- function(x, h) {
+        if (any(isInf <- h >= 1)) {
+            warning("Not plotting observations with leverage one:\n  ",
+                    paste(which(isInf), collapse = ", "), call. = FALSE)
+            x[isInf] <- NaN
+        }
+        x
+    }
+    if (!inherits(x, "lm"))
+        stop("use only with \"lm\" objects")
+    if (!is.numeric(which) || any(which < 1) || any(which > 6))
+        stop("'which' must be in 1:6")
+    isGlm <- inherits(x, "glm")
+    show <- rep(FALSE, 6)
+    show[which] <- TRUE
+    r <- residuals(x)
+    yh <- predict(x)
+    w <- weights(x)
+    if (!is.null(w)) {
+        wind <- w != 0
+        r <- r[wind]
+        yh <- yh[wind]
+        w <- w[wind]
+        labels.id <- labels.id[wind]
+    }
+    n <- length(r)
+    if (any(show[2L:6L])) {
+        s <- if (inherits(x, "rlm"))
+            x$s
+        else if (isGlm)
+            sqrt(summary(x)$dispersion)
+        else sqrt(deviance(x)/df.residual(x))
+        hii <- lm.influence(x, do.coef = FALSE)$hat
+        if (any(show[4L:6L])) {
+            cook <- if (isGlm)
+                cooks.distance(x)
+            else cooks.distance(x, sd = s, res = r)
+        }
+    }
+    if (any(show[2L:3L])) {
+        ylab23 <- if (isGlm)
+            "Std. deviance resid."      # [!!!]
+        else "Résidus standardisés"
+        r.w <- if (is.null(w))
+            r
+        else sqrt(w) * r
+        rs <- dropInf(r.w/(s * sqrt(1 - hii)), hii)
+    }
+    if (any(show[5L:6L])) {
+        r.hat <- range(hii, na.rm = TRUE)
+        isConst.hat <- all(r.hat == 0) || diff(r.hat) < 1e-10 *
+            mean(hii, na.rm = TRUE)
+    }
+    if (any(show[c(1L, 3L)]))
+        l.fit <- if (isGlm)
+            "Valeurs prédites"
+        else "Valeurs ajustées"
+    if (is.null(id.n))
+        id.n <- 0
+    else {
+        id.n <- as.integer(id.n)
+        if (id.n < 0L || id.n > n)
+            stop(gettextf("'id.n' must be in {1,..,%d}", n),
+                 domain = NA)
+    }
+    if (id.n > 0L) {
+        if (is.null(labels.id))
+            labels.id <- paste(1L:n)
+        iid <- 1L:id.n
+        show.r <- sort.list(abs(r), decreasing = TRUE)[iid]
+        if (any(show[2L:3L]))
+            show.rs <- sort.list(abs(rs), decreasing = TRUE)[iid]
+        text.id <- function(x, y, ind, adj.x = TRUE) {
+            labpos <- if (adj.x)
+                label.pos[1 + as.numeric(x > mean(range(x)))]
+            else 3
+            text(x, y, labels.id[ind], cex = cex.id, xpd = TRUE,
+                 pos = labpos, offset = 0.25)
+        }
+    }
+    getCaption <- function(k) if (length(caption) < k)
+        NA_character_
+    else as.graphicsAnnot(caption[[k]])
+    if (is.null(sub.caption)) {
+        cal <- x$call
+        if (!is.na(m.f <- match("formula", names(cal)))) {
+            cal <- cal[c(1, m.f)]
+            names(cal)[2L] <- ""
+        }
+        cc <- deparse(cal, 80)
+        nc <- nchar(cc[1L], "c")
+        abbr <- length(cc) > 1 || nc > 75
+        sub.caption <- if (abbr)
+            paste(substr(cc[1L], 1L, min(75L, nc)), "...")
+        else cc[1L]
+    }
+    one.fig <- prod(par("mfcol")) == 1
+    if (ask) {
+        oask <- devAskNewPage(TRUE)
+        on.exit(devAskNewPage(oask))
+    }
+    if (show[1L]) {
+        ylim <- range(r, na.rm = TRUE)
+        if (id.n > 0)
+            ylim <- extendrange(r = ylim, f = 0.08)
+        plot(yh, r, xlab = l.fit, ylab = "Résidus", main = main,
+             ylim = ylim, type = "n", ...)
+        panel(yh, r, ...)
+        if (one.fig)
+            title(sub = sub.caption, ...)
+        mtext(getCaption(1), 3, 0.25, cex = cex.caption)
+        if (id.n > 0) {
+            y.id <- r[show.r]
+            y.id[y.id < 0] <- y.id[y.id < 0] - strheight(" ")/3
+            text.id(yh[show.r], y.id, show.r)
+        }
+        abline(h = 0, lty = 3, col = "gray")
+    }
+    if (show[2L]) {
+        ylim <- range(rs, na.rm = TRUE)
+        ylim[2L] <- ylim[2L] + diff(ylim) * 0.075
+        qq <- qqnorm(rs, main = main, ylab = ylab23, ylim = ylim,
+                     xlab="Quantiles théoriques",
+                     ...)
+        if (qqline)
+            qqline(rs, lty = 3, col = "gray50")
+        if (one.fig)
+            title(sub = sub.caption, ...)
+        mtext(getCaption(2), 3, 0.25, cex = cex.caption)
+        if (id.n > 0)
+            text.id(qq$x[show.rs], qq$y[show.rs], show.rs)
+    }
+    if (show[3L]) {
+        sqrtabsr <- sqrt(abs(rs))
+        ylim <- c(0, max(sqrtabsr, na.rm = TRUE))
+        yl <- as.expression(substitute(sqrt(abs(YL)), list(YL = as.name(ylab23))))
+        yhn0 <- if (is.null(w))
+            yh
+        else yh[w != 0]
+        plot(yhn0, sqrtabsr, xlab = l.fit, ylab = yl, main = main,
+             ylim = ylim, type = "n", ...)
+        panel(yhn0, sqrtabsr, ...)
+        if (one.fig)
+            title(sub = sub.caption, ...)
+        mtext(getCaption(3), 3, 0.25, cex = cex.caption)
+        if (id.n > 0)
+            text.id(yhn0[show.rs], sqrtabsr[show.rs], show.rs)
+    }
+    if (show[4L]) {
+        if (id.n > 0) {
+            show.r <- order(-cook)[iid]
+            ymx <- cook[show.r[1L]] * 1.075
+        }
+        else ymx <- max(cook, na.rm = TRUE)
+        plot(cook, type = "h", ylim = c(0, ymx), main = main,
+             xlab = "Nombre d'obs.", ylab = "Distance de Cook", ...)
+        if (one.fig)
+            title(sub = sub.caption, ...)
+        mtext(getCaption(4), 3, 0.25, cex = cex.caption)
+        if (id.n > 0)
+            text.id(show.r, cook[show.r], show.r, adj.x = FALSE)
+    }
+    if (show[5L]) {
+        ylab5 <- if (isGlm)
+            "Résidus std. de Pearson."
+        else "Résidus standardisés"
+        r.w <- residuals(x, "pearson")
+        if (!is.null(w))
+            r.w <- r.w[wind]
+        rsp <- dropInf(r.w/(s * sqrt(1 - hii)), hii)
+        ylim <- range(rsp, na.rm = TRUE)
+        if (id.n > 0) {
+            ylim <- extendrange(r = ylim, f = 0.08)
+            show.rsp <- order(-cook)[iid]
+        }
+        do.plot <- TRUE
+        if (isConst.hat) {
+            if (missing(caption))
+                caption[[5L]] <- "Leverage Constant :\n Résidus vs niveaux de facteur"
+            aterms <- attributes(terms(x))
+            dcl <- aterms$dataClasses[-aterms$response]
+            facvars <- names(dcl)[dcl %in% c("factor", "ordered")]
+            mf <- model.frame(x)[facvars]
+            if (ncol(mf) > 0) {
+                effM <- mf
+                for (j in seq_len(ncol(mf))) effM[, j] <- sapply(split(yh,
+                                                                       mf[, j]), mean)[mf[, j]]
+                ord <- do.call(order, effM)
+                dm <- data.matrix(mf)[ord, , drop = FALSE]
+                nf <- length(nlev <- unlist(unname(lapply(x$xlevels,
+                                                          length))))
+                ff <- if (nf == 1)
+                    1
+                else rev(cumprod(c(1, nlev[nf:2])))
+                facval <- ((dm - 1) %*% ff)
+                facval[ord] <- facval
+                xx <- facval
+                plot(facval, rsp, xlim = c(-1/2, sum((nlev -
+                                  1) * ff) + 1/2), ylim = ylim, xaxt = "n", main = main,
+                     xlab = "Combinaisons de niveaux de facteurs", ylab = ylab5,
+                     type = "n", ...)
+                axis(1, at = ff[1L] * (1L:nlev[1L] - 1/2) - 1/2,
+                     labels = x$xlevels[[1L]][order(sapply(split(yh,
+                     mf[, 1]), mean))])
+                mtext(paste(facvars[1L], ":"), side = 1, line = 0.25,
+                      adj = -0.05)
+                abline(v = ff[1L] * (0:nlev[1L]) - 1/2, col = "gray",
+                       lty = "F4")
+                panel(facval, rsp, ...)
+                abline(h = 0, lty = 3, col = "gray")
+            }
+            else {
+                message("hat values (leverages) are all = ",
+                        format(mean(r.hat)), "\n and there are no factor predictors; no plot no. 5")
+                frame()
+                do.plot <- FALSE
+            }
+        }
+        else {
+            xx <- hii
+            xx[xx >= 1] <- NA
+            plot(xx, rsp, xlim = c(0, max(xx, na.rm = TRUE)),
+                 ylim = ylim, main = main, xlab = "Leverage",
+                 ylab = ylab5, type = "n", ...)
+            panel(xx, rsp, ...)
+            abline(h = 0, v = 0, lty = 3, col = "gray")
+            if (one.fig)
+                title(sub = sub.caption, ...)
+            if (length(cook.levels)) {
+                p <- length(coef(x))
+                usr <- par("usr")
+                hh <- seq.int(min(r.hat[1L], r.hat[2L]/100),
+                              usr[2L], length.out = 101)
+                for (crit in cook.levels) {
+                    cl.h <- sqrt(crit * p * (1 - hh)/hh)
+                    lines(hh, cl.h, lty = 2, col = 2)
+                    lines(hh, -cl.h, lty = 2, col = 2)
+                }
+                legend("bottomleft", legend = "Distance de Cook",
+                       lty = 2, col = 2, bty = "n")
+                xmax <- min(0.99, usr[2L])
+                ymult <- sqrt(p * (1 - xmax)/xmax)
+                aty <- c(-sqrt(rev(cook.levels)) * ymult, sqrt(cook.levels) *
+                         ymult)
+                axis(4, at = aty, labels = paste(c(rev(cook.levels),
+                                  cook.levels)), mgp = c(0.25, 0.25, 0), las = 2,
+                     tck = 0, cex.axis = cex.id, col.axis = 2)
+            }
+        }
+        if (do.plot) {
+            mtext(getCaption(5), 3, 0.25, cex = cex.caption)
+            if (id.n > 0) {
+                y.id <- rsp[show.rsp]
+                y.id[y.id < 0] <- y.id[y.id < 0] - strheight(" ")/3
+                text.id(xx[show.rsp], y.id, show.rsp)
+            }
+        }
+    }
+    if (show[6L]) {
+        g <- dropInf(hii/(1 - hii), hii)
+        ymx <- max(cook, na.rm = TRUE) * 1.025
+        plot(g, cook, xlim = c(0, max(g, na.rm = TRUE)), ylim = c(0,
+                                                         ymx), main = main, ylab = "Distance de Cook", xlab = expression("Leverage  " *
+                                                             h[ii]), xaxt = "n", type = "n", ...)
+        panel(g, cook, ...)
+        athat <- pretty(hii)
+        axis(1, at = athat/(1 - athat), labels = paste(athat))
+        if (one.fig)
+            title(sub = sub.caption, ...)
+        p <- length(coef(x))
+        bval <- pretty(sqrt(p * cook/g), 5)
+        usr <- par("usr")
+        xmax <- usr[2L]
+        ymax <- usr[4L]
+        for (i in seq_along(bval)) {
+            bi2 <- bval[i]^2
+            if (ymax > bi2 * xmax) {
+                xi <- xmax + strwidth(" ")/3
+                yi <- bi2 * xi
+                abline(0, bi2, lty = 2)
+                text(xi, yi, paste(bval[i]), adj = 0, xpd = TRUE)
+            }
+            else {
+                yi <- ymax - 1.5 * strheight(" ")
+                xi <- yi/bi2
+                lines(c(0, xi), c(0, yi), lty = 2)
+                text(xi, ymax - 0.8 * strheight(" "), paste(bval[i]),
+                     adj = 0.5, xpd = TRUE)
+            }
+        }
+        mtext(getCaption(6), 3, 0.25, cex = cex.caption)
+        if (id.n > 0) {
+            show.r <- order(-cook)[iid]
+            text.id(g[show.r], cook[show.r], show.r)
+        }
+    }
+    if (!one.fig && par("oma")[3L] >= 1)
+        mtext(sub.caption, outer = TRUE, cex = 1.25)
+    invisible()
 }
 
 
@@ -706,7 +1025,7 @@ diffTemporelles.f <- function(objLM, factSpatial, factTemp, Data)
 
 
 ########################################################################################################################
-resFileLM.f <- function(objLM, metrique, factAna, modSel, listFact, Log=FALSE,  prefix=NULL, ext="txt")
+resFileLM.f <- function(objLM, metrique, factAna, modSel, listFact, Log=FALSE,  prefix=NULL, ext="txt", sufixe=NULL)
 {
     ## Purpose: Définit les noms du fichiers pour les résultats des modèles
     ##          linéaires. L'extension et un prefixe peuvent êtres précisés,
@@ -720,6 +1039,7 @@ resFileLM.f <- function(objLM, metrique, factAna, modSel, listFact, Log=FALSE,  
     ##            listFact : vecteur des noms de facteurs de l'analyse.
     ##            Log : Est-ce que les données sont log-transformées.
     ##            prefix : préfixe du nom de fichier.
+    ##            sufixe : un sufixe pour le nom de fichier.
     ##            ext : extension du fichier.
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date:  8 sept. 2010, 15:48
@@ -746,6 +1066,8 @@ resFileLM.f <- function(objLM, metrique, factAna, modSel, listFact, Log=FALSE,  
                              paste(factAna, "(", ifelse(modSel != "", modSel, "toutes"), ")_", sep="")),
                       ## liste des facteurs de l'analyse
                       paste(listFact, collapse="-"),
+                      ## sufixe :
+                      ifelse(is.null(sufixe), "", paste("_", sufixe, sep="")),
                       ## Extension du fichier :
                       ".", gsub("^\\.([^.]*)", "\\1", ext[1], perl=TRUE), # nettoyage de l'extension si besoin.
                       sep="")
@@ -951,7 +1273,7 @@ signifParamLM.f <- function(objLM, resFile)
 
 
 ########################################################################################################################
-sortiesLM.f <- function(objLM, formule, metrique, factAna, modSel, listFact, Data, Log=FALSE)
+sortiesLM.f <- function(objLM, formule, metrique, factAna, modSel, listFact, Data, Log=FALSE, sufixe=NULL)
 {
     ## Purpose: Formater les résultats de lm et les écrire dans un fichier
     ## ----------------------------------------------------------------------
@@ -963,6 +1285,7 @@ sortiesLM.f <- function(objLM, formule, metrique, factAna, modSel, listFact, Dat
     ##            listFact : liste du (des) facteur(s) de regroupement.
     ##            Data : les données utilisées.
     ##            Log : données log-transformées ou non (booléen).
+    ##            sufixe : un sufixe pour le nom de fichier.
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 25 août 2010, 16:19
 
@@ -977,7 +1300,8 @@ sortiesLM.f <- function(objLM, formule, metrique, factAna, modSel, listFact, Dat
     formule <<- formule
 
     ## Chemin et nom de fichier :
-    resFile <- resFileLM.f(objLM=objLM, metrique=metrique, factAna=factAna, modSel=modSel, listFact=listFact, Log=Log)
+    resFile <- resFileLM.f(objLM=objLM, metrique=metrique, factAna=factAna, modSel=modSel, listFact=listFact,
+                           Log=Log, sufixe=sufixe)
     on.exit(close(resFile), add=TRUE)
 
 
@@ -1015,26 +1339,68 @@ sortiesLM.f <- function(objLM, formule, metrique, factAna, modSel, listFact, Dat
 
         compMultiplesLM.f(objLM=objLM, Data=Data, factSpatial="statut_protection", factTemp="an", resFile=resFile)
 
-        ## Représentation des interactions
+        ## Représentation des interactions :
+        X11()
         with(Data,
              interaction.plot(an, statut_protection, eval(parse(text=metrique)),
                               ylab=paste(Capitalize.f(varNames[metrique, "nom"]), "moyenne")))
         tkdestroy(WinInfo)
     }else{}
 
-    X11(width=60, height=40)
+    X11(width=45, height=35)
     par(mfrow=c(2, 2))
     hist(objLM$residuals, xlab="valeur des résidus ", ylab= "Fréquence ", main=NULL)
+    mtext("Distribution des résidus", side=3, cex=0.8)
 
-    diagCaptions <- list("Résidus vs valeurs prédites",
-                         "'Normal Q-Q plot': quantiles des résidus standardisés vs quantiles théoriques",
-                         "Scale-Location", "distance de Cook", "Résidus vs Leverage",
-                         expression("Cook's dist vs Leverage  " * h[ii]/(1 - h[ii])))
-    plot(objLM,caption=diagCaptions, which=2, cex.main=0.8)
-    plot(objLM,caption=diagCaptions, which=c(1, 4), cex.main=0.8)
+    plot.lm.fr(objLM, which=2, cex.caption=0.8)
+    plot.lm.fr(objLM, which=c(1, 4), cex.caption=0.8)
+
+
 
     ## flush.console()
 }
+
+
+########################################################################################################################
+calcLM.f <- function(loiChoisie, formule, metrique, Data)
+{
+    ## Purpose:
+    ## ----------------------------------------------------------------------
+    ## Arguments:
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date: 17 sept. 2010, 14:49
+
+     switch(loiChoisie,
+                   ## Modèle linéaire :
+                   NO={
+                       res <- lm(formule, data=Data)
+                       ## Mise en forme :
+                       ## sortiesLM.f(lm=res, formule=formule, metrique, factAna, modSel, listFact)
+                   },
+                   ## Modèle linéaire, données log-transformées :
+                   LOGNO={
+                       ## Ajout d'une constante à la métrique si contient des zéros :
+                       if (sum(Data[ , metrique] == 0, na.rm=TRUE))
+                       {
+                           Data[ , metrique] <- Data[ , metrique] +
+                               ((min(Data[ , metrique], na.rm=TRUE) + 1) / 1000)
+                       }else{}
+
+                       res <- lm(formule, data=Data)
+                       ## Mise en forme :
+                       ## sortiesLM.f(lm=res, formule=formule, metrique, factAna, modSel, listFact, Log=TRUE)
+                   },
+                   ## GLM, distribution de Poisson :
+                   PO={
+                       res <- glm(formule, data=Data, family="poisson")
+                   },
+                   ## GLM, distribution binomiale négative :
+                   NBI={
+                       res <- glm.nb(formule, data=Data)
+                   },)
+     return(res)
+}
+
 
 
 ########################################################################################################################
@@ -1113,45 +1479,43 @@ modeleLineaireWP2.f <- function(metrique, factAna, factAnaSel, listFact, listFac
         {
             message("Loi de distribution choisie = ", loiChoisie)
 
-            Log <- FALSE
-            formule <- exprML
+            if (is.element(loiChoisie, c("LOGNO")))
+            {
+                Log <- TRUE
+                formule <- logExprML
+            }else{
+                Log <- FALSE
+                formule <- exprML
+            }
 
-            switch(loiChoisie,
-                   ## Modèle linéaire :
-                   NO={
-                       res <- lm(exprML, data=tmpDataMod)
-                       ## Mise en forme :
-                       ## sortiesLM.f(lm=res, formule=exprML, metrique, factAna, modSel, listFact)
-                   },
-                   ## Modèle linéaire, données log-transformées :
-                   LOGNO={
-                       ## Ajout d'une constante à la métrique si contient des zéros :
-                       if (sum(tmpDataMod[ , metrique] == 0, na.rm=TRUE))
-                       {
-                           tmpDataMod[ , metrique] <- tmpDataMod[ , metrique] +
-                               ((min(tmpDataMod[ , metrique], na.rm=TRUE) + 1) / 1000)
-                       }else{}
-
-                       res <- lm(logExprML, data=tmpDataMod)
-                       ## Mise en forme :
-                       Log <- TRUE
-                       formule <- logExprML
-                       ## sortiesLM.f(lm=res, formule=logExprML, metrique, factAna, modSel, listFact, Log=TRUE)
-                   },
-                   ## GLM, distribution de Poisson :
-                   PO={
-                       res <- glm(exprML, data=tmpDataMod, family="poisson")
-                   },
-                   ## GLM, distribution binomiale négative :
-                   NBI={
-                       res <- glm.nb(exprML, data=tmpDataMod)
-                   },)
+            res <- calcLM.f(loiChoisie=loiChoisie, formule=formule, metrique=metrique, Data=tmpDataMod)
 
             res <<- res
 
             sortiesLM.f(objLM=res, formule=formule, metrique=metrique,
                         factAna=factAna, modSel=modSel, listFact=listFact,
                         Data=tmpDataMod, Log=Log)
+
+            resid.out <- boxplot(residuals(res), plot=FALSE)$out
+
+            if (length(resid.out))
+            {
+                suppr <- supprimeObs.f(residus=resid.out)
+
+                if(!is.null(suppr))
+                {
+                    tmpDataMod <- tmpDataMod[ - suppr, ]
+                    res.red <- calcLM.f(loiChoisie=loiChoisie, formule=formule, metrique=metrique, Data=tmpDataMod)
+
+                    res.red <<- res.red
+
+                    sortiesLM.f(objLM=res.red, formule=formule, metrique=metrique,
+                                factAna=factAna, modSel=modSel, listFact=listFact,
+                                Data=tmpDataMod, Log=Log, sufixe="(red)")
+                }else{}
+
+            }else{}
+
 
         }else{
             message("Annulé !")

@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: modeles_lineaires_interface.R
-### Time-stamp: <2010-09-17 15:38:45 yreecht>
+### Time-stamp: <2010-09-20 16:32:17 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -103,8 +103,8 @@ choixDistri.f <- function(metrique, data)
     env <- environment()                # environnement courant.
     Done <- tclVar(0)                   # État d'exécution.
     LoiChoisie <- tclVar("NO")          # Variable pour le choix de distribution théorique.
-    vscale <- 0.75                      # dimension verticale des graphiques.
-    hscale <- 1.2                       # dimension horizontale des graphiques.
+    vscale <- 0.6                      # dimension verticale des graphiques.
+    hscale <- 1.05                       # dimension horizontale des graphiques.
     pointsize <- 10                     # taille du point pour les graphiques
     distList <- list()                  # liste pour le stockage des AIC et autres.
 

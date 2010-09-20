@@ -20,6 +20,8 @@ if (.Platform$OS.type == "windows")
 }
 basePath <- getwd()
 
+## Répertoire de travail par défaut (si pas configuré par ailleurs) :
+nameWorkspace <- basePath
 
 ## ! suggestions concernant la réorganisation :
 

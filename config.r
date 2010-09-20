@@ -18,6 +18,7 @@ SiteEtudie <- "CB"
 fileName1 <- "CB_UnitobsUVC_Couronne.txt"
 fileName2 <- "CB_ObsUVC_Couronne.txt"
 fileName3 <- "refEspecesMED.txt"
+nameWorkspace <- "C:/PAMPA/WD"
 ## fileNameRefSpa <- "REFSPA_CB.txt"
 
 

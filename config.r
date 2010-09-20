@@ -87,14 +87,14 @@ Jeuxdonnescoupe <- 0
 ## variables d'environnement pour l'interface
 lang <- "FR"
 
-assign("NomDossierTravail", paste(basePath, "/FichiersSortie/", sep=""), envir=.GlobalEnv)
-assign("NomDossierData", paste(basePath, "/Data/", sep=""), envir=.GlobalEnv)   # sert a concaténer les variables fileNameUnitObs fileNameObs   fileNameRefEsp fileNameRefSpa
+assign("nameWorkspace", nameWorkspace, envir=.GlobalEnv)
+assign("NomDossierTravail", paste(nameWorkspace, "/FichiersSortie/", sep=""), envir=.GlobalEnv)
+assign("NomDossierData", paste(nameWorkspace, "/Data/", sep=""), envir=.GlobalEnv)   # sert a concaténer les variables fileNameUnitObs fileNameObs   fileNameRefEsp fileNameRefSpa
 assign("fileNameUnitObs", paste(NomDossierData, fileName1, sep=""), envir=.GlobalEnv)
 assign("fileNameObs", paste(NomDossierData, fileName2, sep=""), envir=.GlobalEnv)
 assign("fileNameRefEsp", paste(NomDossierData, fileName3, sep=""), envir=.GlobalEnv)
 ## assign("fileNameRefSpa", paste(NomDossierData, fileNameRefSpa, sep=""), envir=.GlobalEnv)
 assign("siteEtudie", SiteEtudie, envir=.GlobalEnv)
-assign("nameWorkspace", basePath, envir=.GlobalEnv)
 assign("fileimage", fileimage, envir=.GlobalEnv)
 assign("Jeuxdonnescoupe", Jeuxdonnescoupe, envir=.GlobalEnv)
 

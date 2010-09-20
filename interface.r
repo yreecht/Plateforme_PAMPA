@@ -360,8 +360,8 @@ tkadd(benthos, "command", label="Boxplots \"à la carte\"...", command=function()
 
 
   # Menu deroulant de "Import de donnees"
-  tkadd(import,"command",label="Choix des fichiers de données...", accelerator="CTRL+N", command = {openfile.f})
-  tkadd(import,"command",label="C:/PAMPA par defaut", accelerator="CTRL+A", command = {opendefault.f})
+  tkadd(import,"command",label="Choix des dossiers et fichiers de données...", accelerator="CTRL+N", command = {openfile.f})
+  tkadd(import,"command",label="Dossiers et fichiers par defaut", accelerator="CTRL+A", command = {opendefault.f})
   tkadd(import,"separator")
   tkadd(import,"command",label="Test du référentiel (espèces concernées)",underline=9,accelerator="CTRL+R", command = testfileref.f)
   tkadd(import,"command",label="Test des données importées",underline=0, accelerator="CTRL+T", command = testdonnees.f)

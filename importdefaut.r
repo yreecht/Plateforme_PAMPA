@@ -210,24 +210,25 @@ opendefault.f <- function ()
 
     assign("unitobs", unitobs, envir=.GlobalEnv)
     assign("siteEtudie", unique(unitobs$AMP), envir=.GlobalEnv)
-    ## Référentiel spatial de l'AMP
-    refSpatial <- read.table(file=fileNameRefSpa, header=TRUE, sep="\t", dec=".", quote="", encoding="latin1")
-    ## 15 colonnes
-    ## Vérification du nombre de colonnes:
-    if (dim(refSpatial)[2] != 15)
-    {
-        tkmessageBox(message=paste("ATTENTION, votre fichier 'Référentiel spatial' comporte ", dim(refSpatial)[2], " champs au lieu de 15. Corrigez le et recommencez l'importation.", sep=""), icon="warning", type="ok")
-        rm(refSpatial)
-    }
-    ## renomination des colonnes du référentiel spatial
 
-    colnames(refSpatial) <- c("codeZone", "zone", "AMP", "site", "station", "groupe", "longitude", "latitude", "surface", "lineaireCotier", "statutProtec", "zonagePeche", "codeSIH", "statutPAMPA", "nbCM")
-    ## remplacement des -999 en NA
-    if (nrow(refSpatial)!=0)
-    {
-        refSpatial[refSpatial=="-999"] <- NA
-    }
-    assign("refSpatial", refSpatial, envir=.GlobalEnv)
+    ## ## Référentiel spatial de l'AMP
+    ## refSpatial <- read.table(file=fileNameRefSpa, header=TRUE, sep="\t", dec=".", quote="", encoding="latin1")
+    ## ## 15 colonnes
+    ## ## Vérification du nombre de colonnes:
+    ## if (dim(refSpatial)[2] != 15)
+    ## {
+    ##     tkmessageBox(message=paste("ATTENTION, votre fichier 'Référentiel spatial' comporte ", dim(refSpatial)[2], " champs au lieu de 15. Corrigez le et recommencez l'importation.", sep=""), icon="warning", type="ok")
+    ##     rm(refSpatial)
+    ## }
+    ## ## renomination des colonnes du référentiel spatial
+
+    ## colnames(refSpatial) <- c("codeZone", "zone", "AMP", "site", "station", "groupe", "longitude", "latitude", "surface", "lineaireCotier", "statutProtec", "zonagePeche", "codeSIH", "statutPAMPA", "nbCM")
+    ## ## remplacement des -999 en NA
+    ## if (nrow(refSpatial)!=0)
+    ## {
+    ##     refSpatial[refSpatial=="-999"] <- NA
+    ## }
+    ## assign("refSpatial", refSpatial, envir=.GlobalEnv)
 
     obs <- read.table(fileNameObs, sep="\t", dec=".", header=TRUE, encoding="latin1")
     if (unique(unitobs$type) != "SVR")

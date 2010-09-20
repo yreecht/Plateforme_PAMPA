@@ -13,11 +13,11 @@
 
 ## lignes temporaires pour copier/coller
 
-## #### CB
-## SiteEtudie <- "CB"
-## fileName1 <- "CB_UnitobsUVC_Couronne.txt"
-## fileName2 <- "CB_ObsUVC_Couronne.txt"
-## fileName3 <- "refEspecesMED.txt"
+#### CB
+SiteEtudie <- "CB"
+fileName1 <- "CB_UnitobsUVC_Couronne.txt"
+fileName2 <- "CB_ObsUVC_Couronne.txt"
+fileName3 <- "refEspecesMED.txt"
 ## fileNameRefSpa <- "REFSPA_CB.txt"
 
 
@@ -42,16 +42,16 @@
 ## fileName3 <- "PAMPA-WP1-Meth-4-RefSpOM 110810.txt"
 ## fileNameRefSpa <- "REFSPA_NC.txt"       # pas bon mais y'en faut bien un (pas utilisé de toute façon)
 
-#### RUN :
-SiteEtudie <- "RUN"
-fileName1 <- "unitobspampaGCRMNpoisson-100810.txt"
-fileName2 <- "obspampaGCRMNpoisson-100810.txt"
-## fileName1 <- "unitobsGCRMNPoissons.txt"
-## fileName2 <- "obsGCRMNPoissons.txt"
-## fileName1 <- "unitobsGCRMNBenthos.txt"
-## fileName2 <- "obsGCRMNBenthos.txt"
-fileName3 <- "PAMPA-WP1-Meth-4-RefSpOM 110810.txt"
-fileNameRefSpa <- "refSpatialRUN.txt"
+## #### RUN :
+## SiteEtudie <- "RUN"
+## fileName1 <- "unitobspampaGCRMNpoisson-100810.txt"
+## fileName2 <- "obspampaGCRMNpoisson-100810.txt"
+## ## fileName1 <- "unitobsGCRMNPoissons.txt"
+## ## fileName2 <- "obsGCRMNPoissons.txt"
+## ## fileName1 <- "unitobsGCRMNBenthos.txt"
+## ## fileName2 <- "obsGCRMNBenthos.txt"
+## fileName3 <- "PAMPA-WP1-Meth-4-RefSpOM 110810.txt"
+## fileNameRefSpa <- "refSpatialRUN.txt"
 
 
 ## ## NC Jérémy Drelon :
@@ -91,7 +91,7 @@ assign("NomDossierData", paste(basePath, "/Data/", sep=""), envir=.GlobalEnv)   
 assign("fileNameUnitObs", paste(NomDossierData, fileName1, sep=""), envir=.GlobalEnv)
 assign("fileNameObs", paste(NomDossierData, fileName2, sep=""), envir=.GlobalEnv)
 assign("fileNameRefEsp", paste(NomDossierData, fileName3, sep=""), envir=.GlobalEnv)
-assign("fileNameRefSpa", paste(NomDossierData, fileNameRefSpa, sep=""), envir=.GlobalEnv)
+## assign("fileNameRefSpa", paste(NomDossierData, fileNameRefSpa, sep=""), envir=.GlobalEnv)
 assign("siteEtudie", SiteEtudie, envir=.GlobalEnv)
 assign("nameWorkspace", basePath, envir=.GlobalEnv)
 assign("fileimage", fileimage, envir=.GlobalEnv)

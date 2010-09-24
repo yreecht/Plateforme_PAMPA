@@ -1338,8 +1338,11 @@ unitesp.f <- function(){
         rm(s)
 
         ## Nombre de colonies
-        obs$count <- 1
+        obs$count <- 1                  # [!!!] somme des obs$nombre > 0 [???]
         e <- tapply(obs$count, list(obs$unite_observation, obs$code_espece), sum, na.rm=TRUE)
+        ## Vérif faite :
+        ## sapply(1:2, function(x)all(expand.grid(row.names(e), colnames(e))[!is.na(e), ][, x] ==
+        ##                            listespunit[ , c("unite_observation", "code_espece")][, x]))
         unitesp$colonie <- as.vector(e)
         unitesp$colonie[is.na(unitesp$colonie)] <- 0
         rm(e)

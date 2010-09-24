@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: comparaison_distri_generique.R
-### Time-stamp: <2010-09-17 15:52:58 yreecht>
+### Time-stamp: <2010-09-22 18:58:53 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -1352,6 +1352,7 @@ sortiesLM.f <- function(objLM, formule, metrique, factAna, modSel, listFact, Dat
     hist(objLM$residuals, xlab="valeur des résidus ", ylab= "Fréquence ", main=NULL)
     mtext("Distribution des résidus", side=3, cex=0.8)
 
+    ## Essayer glm.diag.plots('glm')...
     plot.lm.fr(objLM, which=2, cex.caption=0.8)
     plot.lm.fr(objLM, which=c(1, 4), cex.caption=0.8)
 

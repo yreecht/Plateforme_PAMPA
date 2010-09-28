@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: Selection_variables_interface.R
-### Time-stamp: <2010-09-17 13:40:04 yreecht>
+### Time-stamp: <2010-09-28 16:45:02 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -176,6 +176,7 @@ choixOptionsGraphiques.f <- function()
     tkbind(WinOpt, "<Destroy>", function(){tclvalue(Done) <- 2}) # En cas de destruction de la fenêtre.
 
     tkfocus(WinOpt)
+    winSmartPlace.f(WinOpt, xoffset=40, yoffset=-40)
 
     tkwait.variable(Done)
 
@@ -317,6 +318,7 @@ selectModWindow.f <- function(champ, data, selectmode="multiple", sort=TRUE, pre
 
     ## Affichage/attente :
     tkfocus(winfac)
+    winSmartPlace.f(winfac, xoffset=50, yoffset=-40)
 
     tkwait.window(winfac)
     return(selection)
@@ -659,7 +661,7 @@ nouvChoixFact.f <- function(level, env)
                          " <- tkbutton(FrameFact, text=' Sélection... ', command=function()",
                          " { selectModalites.f(tclvalue(listFacteurs[[", level + 1, "]]), ",
                          "tableMetrique=tclvalue(TableMetrique), env=env, level=",
-                         level + 1, ") })", sep="")
+                         level + 1, ") ; winRaise.f(WinSelection) })", sep="")
         ## Affichage de la combobox et du bouton :
         exprGrid <- paste("tkgrid(tklabel(FrameFact, text='Facteur ",
                           level + 1, " '), CB.fact", level + 1, ", B.factSel", level + 1,
@@ -779,6 +781,7 @@ selectionVariables.f <- function(nextStep)
                            {
                                selectModalites.f(tclvalue(FacteurGraph), tableMetrique=tclvalue(TableMetrique),
                                                  env=env, level=0)
+                               winRaise.f(WinSelection)
                            })
 
     ## Choix des facteurs de regroupement + modalités :
@@ -789,12 +792,18 @@ selectionVariables.f <- function(nextStep)
                        {
                            selectModalites.f(tclvalue(listFacteurs[[1]]), tableMetrique=tclvalue(TableMetrique),
                                              env=env, level=1)
+                           winRaise.f(WinSelection)
                        })
 
     FrameBT <- tkframe(WinSelection)
     B.OK <- tkbutton(FrameBT, text="   OK   ", command=function(){tclvalue(Done) <- 1})
     B.Cancel <- tkbutton(FrameBT, text=" Quitter ", command=function(){tclvalue(Done) <- 2})
-    B.optGraph <- tkbutton(FrameBT, text=" Options graphiques... ", command=choixOptionsGraphiques.f)
+    B.optGraph <- tkbutton(FrameBT, text=" Options graphiques... ",
+                           command=function(x)
+                       {
+                           choixOptionsGraphiques.f()
+                           winRaise.f(WinSelection)
+                       })
 
     ## ############
     ## Évènements :
@@ -855,6 +864,7 @@ selectionVariables.f <- function(nextStep)
            tklabel(FrameBT, text="               "), B.optGraph, tklabel(FrameBT, text="\n"))
 
     ## tkfocus(WinSelection)
+    winSmartPlace.f(WinSelection)
     ## Tant que l'utilisateur ne ferme pas la fenêtre... :
     repeat
     {
@@ -876,7 +886,7 @@ selectionVariables.f <- function(nextStep)
             switch(nextStep,
                    boxplot={
 
-                       tkmessageBox(message="BoxPlots")
+                       ## tkmessageBox(message="BoxPlots")
                        WP2boxplot.f(metrique=tclvalue(MetriqueChoisie),
                                     factGraph=tclvalue(FacteurGraph), factGraphSel=factGraphSel,
                                     listFact=sapply(listFacteurs, tclvalue), listFactSel=listFactSel,
@@ -884,14 +894,17 @@ selectionVariables.f <- function(nextStep)
                    },
                    modele_lineaire={
 
-                       tkmessageBox(message="Modèles linéaires")
+                       ## tkmessageBox(message="Modèles linéaires")
                        modeleLineaireWP2.f(metrique=tclvalue(MetriqueChoisie),
                                            factAna=tclvalue(FacteurGraph), factAnaSel=factGraphSel,
                                            listFact=sapply(listFacteurs, tclvalue), listFactSel=listFactSel,
                                            tableMetrique=tclvalue(TableMetrique))
                    },
-                   tkmessageBox(message="Rien", icon="warning"))
+                   tkmessageBox(message=paste("Aucune action (option '", nextStep, "' pas implémentée).", sep=""),
+                                icon="warning"))
 
+            ## Fenêtre de sélection ramenée au premier plan une fois l'étape finie :
+            ## winSmartPlace.f(WinSelection)
         }
         if (tclvalue(Done) == "2") {break()} # statut d'exécution 'abandon' : on sort de la boucle.
     }

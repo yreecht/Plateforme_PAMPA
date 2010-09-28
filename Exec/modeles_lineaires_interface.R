@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: modeles_lineaires_interface.R
-### Time-stamp: <2010-09-20 16:32:17 yreecht>
+### Time-stamp: <2010-09-28 15:25:36 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -114,9 +114,6 @@ choixDistri.f <- function(metrique, data)
     WinDistri <- tktoplevel()           # Fenêtre principale.
     tkwm.title(WinDistri, paste("Choix de distribution théorique de la métrique '", metrique, "'", sep=""))
 
-    tmp <- tktoplevel(WinDistri)
-    tkfocus(tmp)
-    tkdestroy(tmp)
     ## tkfocus(WinDistri)
 
     ## Frame d'aide :
@@ -242,6 +239,9 @@ choixDistri.f <- function(metrique, data)
     tclvalue(LoiChoisie) <- names(distList)[which.min(sapply(distList, function(x){x$aic}))]
     ## flush.console()
 
+    ## Placement et mise au premier plan de la fenêtre :
+    winSmartPlace.f(WinDistri)
+
     tkwait.variable(Done)               # Attente d'une action de l'utilisateur.
 
     if (tclvalue(Done) == "1")
@@ -287,6 +287,8 @@ supprimeObs.f <- function(residus)
     tkbind(WinSuppr, "<Destroy>", function(){tclvalue(Done) <- "2"})
 
     tkfocus(WinSuppr)
+    ## Placement et mise au premier plan de la fenêtre :
+    winSmartPlace.f(WinSuppr)
 
     tkwait.variable(Done)
 

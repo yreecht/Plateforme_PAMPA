@@ -157,7 +157,7 @@ opendefault.f <- function ()
 
     print("fonction opendefault activée")
     print(paste("chargement de ", fileNameUnitObs, fileNameObs, fileNameRefEsp))
-    nameWorkspace <- basePath
+
     tkconfigure(ResumerEspaceTravail, text=paste("Espace de travail : ", nameWorkspace))
     environnementdefault.f(nameWorkspace)
     ## après, return fonction dans variables environnement

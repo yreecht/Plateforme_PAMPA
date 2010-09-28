@@ -1085,6 +1085,7 @@ unitespta.f <- function(){
     unitespta$pres_abs[unitespta$nombre == 0] <- as.integer(0) # pour avoir la richesse spécifique en 'integer'.0
 
     ## calcul densites (pour les pêches, ce calcul correspond au CPUE en nombre par espece)
+    ## [densité]
     if (unique(unitobs$type) != "SVR")
     {
         unitespta$densite <- unitespta$nombre /
@@ -1245,7 +1246,7 @@ unitesp.f <- function(){
     unitesp$unite_observation <- rep(rownames(unitespT), ncol(unitespT))
     unitesp$code_espece <- rep(colnames(unitespT), each = nrow(unitespT), 1)
 
-    if (unique(unitobs$type) != "LIT")
+    if (!is.benthos.f())                               # unique(unitobs$type) != "LIT"
     {
 
         ## biomasses
@@ -1263,7 +1264,7 @@ unitesp.f <- function(){
 
             unitesp.t <- as.data.frame(matrix(NA, dim(z)[1]*dim(z)[2], 3))
             colnames(unitesp.t) = c("unitobs", "code_espece", "taille_moy")
-            unitesp.t$taille_moy <- as.vector(z/y)
+            unitesp.t$taille_moy <- as.vector(z/y) # [!!!] On doit pouvoir faire plus simple. [yr: 28/09/2010]
             ## unitesp.t$taille_moy[is.na(unitesp.t$taille_moy)] <- 0
                                         # [!!!] Rhaa, mais c'est pas vrai cette manie de
                                         # mettre les valeurs manquantes à zéro !!  [yr: 13/08/2010]
@@ -1345,6 +1346,7 @@ unitesp.f <- function(){
         ##                            listespunit[ , c("unite_observation", "code_espece")][, x]))
         unitesp$colonie <- as.vector(e)
         unitesp$colonie[is.na(unitesp$colonie)] <- 0
+        unitesp$taille.moy.colonies <- unitesp$nombre / unitesp$colonie
         rm(e)
     }
 

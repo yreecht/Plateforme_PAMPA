@@ -34,6 +34,8 @@ ModifierMenuApresImport.f = function()
     tkconfigure(ResumerSituationEspecesSelectionnees,text=paste("-> Nombre d'espèces concernées : ",NbEsp))
     Nbunitobs<-length(unique(obs$unite_observation))
     tkconfigure(ResumerSituationUnitobsSelectionnees,text=paste("-> Nombre  d'unités d'observations concernées : ",Nbunitobs))
+
+    winRaise.f(tm)
 }
 
 MiseajourTableau.f = function(tclarray)
@@ -68,8 +70,10 @@ ModifierInterfaceApresSelection.f = function(Critere,Valeur)
     {
         tkconfigure(button.DataRestore, state="normal")
     }
-    ## tkconfigure(frameLower,text=paste(length(obs$code_espece[obs$code_espece==fa])," enregistrements concernés",sep=""))
+    ## tkconfigure(frameLower,text=paste(length(obs$code_espece[obs$code_espece==fa])," enregistrements
+    ## concernés",sep=""))
 
+    winRaise.f(tm)
 }
 
 ModifierInterfaceApresRestore.f = function(Critere="Aucun",Valeur="NA")
@@ -88,4 +92,6 @@ ModifierInterfaceApresRestore.f = function(Critere="Aucun",Valeur="NA")
     Nbunitobs<-length(unique(obs$unite_observation))
     tkconfigure(ResumerSituationUnitobsSelectionnees,text=paste("-> Nombre d'unités d'observations dans le fichier d'observations : ",Nbunitobs))
     tkconfigure(button.DataRestore, state="disabled")
+
+    winRaise.f(tm)
 }

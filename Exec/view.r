@@ -61,7 +61,7 @@ VoirPlanEchantillonnage.f <- function()
 {
 
     print("fonction VoirPlanEchantillonnage.f activée")
-    myRarrayPE <- read.csv(paste(basePath, "./FichiersSortie/PlanEchantillonnage.csv", sep=""),
+    myRarrayPE <- read.csv(paste(nameWorkspace, "./FichiersSortie/PlanEchantillonnage.csv", sep=""),
                            sep=",", dec=".", header=TRUE)
     tkinsert(txt.w, "end", paste("\n fichier Plan d'échantillonnage lu :\n ", myRarrayPE))
     tclarrayPE <- tclArray()

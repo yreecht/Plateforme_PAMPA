@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: comparaison_distri_generique.R
-### Time-stamp: <2010-09-22 18:58:53 yreecht>
+### Time-stamp: <2010-09-28 16:20:27 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -1336,6 +1336,7 @@ sortiesLM.f <- function(objLM, formule, metrique, factAna, modSel, listFact, Dat
                        " un peu de temps (cette fenêtre se fermera automatiquement)\n", sep="")),
                sticky="w")
         tkfocus(WinInfo)
+        winSmartPlace.f(WinInfo)
 
         compMultiplesLM.f(objLM=objLM, Data=Data, factSpatial="statut_protection", factTemp="an", resFile=resFile)
 

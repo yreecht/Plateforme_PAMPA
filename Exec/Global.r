@@ -79,6 +79,8 @@ source("./Exec/testfichier.r", encoding="latin1")
 source("./Exec/view.r", encoding="latin1")                 # faite
 source("./Exec/import.r", encoding="latin1")
 source("./Exec/importdefaut.r", encoding="latin1")         # faite [sll]
+
+source("./Exec/interface_fonctions.R", encoding="latin1")
 source("./Exec/interface.r", encoding="latin1")
 
 ##################################################

@@ -356,7 +356,8 @@ tkadd(traitement, "command", label="Boxplots \"à la carte\"...", command=functio
   tkadd(benthos,"command",label="Métrique par facteur espèce",command=GraphMetriqueParFacteurEspece.f)
   tkadd(benthos,"command",label="Métrique par facteur unités d'observation",command=GraphMetriqueParFacteurUnitobs.f)
 ## Ajout [yr: 18/08/2010]
-tkadd(benthos, "command", label="Boxplots \"à la carte\"...", command=function(){selectionVariables.f("boxplot")})
+tkadd(benthos, "command", label="Boxplots \"à la carte\"...",
+      command=function(){selectionVariables.f("boxplot") ; winRaise.f(tm)})
 
 
   # Menu deroulant de "Import de donnees"
@@ -393,7 +394,7 @@ tkadd(analyse, "cascade", label="Analyses exploratoires", menu=analysesExplo)
 tkadd(analyse, "cascade", label="Modèles inférentiels", menu=modelesInferentiels)
 
 tkadd(modelesInferentiels, "command", label="Modèles linéaires",
-      command=function(){selectionVariables.f("modele_lineaire")})
+      command=function(){selectionVariables.f("modele_lineaire") ; winRaise.f(tm)})
 
 
   #Menu deroulant de "Outils"
@@ -472,3 +473,6 @@ tkconfigure(button.DataRestore, state="disabled")
  tkbind(tm, "<Control-O>", test.f)
  tkbind(tm, "<Control-q>", function() tkdestroy(tm))
  tkbind(tm, "<Control-Q>", function() tkdestroy(tm))
+
+## Placement de la fenêtre :
+winSmartPlace.f(tm)

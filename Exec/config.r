@@ -13,14 +13,23 @@
 
 ## lignes temporaires pour copier/coller
 
-#### CB
-SiteEtudie <- "CB"
-fileName1 <- "CB_UnitobsUVC_Couronne.txt"
-fileName2 <- "CB_ObsUVC_Couronne.txt"
-fileName3 <- "refEspecesMED.txt"
-nameWorkspace <- "C:/PAMPA/WD"
-## fileNameRefSpa <- "REFSPA_CB.txt"
+## #### CB
+## SiteEtudie <- "CB"
+## fileName1 <- "CB_UnitobsUVC_Couronne.txt"
+## fileName2 <- "CB_ObsUVC_Couronne.txt"
+## fileName3 <- "refEspecesMED.txt"
+## nameWorkspace <- "C:/PAMPA/WD"
+## ## fileNameRefSpa <- "REFSPA_CB.txt"
 
+
+## #### NC Staviro :
+## SiteEtudie <- "NC"
+## fileName1 <- "UniteObs_Staviro_NCcorrige07072010.txt"
+## ## fileName1 <- "UnitObs_Staviro_NC_statutOK230910.txt"
+## fileName2 <- "Obs_Staviro_NC.txt"
+## ## fileName2 <- "Obs_staviro_NC_tous220910.txt"
+## fileName3 <- "PAMPA-WP1-Meth-4-RefSpOM 210910.txt"
+## nameWorkspace <- "C:/PAMPA/WD2"
 
 
 ## #### STM :
@@ -43,15 +52,16 @@ nameWorkspace <- "C:/PAMPA/WD"
 ## fileName3 <- "PAMPA-WP1-Meth-4-RefSpOM 110810.txt"
 ## fileNameRefSpa <- "REFSPA_NC.txt"       # pas bon mais y'en faut bien un (pas utilisé de toute façon)
 
-## #### RUN :
-## SiteEtudie <- "RUN"
+#### RUN :
+SiteEtudie <- "RUN"
 ## fileName1 <- "unitobspampaGCRMNpoisson-100810.txt"
 ## fileName2 <- "obspampaGCRMNpoisson-100810.txt"
-## ## fileName1 <- "unitobsGCRMNPoissons.txt"
-## ## fileName2 <- "obsGCRMNPoissons.txt"
-## ## fileName1 <- "unitobsGCRMNBenthos.txt"
-## ## fileName2 <- "obsGCRMNBenthos.txt"
-## fileName3 <- "PAMPA-WP1-Meth-4-RefSpOM 110810.txt"
+## fileName1 <- "unitobsGCRMNPoissons.txt"
+## fileName2 <- "obsGCRMNPoissons.txt"
+fileName1 <- "unitobsGCRMNBenthos.txt"
+fileName2 <- "obsGCRMNBenthos.txt"
+fileName3 <- "PAMPA-WP1-Meth-4-RefSpOM 110810.txt"
+nameWorkspace <- "C:/PAMPA/WD"
 ## fileNameRefSpa <- "refSpatialRUN.txt"
 
 
@@ -87,13 +97,26 @@ Jeuxdonnescoupe <- 0
 ## variables d'environnement pour l'interface
 lang <- "FR"
 
-assign("nameWorkspace", nameWorkspace, envir=.GlobalEnv)
-assign("NomDossierTravail", paste(nameWorkspace, "/FichiersSortie/", sep=""), envir=.GlobalEnv)
-assign("NomDossierData", paste(nameWorkspace, "/Data/", sep=""), envir=.GlobalEnv)   # sert a concaténer les variables fileNameUnitObs fileNameObs   fileNameRefEsp fileNameRefSpa
-assign("fileNameUnitObs", paste(NomDossierData, fileName1, sep=""), envir=.GlobalEnv)
-assign("fileNameObs", paste(NomDossierData, fileName2, sep=""), envir=.GlobalEnv)
-assign("fileNameRefEsp", paste(NomDossierData, fileName3, sep=""), envir=.GlobalEnv)
-## assign("fileNameRefSpa", paste(NomDossierData, fileNameRefSpa, sep=""), envir=.GlobalEnv)
+pathMaker.f <- function()
+{
+    ## Purpose: Redéfinir les chemins (par exemple après changement du
+    ##          dossier de travail)
+    ## ----------------------------------------------------------------------
+    ## Arguments:
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date: 28 sept. 2010, 10:05
+    assign("nameWorkspace", nameWorkspace, envir=.GlobalEnv)
+    assign("NomDossierTravail", paste(nameWorkspace, "/FichiersSortie/", sep=""), envir=.GlobalEnv)
+    assign("NomDossierData", paste(nameWorkspace, "/Data/", sep=""), envir=.GlobalEnv)   # sert a concaténer les
+                                        # variables fileNameUnitObs fileNameObs   fileNameRefEsp fileNameRefSpa
+    assign("fileNameUnitObs", paste(NomDossierData, fileName1, sep=""), envir=.GlobalEnv)
+    assign("fileNameObs", paste(NomDossierData, fileName2, sep=""), envir=.GlobalEnv)
+    assign("fileNameRefEsp", paste(NomDossierData, fileName3, sep=""), envir=.GlobalEnv)
+    ## assign("fileNameRefSpa", paste(NomDossierData, fileNameRefSpa, sep=""), envir=.GlobalEnv)
+}
+
+pathMaker.f()
+
 assign("siteEtudie", SiteEtudie, envir=.GlobalEnv)
 assign("fileimage", fileimage, envir=.GlobalEnv)
 assign("Jeuxdonnescoupe", Jeuxdonnescoupe, envir=.GlobalEnv)

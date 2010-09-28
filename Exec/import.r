@@ -12,7 +12,7 @@ openfile.f = function()
             # tkmessageBox(message="Aucun espace de travail n'a ete selectionné!")
         }else{
             assign("nameWorkspace", nameWorkspace, envir=.GlobalEnv)
-            setwd(nameWorkspace)
+            ## setwd(nameWorkspace)
             tkconfigure(ResumerEspaceTravail, text=paste("Espace de travail : ",nameWorkspace))
             tkinsert(helpframe,"end","\n Choisissez maintenant votre fichier d'unités d'observations")
         }
@@ -77,7 +77,8 @@ openfile.f = function()
     tt <- tktoplevel(height=50,width=300)
     tkwm.title(tt,"Import des fichiers de donnees")
     OK <- tclVar(0)
-    button.widget0 <- tkbutton(tt,text="Espace de travail",width=45,command=chercheEspaceTravail.f)
+    button.widget0 <- tkbutton(tt, text="Espace de travail", width=45,
+                               command=chercheEspaceTravail.f)
     button.widget1 <- tkbutton(tt,text="Table de donnees unites d'observation",command=openUnitobs.f)
     button.widget2 <- tkbutton(tt,text="Table de donnees d'observations",command=openObservations.f)
     button.widget3 <- tkbutton(tt,text="Referentiel especes",command=openListespeces.f)
@@ -95,14 +96,16 @@ openfile.f = function()
     tkgrid.configure(OK.but,sticky="we")
 
     tkfocus(tt)
+    winSmartPlace.f(tt)
     tkwait.window(tt)
     ## Changement des variables globales
-    assign("fileNameUnitObs", paste(nameWorkspace, "/Data/", fileName1, sep=""), envir=.GlobalEnv)
-    assign("fileNameObs", paste(nameWorkspace, "/Data/", fileName2, sep=""),envir=.GlobalEnv)
-    assign("fileNameRefEsp", paste(nameWorkspace, "/Data/", fileName3, sep=""),envir=.GlobalEnv)
+    pathMaker.f()
+    ## assign("fileNameUnitObs", paste(nameWorkspace, "/Data/", fileName1, sep=""), envir=.GlobalEnv)
+    ## assign("fileNameObs", paste(nameWorkspace, "/Data/", fileName2, sep=""),envir=.GlobalEnv)
+    ## assign("fileNameRefEsp", paste(nameWorkspace, "/Data/", fileName3, sep=""),envir=.GlobalEnv)
 
-    print(nameWorkspace)
-    environnementdefault.f(nameWorkspace)
+    ## print(nameWorkspace)
+    ## environnementdefault.f(nameWorkspace)
     opendefault.f()
 }
 
@@ -177,13 +180,13 @@ import.donnees.f = function()
         nameWorkspace = setwd(tclvalue(tkchooseDirectory()))
         if (!nchar(nameWorkspace))
         {
-            tkmessageBox(message="Aucun workspace n'a ete selectionne!")
+            tkmessageBox(message="Aucun workspace n'a été sélectionné!")
         }
         tkconfigure(ResumerEspaceTravail, text=paste("Espace de travail : ",nameWorkspace))
         tkinsert(helpframe,"end","\n Choisissez maintenant votre fichier d'unités d'observations")
     }
 
-    tt <- tktoplevel(height=50,width=300)
+    tt <- tktoplevel(height=50, width=300)
     tkwm.title(tt,"Import des fichiers de donnees")
     OK <- tclVar(0)
     button.widget0 <- tkbutton(tt,text="Espace de travail",command=openWorkspace.f)
@@ -211,6 +214,7 @@ import.donnees.f = function()
     tkwait.window(tt)
 
     ## constitution des tables
+    print(nameWorkspace)
     assign("fileNameUnitObs",fileName1,envir=.GlobalEnv)
     assign("fileNameObs",fileName2,envir=.GlobalEnv)
     assign("fileNameRefEsp",fileName3,envir=.GlobalEnv)
@@ -311,13 +315,17 @@ import.donnees.f = function()
         if (dim(obs)[2] != 10)
         {
             rm(obs)
-            tkmessageBox(message="ATTENTION, votre fichier 'Observations' ne comporte pas le bon nombre de champs! Corrigez-le et recommencez l'importation.",icon="warning",type="ok")
+            tkmessageBox(message=paste("ATTENTION, votre fichier 'Observations' ne comporte pas",
+                         " le bon nombre de champs! Corrigez-le et recommencez l'importation.", sep=""),
+                         icon="warning", type="ok")
         }
     }else{
         if (dim(obs)[2] != 11)
         {
             rm(obs)
-            tkmessageBox(message="ATTENTION, votre fichier 'Observations' ne comporte pas le bon nombre de champs! Corrigez-le et recommencez l'importation.",icon="warning",type="ok")
+            tkmessageBox(message=paste("ATTENTION, votre fichier 'Observations' ne comporte pas",
+                         " le bon nombre de champs! Corrigez-le et recommencez l'importation.", sep=""),
+                         icon="warning", type="ok")
         }
     }
 
@@ -357,11 +365,11 @@ import.donnees.f = function()
     tclarray[[3,2]] <- dim(especes)[1]
     tclarray[[3,3]] <- dim(especes)[2]
     ## ############# Récapitulatif du plan d'échantillonnage #############
-    if (NA %in% unique(unitobs$site) == FALSE)
+    if (NA %in% unique(unitobs$site) == FALSE) # [!!!]
     {
         PlanEchantillonnage = with(unitobs,table(an,caracteristique_1,biotope,statut_protection, exclude = NA))
     }else{
-        if (NA %in% unique(unitobs$biotope) == FALSE)
+        if (NA %in% unique(unitobs$biotope) == FALSE) # [!!!]
         {
             PlanEchantillonnage = with(unitobs,table(an,habitat3,statut_protection, exclude = NA))
         }else{

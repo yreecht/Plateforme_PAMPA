@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: Selection_variables_fonctions.R
-### Time-stamp: <2010-09-29 09:00:22 yreecht>
+### Time-stamp: <2010-09-29 11:51:34 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -54,7 +54,7 @@ champsMetriques.f <- function(nomTable)
                                                      !is.element(colnames(listespunit),
                                                                  c("an", "pres_abs", ifelse(is.benthos.f(),
                                                                                             "nombre",
-                                                                                            NULL)))]))
+                                                                                            "")))]))
                },
                ## Table unitespta (métriques d'observation par classes de taille) :
                unitespta={
@@ -83,13 +83,16 @@ champsMetriques.f <- function(nomTable)
 
 
 ########################################################################################################################
-champsUnitobs.f <- function(ordered=FALSE)
+champsUnitobs.f <- function(ordered=FALSE, tableMetrique="")
 {
     ## Purpose: Retourne la liste des champs du référentiel d'unités
     ##          d'observations après avoir supprimé les champs vides.
     ## ----------------------------------------------------------------------
     ## Arguments: ordered : faire apparaître les champs principaux en
     ##                      premiers ? (booléen, optionnel)
+    ##            tableMetrique : nom de la table de métriques (pour pouvoir
+    ##                            ajouter le champs classe de taille, même
+    ##                            si ne fait pas partie de cette table).
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date:  3 août 2010, 11:12
 
@@ -105,7 +108,13 @@ champsUnitobs.f <- function(ordered=FALSE)
     ## Champs principaux en premiers :
     if (ordered)
     {
-        res <- c("", sort(cPrincip[is.element(cPrincip, res)]),
+        res <- c(if (tableMetrique == "unitespta")
+             {
+                 c("classe_taille", "")
+             }else{
+                 ""
+             },
+                 sort(cPrincip[is.element(cPrincip, res)]),
                  "", sort(res[!is.element(res, cPrincip)]))
     }else{}
 

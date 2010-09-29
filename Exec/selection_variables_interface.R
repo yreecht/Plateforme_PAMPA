@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: Selection_variables_interface.R
-### Time-stamp: <2010-09-29 09:55:27 yreecht>
+### Time-stamp: <2010-09-29 11:48:55 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -582,8 +582,10 @@ updateFactGraph.f <- function(nomTable, env)
            },
            ## Si table des "unités d'observation" :
            unitobs={
-               evalq(tkconfigure(CB.factGraph, value=champsUnitobs.f(ordered=TRUE)), envir=env)
-               evalq(if (!is.element(tclvalue(FacteurGraph), champsUnitobs.f()))
+               evalq(tkconfigure(CB.factGraph,
+                                 value=champsUnitobs.f(ordered=TRUE, tableMetrique=tclvalue(TableMetrique))),
+                     envir=env)
+               evalq(if (!is.element(tclvalue(FacteurGraph), champsUnitobs.f(tableMetrique=tclvalue(TableMetrique))))
                  {
                      tclvalue(FacteurGraph) <- "" # réinitialisation
                  }, envir=env)

@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: interface_fonctions.R
-### Time-stamp: <2010-09-28 16:42:28 yreecht>
+### Time-stamp: <2010-09-29 10:14:46 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -42,11 +42,12 @@ winSmartPlace.f <- function(win, xoffset=0, yoffset=0)
                                         # tache généralement en bas.
                              - height) / 2) + as.integer(yoffset)
 
+            ## print(tkwm.geometry(win))
             ## configuration de la nouvelle géométrie :
             tkwm.geometry(win, paste(width, "x", height, "+", x, "+", y, sep=""))
             tkwm.geometry(win, "")      # pour conserver le redimentionnement automatique.
 
-            print(paste(width, "x", height, "+", x, "+", y, sep=""))
+            ## print(paste(width, "x", height, "+", x, "+", y, sep=""))
 
             ## Mettre la fenêtre au premier plan :
             tkwm.deiconify(win)

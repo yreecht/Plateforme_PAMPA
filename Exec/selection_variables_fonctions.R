@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: Selection_variables_fonctions.R
-### Time-stamp: <2010-08-27 15:35:56 yreecht>
+### Time-stamp: <2010-09-29 09:00:22 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -51,7 +51,10 @@ champsMetriques.f <- function(nomTable)
                listespunit={
                    return(sort(colnames(listespunit)[sapply(listespunit,
                                                             function(x){is.numeric(x) & !all(is.na(x))}) &
-                                                     !is.element(colnames(listespunit), c("an", "pres_abs"))]))
+                                                     !is.element(colnames(listespunit),
+                                                                 c("an", "pres_abs", ifelse(is.benthos.f(),
+                                                                                            "nombre",
+                                                                                            NULL)))]))
                },
                ## Table unitespta (métriques d'observation par classes de taille) :
                unitespta={

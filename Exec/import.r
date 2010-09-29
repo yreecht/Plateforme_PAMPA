@@ -5,7 +5,7 @@ openfile.f = function()
     ## Choix de l'espace de travail
     chercheEspaceTravail.f = function() # [imb]
     {
-        nameWorkspace <- tclvalue(tkchooseDirectory())
+        nameWorkspace <- tclvalue(tkchooseDirectory(initialdir=nameWorkspace))
 
         if (!nchar(nameWorkspace))
         {
@@ -23,7 +23,7 @@ openfile.f = function()
     {
 
         print("fonction openUnitobs activée")
-        nameUnitobs<-tclvalue(tkgetOpenFile())
+        nameUnitobs<-tclvalue(tkgetOpenFile(initialdir=paste(nameWorkspace, "/Data/", sep="")))
         nameUnitobs<-sub(paste(nameWorkspace,"/Data/",sep=""),'',nameUnitobs)   #ici, on enlève le nom de chemin pour ne conserver que le nom du fichier
         if (!nchar(nameUnitobs))
         {
@@ -43,7 +43,7 @@ openfile.f = function()
     {
 
         print("fonction openObservations activée")
-        namefileObs<-tclvalue(tkgetOpenFile())
+        namefileObs<-tclvalue(tkgetOpenFile(initialdir=paste(nameWorkspace, "/Data/", sep="")))
         namefileObs<-sub(paste(nameWorkspace,"/Data/",sep=""),'',namefileObs)   #ici, on enlève le nom de chemin pour ne conserver que le nom du fichier
         if (!nchar(namefileObs))
         {
@@ -62,7 +62,7 @@ openfile.f = function()
     {
 
         print("fonction openListespeces activée")
-        namefileRef<-tclvalue(tkgetOpenFile())
+        namefileRef<-tclvalue(tkgetOpenFile(initialdir=paste(nameWorkspace, "/Data/", sep="")))
         namefileRef<-sub(paste(nameWorkspace,"/Data/",sep=""),'',namefileRef)   #ici, on enlève le nom de chemin pour ne conserver que le nom du fichier
         if (!nchar(namefileRef))
         {

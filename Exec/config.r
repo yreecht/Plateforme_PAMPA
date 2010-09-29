@@ -61,7 +61,7 @@ SiteEtudie <- "RUN"
 fileName1 <- "unitobsGCRMNBenthos.txt"
 fileName2 <- "obsGCRMNBenthos.txt"
 fileName3 <- "PAMPA-WP1-Meth-4-RefSpOM 110810.txt"
-nameWorkspace <- "C:/PAMPA/WD"
+nameWorkspace <- "C:/PAMPA"
 ## fileNameRefSpa <- "refSpatialRUN.txt"
 
 

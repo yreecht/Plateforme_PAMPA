@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: Selection_variables_interface.R
-### Time-stamp: <2010-09-28 16:45:02 yreecht>
+### Time-stamp: <2010-09-29 09:55:27 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -176,7 +176,7 @@ choixOptionsGraphiques.f <- function()
     tkbind(WinOpt, "<Destroy>", function(){tclvalue(Done) <- 2}) # En cas de destruction de la fenêtre.
 
     tkfocus(WinOpt)
-    winSmartPlace.f(WinOpt, xoffset=40, yoffset=-40)
+    winSmartPlace.f(WinOpt, xoffset=40, yoffset=-90)
 
     tkwait.variable(Done)
 
@@ -229,7 +229,7 @@ selectModWindow.f <- function(champ, data, selectmode="multiple", sort=TRUE, pre
     selection <- NULL
 
     ## ########## Définition des éléments graphiques ##########
-    winfac <- tktoplevel(width = 80)
+    winfac <- tktoplevel()   ## (width = 80)
 
     if (is.null(title))
     {
@@ -318,7 +318,7 @@ selectModWindow.f <- function(champ, data, selectmode="multiple", sort=TRUE, pre
 
     ## Affichage/attente :
     tkfocus(winfac)
-    winSmartPlace.f(winfac, xoffset=50, yoffset=-40)
+    winSmartPlace.f(winfac, xoffset=50, yoffset=-100)
 
     tkwait.window(winfac)
     return(selection)

@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: comparaison_distri_generique.R
-### Time-stamp: <2010-09-28 16:20:27 yreecht>
+### Time-stamp: <2010-10-04 17:07:35 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -1023,6 +1023,36 @@ diffTemporelles.f <- function(objLM, factSpatial, factTemp, Data)
 
 }
 
+########################################################################################################################
+diffTempSimples.f <- function(objLM, fact, Data)
+{
+    ## Purpose:
+    ## ----------------------------------------------------------------------
+    ## Arguments: objLM : un objet de classe 'lm' ou 'glm'.
+    ##            factSpatial : nom du facteur spatial.
+    ##            factTemp : nom du facteur temporel.
+    ##            Data : données utilisées pour ajuster le modèle.
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date:  4 oct. 2010, 16:28
+
+    tDiff <- paste(c(head(rev(levels(Data[ , fact])), 1), head(rev(levels(Data[ , fact])),  - 1)),
+                   c(tail(rev(levels(Data[ , fact])), 1), tail(rev(levels(Data[ , fact])),  - 1)),
+                   sep=" - ")
+
+    diffDim <- length(coef(objLM))
+
+    diffMat <- matrix(0, ncol=diffDim, nrow=diffDim,
+                      dimnames=list(tDiff, names(coef(objLM))))
+
+
+    ## Différences sur l'effet temporel seul :
+    diffMat[ , -1] <- rbind(c(-1, rep(0, diffDim - 2), 1),
+                            cbind(0, diag(1, diffDim - 1)[ , seq(diffDim - 1, 1)]) +
+                            cbind(diag(-1, diffDim - 1)[ , seq(diffDim - 1, 1)], 0))[ , -1]
+
+    return(diffMat)
+}
+
 
 ########################################################################################################################
 resFileLM.f <- function(objLM, metrique, factAna, modSel, listFact, Log=FALSE,  prefix=NULL, ext="txt", sufixe=NULL)
@@ -1133,38 +1163,80 @@ valPreditesLM.f <- function(objLM, Data, listFact, resFile)
 
 }
 
+########################################################################################################################
+is.temporal.f <- function(facteur)
+{
+    ## Purpose: test si un facteur est temporel ou non
+    ## ----------------------------------------------------------------------
+    ## Arguments: facteur : le nom (chaîne de caractères) du facteur.
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date:  4 oct. 2010, 10:01
+
+    res <- sapply(facteur,
+                  function(x)
+              {
+                  switch(x,
+                         an={           # An est toujours censé être temporel.
+                             TRUE
+                         },
+                         caracteristique_2={ # Dépend du format.
+                             ifelse(all(grepl("^[cC][[:digit:]]{4}$", unitobs$caracteristique_2), na.rm=TRUE),
+                                    TRUE,
+                                    FALSE)
+                         },
+                         FALSE)
+              })
+    return(res)
+}
+
 
 ########################################################################################################################
-compMultiplesLM.f <- function(objLM, Data, factSpatial, factTemp, resFile)
+compMultiplesLM.f <- function(objLM, Data, fact1, fact2, resFile)
 {
     ## Purpose: Calculer et écrire les résultats des comparaisons multiples.
     ## ----------------------------------------------------------------------
     ## Arguments: objLM : objet de classe 'lm' ou 'glm'.
     ##            Data : les données utilisées pour ajuster le modèle.
-    ##            factSpatial : le nom du facteur utilisé pour les
-    ##                          comparaisons spatiales/de statut.
-    ##            factTemp : le nom du facteur utilisé pour les comparaisons
-    ##                       temporelles.
+    ##            fact1 : le nom du premier facteur utilisé pour les
+    ##                    comparaisons multiples.
+    ##            fact2 : le nom du second facteur utilisé pour les
+    ##                    comparaisons multiples.
     ##            resFile : la connection pour les sorties textes.
     ## ----------------------------------------------------------------------
-    ## Author: Yves Reecht, Date:  8 sept. 2010, 16:38
+    ## Author: Yves Reecht, Date:  4 oct. 2010, 09:54
+
+    facts <- c(fact1, fact2)
 
     ## écriture des en-têtes :
     cat("\n\n\n---------------------------------------------------------------------------",
         "\nComparaisons multiples :",
         file=resFile)
 
-    ## Calcul de la matrice de différences spatiales/de statut :
-    Dspat <- diffSpatiales.f(objLM=objLM,
-                             factSpatial="statut_protection",
-                             factTemp="an",
-                             Data=Data)
+    ## Test si un facteur est temporel :
+    tempFact <- is.temporal.f(facts)
 
-    ## Calcul de la matrice de différences temporelles :
-    Dtemp <- diffTemporelles.f(objLM=objLM,
-                               factSpatial="statut_protection",
-                               factTemp="an",
-                               Data=Data)
+    ## Calculs des matrices de différences :
+    for (i in seq(along=facts))
+    {
+        ## fact <- get(paste("fact", i, sep=""))
+        if (tempFact[i])                # Si le facteur inclus est temporel :
+        {
+            assign(paste("diff", i, sep=""),
+                   diffTemporelles.f(objLM=objLM,
+                                     factSpatial=facts[-i],
+                                     factTemp=facts[i],
+                                     Data=Data))
+        }else{                          # ... sinon :
+            difftmp <- diffSpatiales.f(objLM=objLM,
+                                       factSpatial=facts[i],
+                                       factTemp=facts[-i],
+                                       Data=Data)
+            ## On réordonne d'après le second facteur (plus lisible) :
+            assign(paste("diff", i, sep=""),
+                   difftmp[order(sub("^([^:]+) :.+$", "\\1", row.names(difftmp))), ])
+            rm(difftmp)
+        }
+    }
 
     ## Si des coefs n'ont pu être calculés, glht plante... à moins que :
     if (any(is.na(coef(objLM))))
@@ -1176,27 +1248,75 @@ compMultiplesLM.f <- function(objLM, Data, factSpatial, factTemp, resFile)
             file=resFile)
 
         ## Réduction des matrices de différences :
-        Dspat <- Dspat[ , !is.na(coef(objLM))]
-        Dtemp <- Dtemp[ , !is.na(coef(objLM))]
+        diff1 <- diff1[ , !is.na(coef(objLM))]
+        diff2 <- diff2[ , !is.na(coef(objLM))]
 
         objLM$coefficients <- objLM$coefficients[!is.na(coef(objLM))]
     }
 
-    ## Résultats des comparaisons spatiales/de statut :
-    cat("\n\nComparaisons pour les différences spatiales (statut de protection) par année :\n",
+    for (i in seq(along=facts))
+    {
+        ## Résultats des comparaisons spatiales/de statut :
+        cat(paste("\n\nComparaisons pour les différences de '", varNames[facts[i], "nom"], "' ",
+                  ifelse(tempFact[i], "(temporel) ", ""),
+                  "par '", varNames[facts[-i], "nom"], "' ",
+                  ifelse(tempFact[-i], "(temporel) ", ""),
+                  ":\n", sep=""),
+            file=resFile)
+
+        capture.output(print.summary.glht.red(summary(glht(objLM,
+                                                           linfct=get(paste("diff", i, sep="")),
+                                                           alternative="two.sided"))),
+                   file=resFile)
+    }
+}
+
+########################################################################################################################
+compSimplesLM.f <- function(objLM, Data, fact, resFile)
+{
+    ## Purpose: Calculer et écrire les résultats des comparaisons simples.
+    ## ----------------------------------------------------------------------
+    ## Arguments: objLM : objet de classe 'lm' ou 'glm'.
+    ##            Data : les données utilisées pour ajuster le modèle.
+    ##            fact : le nom du facteur utilisé.
+    ##            resFile : la connection pour les sorties textes.
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date:  4 oct. 2010, 15:51
+
+    ## écriture des en-têtes :
+    cat("\n\n\n---------------------------------------------------------------------------",
+        "\nComparaisons des modalités :",
         file=resFile)
 
-    capture.output(print.summary.glht.red(summary(glht(objLM, linfct=Dspat, alternative="two.sided"))),
+    if (is.temporal.f(fact))
+    {
+        ## Suite en-tête :
+        cat(paste("\n\n\tFacteur '", varNames[fact, "nom"], "' (temporel) :\n", sep=""),
+            file=resFile)
+
+        ## Comparaisons temporelles :
+        compSimple <- glht(objLM,
+                           linfct=diffTempSimples.f(objLM=objLM, fact=fact, Data=Data),
+                           alternative="two.sided")
+
+        ## Écriture des résultats :
+        capture.output(print.summary.glht.red(summary(compSimple)),
                    file=resFile)
 
-    ## Résultats des comparaisons temporelles :
-    cat("\n\nComparaisons pour les différences temporelles par statut de protection :\n",
-        file=resFile)
+    }else{
+        ## Suite en-tête :
+        cat(paste("\n\nFacteur '", varNames[fact, "nom"], "' :\n", sep=""),
+            file=resFile)
 
-    capture.output(print.summary.glht.red(summary(glht(objLM, linfct=Dtemp, alternative="two.sided"))),
+        ## Comparaisons de toutes les paires ("Tukey") :
+        compSimple <- glht(objLM,
+                           linfct=eval(parse(text=paste("mcp(", fact, "=\"Tukey\")"))),
+                           alternative="two.sided")
+
+        ## Écriture des résultats :
+        capture.output(print.summary.glht.red(summary(compSimple)),
                    file=resFile)
-
-
+    }
 }
 
 
@@ -1320,7 +1440,8 @@ sortiesLM.f <- function(objLM, formule, metrique, factAna, modSel, listFact, Dat
     ## ##################################################
     ## Comparaisons multiples :
 
-    if (all(is.element(c("an", "statut_protection"), listFact)))
+    ## if (all(is.element(c("an", "statut_protection"), listFact)))
+    if (length(listFact) == 2)
     {
         WinInfo <- tktoplevel()
         on.exit(tkdestroy(WinInfo))
@@ -1338,15 +1459,34 @@ sortiesLM.f <- function(objLM, formule, metrique, factAna, modSel, listFact, Dat
         tkfocus(WinInfo)
         winSmartPlace.f(WinInfo)
 
-        compMultiplesLM.f(objLM=objLM, Data=Data, factSpatial="statut_protection", factTemp="an", resFile=resFile)
+        ## compMultiplesLM.f(objLM=objLM, Data=Data, factSpatial="statut_protection", factTemp="an", resFile=resFile)
+        compMultiplesLM.f(objLM=objLM, Data=Data, fact1=listFact[1], fact2=listFact[2], resFile=resFile)
 
         ## Représentation des interactions :
         X11()
         with(Data,
-             interaction.plot(an, statut_protection, eval(parse(text=metrique)),
-                              ylab=paste(Capitalize.f(varNames[metrique, "nom"]), "moyenne")))
+             if (Log)                   # Les sens de variations peuvent changer en log (sur les moyennes) =>
+                                        # besoin d'un graphique adapté :
+             {
+                 eval(parse(text=paste("interaction.plot(", listFact[1], ", ", listFact[2],
+                                       ", log(", metrique, "), ylab=\"",
+                                       paste("log(", Capitalize.f(varNames[metrique, "nom"]), ") moyen", sep=""),
+                                       "\")", sep="")))
+
+              }else{
+                 eval(parse(text=paste("interaction.plot(", listFact[1], ", ", listFact[2],
+                                       ", ", metrique, ", ylab=\"",
+                                       paste(Capitalize.f(varNames[metrique, "nom"]), " moyenne", sep=""),
+                                       "\")", sep="")))
+             })
+
         tkdestroy(WinInfo)
-    }else{}
+    }else{
+        if (length(listFact) == 1)
+        {
+            compSimplesLM.f(objLM=objLM, Data=Data, fact=listFact, resFile=resFile)
+        }else{}
+    }
 
     X11(width=45, height=35)
     par(mfrow=c(2, 2))

@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: Selection_variables_interface.R
-### Time-stamp: <2010-09-29 11:48:55 yreecht>
+### Time-stamp: <2010-09-30 10:53:44 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -477,6 +477,28 @@ verifVariables.f <- function(metrique, factGraph, factGraphSel, listFact, listFa
                      icon="warning")
             return(0)
         }else{}
+
+        ## Bloquer les analyses à plus de 3 facteurs :
+        if (length(listFact[unlist(listFact) != ""]) > 3)
+        {
+            tkmessageBox(message=paste("Vous avez sélectionné trop de facteurs de regroupement : ",
+                                       "\nLes résultats seraient inexploitables !",
+                                       "\n\nVeuillez sélectionner *au plus* trois facteurs de regroupement",
+                                       sep=""),
+                     icon="error")
+            return(0)
+        }else{
+            if (length(listFact[unlist(listFact) != ""]) >= 3) # On garde la possibilité d'augmenter le seuil de refus
+                                        # des analyses, ci-dessus, sans modifier celui-ci.
+            {
+                tkmessageBox(message=paste("Attention :",
+                                           "\n\nÀ partir de trois facteurs de regroupement, les résultats deviennent ",
+                                           "\ndifficiles à interpréter. Préférez des analyses à un ou deux facteur(s).",
+                                           sep=""),
+                     icon="warning")
+                return(1)
+            }else{}
+        }
     }else{}
 }
 
@@ -765,11 +787,11 @@ selectionVariables.f <- function(nextStep)
     CB.metrique <- ttkcombobox(FrameMetrique, value=metriques, textvariable=MetriqueChoisie,
                                state="readonly")
     RB.unitespta <- tkradiobutton(FrameMetrique, variable=TableMetrique,
-                                    value="unitespta", text="...d'observation par classes de taille")
+                                    value="unitespta", text=".../ unité d'observation / espèce / classes de taille")
     RB.listespunit <- tkradiobutton(FrameMetrique, variable=TableMetrique,
-                                    value="listespunit", text="...d'observation")
+                                    value="listespunit", text=".../ unité d'observation / espèce")
     RB.TableBiodiv <- tkradiobutton(FrameMetrique, variable=TableMetrique,
-                                    value="TableBiodiv", text="...de biodiversité")
+                                    value="TableBiodiv", text="...de biodiversité ( / unité d'observation)")
 
     ## Choix du facteur de séparation des graphs + modalités :
     FrameFactGraph <- tkframe(WinSelection, borderwidth=2, relief="groove")
@@ -830,7 +852,12 @@ selectionVariables.f <- function(nextStep)
     if (!is.benthos.f())                 # Table pas pertinent pour benthos.
     {
         tkgrid(RB.unitespta, sticky="w")
+        if (nrow(unitespta) == 0)           # désactivation si pas de classe de taille dispo.
+        {
+            tkconfigure(RB.unitespta, state="disabled")
+        }else{}
     }else{}
+
     tkgrid(RB.listespunit, sticky="w")
     tkgrid(RB.TableBiodiv, CB.metrique, tklabel(FrameMetrique, text=" \n"), sticky="w")
     tkgrid(FrameMetrique, column=1, columnspan=3, sticky="w")

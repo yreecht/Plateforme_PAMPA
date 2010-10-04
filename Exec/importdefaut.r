@@ -50,6 +50,7 @@ openListespeces.f <- function()
     tkconfigure(ResumerSituationReferencielEspece, text=paste("Fichier référenciel espèce : ", namefileRef))
     assign("fileName3", namefileRef, envir=.GlobalEnv)
 }
+
 ################################################################################
 ## Nom    : lectureFichierEspeces.f()
 ## Objet  : lecture du référentiel espèces
@@ -131,7 +132,7 @@ environnementdefault.f <- function (nameWorkspace)
     print("fonction environnementdefault activée")
     if (!missing(nameWorkspace))
     {
-        if (file.access(nameWorkspace, mode = 0)==0)
+        if (file.access(nameWorkspace, mode = 0)== 0)
         {
             tkinsert(txt.w, "end", paste(nameWorkspace, " existe\n", sep=""))
             if (file.access(paste(nameWorkspace, "/FichiersSortie", sep=""), mode = 0)==-1)
@@ -155,7 +156,7 @@ environnementdefault.f <- function (nameWorkspace)
 opendefault.f <- function ()
 {
 
-    print("fonction opendefault activée")
+    print("fonction opendefault activée !!")
     print(paste("chargement de ", fileNameUnitObs, fileNameObs, fileNameRefEsp))
 
     tkconfigure(ResumerEspaceTravail, text=paste("Espace de travail : ", nameWorkspace))
@@ -239,9 +240,9 @@ opendefault.f <- function ()
         obs$rotation <- as.numeric(obs$rotation)
     }
     ## remplacement des -999 en NA
-    if (nrow(obs)!=0)
+    if (as.logical(nrow(obs)))                      # !=0
     {
-        obs[obs=="-999"] <- NA
+        obs[obs == "-999"] <- NA
     }
 
     ## nombre : numeric -> factor (nécessaire pour une bonne prise en compte dans les analyses stat) :
@@ -262,14 +263,17 @@ opendefault.f <- function ()
     }
 
 
-    ## suppression des observations dont le nombre d'individus est à zero
-    if (dim(subset(obs, nombre == 0))[1] > 0) # [!!!] nrow ?
-    {
-        obs0 <- dim(subset(obs, nombre != 0))
-        obssup <- dim(subset(obs, nombre == 0))
-        obs <- subset(obs, nombre != 0)
-        ## tkinsert(txt.w, "end", paste("\n", obssup[1], " observations dont le nombre d'individus est à 0 ont ete supprimees.", sep=""))
-    }
+    ## ## suppression des observations dont le nombre d'individus est à zero
+    ## if (dim(subset(obs, nombre == 0))[1] > 0) # [!!!] nrow ?
+    ## {
+    ##     obs0 <- dim(subset(obs, nombre != 0))
+    ##     obssup <- dim(subset(obs, nombre == 0))
+    ##     obs <- subset(obs, nombre != 0)
+    ##     ## tkinsert(txt.w, "end",
+    ##     ##          paste("\n", obssup[1],
+    ##     ##                " observations dont le nombre d'individus est à 0 ont ete supprimees.", sep=""))
+    ## }
+
     lectureFichierEspeces.f()
 
     ## ############# Récapitulatif du plan d'échantillonnage #############
@@ -294,10 +298,17 @@ opendefault.f <- function ()
     ## rm(PlanEchantillonnage)
     ## ################
     assign("obs", obs, envir=.GlobalEnv)
-    tkconfigure(ResumerSituationFichierUnitesObs, text=paste("Fichier d'unités d'observations : ", fileNameUnitObs, " Nb Enr : ", dim(unitobs)[1], " Nb Champs : ", dim(unitobs)[2]))
-    tkconfigure(ResumerSituationFichierObs, text=paste("Fichier d'observations : ", fileNameObs, " Nb Enr : ", dim(obs)[1], " Nb Champs : ", dim(obs)[2]))
-    tkconfigure(ResumerSituationReferencielEspece, text=paste("Fichier référenciel espèce : ", fileNameRefEsp, " Nb Enr : ", dim(especes)[1], " Nb Champs : ", dim(especes)[2]))
-    tkconfigure(ResumerAMPetType, text=paste("AMP considérée", unique(unitobs$AMP), " type d'observation : ", unique(unitobs$type)))
+    tkconfigure(ResumerSituationFichierUnitesObs,
+                text=paste("Fichier d'unités d'observations : ", fileNameUnitObs, " Nb Enr : ",
+                           dim(unitobs)[1], " Nb Champs : ", dim(unitobs)[2]))
+    tkconfigure(ResumerSituationFichierObs,
+                text=paste("Fichier d'observations : ", fileNameObs, " Nb Enr : ",
+                           dim(obs)[1], " Nb Champs : ", dim(obs)[2]))
+    tkconfigure(ResumerSituationReferencielEspece,
+                text=paste("Fichier référenciel espèce : ", fileNameRefEsp, " Nb Enr : ",
+                           dim(especes)[1], " Nb Champs : ", dim(especes)[2]))
+    tkconfigure(ResumerAMPetType,
+                text=paste("AMP considérée", unique(unitobs$AMP), " type d'observation : ", unique(unitobs$type)))
 
     ## ################# Creation de la table de contingence ##################
 
@@ -314,30 +325,38 @@ opendefault.f <- function ()
             obsSansCathBenth <- subset(obsSansCathBenth, obsSansCathBenth$Genre!="ge.")
 
         }
-        contingence <- tapply(obsSansCathBenth$nombre, list(obsSansCathBenth$unite_observation, obsSansCathBenth$code_espece), na.rm=TRUE, sum)
+        contingence <- tapply(obsSansCathBenth$nombre,
+                              list(obsSansCathBenth$unite_observation, obsSansCathBenth$code_espece), na.rm=TRUE, sum)
     }else{
-        contingenceSVRt <- tapply(obs$nombre, list(obs$unite_observation, obs$rotation, obs$code_espece), na.rm=TRUE, mean)
+        contingenceSVRt <- tapply(obs$nombre,
+                                  list(obs$unite_observation, obs$rotation, obs$code_espece), na.rm=TRUE, mean)
         contingenceSVRt[is.na(contingenceSVRt)] <- 0
-        contingenceSVR <- as.data.frame(matrix(NA, dim(contingenceSVRt)[1]*dim(contingenceSVRt)[2]*dim(contingenceSVRt)[3], 4))
+        contingenceSVR <- as.data.frame(matrix(NA, dim(contingenceSVRt)[1] * dim(contingenceSVRt)[2] *
+                                               dim(contingenceSVRt)[3], 4))
         colnames(contingenceSVR) = c("unitobs", "rotation", "code_espece", "abondance")
         contingenceSVR$abondance <- as.vector(contingenceSVRt)
-        contingenceSVR$unitobs <- rep(dimnames(contingenceSVRt)[[1]], times = dim(contingenceSVRt)[2] * dim(contingenceSVRt)[3])
-        contingenceSVR$rotation <- rep(dimnames(contingenceSVRt)[[2]], each = dim(contingenceSVRt)[1], times = dim(contingenceSVRt)[3])
-        contingenceSVR$code_espece = rep(dimnames(contingenceSVRt)[[3]], each = dim(contingenceSVRt)[1]*dim(contingenceSVRt)[2])
-        contingence <- tapply(contingenceSVR$abondance, list(contingenceSVR$unitobs, contingenceSVR$code_espece), na.rm=TRUE, sum)
+        contingenceSVR$unitobs <- rep(dimnames(contingenceSVRt)[[1]],
+                                      times = dim(contingenceSVRt)[2] * dim(contingenceSVRt)[3])
+        contingenceSVR$rotation <- rep(dimnames(contingenceSVRt)[[2]],
+                                       each = dim(contingenceSVRt)[1], times = dim(contingenceSVRt)[3])
+        contingenceSVR$code_espece <- rep(dimnames(contingenceSVRt)[[3]],
+                                          each = dim(contingenceSVRt)[1]*dim(contingenceSVRt)[2])
+        contingence <- tapply(contingenceSVR$abondance,
+                              list(contingenceSVR$unitobs, contingenceSVR$code_espece), na.rm=TRUE, sum)
     }
 
     contingence[is.na(contingence)] <- 0
     ## Suppression des especes qui ne sont jamais vues
     ## Sinon problemes pour les calculs d'indices de diversite.
-    a <- which(apply(contingence, 2, sum, na.rm=T)==0)
+    a <- which(apply(contingence, 2, sum, na.rm=TRUE) == 0)
     if (length(a) != 0)
     {
         contingence <- contingence[, -a, drop=FALSE]
     }
     rm(a)
+
     ## idem
-    b <- which(apply(contingence, 1, sum, na.rm=T)==0)
+    b <- which(apply(contingence, 1, sum, na.rm=TRUE) == 0)
     if (length(b) != 0)
     {
         contingence <- contingence[-b, , drop=FALSE]
@@ -373,16 +392,18 @@ opendefault.f <- function ()
         print("choix du type de jeux de données activé, sélection sur :")
         print(selectType)
         obs$type <- unitobs$type[match(obs$unite_observation, unitobs$unite_observation)]
-        obs <- subset(obs$type, obs$type==selectType)
-        unitobs <- subset(unitobs$type, unitobs$type==selectType)
+        obs <- subset(obs$type, obs$type == selectType)
+        unitobs <- subset(unitobs$type, unitobs$type == selectType)
         assign("obs", obs, envir=.GlobalEnv)
         assign("unitobs", unitobs, envir=.GlobalEnv)
     }
 
+    ## print(paste("\t\t", paste(dim(obs), collapse="x")))
     ## Creation des tables de base
     creationTablesBase.f()
     ## biomasse.f()
 
+    ## print(paste("\t\t", paste(dim(obs), collapse="x")))
     ## ! ici, donner des noms avec une base variable, pour rendre les fichiers indépendants et plus facilement reconnaissables
 
     gestionMSGinfo.f("BasetxtCreate")

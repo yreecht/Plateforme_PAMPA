@@ -1238,9 +1238,11 @@ unitesp.f <- function(){
     {
         unitespT <- unitespT / 3
     }
-    unitespT[is.na(unitespT)] <- as.integer(0) # Pour conserver des entiers
 
-    unitesp <- as.data.frame(matrix(NA, nrow(unitespT)*ncol(unitespT), 3))
+    ## Euh... ce serait pas hyper dangeureux ce qui suit [!!!] [???] [yr: 01/10/2010]
+    ## unitespT[is.na(unitespT)] <- as.integer(0) # Pour conserver des entiers
+
+    unitesp <- as.data.frame(matrix(data=NA, nrow=nrow(unitespT) * ncol(unitespT), ncol=3))
     colnames(unitesp) = c("unite_observation", "code_espece", "nombre")
     unitesp$nombre <- as.vector(unitespT, "integer")
     unitesp$unite_observation <- rep(rownames(unitespT), ncol(unitespT))
@@ -1255,8 +1257,9 @@ unitesp.f <- function(){
         ## tailles moyennes ponderees
         if (ct==1)
         {
-
-            obs$taillecum <- obs$taille * obs$nombre # L*nb par ligne (=1obs exp X tr)
+            ## Calcul des tailles moyennes :
+            obs$taillecum <- obs$taille * obs$nombre # L*nb par ligne (=1obs exp X tr) # pas besoin de stocker dans
+                                        # obs. [yr: 01/10/2010]
             y <- tapply(obs$nombre, list(obs$unite_observation, obs$code_espece), sum, na.rm=TRUE) # nb espXtr
             z <- tapply(obs$taillecum, list(obs$unite_observation, obs$code_espece),
                         function(x){if (all(is.na(x))) {return(NA)}else{return(sum(x, na.rm=TRUE))}}) # Pour éviter
@@ -1268,9 +1271,12 @@ unitesp.f <- function(){
             ## unitesp.t$taille_moy[is.na(unitesp.t$taille_moy)] <- 0
                                         # [!!!] Rhaa, mais c'est pas vrai cette manie de
                                         # mettre les valeurs manquantes à zéro !!  [yr: 13/08/2010]
+            ## ##################################################
+            ## Est-ce que tout cela sert à qqch ? :
             unitesp.t$unitobs <- rep(dimnames(z)[[1]], dim(z)[2])
             unitesp.t$code_espece <- rep(dimnames(z)[[2]], each = dim(z)[1], 1)
             unitesp.t$an <- unitobs$an[match(unitesp.t$unitobs, unitobs$unite_observation)]
+            ## ##################################################
             obs$taillecum <- NULL
 
             unitesp$taille_moy <- unitesp.t$taille_moy # [match(unitesp$unite_observation, unitesp.t$unitobs)] #faire un
@@ -1284,12 +1290,16 @@ unitesp.f <- function(){
         unitespT.b <- tapply(obs$biomasse, list(obs$unite_observation, obs$code_espece),
                              function(x){if (all(is.na(x))) {return(NA)}else{return(sum(x, na.rm=TRUE))}}) # Pour éviter
                                         # des sommes à zéro là où seulement des NAs.
-        unitesp.b <- as.data.frame(matrix(NA, dim(unitespT.b)[1]*dim(unitespT.b)[2], 3))
+        unitesp.b <- as.data.frame(matrix(data=NA, nrow=dim(unitespT.b)[1] * dim(unitespT.b)[2], ncol=3))
         colnames(unitesp.b) = c("unitobs", "code_espece", "biomasse")
-        unitesp.b$biomasse <- as.vector(unitespT.b)
+        ## ##################################################
+        ## Est-ce que tout cela sert à qqch ? :
+        unitesp.b$biomasse <- as.vector(unitespT.b) # On peut également compacter les lignes suivantes en une
+                                        # seule. [yr: 01/10/2010]... ou pas !
         unitesp.b$unitobs <- rep(dimnames(unitespT.b)[[1]], dim(unitespT.b)[2])
         unitesp.b$code_espece <- rep(dimnames(unitespT.b)[[2]], each = dim(unitespT.b)[1], 1)
         unitesp.b$an <- unitobs$an[match(unitesp.b$unitobs, unitobs$unite_observation)]
+        ## ##################################################
 
         unitesp$biomasse <- unitesp.b$biomasse
         unitesp$biomasse <- as.numeric(unitesp$biomasse) /
@@ -1300,12 +1310,16 @@ unitesp.f <- function(){
 
         ## sommes des poids par espece par unitobs
         unitespT.p <- tapply(obs$poids, list(obs$unite_observation, obs$code_espece), sum)
-        unitesp.p <- as.data.frame(matrix(NA, dim(unitespT.p)[1]*dim(unitespT.p)[2], 3))
+        unitesp.p <- as.data.frame(matrix(data=NA, nrow=dim(unitespT.p)[1] * dim(unitespT.p)[2], ncol=3))
         colnames(unitesp.p) = c("unitobs", "code_espece", "poids")
         unitesp.p$poids <- as.vector(unitespT.p, "numeric")
-        unitesp.p$unitobs <- rep(dimnames(unitespT.p)[[1]], dim(unitespT.p)[2])
+        ## ##################################################
+        ## Est-ce que tout cela sert à qqch ? :
+        unitesp.p$unitobs <- rep(dimnames(unitespT.p)[[1]], dim(unitespT.p)[2]) # préférer des ncol() plus explicites
+                                        # [yr: 01/10/2010]
         unitesp.p$code_espece <- rep(dimnames(unitespT.p)[[2]], each = dim(unitespT.p)[1], 1)
         unitesp.p$an <- unitobs$an[match(unitesp.p$unitobs, unitobs$unite_observation)]
+        ## ##################################################
         unitesp$poids <- unitesp.p$poids
 
         ## poids moyen
@@ -1345,7 +1359,7 @@ unitesp.f <- function(){
         ## sapply(1:2, function(x)all(expand.grid(row.names(e), colnames(e))[!is.na(e), ][, x] ==
         ##                            listespunit[ , c("unite_observation", "code_espece")][, x]))
         unitesp$colonie <- as.vector(e)
-        unitesp$colonie[is.na(unitesp$colonie)] <- 0
+        unitesp$colonie[is.na(unitesp$colonie)] <- 0 # [???]
         unitesp$taille.moy.colonies <- unitesp$nombre / unitesp$colonie
         rm(e)
     }
@@ -1354,7 +1368,7 @@ unitesp.f <- function(){
     unitesp$pres_abs[unitesp$nombre != 0] <- as.integer(1) # pour avoir la richesse spécifique en 'integer'.1
     unitesp$pres_abs[unitesp$nombre == 0] <- as.integer(0) # pour avoir la richesse spécifique en 'integer'.0
 
-    ## Ajout des champs site, biotope, an
+    ## Ajout des champs site, biotope, an, statut
     unitesp$site <- unitobs$site[match(unitesp$unite_observation, unitobs$unite_observation)]
     unitesp$biotope <- unitobs$biotope[match(unitesp$unite_observation, unitobs$unite_observation)]
     unitesp$an <- unitobs$an[match(unitesp$unite_observation, unitobs$unite_observation)]
@@ -1373,7 +1387,7 @@ unitesp.f <- function(){
     write.csv(unitesp, file=paste(NomDossierTravail, "UnitobsEspeceMetriques.csv", sep=""), row.names = FALSE)
 
     ## table avec la liste des especes presentes dans chaque transect
-    listespunit <- unitesp[unitesp$pres_abs != 0, ]
+    listespunit <- unitesp## [unitesp$pres_abs != 0, ]
     listespunit <- listespunit[order(listespunit$code_espece), ]
     assign("listespunit", listespunit, envir=.GlobalEnv)
     print("La liste des especes presentes dans chaque transect a ete creee : ListeEspecesUnitobs.csv")
@@ -1776,8 +1790,8 @@ creationTablesBase.f <- function(){
         unitespta.f()
         if (Jeuxdonnescoupe==0)
         {
-            SAUVunitespta <- unitespta  # stockage inutile [yr: 10/08/2010]
-            assign("SAUVunitespta", SAUVunitespta, envir=.GlobalEnv)
+            ## SAUVunitespta <- unitespta  # stockage inutile [yr: 10/08/2010]
+            assign("SAUVunitespta", unitespta, envir=.GlobalEnv)
         }
     }
     unitesp.f()
@@ -1785,16 +1799,16 @@ creationTablesBase.f <- function(){
     ## Sauvegarde des calculs pour restauration sans rechargement
     if (Jeuxdonnescoupe==0)
     {
-        SAUVobs <- obs                  # ########################################
-        SAUVunitobs <- unitobs          #
-        SAUVcontingence <- contingence  # stockages inutiles [yr: 10/08/2010]
-        SAUVunitesp <- unitesp          #
-        SAUVunit <- unit                # ########################################
-        assign("SAUVobs", SAUVobs, envir=.GlobalEnv)
-        assign("SAUVunitobs", SAUVunitobs, envir=.GlobalEnv)
-        assign("SAUVcontingence", SAUVcontingence, envir=.GlobalEnv)
-        assign("SAUVunitesp", SAUVunitesp, envir=.GlobalEnv)
-        assign("SAUVunit", SAUVunit, envir=.GlobalEnv)
+        ## SAUVobs <- obs                  # ########################################
+        ## SAUVunitobs <- unitobs          #
+        ## SAUVcontingence <- contingence  # stockages inutiles [yr: 10/08/2010]
+        ## SAUVunitesp <- unitesp          #
+        ## SAUVunit <- unit                # ########################################
+        assign("SAUVobs", obs, envir=.GlobalEnv)
+        assign("SAUVunitobs", unitobs, envir=.GlobalEnv)
+        assign("SAUVcontingence", contingence, envir=.GlobalEnv)
+        assign("SAUVunitesp", unitesp, envir=.GlobalEnv)
+        assign("SAUVunit", unit, envir=.GlobalEnv)
     }
 
     ## si SVR calcul des metriques par rotation
@@ -1848,6 +1862,7 @@ creationTablesCalcul.f <- function(){
     }
 
     TableMetrique <- listespunit
+    ## On peut 'achement réduire tout ce qui suit (en 1 ou 2 lignes) [!!!] [yr: 01/10/2010]
     TableMetrique$site <- unitobs$site[match(TableMetrique$unite_observation, unitobs$unite_observation)]
     TableMetrique$station <- unitobs$station[match(TableMetrique$unite_observation, unitobs$unite_observation)]
     TableMetrique$caracteristique_1 <- unitobs$caracteristique_1[match(TableMetrique$unite_observation,
@@ -1990,7 +2005,7 @@ creationTablesCalcul.f <- function(){
     {
         ## Si Video     "poids.moyen.petits" "poids.moyen.moyens" "poids.moyen.gros"   "taille_max_petits"  "taille_max_moyens"     "L50"
     }
-    print(names(TableMetrique))
+    ## print(names(TableMetrique))    # Pas utile sauf en développement.
 
     ## On peut rendre plus lisible ce qui suit... [yreecht: 22/07/2010]
     TableBiodiv <- unit
@@ -2035,5 +2050,5 @@ creationTablesCalcul.f <- function(){
     assign("TableBiodiv", TableBiodiv, envir=.GlobalEnv)
     assign("TableMetrique", TableMetrique, envir=.GlobalEnv)
     print("tableau TableMetrique réalisé")
-    print(names(TableMetrique))
+    ## print(names(TableMetrique))    # Pas utile sauf en développement.
 }

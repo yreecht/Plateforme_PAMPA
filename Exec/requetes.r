@@ -16,23 +16,32 @@ critereespref.f <- function ()
     tkgrid(tklabel(aa, text="Liste des facteurs du référentiel des espèces"))
     tkgrid(tl, scr)
     tkgrid.configure(scr, rowspan=4, sticky="nsw")
-    facts <- sort(names(especes))
-    ## ici, on liste les AMP qui ne correspondent pas au jeu de données
+
+    ## Réduction aux facteurs contenant de l'information : [yr: 30/09/2010]
+    esptmp <- especes[is.element(especes$code_espece, obs$code_espece), ] # sélection des lignes correspondant aux
+                                        # obs.
+    esptmp <- esptmp[ , sapply(esptmp, function(x){!all(is.na(x))})] # sélection des champs qui contiennent autre
+                                        # chose qu'uniquement des NAs.
+
+    facts <- sort(names(esptmp))
+
+    ## ici, on liste les AMP qui ne correspondent pas au jeu de données :
     listeSite <- c("RUN" , "MAY" , "BA" , "BO" , "CB" , "CR" , "STM" , "NC")
     listeSiteExclus <- subset(listeSite, listeSite!=SiteEtudie)
     ## grep(pattern=paste("^", SiteEtudie, "$", sep=""), x=listeSite, value=TRUE, invert=TRUE)
     print("les sites exclus sont :")
     print(listeSiteExclus)
     ## on retire les champs contenant les lettres des sites exclus
-    for (k in (1:length(listeSiteExclus)))
+    for (k in (seq(along=listeSiteExclus)))
     { # On peut faire plus simple [yr: 03/08/2010]
         print(listeSiteExclus[k])
-        facts <- facts[-grep(listeSiteExclus[k], facts)] # ajouter que le motif doit être en fin de chaîne
+        facts <- facts[ ! grepl(listeSiteExclus[k], facts)] # ajouter que le motif doit être en fin de chaîne
                                         # [yr: 03/08/2010]
-        print(facts)
+        ## print(facts)
     }
-    a <- length(facts)                 # écriture inutile [yr: 26/07/2010]
-    for (i in (1:a))
+
+    ## a <- length(facts)                 # écriture inutile [yr: 26/07/2010]
+    for (i in seq(along=facts))         # remplace 1:a [yr: 30/09/2010]
     {
         tkinsert(tl, "end", facts[i])
     }
@@ -48,7 +57,7 @@ critereespref.f <- function ()
     tkgrid(OK.but)
     tkfocus(aa)
     tkwait.window(aa)
-    rm(a)
+    ## rm(a)
 } # fin critereespref.f
 
 ################################################################################
@@ -118,7 +127,8 @@ ChoixFacteurSelect.f <- function (tableselect, monchamp, Nbselectmax, ordre, mav
     winfac <- tktoplevel(width = 80)
     tkwm.title(winfac, paste("Selection des valeurs de ", monchamp, sep=""))
     scr <- tkscrollbar(winfac, repeatinterval=5, command=function(...)tkyview(tl, ...))
-    if (Nbselectmax=="single"||Nbselectmax=="multiple")
+    if (Nbselectmax=="single"||Nbselectmax=="multiple") # [???] à quoi ça sert de faire ça, puisque la fonction ne gère
+                                        # pas les erreurs ! [yr: 30/09/2010]
     {
         tl <- tklistbox(winfac, height=20, width=50, selectmode=Nbselectmax, yscrollcommand=function(...)tkset(scr, ...), background="white")
     }
@@ -222,10 +232,16 @@ choixunfacteurUnitobs.f <- function ()
     tkgrid(tklabel(aa, text="Liste des facteurs de groupement"))
     tkgrid(tl, scr)
     tkgrid.configure(scr, rowspan=4, sticky="nsw")
-    facts <- sort(names(unitobs))
 
-    a <- length(facts)
-    for (i in (1:a))
+    ## Réduction aux facteurs contenant de l'information : [yr: 30/09/2010]
+    uobstmp <- unitobs[is.element(unitobs$unite_observation, obs$unite_observation), ] # sélection des lignes
+                                        # correspondant aux obs.
+    uobstmp <- uobstmp[ , sapply(uobstmp, function(x){!all(is.na(x))})] # sélection des champs qui contiennent autre
+                                        # chose qu'uniquement des NAs.
+
+    facts <- sort(names(uobstmp))
+
+    for (i in (seq(along=facts)))
     {
         tkinsert(tl, "end", facts[i])
     }
@@ -236,15 +252,17 @@ choixunfacteurUnitobs.f <- function ()
         fact <- facts[as.numeric(tkcurselection(tl))+1]
         assign("fact", fact, envir=.GlobalEnv)
         tkdestroy(aa)
-        unit[, fact] <- unitobs[, fact][match(unit$unitobs, unitobs$unite_observation)]
+        unit[, fact] <- unitobs[, fact][match(unit$unitobs, unitobs$unite_observation)] # [???] unitobs ou uobstmp ?
+                                        # [!!!]
         assign("unit", unit, envir=.GlobalEnv)
     }
     OK.but <-tkbutton(aa, text="OK", command=OnOK)
     tkgrid(OK.but)
     tkfocus(aa)
     tkwait.window(aa)
-    rm(a)
 } # fin choixunfacteurUnitobs
+
+
 ################################################################################
 ## Nom     : ChoixUneEspece.f
 ## Objet   : choix d'une espèce par l'utilisateur
@@ -1013,10 +1031,12 @@ UnCritereEspDansObs.f <- function ()
 
     critereespref.f()
     obs[, factesp] <- especes[, factesp][match(obs$code_espece, especes$code_espece)]
+
     print(head(obs))
-    ChoixFacteurSelect.f(obs[, factesp], factesp, "multiple", 1, "selectfactesp")
+    ChoixFacteurSelect.f(tableselect=obs[, factesp], monchamp=factesp,
+                         Nbselectmax="multiple", ordre=1, mavar="selectfactesp")
     print(selectfactesp)
-    obs <- subset(obs, obs[, factesp]==selectfactesp)
+    obs <- subset(obs, is.element(obs[, factesp], selectfactesp))
     gestionMSGaide.f("etapeselected")
     Jeuxdonnescoupe <- 1
     assign("Jeuxdonnescoupe", Jeuxdonnescoupe, envir=.GlobalEnv)
@@ -1043,7 +1063,7 @@ UnCritereUnitobsDansObs.f <- function ()
     print(head(obs))
     ChoixFacteurSelect.f(obs[, factunitobs], factunitobs, "multiple", 1, "selectfactunitobs")
     print(selectfactunitobs)
-    obs <- subset(obs, obs[, factunitobs]==selectfactunitobs)
+    obs <- subset(obs, is.element(obs[, factunitobs], selectfactunitobs))
     gestionMSGaide.f("etapeselected")
     Jeuxdonnescoupe <- 1
     assign("Jeuxdonnescoupe", Jeuxdonnescoupe, envir=.GlobalEnv)

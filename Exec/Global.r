@@ -72,7 +72,7 @@ source("./Exec/anova.r", encoding="latin1")
 
 source("./Exec/requetes.r", encoding="latin1")
 source("./Exec/modifinterface.r", encoding="latin1")
-source("./Exec/command.r", encoding="latin1")
+source("./Exec/command.r", encoding="latin1")              # faite
 
 
 source("./Exec/testfichier.r", encoding="latin1")

@@ -73,7 +73,7 @@ ModifierInterfaceApresSelection.f = function(Critere,Valeur)
     ## tkconfigure(frameLower,text=paste(length(obs$code_espece[obs$code_espece==fa])," enregistrements
     ## concernés",sep=""))
 
-    winRaise.f(tm)
+    eval(winRaise.f(tm), envir=.GlobalEnv)
 }
 
 ModifierInterfaceApresRestore.f = function(Critere="Aucun",Valeur="NA")

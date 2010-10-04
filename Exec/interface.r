@@ -362,7 +362,8 @@ tkadd(benthos, "command", label="Boxplots \"à la carte\"...",
 
   # Menu deroulant de "Import de donnees"
   tkadd(import,"command",label="Choix des dossiers et fichiers de données...", accelerator="CTRL+N", command = {openfile.f})
-  tkadd(import,"command",label="Dossiers et fichiers par defaut", accelerator="CTRL+A", command = {opendefault.f})
+  tkadd(import,"command",label="Dossiers et fichiers par defaut", accelerator="CTRL+A",
+        command = function(){opendefault.f()})
   tkadd(import,"separator")
   tkadd(import,"command",label="Test du référentiel (espèces concernées)",underline=9,accelerator="CTRL+R", command = testfileref.f)
   tkadd(import,"command",label="Test des données importées",underline=0, accelerator="CTRL+T", command = testdonnees.f)
@@ -453,8 +454,8 @@ tkconfigure(button.DataRestore, state="disabled")
 
 # Gestion des évènements dans la fenêtre tm (toplevel)
 
- tkbind(tm, "<Control-a>", opendefault.f)
- tkbind(tm, "<Control-A>", opendefault.f)
+ tkbind(tm, "<Control-a>", function(){opendefault.f()})
+ tkbind(tm, "<Control-A>", function(){opendefault.f()})
  tkbind(tm, "<Control-n>", function(){openfile.f()})
  tkbind(tm, "<Control-N>", function(){openfile.f()})
  tkbind(tm, "<Control-r>", testfileref.f)

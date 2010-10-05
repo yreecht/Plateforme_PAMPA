@@ -59,6 +59,7 @@ nameWorkspace <- basePath
                                                            # Mise en forme du code :
                                                            # -----------------------
 source("./Exec/load_packages.R", encoding="latin1")
+source("./Exec/fonctions_base.R", encoding="latin1")
 source("./Exec/config.r", encoding="latin1")               # faite
 source("./Exec/gestionmessages.r", encoding="latin1")      # faite
 source("./Exec/mkfilegroupe.r", encoding="latin1")         # faite

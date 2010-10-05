@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: comparaison_distri_generique.R
-### Time-stamp: <2010-10-04 17:07:35 yreecht>
+### Time-stamp: <2010-10-05 11:05:47 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -1414,6 +1414,13 @@ sortiesLM.f <- function(objLM, formule, metrique, factAna, modSel, listFact, Dat
     on.exit(options(oOpt))
 
     options(width=120)
+
+    ## Ajout d'une constante si des zéros dans la métrique + transformation 'log' :
+    if (sum(Data[ , metrique] == 0, na.rm=TRUE) & Log)
+    {
+        Data[ , metrique] <- Data[ , metrique] +
+            ((min(Data[ , metrique], na.rm=TRUE) + 1) / 1000)
+    }else{}
 
     ## Formule de modèle lisible:
     objLM$call$formula <- formule

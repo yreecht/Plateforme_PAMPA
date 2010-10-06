@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: Boxplot_generique_calc.R
-### Time-stamp: <2010-08-30 10:47:45 yreecht>
+### Time-stamp: <2010-10-06 11:07:54 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -299,15 +299,20 @@ WP2boxplot.f <- function(metrique, factGraph, factGraphSel, listFact, listFactSe
                                   paste("\npour le champ '", factGraph, "' = ", modGraphSel, sep="")),
                            "\n selon ",
                            paste(sapply(listFact[length(listFact):1],
-                                        function(x)paste(varNames[x, ], collapse="")), collapse=" et "),
+                                        function(x)paste(varNames[x, c("article", "nom")], collapse="")),
+                                 collapse=" et "),
                            "\n\n", sep="")
 
         ## Les couleurs pour l'identification des modalités du facteur de second niveau :
         colors <- colBoxplot.f(terms=attr(terms(exprBP), "term.labels"), data=tmpDataMod)
 
+        ## Label axe y :
+        ylab <- parse(text=paste("'", Capitalize.f(varNames[metrique, "nom"]), "  '(",
+                      varNames[metrique, "unite"], ")", sep=""))
+
         ## Boxplot !
         tmpBP <- boxplot(exprBP, data=tmpDataMod,
-                         main=mainTitle, ylab=Capitalize.f(varNames[metrique, "nom"]),
+                         main=mainTitle, ylab=ylab,  ## Capitalize.f(varNames[metrique, "nom"]),
                          varwidth = TRUE, las=2,
                          col=colors)
 

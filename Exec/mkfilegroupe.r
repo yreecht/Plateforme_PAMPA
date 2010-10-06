@@ -1353,6 +1353,8 @@ unitesp.f <- function(){
         rm(s)
 
         ## Nombre de colonies
+        ## Vérifier si pas de risque que des longueurs de transitions == 0 => besoin de mettre 0 à count dans ces cas là
+        ## [!!!]
         obs$count <- 1                  # [!!!] somme des obs$nombre > 0 [???]
         e <- tapply(obs$count, list(obs$unite_observation, obs$code_espece), sum, na.rm=TRUE)
         ## Vérif faite :

@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: comparaison_distri_generique.R
-### Time-stamp: <2010-10-05 11:05:47 yreecht>
+### Time-stamp: <2010-10-06 11:14:28 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -1483,7 +1483,10 @@ sortiesLM.f <- function(objLM, formule, metrique, factAna, modSel, listFact, Dat
               }else{
                  eval(parse(text=paste("interaction.plot(", listFact[1], ", ", listFact[2],
                                        ", ", metrique, ", ylab=\"",
-                                       paste(Capitalize.f(varNames[metrique, "nom"]), " moyenne", sep=""),
+                                       paste(Capitalize.f(varNames[metrique, "nom"]),
+                                             " moyen", ifelse(varNames[metrique, "genre"] == "f", "ne", ""), # "moyen"
+                                               # ou "moyenne" selon le genre.
+                                             sep=""),
                                        "\")", sep="")))
              })
 

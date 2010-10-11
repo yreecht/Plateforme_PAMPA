@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: Selection_variables_fonctions.R
-### Time-stamp: <2010-09-29 11:51:34 yreecht>
+### Time-stamp: <2010-10-11 10:25:19 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -66,8 +66,9 @@ champsMetriques.f <- function(nomTable)
                ## Table TabbleBiodiv (indices de biodiversité) :
                TableBiodiv={
                    columns <- c("richesse_specifique", "simpson", "l.simpson", "pielou", "hill",
-                                "RS_relative", "Delta", "DeltaEtoile", "LambdaPlus", "DeltaPlus",
-                                "SDeltaPlus")
+                                "Delta", "DeltaEtoile", "LambdaPlus", "DeltaPlus",
+                                "SDeltaPlus",
+                                grep("RS.relative", colnames(eval(parse(text=nomTable))), value=TRUE))
 
                    return(sort(colnames(TableBiodiv)[sapply(TableBiodiv,
                                                             function(x){is.numeric(x) & !all(is.na(x))}) &

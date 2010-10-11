@@ -1483,7 +1483,7 @@ unit.f <- function(){
     unit$unitobs <- rownames(uniti)
     rm(uniti)
 
-    if (unique(unitobs$type) != "LIT")
+    if (!is.benthos.f())                # unique(unitobs$type) != "LIT"
     {
         ## somme des biomasses
         biomasse.f()
@@ -1568,53 +1568,40 @@ unit.f <- function(){
 
         ## richesse specifique relative  ## Remplacer par un "switch" ou même une construction plus
                                         # générique (e.g. construction et évaluation d'une expression dépendant du site
-                                        # étudié) [yreecht: 22/07/2010]
-        if (siteEtudie == "BA")
-        {
-            unit$RS_relative <- (unit$richesse_specifique / dim(subset(especes, ObsBA=="oui"))[1]) *100
-        }else{
-            if (siteEtudie == "BO")
-            {
-                unit$RS_relative <- (unit$richesse_specifique / dim(subset(especes, ObsBO=="oui"))[1]) *100
-            }else{
-                if (siteEtudie == "CB")
-                {
-                    unit$RS_relative <- (unit$richesse_specifique / dim(subset(especes, ObsCB=="oui"))[1]) *100
-                }else{
-                    if (siteEtudie == "CR")
-                    {
-                        unit$RS_relative <- (unit$richesse_specifique / dim(subset(especes, ObsCR=="oui"))[1]) *100
-                    }else{
-                        if (siteEtudie == "MAY")
-                        {
-                            unit$RS_relative <- (unit$richesse_specifique / dim(subset(especes, ObsMAY=="oui"))[1]) *100
-                        }else{
-                            if (siteEtudie == "NC")
-                            {
-                                unit$RS_relative <- (unit$richesse_specifique /
-                                                     dim(subset(especes, ObsNC=="oui"))[1]) *100
-                            }else{
-                                if (siteEtudie == "RUN")
-                                {
-                                    unit$RS_relative <- (unit$richesse_specifique /
-                                                         dim(subset(especes, ObsRUN=="oui"))[1]) *100
-                                }else{
-                                    if (siteEtudie == "STM")
-                                    {
-                                        unit$RS_relative <- (unit$richesse_specifique /
-                                                             dim(subset(especes, ObsSTM=="oui"))[1]) *100
-                                    }else{
-                                        stop("Site '", siteEtudie, "' non défini !")
-                                        ## unit$RS_relative <- (unit$richesse_specifique /
-                                        ##                      dim(subset(especes, ObsGUA=="oui"))[1]) *100
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
+                                        # étudié) [yreecht: 22/07/2010] OK [yr: 08/10/2010]
+
+        ## Phylum(s) présent(s) dans le jeux de données :
+        phylums <- as.character(unique(na.omit(especes$Phylum[match(obs$code_espece, especes$code_espece)])))
+
+
+        ## RS relative par rapp. au nombre d'espèces du site :
+        unit$RS.relative.site <- (unit$richesse_specifique /
+                                  nrow(subset(especes,
+                                              eval(parse(text=paste("Obs", siteEtudie, sep=""))) == "oui"))) * 100
+
+        ## RS relative par rapp. au nombre d'espèces du site et du(des) phylum(s) concerné(s) (jeu de données) :
+        unit$RS.relative.site.phylum <- (unit$richesse_specifique /
+                                         nrow(subset(especes,
+                                                     eval(parse(text=paste("Obs", siteEtudie, sep=""))) == "oui" &
+                                                     is.element(Phylum, phylums)))) * 100
+
+        ## RS relative par rapp. au nombre d'espèces des données :
+        unit$RS.relative.donnees <- (unit$richesse_specifique /
+                                     nrow(subset(especes,
+                                                 is.element(code_espece, obs$code_espece)))) * 100
+
+        ## ## RS relative par rapp. au nombre d'espèces des données :
+        ## Inutile : "RS.relative.donnees" est par définition limitée au phylums présents
+
+        ## RS relative par rapp. au nombre d'espèces au niveau régional (OM ou méditerrannée) :
+        unit$RS.relative.region <- (unit$richesse_specifique /
+                                            nrow(especes)) * 100
+
+        ## RS relative par rapp. au nombre d'espèces au niveau régional (OM ou méditerrannée) et
+        ## du(des) phylum(s) concerné(s) (jeu de données) :
+        unit$RS.relative.region.phylum <- (unit$richesse_specifique /
+                                            nrow(subset(especes, is.element(Phylum, phylums)))) * 100
+
     }
 
     ## ajout des champs "an", "site", "statut_protection", "biotope", "latitude", "longitude"
@@ -1671,7 +1658,7 @@ unit.f <- function(){
                 fg=colours()[seq(10, (nrow(unitSymbols)*10), by=10)], lwd=3) #
         title(main=paste("CPUE", typePeche))
     }
-    if (unique(unitobs$type) == "LIT")
+    if (is.benthos.f())                 # unique(unitobs$type) == "LIT"
     {
         unit$richesse_specifique <- as.integer(tapply(unitesp$pres_abs, unitesp$unite_observation,
                                                       sum, na.rm=TRUE)) # changé pour avoir des entiers.
@@ -1821,12 +1808,12 @@ creationTablesBase.f <- function(){
         unitr.f()
         if (Jeuxdonnescoupe==0)
         {
-            SAUVunitesptar <- unitesptaR # ########################################
-            SAUVunitespr <- unitespr     # stockages inutiles [yr: 10/08/2010]
-            SAUVunitr <- unitr           # ########################################
-            assign("SAUVunitesptar", SAUVunitesptar, envir=.GlobalEnv)
-            assign("SAUVunitespr", SAUVunitespr, envir=.GlobalEnv)
-            assign("SAUVunitr", SAUVunitr, envir=.GlobalEnv)
+            ## SAUVunitesptar <- unitesptaR # ########################################
+            ## SAUVunitespr <- unitespr     # stockages inutiles [yr: 10/08/2010]
+            ## SAUVunitr <- unitr           # ########################################
+            assign("SAUVunitesptar", unitesptaR, envir=.GlobalEnv)
+            assign("SAUVunitespr", unitespr, envir=.GlobalEnv)
+            assign("SAUVunitr", unitr, envir=.GlobalEnv)
         }
     }
     if (Jeuxdonnescoupe==1)
@@ -1864,142 +1851,25 @@ creationTablesCalcul.f <- function(){
     }
 
     TableMetrique <- listespunit
-    ## On peut 'achement réduire tout ce qui suit (en 1 ou 2 lignes) [!!!] [yr: 01/10/2010]
-    TableMetrique$site <- unitobs$site[match(TableMetrique$unite_observation, unitobs$unite_observation)]
-    TableMetrique$station <- unitobs$station[match(TableMetrique$unite_observation, unitobs$unite_observation)]
-    TableMetrique$caracteristique_1 <- unitobs$caracteristique_1[match(TableMetrique$unite_observation,
-                                                                       unitobs$unite_observation)]
-    TableMetrique$caracteristique_2 <- unitobs$caracteristique_2[match(TableMetrique$unite_observation,
-                                                                       unitobs$unite_observation)]
-    TableMetrique$fraction_echantillonnee <- unitobs$fraction_echantillonnee[match(TableMetrique$unite_observation,
-                                                                                   unitobs$unite_observation)]
-    TableMetrique$jour <- unitobs$jour[match(TableMetrique$unite_observation, unitobs$unite_observation)]
-    TableMetrique$mois <- unitobs$mois[match(TableMetrique$unite_observation, unitobs$unite_observation)]
-    TableMetrique$heure <- unitobs$heure[match(TableMetrique$unite_observation, unitobs$unite_observation)]
-    TableMetrique$nebulosite <- unitobs$nebulosite[match(TableMetrique$unite_observation, unitobs$unite_observation)]
-    TableMetrique$direction_vent <- unitobs$direction_vent[match(TableMetrique$unite_observation,
-                                                                 unitobs$unite_observation)]
-    TableMetrique$force_vent <- unitobs$force_vent[match(TableMetrique$unite_observation, unitobs$unite_observation)]
-    TableMetrique$etat_mer <- unitobs$etat_mer[match(TableMetrique$unite_observation, unitobs$unite_observation)]
-    TableMetrique$courant <- unitobs$courant[match(TableMetrique$unite_observation, unitobs$unite_observation)]
-    TableMetrique$maree <- unitobs$maree[match(TableMetrique$unite_observation, unitobs$unite_observation)]
-    TableMetrique$phase_lunaire <- unitobs$phase_lunaire[match(TableMetrique$unite_observation,
-                                                               unitobs$unite_observation)]
-    TableMetrique$latitude <- unitobs$latitude[match(TableMetrique$unite_observation, unitobs$unite_observation)]
-    TableMetrique$longitude <- unitobs$longitude[match(TableMetrique$unite_observation, unitobs$unite_observation)]
-    TableMetrique$statut_protection <- unitobs$statut_protection[match(TableMetrique$unite_observation,
-                                                                       unitobs$unite_observation)]
-    TableMetrique$avant_apres <- unitobs$avant_apres[match(TableMetrique$unite_observation, unitobs$unite_observation)]
-    TableMetrique$biotope <- unitobs$biotope[match(TableMetrique$unite_observation, unitobs$unite_observation)]
-    TableMetrique$biotope_2 <- unitobs$biotope_2[match(TableMetrique$unite_observation, unitobs$unite_observation)]
-    TableMetrique$habitat1 <- unitobs$habitat1[match(TableMetrique$unite_observation, unitobs$unite_observation)]
-    TableMetrique$habitat2 <- unitobs$habitat2[match(TableMetrique$unite_observation, unitobs$unite_observation)]
-    TableMetrique$habitat3 <- unitobs$habitat3[match(TableMetrique$unite_observation, unitobs$unite_observation)]
-    TableMetrique$visibilite <- unitobs$visibilite[match(TableMetrique$unite_observation, unitobs$unite_observation)]
-    TableMetrique$prof_min <- unitobs$prof_min[match(TableMetrique$unite_observation, unitobs$unite_observation)]
-    TableMetrique$prof_max <- unitobs$prof_max[match(TableMetrique$unite_observation, unitobs$unite_observation)]
-    TableMetrique$DimObs1 <- unitobs$DimObs1[match(TableMetrique$unite_observation, unitobs$unite_observation)]
-    TableMetrique$DimObs2 <- unitobs$DimObs2[match(TableMetrique$unite_observation, unitobs$unite_observation)]
-    TableMetrique$nb_plong <- unitobs$nb_plong[match(TableMetrique$unite_observation, unitobs$unite_observation)]
-    TableMetrique$plongeur <- unitobs$plongeur[match(TableMetrique$unite_observation, unitobs$unite_observation)]
 
-    TableMetrique$genre <- especes$genre[match(TableMetrique$code_espece, especes$code_espece)]
-    TableMetrique$Famille <- especes$Famille[match(TableMetrique$code_espece, especes$code_espece)]
-    TableMetrique$mobilite <- especes$mobilite[match(TableMetrique$code_espece, especes$code_espece)]
-    TableMetrique$nocturne <- especes$nocturne[match(TableMetrique$code_espece, especes$code_espece)]
-    TableMetrique$cryptique <- especes$cryptique[match(TableMetrique$code_espece, especes$code_espece)]
-    TableMetrique$taillemax <- especes$taillemax[match(TableMetrique$code_espece, especes$code_espece)]
-    TableMetrique$regim.alim <- especes$regim.alim[match(TableMetrique$code_espece, especes$code_espece)]
+    ## Simplification OK [yreecht: 08/10/2010] :
+    TableMetrique <- cbind(TableMetrique,
+                           ## Colonnes d'unitobs :
+                           unitobs[match(TableMetrique$unite_observation, unitobs$unite_observation),
+                                   c("station", "caracteristique_1", "caracteristique_2", "fraction_echantillonnee",
+                                     "jour", "mois", "heure", "nebulosite", "direction_vent", "force_vent", "etat_mer",
+                                     "courant", "maree", "phase_lunaire", "latitude", "longitude", "avant_apres",
+                                     "biotope_2", "habitat1", "habitat2", "habitat3", "visibilite", "prof_min",
+                                     "prof_max", "DimObs1", "DimObs2", "nb_plong", "plongeur")],
+                           ## Colonnes du référentiel espèces :
+                           especes[match(TableMetrique$code_espece, especes$code_espece),
+                                   c("Genre", "Famille", "mobilite", "nocturne", "cryptique", "taillemax", "regim.alim",
+                                     ## Interêts types de pêches :
+                                     grep(paste("^interet\\.[[:alpha:]]+", siteEtudie, "$", sep=""), # Colonnes
+                                          colnames(especes), value=TRUE))])                          # site-spécifiques.
 
-    if (unique(unitobs$AMP) == "NC")
-    {
-        TableMetrique$interet.chasseNC <- especes$interet.chasseNC[match(TableMetrique$code_espece,
-                                                                         especes$code_espece)]
-        TableMetrique$interet.ligneNC <- especes$interet.ligneNC[match(TableMetrique$code_espece, especes$code_espece)]
-        TableMetrique$interet.filetNC <- especes$interet.filetNC[match(TableMetrique$code_espece, especes$code_espece)]
-        TableMetrique$interet.casierNC <- especes$interet.casierNC[match(TableMetrique$code_espece,
-                                                                         especes$code_espece)]
-        TableMetrique$interet.piedNC <- especes$interet.piedNC[match(TableMetrique$code_espece, especes$code_espece)]
-    }
-    if (unique(unitobs$AMP) == "RUN")
-    {
-        TableMetrique$interet.chasseRUN <- especes$interet.chasseRUN[match(TableMetrique$code_espece,
-                                                                           especes$code_espece)]
-        TableMetrique$interet.ligneRUN <- especes$interet.ligneRUN[match(TableMetrique$code_espece,
-                                                                         especes$code_espece)]
-        TableMetrique$interet.filetRUN <- especes$interet.filetRUN[match(TableMetrique$code_espece,
-                                                                         especes$code_espece)]
-        TableMetrique$interet.casierRUN <- especes$interet.casierRUN[match(TableMetrique$code_espece,
-                                                                           especes$code_espece)]
-        TableMetrique$interet.piedRUN <- especes$interet.piedRUN[match(TableMetrique$code_espece, especes$code_espece)]
-    }
-    if (unique(unitobs$AMP) == "MAY")
-    {
-        TableMetrique$interet.chasseMAY <- especes$interet.chasseMAY[match(TableMetrique$code_espece,
-                                                                           especes$code_espece)]
-        TableMetrique$interet.ligneMAY <- especes$interet.ligneMAY[match(TableMetrique$code_espece,
-                                                                         especes$code_espece)]
-        TableMetrique$interet.filetMAY <- especes$interet.filetMAY[match(TableMetrique$code_espece,
-                                                                         especes$code_espece)]
-        TableMetrique$interet.casierMAY <- especes$interet.casierMAY[match(TableMetrique$code_espece,
-                                                                           especes$code_espece)]
-        TableMetrique$interet.piedMAY <- especes$interet.piedMAY[match(TableMetrique$code_espece, especes$code_espece)]
-        TableMetrique$interetComMAY <- especes$interetComMAY[match(TableMetrique$code_espece, especes$code_espece)]
-    }
-    if (unique(unitobs$AMP) == "STM")
-    {
-        TableMetrique$interet.chasseSTM <- especes$interet.chasseSTM[match(TableMetrique$code_espece,
-                                                                           especes$code_espece)]
-        TableMetrique$interet.ligneSTM <- especes$interet.ligneSTM[match(TableMetrique$code_espece,
-                                                                         especes$code_espece)]
-        TableMetrique$interet.filetSTM <- especes$interet.filetSTM[match(TableMetrique$code_espece,
-                                                                         especes$code_espece)]
-        TableMetrique$interet.casierSTM <- especes$interet.casierSTM[match(TableMetrique$code_espece,
-                                                                           especes$code_espece)]
-        TableMetrique$interet.piedSTM <- especes$interet.piedSTM[match(TableMetrique$code_espece, especes$code_espece)]
-    }
-    if (unique(unitobs$AMP) == "BA")
-    {
-        TableMetrique$interet.chasseBA <- especes$interet.chasseBA[match(TableMetrique$code_espece,
-                                                                         especes$code_espece)]
-        TableMetrique$interet.ligneBA <- especes$interet.ligneBA[match(TableMetrique$code_espece, especes$code_espece)]
-        TableMetrique$interet.filetBA <- especes$interet.filetBA[match(TableMetrique$code_espece, especes$code_espece)]
-        TableMetrique$interet.casierBA <- especes$interet.casierBA[match(TableMetrique$code_espece,
-                                                                         especes$code_espece)]
-        TableMetrique$interet.piedBA <- especes$interet.piedBA[match(TableMetrique$code_espece, especes$code_espece)]
-    }
-    if (unique(unitobs$AMP) == "CB")
-    {
-        TableMetrique$interet.chasseCB <- especes$interet.chasseCB[match(TableMetrique$code_espece,
-                                                                         especes$code_espece)]
-        TableMetrique$interet.ligneCB <- especes$interet.ligneCB[match(TableMetrique$code_espece, especes$code_espece)]
-        TableMetrique$interet.filetCB <- especes$interet.filetCB[match(TableMetrique$code_espece, especes$code_espece)]
-        TableMetrique$interet.casierCB <- especes$interet.casierCB[match(TableMetrique$code_espece,
-                                                                         especes$code_espece)]
-        TableMetrique$interet.piedCB <- especes$interet.piedCB[match(TableMetrique$code_espece, especes$code_espece)]
-    }
-    if (unique(unitobs$AMP) == "CR")
-    {
-        TableMetrique$interet.chasseCR <- especes$interet.chasseCR[match(TableMetrique$code_espece,
-                                                                         especes$code_espece)]
-        TableMetrique$interet.ligneCR <- especes$interet.ligneCR[match(TableMetrique$code_espece, especes$code_espece)]
-        TableMetrique$interet.filetCR <- especes$interet.filetCR[match(TableMetrique$code_espece, especes$code_espece)]
-        TableMetrique$interet.casierCR <- especes$interet.casierCR[match(TableMetrique$code_espece,
-                                                                         especes$code_espece)]
-        TableMetrique$interet.piedCR <- especes$interet.piedCR[match(TableMetrique$code_espece, especes$code_espece)]
-    }
-    if (unique(unitobs$AMP) == "BO")
-    {
-        TableMetrique$interet.chasseBO <- especes$interet.chasseBO[match(TableMetrique$code_espece,
-                                                                         especes$code_espece)]
-        TableMetrique$interet.ligneBO <- especes$interet.ligneBO[match(TableMetrique$code_espece, especes$code_espece)]
-        TableMetrique$interet.filetBO <- especes$interet.filetBO[match(TableMetrique$code_espece, especes$code_espece)]
-        TableMetrique$interet.casierBO <- especes$interet.casierBO[match(TableMetrique$code_espece,
-                                                                         especes$code_espece)]
-        TableMetrique$interet.piedBO <- especes$interet.piedBO[match(TableMetrique$code_espece, especes$code_espece)]
-    }
 
-    if (unique(unitobs$type) == "LIT")
+    if (is.benthos.f())                 # unique(unitobs$type) == "LIT"
     {
         TableMetrique$Cath_benthique <- especes$Cath_benthique[match(TableMetrique$code_espece, especes$code_espece)]
     }
@@ -2009,45 +1879,19 @@ creationTablesCalcul.f <- function(){
     }
     ## print(names(TableMetrique))    # Pas utile sauf en développement.
 
-    ## On peut rendre plus lisible ce qui suit... [yreecht: 22/07/2010]
+    ## On peut rendre plus lisible ce qui suit... [yreecht: 22/07/2010] OK [yreecht: 08/10/2010]
     TableBiodiv <- unit
     names(TableBiodiv)[1] <- "unite_observation"
-    TableBiodiv$site <- unitobs$site[match(TableBiodiv$unite_observation, unitobs$unite_observation)]
-    TableBiodiv$station <- unitobs$station[match(TableBiodiv$unite_observation, unitobs$unite_observation)]
-    TableBiodiv$caracteristique_1 <- unitobs$caracteristique_1[match(TableBiodiv$unite_observation,
-                                                                     unitobs$unite_observation)]
-    TableBiodiv$caracteristique_2 <- unitobs$caracteristique_2[match(TableBiodiv$unite_observation,
-                                                                     unitobs$unite_observation)]
-    TableBiodiv$fraction_echantillonnee <- unitobs$fraction_echantillonnee[match(TableBiodiv$unite_observation,
-                                                                                 unitobs$unite_observation)]
-    TableBiodiv$jour <- unitobs$jour[match(TableBiodiv$unite_observation, unitobs$unite_observation)]
-    TableBiodiv$mois <- unitobs$mois[match(TableBiodiv$unite_observation, unitobs$unite_observation)]
-    TableBiodiv$heure <- unitobs$heure[match(TableBiodiv$unite_observation, unitobs$unite_observation)]
-    TableBiodiv$nebulosite <- unitobs$nebulosite[match(TableBiodiv$unite_observation, unitobs$unite_observation)]
-    TableBiodiv$direction_vent <- unitobs$direction_vent[match(TableBiodiv$unite_observation,
-                                                               unitobs$unite_observation)]
-    TableBiodiv$force_vent <- unitobs$force_vent[match(TableBiodiv$unite_observation, unitobs$unite_observation)]
-    TableBiodiv$etat_mer <- unitobs$etat_mer[match(TableBiodiv$unite_observation, unitobs$unite_observation)]
-    TableBiodiv$courant <- unitobs$courant[match(TableBiodiv$unite_observation, unitobs$unite_observation)]
-    TableBiodiv$maree <- unitobs$maree[match(TableBiodiv$unite_observation, unitobs$unite_observation)]
-    TableBiodiv$phase_lunaire <- unitobs$phase_lunaire[match(TableBiodiv$unite_observation, unitobs$unite_observation)]
-    TableBiodiv$latitude <- unitobs$latitude[match(TableBiodiv$unite_observation, unitobs$unite_observation)]
-    TableBiodiv$longitude <- unitobs$longitude[match(TableBiodiv$unite_observation, unitobs$unite_observation)]
-    TableBiodiv$statut_protection <- unitobs$statut_protection[match(TableBiodiv$unite_observation,
-                                                                     unitobs$unite_observation)]
-    TableBiodiv$avant_apres <- unitobs$avant_apres[match(TableBiodiv$unite_observation, unitobs$unite_observation)]
-    TableBiodiv$biotope <- unitobs$biotope[match(TableBiodiv$unite_observation, unitobs$unite_observation)]
-    TableBiodiv$biotope_2 <- unitobs$biotope_2[match(TableBiodiv$unite_observation, unitobs$unite_observation)]
-    TableBiodiv$habitat1 <- unitobs$habitat1[match(TableBiodiv$unite_observation, unitobs$unite_observation)]
-    TableBiodiv$habitat2 <- unitobs$habitat2[match(TableBiodiv$unite_observation, unitobs$unite_observation)]
-    TableBiodiv$habitat3 <- unitobs$habitat3[match(TableBiodiv$unite_observation, unitobs$unite_observation)]
-    TableBiodiv$visibilite <- unitobs$visibilite[match(TableBiodiv$unite_observation, unitobs$unite_observation)]
-    TableBiodiv$prof_min <- unitobs$prof_min[match(TableBiodiv$unite_observation, unitobs$unite_observation)]
-    TableBiodiv$prof_max <- unitobs$prof_max[match(TableBiodiv$unite_observation, unitobs$unite_observation)]
-    TableBiodiv$DimObs1 <- unitobs$DimObs1[match(TableBiodiv$unite_observation, unitobs$unite_observation)]
-    TableBiodiv$DimObs2 <- unitobs$DimObs2[match(TableBiodiv$unite_observation, unitobs$unite_observation)]
-    TableBiodiv$nb_plong <- unitobs$nb_plong[match(TableBiodiv$unite_observation, unitobs$unite_observation)]
-    TableBiodiv$plongeur <- unitobs$plongeur[match(TableBiodiv$unite_observation, unitobs$unite_observation)]
+
+    TableBiodiv <- cbind(TableBiodiv,
+                         ## Colonnes d'unitobs :
+                         unitobs[match(TableBiodiv$unite_observation, unitobs$unite_observation),
+                                 c("station", "caracteristique_1", "caracteristique_2", "fraction_echantillonnee",
+                                   "jour", "mois", "heure", "nebulosite", "direction_vent", "force_vent", "etat_mer",
+                                   "courant", "maree", "phase_lunaire", "avant_apres", "biotope_2", "habitat1",
+                                   "habitat2", "habitat3", "visibilite", "prof_min", "prof_max", "DimObs1", "DimObs2",
+                                   "nb_plong", "plongeur")])
+
 
     assign("TableBiodiv", TableBiodiv, envir=.GlobalEnv)
     assign("TableMetrique", TableMetrique, envir=.GlobalEnv)

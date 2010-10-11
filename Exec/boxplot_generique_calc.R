@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: Boxplot_generique_calc.R
-### Time-stamp: <2010-10-06 11:43:53 yreecht>
+### Time-stamp: <2010-10-06 13:52:10 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -307,9 +307,9 @@ WP2boxplot.f <- function(metrique, factGraph, factGraphSel, listFact, listFactSe
         colors <- colBoxplot.f(terms=attr(terms(exprBP), "term.labels"), data=tmpDataMod)
 
         ## Label axe y :
-        ylab <- parse(text=paste("'", Capitalize.f(varNames[metrique, "nom"]), "  '",
+        ylab <- parse(text=paste("'", Capitalize.f(varNames[metrique, "nom"]), "'",
                       ifelse(varNames[metrique, "unite"] != "",
-                             paste("(", varNames[metrique, "unite"], ")", sep=""),
+                             paste("~~(", varNames[metrique, "unite"], ")", sep=""),
                              ""),
                       sep=""))
 

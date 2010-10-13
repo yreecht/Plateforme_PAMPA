@@ -119,6 +119,40 @@ AjoutTaillesMoyennes.f <- function(data)
 ## Output : obs$biomasse
 ################################################################################
 
+
+########################################################################################################################
+poids.moyen.CT.f <- function()
+{
+    ## Purpose: poids moyens d'après les classes de taille PMG du référentiel
+    ##          espèces.
+    ## ----------------------------------------------------------------------
+    ## Arguments: Aucun.
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date: 11 oct. 2010, 14:58
+
+    refespTmp <- as.matrix(especes[ , c("poids.moyen.petits", "poids.moyen.moyens", "poids.moyen.gros")])
+    row.names(refespTmp) <- as.character(especes$code_espece)
+
+    classID <- c("P"=1, "M"=2, "G"=3)
+
+    res <- sapply(seq(length.out=nrow(obs)),
+                  function(i)
+              {
+                  ifelse(## Si l'espèce est dans le référentiel espèce...
+                         is.element(obs$code_espece[i], row.names(refespTmp)),
+                         ## ...poids moyen correspondant à l'espèce et la classe de taille :
+                         refespTmp[as.character(obs$code_espece[i]),
+                                   classID[as.character(obs$classe_taille[i])]],
+                         ## Sinon rien :
+                         NA)
+              })
+
+    return(res)
+}
+
+
+
+########################################################################################################################
 biomasse.f <- function()
 {
     print("fonction biomasse activée")
@@ -151,6 +185,11 @@ biomasse.f <- function()
                 obs$taille^especes$Coeff.b.NC[match(obs$code_espece, especes$code_espece)]
         }
     }
+
+    if (siteEtudie == "BO")
+    {
+        obs$biomasse <- poids.moyen.CT.f() * obs$nombre
+    }else{}                             # Rien
     ## }
     assign("obs", obs, envir=.GlobalEnv)
 }

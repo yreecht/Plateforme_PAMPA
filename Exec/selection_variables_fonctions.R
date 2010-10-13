@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: Selection_variables_fonctions.R
-### Time-stamp: <2010-10-11 10:25:19 yreecht>
+### Time-stamp: <2010-10-12 09:45:21 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -28,10 +28,29 @@ is.benthos.f <- function()
     return(all(is.element(unitobs$type, benthTypes)))
 }
 
+########################################################################################################################
+has.no.pres.abs <- function(nextStep, tableMetrique)
+{
+    ## Purpose: si les présences/absences doivent ne pas être affichées,
+    ##          renvoie "pres_abs", NULL sinon
+    ## ----------------------------------------------------------------------
+    ## Arguments: nextStep : l'identifiant de l'étape suivante
+    ##            tableMetrique : la table de métrique.
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date: 12 oct. 2010, 09:07
+    if (is.element(nextStep, c("boxplot")) |     # pas proposé si on fait des boxplots.
+        length(unique(na.omit(get(tableMetrique, # "            " une seule modalité.
+                                  envir=.GlobalEnv)$pres_abs))) < 2)
+    {
+        return("pres_abs")
+    }else{
+        return(NULL)
+    }
+}
 
 
 ########################################################################################################################
-champsMetriques.f <- function(nomTable)
+champsMetriques.f <- function(nomTable, nextStep)
 {
     ## Purpose: Retourne la liste des champs pouvant être utilisés comme
     ##          métriques en fonction du nom de table
@@ -39,6 +58,7 @@ champsMetriques.f <- function(nomTable)
     ## Arguments: nomTable : nom de la table dans laquelle doivent être
     ##                       cherchées les métriques disponibles (chaîne de
     ##                       caractères).
+    ##            nextStep : identifiant de l'étape suivante.
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 11 août 2010, 16:14
 
@@ -52,16 +72,20 @@ champsMetriques.f <- function(nomTable)
                    return(sort(colnames(listespunit)[sapply(listespunit,
                                                             function(x){is.numeric(x) & !all(is.na(x))}) &
                                                      !is.element(colnames(listespunit),
-                                                                 c("an", "pres_abs", ifelse(is.benthos.f(),
-                                                                                            "nombre",
-                                                                                            "")))]))
+                                                                 c("an",
+                                                                   has.no.pres.abs(nextStep, nomTable),
+                                                                   ifelse(is.benthos.f(),
+                                                                          "nombre",
+                                                                          "")))]))
                },
                ## Table unitespta (métriques d'observation par classes de taille) :
                unitespta={
                    return(sort(colnames(unitespta)[sapply(unitespta,
                                                             function(x){is.numeric(x) & !all(is.na(x))}) &
                                                      !is.element(colnames(unitespta),
-                                                                 c("an", "pres_abs", "longitude", "latitude"))]))
+                                                                 c("an",
+                                                                   has.no.pres.abs(nextStep, nomTable),
+                                                                   "longitude", "latitude"))]))
                },
                ## Table TabbleBiodiv (indices de biodiversité) :
                TableBiodiv={

@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: Selection_variables_interface.R
-### Time-stamp: <2010-09-30 10:53:44 yreecht>
+### Time-stamp: <2010-10-12 09:02:48 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -523,8 +523,8 @@ updateMetrique.f <- function(nomTable, env)
 
            ## Si table listespunit (métriques d'observation) :
            listespunit={
-               evalq(tkconfigure(CB.metrique, value=champsMetriques.f("listespunit")), envir=env)
-               evalq(if (!is.element(tclvalue(MetriqueChoisie), champsMetriques.f("listespunit")))
+               evalq(tkconfigure(CB.metrique, value=champsMetriques.f("listespunit", nextStep)), envir=env)
+               evalq(if (!is.element(tclvalue(MetriqueChoisie), champsMetriques.f("listespunit", nextStep)))
                  {
                      tclvalue(MetriqueChoisie) <- "" # réinitialisation
                      tkconfigure(RB.factGraphRefesp, state="normal") # réactivation du référentiel
@@ -534,8 +534,8 @@ updateMetrique.f <- function(nomTable, env)
            },
            ## Si table unitespta (métriques d'observation) :
            unitespta={
-               evalq(tkconfigure(CB.metrique, value=champsMetriques.f("unitespta")), envir=env)
-               evalq(if (!is.element(tclvalue(MetriqueChoisie), champsMetriques.f("unitespta")))
+               evalq(tkconfigure(CB.metrique, value=champsMetriques.f("unitespta", nextStep)), envir=env)
+               evalq(if (!is.element(tclvalue(MetriqueChoisie), champsMetriques.f("unitespta", nextStep)))
                  {
                      tclvalue(MetriqueChoisie) <- "" # réinitialisation
                      tkconfigure(RB.factGraphRefesp, state="normal") # réactivation du référentiel
@@ -544,8 +544,8 @@ updateMetrique.f <- function(nomTable, env)
            },
            ## Si table TabbleBiodiv (indices de biodiversité) :
            TableBiodiv={
-               evalq(tkconfigure(CB.metrique, value=champsMetriques.f("TableBiodiv")), envir=env)
-               evalq(if (!is.element(tclvalue(MetriqueChoisie), champsMetriques.f("TableBiodiv")))
+               evalq(tkconfigure(CB.metrique, value=champsMetriques.f("TableBiodiv", nextStep)), envir=env)
+               evalq(if (!is.element(tclvalue(MetriqueChoisie), champsMetriques.f("TableBiodiv", nextStep)))
                  {
                      tclvalue(MetriqueChoisie) <- "" # réinitialisation
                  }, envir=env)
@@ -761,7 +761,7 @@ selectionVariables.f <- function(nextStep)
     Done <- tclVar(0)                       # Statut d'exécution
 
     ## Liste des métriques :
-    metriques <- champsMetriques.f("listespunit")
+    metriques <- champsMetriques.f("listespunit", nextStep)
 
     TableMetrique <- tclVar("listespunit")  # Table des métriques.
     MetriqueChoisie <- tclVar("")           # Métrique choisie
@@ -875,7 +875,7 @@ selectionVariables.f <- function(nextStep)
     tkgrid(tklabel(WinSelection), column=4)
 
     tkconfigure(CB.factGraph, value=champsRefEspeces.f(siteEtudie, ordered=TRUE))
-    ## tkconfigure(CB.metrique, value=champsMetriques.f(tclvalue(TableMetrique))) # inutile
+    ## tkconfigure(CB.metrique, value=champsMetriques.f(tclvalue(TableMetrique), nextStep)) # inutile
 
     ## Choix des facteurs de regroupement :
     tkgrid(FrameFact, column=1, columnspan=3, sticky="w")

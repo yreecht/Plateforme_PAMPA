@@ -34,7 +34,7 @@ grpespcalc.f <- function(x)
     grpesp$unitobs <- rep(dimnames(grpespT)[[1]], dim(grpespT)[2])
     grpesp[, x] <- rep(dimnames(grpespT)[[2]], each = dim(grpespT)[1], 1)
 
-    if (unique(unitobs$type) != "LIT")
+    if (!is.benthos.f())                # unique(unitobs$type) != "LIT"
     {
         ## somme des biomasses
         ## calcul des biomasses à partir des relations taille-poids :
@@ -1774,7 +1774,7 @@ creationTablesBase.f <- function(){
 
 
     ## ATTENTION A L'ORDRE D'APPEL DES FONCTIONS!!
-    if (unique(unitobs$type) != "LIT")
+    if (!is.benthos.f())                 # unique(unitobs$type) != "LIT"
     {  #car pas de classes de tailles avec les recouvrements
         unitespta.f()
         if (Jeuxdonnescoupe==0)
@@ -1840,7 +1840,7 @@ creationTablesBase.f <- function(){
 creationTablesCalcul.f <- function(){
 
     print("fonction creationTablesCalcul.f activée")
-    if (unique(unitobs$type) != "LIT")
+    if (!is.benthos.f())                # unique(unitobs$type) != "LIT"
     {  #car pas de classes de tailles avec les recouvrements
 
     }

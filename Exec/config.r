@@ -13,13 +13,13 @@
 
 ## lignes temporaires pour copier/coller
 
-#### CB
-SiteEtudie <- "CB"
-fileName1 <- "CB_UnitobsUVC_Couronne.txt"
-fileName2 <- "CB_ObsUVC_Couronne.txt"
-fileName3 <- "refEspecesMED.txt"
-nameWorkspace <- "C:/PAMPA/WD"
-## fileNameRefSpa <- "REFSPA_CB.txt"
+## #### CB
+## SiteEtudie <- "CB"
+## fileName1 <- "CB_UnitobsUVC_Couronne.txt"
+## fileName2 <- "CB_ObsUVC_Couronne.txt"
+## fileName3 <- "refEspecesMED.txt"
+## nameWorkspace <- "C:/PAMPA"
+## ## fileNameRefSpa <- "REFSPA_CB.txt"
 
 
 ## #### NC Staviro :
@@ -52,17 +52,17 @@ nameWorkspace <- "C:/PAMPA/WD"
 ## nameWorkspace <- "C:/PAMPA"
 ## ## fileNameRefSpa <- "REFSPA_NC.txt"       # pas bon mais y'en faut bien un (pas utilisé de toute façon)
 
-## #### RUN :
-## SiteEtudie <- "RUN"
-## fileName1 <- "unitobspampaGCRMNpoisson-100810.txt"
-## fileName2 <- "obspampaGCRMNpoisson-100810.txt"
-## ## fileName1 <- "unitobsGCRMNPoissons.txt"
-## ## fileName2 <- "obsGCRMNPoissons.txt"
-## ## fileName1 <- "unitobsGCRMNBenthos.txt"
-## ## fileName2 <- "obsGCRMNBenthos.txt"
-## fileName3 <- "PAMPA-WP1-Meth-4-RefSpOM 110810.txt"
-## nameWorkspace <- "C:/PAMPA"
-## ## fileNameRefSpa <- "refSpatialRUN.txt"
+#### RUN :
+SiteEtudie <- "RUN"
+fileName1 <- "unitobspampaGCRMNpoisson-100810.txt"
+fileName2 <- "obspampaGCRMNpoisson-100810.txt"
+## fileName1 <- "unitobsGCRMNPoissons.txt"
+## fileName2 <- "obsGCRMNPoissons.txt"
+## fileName1 <- "unitobsGCRMNBenthos.txt"
+## fileName2 <- "obsGCRMNBenthos.txt"
+fileName3 <- "PAMPA-WP1-Meth-4-RefSpOM 110810.txt"
+nameWorkspace <- "C:/PAMPA"
+## fileNameRefSpa <- "refSpatialRUN.txt"
 
 
 ## ## NC Jérémy Drelon :

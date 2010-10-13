@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: comparaison_distri_generique.R
-### Time-stamp: <2010-10-06 11:14:28 yreecht>
+### Time-stamp: <2010-10-12 15:51:33 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -100,13 +100,15 @@ print.anova.fr <- function(x, digits = max(getOption("digits") - 2, 3), signif.s
                                               "Analysis of Variance Table",
                                               "Model:",
                                               "Negative Binomial",
+                                              "binomial",
                                               "Terms added sequentially \\(first to last\\)",
                                               "Response:",
                                               "link:"),
                                     replacement=c("\n---------------------------------------------------------------------------\nTable d'analyse de la déviance :",
                                                   "\n---------------------------------------------------------------------------\nTable d'analyse de la variance :",
-                                                  "Modèle :",
+                                                  "Famille :",
                                                   "Binomiale négative",
+                                                  "Binomiale",
                                                   "Termes ajoutés séquentiellement (premier au dernier)",
                                                   "Réponse :",
                                                   "lien :"),
@@ -1083,7 +1085,9 @@ resFileLM.f <- function(objLM, metrique, factAna, modSel, listFact, Log=FALSE,  
                                 "GLM-NB",
                                 ifelse(length(grep("^glm.*poisson", deparse(objLM$call), perl=TRUE)) > 0,
                                        "GLM-P",
-                                       "Unknown-model")))
+                                       ifelse(length(grep("^glm.*\"binomial\"", deparse(res$call), perl=TRUE)) > 0,
+                                              "GLM-B",
+                                              "Unknown-model"))))
     }else{}
 
     ## Nom de fichier :
@@ -1523,33 +1527,38 @@ calcLM.f <- function(loiChoisie, formule, metrique, Data)
     ## Author: Yves Reecht, Date: 17 sept. 2010, 14:49
 
      switch(loiChoisie,
-                   ## Modèle linéaire :
-                   NO={
-                       res <- lm(formule, data=Data)
-                       ## Mise en forme :
-                       ## sortiesLM.f(lm=res, formule=formule, metrique, factAna, modSel, listFact)
-                   },
-                   ## Modèle linéaire, données log-transformées :
-                   LOGNO={
-                       ## Ajout d'une constante à la métrique si contient des zéros :
-                       if (sum(Data[ , metrique] == 0, na.rm=TRUE))
-                       {
-                           Data[ , metrique] <- Data[ , metrique] +
-                               ((min(Data[ , metrique], na.rm=TRUE) + 1) / 1000)
-                       }else{}
+            ## Modèle linéaire :
+            NO={
+                res <- lm(formule, data=Data)
+                ## Mise en forme :
+                ## sortiesLM.f(lm=res, formule=formule, metrique, factAna, modSel, listFact)
+            },
+            ## Modèle linéaire, données log-transformées :
+            LOGNO={
+                ## Ajout d'une constante à la métrique si contient des zéros :
+                if (sum(Data[ , metrique] == 0, na.rm=TRUE))
+                {
+                    Data[ , metrique] <- Data[ , metrique] +
+                        ((min(Data[ , metrique], na.rm=TRUE) + 1) / 1000)
+                }else{}
 
-                       res <- lm(formule, data=Data)
-                       ## Mise en forme :
-                       ## sortiesLM.f(lm=res, formule=formule, metrique, factAna, modSel, listFact, Log=TRUE)
-                   },
-                   ## GLM, distribution de Poisson :
-                   PO={
-                       res <- glm(formule, data=Data, family="poisson")
-                   },
-                   ## GLM, distribution binomiale négative :
-                   NBI={
-                       res <- glm.nb(formule, data=Data)
-                   },)
+                res <- lm(formule, data=Data)
+                ## Mise en forme :
+                ## sortiesLM.f(lm=res, formule=formule, metrique, factAna, modSel, listFact, Log=TRUE)
+            },
+            ## GLM, distribution de Poisson :
+            PO={
+                res <- glm(formule, data=Data, family="poisson")
+            },
+            ## GLM, distribution binomiale négative :
+            NBI={
+                res <- glm.nb(formule, data=Data)
+            },
+            ## GLM, distribution binomiale (présences/absences) :
+            BI={
+                res <- glm(formule, data=Data, family="binomial")
+            },
+            )
      return(res)
 }
 
@@ -1625,7 +1634,12 @@ modeleLineaireWP2.f <- function(metrique, factAna, factAnaSel, listFact, listFac
         DataBackup[[modSel]] <<- tmpDataMod
 
         ## Aide au choix du type d'analyse :
-        loiChoisie <- choixDistri.f(metrique=metrique, data=tmpDataMod[ , metrique, drop=FALSE])
+        if (metrique == "pres_abs")
+        {
+            loiChoisie <- "BI"
+        }else{
+            loiChoisie <- choixDistri.f(metrique=metrique, data=tmpDataMod[ , metrique, drop=FALSE])
+        }
 
         if (!is.null(loiChoisie))
         {

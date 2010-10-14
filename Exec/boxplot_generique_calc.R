@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: Boxplot_generique_calc.R
-### Time-stamp: <2010-10-06 13:52:10 yreecht>
+### Time-stamp: <2010-10-14 17:05:01 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -199,6 +199,29 @@ legendBoxplot.f <- function(terms, data)
     }
 }
 
+########################################################################################################################
+graphTitle.f <- function(metrique, modGraphSel, factGraph, listFact, model=NULL)
+{
+    ## Purpose:
+    ## ----------------------------------------------------------------------
+    ## Arguments:
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date: 14 oct. 2010, 15:44
+
+    return(paste(ifelse(is.null(model),
+                        "valeurs de ",
+                        paste(model, " pour ", varNames[metrique, "article"], sep="")),
+                 varNames[metrique, "nom"],
+                 ifelse(modGraphSel == "", # Facteur de séparation uniquement si défini.
+                        "",
+                        paste("\npour le champ '", factGraph, "' = ", modGraphSel, sep="")),
+                 "\n selon ",
+                 paste(sapply(listFact[length(listFact):1],
+                              function(x)paste(varNames[x, c("article", "nom")], collapse="")),
+                       collapse=" et "),
+                 "\n", sep=""))
+}
+
 
 ########################################################################################################################
 WP2boxplot.f <- function(metrique, factGraph, factGraphSel, listFact, listFactSel, tableMetrique)
@@ -293,15 +316,9 @@ WP2boxplot.f <- function(metrique, factGraph, factGraphSel, listFact, listFactSe
         par(mar=c(9, 5, 8, 1), mgp=c(3.5, 1, 0)) # paramètres graphiques.
 
         ## Titre (d'après les métriques, modalité du facteur de séparation et facteurs de regroupement) :
-        mainTitle <- paste("valeurs de ", varNames[metrique, "nom"],
-                           ifelse(iFactGraphSel[1] == "", # Facteur de séparation uniquement si défini.
-                                  "",
-                                  paste("\npour le champ '", factGraph, "' = ", modGraphSel, sep="")),
-                           "\n selon ",
-                           paste(sapply(listFact[length(listFact):1],
-                                        function(x)paste(varNames[x, c("article", "nom")], collapse="")),
-                                 collapse=" et "),
-                           "\n\n", sep="")
+        mainTitle <- graphTitle.f(metrique=metrique,
+                                  modGraphSel=modGraphSel, factGraph=factGraph,
+                                  listFact=listFact)
 
         ## Les couleurs pour l'identification des modalités du facteur de second niveau :
         colors <- colBoxplot.f(terms=attr(terms(exprBP), "term.labels"), data=tmpDataMod)

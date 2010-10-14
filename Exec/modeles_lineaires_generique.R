@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: comparaison_distri_generique.R
-### Time-stamp: <2010-10-13 16:47:41 yreecht>
+### Time-stamp: <2010-10-14 17:13:59 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -154,19 +154,21 @@ print.anova.fr <- function(x, digits = max(getOption("digits") - 2, 3), signif.s
 
 ########################################################################################################################
 plot.lm.fr <- function (x, which = c(1L:3L, 5L),
-                         caption = list("Résidus vs valeurs prédites",
-                         "'Normal Q-Q plot': quantiles des résidus standardisés vs quantiles théoriques",
-                         "Scale-Location", "Distance de Cook", "Résidus vs Leverage",
-                         expression("Distance de Cook vs Leverage  " * h[ii]/(1 - h[ii]))),
-                         panel = if (add.smooth) panel.smooth else points, sub.caption = NULL,
-                         main = "", ask = prod(par("mfcol")) < length(which) && dev.interactive(),
-                         ..., id.n = 3, labels.id = names(residuals(x)), cex.id = 0.75,
-                         qqline = TRUE, cook.levels = c(0.5, 1), add.smooth = getOption("add.smooth"),
-                         label.pos = c(4, 2), cex.caption = 1)
+                        caption = list("Résidus vs valeurs prédites",
+                        "'Normal Q-Q plot': quantiles des résidus standardisés vs quantiles théoriques",
+                        "Scale-Location", "Distance de Cook", "Résidus vs Leverage",
+                        expression("Distance de Cook vs Leverage  " * h[ii]/(1 - h[ii]))),
+                        panel = if (add.smooth) panel.smooth else points, sub.caption = NULL,
+                        main = "", ask = prod(par("mfcol")) < length(which) && dev.interactive(),
+                        ..., id.n = 3, labels.id = names(residuals(x)), cex.id = 0.75,
+                        qqline = TRUE, cook.levels = c(0.5, 1), add.smooth = getOption("add.smooth"),
+                        label.pos = c(4, 2), cex.caption = 1,
+                        print.sub.caption=FALSE)
 {
     ## Purpose:
     ## ----------------------------------------------------------------------
     ## Arguments:
+    ##           + print.sub.caption : Imprimer le sub.caption automatique.
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 17 sept. 2010, 09:46
 
@@ -466,7 +468,7 @@ plot.lm.fr <- function (x, which = c(1L:3L, 5L),
             text.id(g[show.r], cook[show.r], show.r)
         }
     }
-    if (!one.fig && par("oma")[3L] >= 1)
+    if (!one.fig && par("oma")[3L] >= 1 && print.sub.caption)
         mtext(sub.caption, outer = TRUE, cex = 1.25)
     invisible()
 }
@@ -1059,6 +1061,27 @@ diffTempSimples.f <- function(objLM, fact, Data)
     return(diffMat)
 }
 
+########################################################################################################################
+modelType.f <- function(objLM, Log)
+{
+    ## Purpose: Fournir un prefix décrivant le modèle utilisé.
+    ## ----------------------------------------------------------------------
+    ## Arguments: objLM : un objet de classe LM ou GLM.
+    ##            Log : log-transformation des données (boolean).
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date: 14 oct. 2010, 16:29
+
+    return(ifelse(length(grep("^lm\\(", deparse(objLM$call), perl=TRUE)) > 0,
+                  paste("LM", ifelse(Log, "-log", ""), sep=""),
+                  ifelse(length(grep("^glm\\.nb", deparse(objLM$call), perl=TRUE)) > 0,
+                         "GLM-NB",
+                         ifelse(length(grep("^glm.*poisson", deparse(objLM$call), perl=TRUE)) > 0,
+                                "GLM-P",
+                                ifelse(length(grep("^glm.*\"binomial\"", deparse(objLM$call), perl=TRUE)) > 0,
+                                       "GLM-B",
+                                       "Unknown-model")))))
+}
+
 
 ########################################################################################################################
 resFileLM.f <- function(objLM, metrique, factAna, modSel, listFact, Log=FALSE,  prefix=NULL, ext="txt", sufixe=NULL)
@@ -1083,15 +1106,7 @@ resFileLM.f <- function(objLM, metrique, factAna, modSel, listFact, Log=FALSE,  
     ## si pas de préfix fourni :
     if (is.null(prefix))
     {
-        prefix <- ifelse(length(grep("^lm\\(", deparse(objLM$call), perl=TRUE)) > 0,
-                         paste("LM", ifelse(Log, "-log", ""), sep=""),
-                         ifelse(length(grep("^glm\\.nb", deparse(objLM$call), perl=TRUE)) > 0,
-                                "GLM-NB",
-                                ifelse(length(grep("^glm.*poisson", deparse(objLM$call), perl=TRUE)) > 0,
-                                       "GLM-P",
-                                       ifelse(length(grep("^glm.*\"binomial\"", deparse(res$call), perl=TRUE)) > 0,
-                                              "GLM-B",
-                                              "Unknown-model"))))
+        prefix <- modelType.f(objLM=objLM, Log=Log)
     }else{}
 
     ## Nom de fichier :
@@ -1481,7 +1496,11 @@ sortiesLM.f <- function(objLM, formule, metrique, factAna, modSel, listFact, Dat
         compMultiplesLM.f(objLM=objLM, Data=Data, fact1=listFact[1], fact2=listFact[2], resFile=resFile, exclude=factAna)
 
         ## Représentation des interactions :
+        mainTitle <- graphTitle.f(metrique=metrique,
+                                  modGraphSel=modSel, factGraph=factAna,
+                                  listFact=listFact, model="Graphique d'intéractions")
         X11()
+        par(mar=c(5, 4, 5, 2) + 0.1)
         with(Data,
              if (Log)                   # Les sens de variations peuvent changer en log (sur les moyennes) =>
                                         # besoin d'un graphique adapté :
@@ -1489,16 +1508,21 @@ sortiesLM.f <- function(objLM, formule, metrique, factAna, modSel, listFact, Dat
                  eval(parse(text=paste("interaction.plot(", listFact[1], ", ", listFact[2],
                                        ", log(", metrique, "), ylab=\"",
                                        paste("log(", Capitalize.f(varNames[metrique, "nom"]), ") moyen", sep=""),
-                                       "\")", sep="")))
+                                       "\", main=\"", mainTitle, "\", cex.main=0.9)", sep="")))
 
               }else{
                  eval(parse(text=paste("interaction.plot(", listFact[1], ", ", listFact[2],
                                        ", ", metrique, ", ylab=\"",
                                        paste(Capitalize.f(varNames[metrique, "nom"]),
-                                             " moyen", ifelse(varNames[metrique, "genre"] == "f", "ne", ""), # "moyen"
-                                               # ou "moyenne" selon le genre.
+                                             " moyen",
+                                             switch(varNames[metrique, "genre"],
+                                                    "f"="ne",
+                                                    "fp"="nes",
+                                                    "mp"="s",
+                                                    ""), # "moyen", moyens,
+                                        # "moyenne" ou "moyennes" selon le genre.
                                              sep=""),
-                                       "\")", sep="")))
+                                       "\", main=\"", mainTitle, "\", cex.main=0.9)", sep="")))
              })
 
         tkdestroy(WinInfo)
@@ -1509,10 +1533,18 @@ sortiesLM.f <- function(objLM, formule, metrique, factAna, modSel, listFact, Dat
         }else{}
     }
 
+    subTitle <- graphTitle.f(metrique=metrique,
+                             modGraphSel=modSel, factGraph=factAna,
+                             listFact=listFact, model=modelType.f(objLM=objLM, Log=Log))
+
     X11(width=45, height=35)
-    par(mfrow=c(2, 2))
+    par(mfrow=c(2, 2), oma=c(0, 0, 4.7, 0))
     hist(objLM$residuals, xlab="valeur des résidus ", ylab= "Fréquence ", main=NULL)
     mtext("Distribution des résidus", side=3, cex=0.8)
+
+    ## Titre général :
+    mtext("Graphiques diagnostiques", side=3, outer=TRUE, line=3.4, cex=1.2)
+    mtext(subTitle, side=3, outer=TRUE, line=-2.4, cex=1.1)
 
     ## Essayer glm.diag.plots('glm')...
     plot.lm.fr(objLM, which=2, cex.caption=0.8)

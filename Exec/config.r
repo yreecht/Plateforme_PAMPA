@@ -1,89 +1,28 @@
 ## noms de fichiers utilisés par le chargement automatique
 
+########################################################################################################################
+## Zone éditable :
 
-## fileName1 <- "unitobsBAPoissons.txt"
-## fileName2 <- "obsBAPoissons.txt"
-## fileName3 <- "refEspecesMED.txt"
-## fileName1 <- "TableUnitesObservationCR2007-2008-2009.txt"
-## fileName2 <- "TableObservationCR2007-2008-2009.txt"
-## fileName3 <- "refEspecesOM.txt"
-## fileName1 <- "CB_UnitobsUVC_Couronne.txt"
-## fileName2 <- "CB_ObsUVC_Couronne.txt"
-## peut être remplacé par : "RUN" , "MAY" , "BA" , "BO" , "CB" , "CR" , "STM" , "NC" selon le sigle du site que vous avez dans le fichier unitobs
+## ##########
+## Exemple : faites de même avec vos jeux de donnée (sans les commentaires -- "## " -- en début de ligne.)
 
-## lignes temporaires pour copier/coller
-
-## #### CB
-## SiteEtudie <- "CB"
-## fileName1 <- "CB_UnitobsUVC_Couronne.txt"
-## fileName2 <- "CB_ObsUVC_Couronne.txt"
-## ## fileName3 <- "refEspecesMED.txt"
-## fileName3 <- "PAMPA-WP1-Meth-5-RefSpMed 121010 LLD.txt"
-## nameWorkspace <- "C:/PAMPA"
-## ## fileNameRefSpa <- "REFSPA_CB.txt"
-
-
-## #### NC Staviro :
-## SiteEtudie <- "NC"
-## fileName1 <- "UniteObs_Staviro_NCcorrige07072010.txt"
-## ## fileName1 <- "UnitObs_Staviro_NC_statutOK230910.txt"
-## fileName2 <- "Obs_Staviro_NC.txt"
-## ## fileName2 <- "Obs_staviro_NC_tous220910.txt"
-## fileName3 <- "PAMPA-WP1-Meth-4-RefSpOM 210910.txt"
-## nameWorkspace <- "C:/PAMPA/WD2"
-
-
-## #### STM :
-## SiteEtudie <- "STM"
-## ## fileName1 <- "unitobspampaSTMpoisson-100809.txt"
-## ## fileName2 <- "obspampaSTMpoisson-100809.txt"
-## ## fileName1 <- "unitobspampaSTMrec-100809.txt"
-## ## fileName2 <- "obspampaSTMrec-100809.txt"
-## ## fileName1 <- "unitobspampaSTMlambi-100809.txt"
-## ## fileName2 <- "obspampaSTMlambi-100809.txt"
-## ## fileName1 <- "unitobspampaSTMbenthos-100809.txt"
-## ## fileName2 <- "obspampaSTMbenthos-100809.txt"
-## fileName1 <- "unitobspampaSTMoursin-100809.txt"
-## fileName2 <- "obspampaSTMoursin-100809.txt"
-## ## fileName1 <- "unitobspampaSTMmacroalgue-100809.txt"
-## ## fileName2 <- "obspampaSTMmacroalgue-100809.txt"
-## ## fileName1 <- "unitobspampaSTMherbier-100809.txt"
-## ## fileName2 <- "obspampaSTMherbier-100809.txt"
+## #### RUN :
+## SiteEtudie <- "RUN"
+## fileName1 <- "unitobspampaGCRMNpoisson-100810.txt"
+## fileName2 <- "obspampaGCRMNpoisson-100810.txt"
 ## fileName3 <- "PAMPA-WP1-Meth-4-RefSpOM 110810.txt"
 ## nameWorkspace <- "C:/PAMPA"
-## ## fileNameRefSpa <- "REFSPA_NC.txt"       # pas bon mais y'en faut bien un (pas utilisé de toute façon)
-
-#### RUN :
-SiteEtudie <- "RUN"
-fileName1 <- "unitobspampaGCRMNpoisson-100810.txt"
-fileName2 <- "obspampaGCRMNpoisson-100810.txt"
-## fileName1 <- "unitobsGCRMNPoissons.txt"
-## fileName2 <- "obsGCRMNPoissons.txt"
-## fileName1 <- "unitobsGCRMNBenthos.txt"
-## fileName2 <- "obsGCRMNBenthos.txt"
-fileName3 <- "PAMPA-WP1-Meth-4-RefSpOM 110810.txt"
-nameWorkspace <- "C:/PAMPA"
-## fileNameRefSpa <- "refSpatialRUN.txt"
 
 
-## ## NC Jérémy Drelon :
-## SiteEtudie <- "NC"
-## fileName1 <- "UnitObs_Staviro_NC_JD.txt"
-## fileName2 <- "Obs_Staviro_NC_tous_JD2.txt"
-## fileName3 <- "REFSPEOutremer_JD.txt"
-## fileNameRefSpa <- "REFSPA_NC.txt"
 
-## fileName1 <- "unitObsMerra.txt"
-## fileName2 <- "obsMerra.txt"
 
-## fileNameRefSpa <- "refSpatialCR.txt"
-## fileNameRefSpa <- "REFSPA_MAY.txt"
-## fileNameRefSpa <- "REFSPA_BA.txt"
-## fileNameRefSpa <- "REFSPA_BO.txt"
-## fileNameRefSpa <- "REFSPA_CB.txt"
-## fileNameRefSpa <- "REFSPA_CR.txt"
-## fileNameRefSpa <- "REFSPA_STM.txt"
-## fileNameRefSpa <- "REFSPA_NC.txt"
+
+
+
+
+## Fin de la zone éditable
+########################################################################################################################
+
 
 #### Logo :
 fileimage <- "./Exec/img/pampa2.GIF"
@@ -103,7 +42,7 @@ pathMaker.f <- function()
     ## Purpose: Redéfinir les chemins (par exemple après changement du
     ##          dossier de travail)
     ## ----------------------------------------------------------------------
-    ## Arguments:
+    ## Arguments: aucun
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 28 sept. 2010, 10:05
     assign("nameWorkspace", nameWorkspace, envir=.GlobalEnv)

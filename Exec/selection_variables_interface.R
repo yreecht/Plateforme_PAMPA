@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: Selection_variables_interface.R
-### Time-stamp: <2010-10-14 13:17:27 yreecht>
+### Time-stamp: <2010-10-14 15:37:50 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -769,8 +769,14 @@ selectionVariables.f <- function(nextStep)
     env <- environment()                    # Environnement courant
     Done <- tclVar(0)                       # Statut d'exécution
 
+    ## ##################################################
+    ## Groupes de traitements :
+
     ## Étapes ne nécessitant pas de choix des variables :
     nextStepMetriqueFixe <- c("pres_abs", "freq_occurrence")
+
+    ## Étapes "graphiques" (besoin d'options graphiques) :
+    nextStepGraph <- c("boxplot", "freq_occurrence")
 
     ## Le même traitement des variables peut être appliqué pour différents "nextStep" :
     casStep <- c("modele_lineaire"="modele_lineaire",
@@ -861,6 +867,11 @@ selectionVariables.f <- function(nextStep)
                            choixOptionsGraphiques.f()
                            winRaise.f(WinSelection)
                        })
+
+    if (! is.element(nextStep, nextStepGraph))
+    {
+        tkconfigure(B.optGraph, state="disabled") # Options graphiques uniquement utiles pour des "étapes" graphiques.
+    }else{}
 
     ## ############
     ## Évènements :

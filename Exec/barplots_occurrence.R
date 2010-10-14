@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: barplots_occurrence.R
-### Time-stamp: <2010-10-14 12:14:32 yreecht>
+### Time-stamp: <2010-10-14 16:10:35 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -92,15 +92,9 @@ barplotOccurrence.f <- function(factGraph, factGraphSel, listFact, listFactSel)
                      metrique=metrique, factGraph=factGraph, listFact=listFact)
 
         ## Titre (d'après les métriques, modalité du facteur de séparation et facteurs de regroupement) :
-        mainTitle <- paste("valeurs de ", varNames[metrique, "nom"],
-                           ifelse(iFactGraphSel[1] == "", # Facteur de séparation uniquement si défini.
-                                  "",
-                                  paste("\npour le champ '", factGraph, "' = ", modGraphSel, sep="")),
-                           "\n selon ",
-                           paste(sapply(listFact[length(listFact):1],
-                                        function(x)paste(varNames[x, c("article", "nom")], collapse="")),
-                                 collapse=" et "),
-                           "\n\n", sep="")
+        mainTitle <- graphTitle.f(metrique=metrique,
+                                  modGraphSel=modGraphSel, factGraph=factGraph,
+                                  listFact=listFact)
 
         ## Paramètres graphiques :
         par(mar=c(5, 5, 8, 7) + 0.1,  mgp=c(3.5, 1, 0))

@@ -297,17 +297,20 @@ analysesExplo <- tkmenu(topMenu,tearoff=FALSE)
   tkadd(importManu,"command",label="Photo recouvrement", command = import.donnees.f)
 ##Second niveau de menu
 
-    # Menu deroulant de "traitement"
+## Menu deroulant de "traitement"
 
-  tkadd(traitement,"cascade",label="Nombre d'observations",menu = traitementNbObs)
-  tkadd(traitement,"cascade",label="Nombre d'espèces",menu = traitementNbEspeces)
-  tkadd(traitement,"cascade",label="Densité d'abondance",menu = traitementDensiteAbondance)
-  tkadd(traitement,"cascade",label="Biomasse",menu = traitementBiomasse)
-  tkadd(traitement,"cascade",label="Indices de diversité",menu = traitementIndices)
-  tkadd(traitement,"separator")
-  tkadd(traitement,"cascade",label="Métriques regroupées en fonction de",menu=regroupements)
-  tkadd(traitement,"command",label="Métrique par facteur espèce",command=GraphMetriqueParFacteurEspece.f)
-  tkadd(traitement,"command",label="Métrique par facteur unités d'observation",command=GraphMetriqueParFacteurUnitobs.f)
+tkadd(traitement,"cascade",label="Nombre d'observations",menu = traitementNbObs)
+tkadd(traitement,"cascade",label="Nombre d'espèces",menu = traitementNbEspeces)
+tkadd(traitement,"cascade",label="Densité d'abondance",menu = traitementDensiteAbondance)
+tkadd(traitement,"cascade",label="Biomasse",menu = traitementBiomasse)
+tkadd(traitement,"cascade",label="Indices de diversité",menu = traitementIndices)
+tkadd(traitement,"separator")
+tkadd(traitement,"cascade",label="Métriques regroupées en fonction de",menu=regroupements)
+tkadd(traitement,"command",label="Métrique par facteur espèce",command=GraphMetriqueParFacteurEspece.f)
+tkadd(traitement,"command",label="Métrique par facteur unités d'observation",command=GraphMetriqueParFacteurUnitobs.f)
+
+## Ajout [yr: 14/10/2010]
+tkadd(traitement,"separator")
 ## Ajout [yr: 11/08/2010]
 tkadd(traitement, "command", label="Boxplots \"à la carte\"...",
       command=function(){selectionVariables.f("boxplot") ; winRaise.f(tm)})
@@ -360,6 +363,9 @@ tkadd(traitement, "command", label="Fréquences d'occurrence...",
   tkadd(benthos,"separator")
   tkadd(benthos,"command",label="Métrique par facteur espèce",command=GraphMetriqueParFacteurEspece.f)
   tkadd(benthos,"command",label="Métrique par facteur unités d'observation",command=GraphMetriqueParFacteurUnitobs.f)
+
+## Ajout [yr: 14/10/2010]
+tkadd(benthos,"separator")
 ## Ajout [yr: 18/08/2010]
 tkadd(benthos, "command", label="Boxplots \"à la carte\"...",
       command=function(){selectionVariables.f("boxplot") ; winRaise.f(tm)})

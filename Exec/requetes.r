@@ -749,6 +749,7 @@ choixespeces.f <- function()
     }
     rm(b)
     assign("contingence", contingence, envir=.GlobalEnv)
+    calcPresAbs.f()
 
     print("Table de contingence unite d'observations/especes creee : ContingenceUnitObsEspeces.csv")
     write.csv(contingence, file=paste(nameWorkspace, "/FichiersSortie/ContingenceUnitObsEspeces.csv", sep=""))

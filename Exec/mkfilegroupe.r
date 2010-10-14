@@ -1798,6 +1798,7 @@ creationTablesBase.f <- function(){
         assign("SAUVcontingence", contingence, envir=.GlobalEnv)
         assign("SAUVunitesp", unitesp, envir=.GlobalEnv)
         assign("SAUVunit", unit, envir=.GlobalEnv)
+        assign("SAUVTablePresAbs", TablePresAbs, envir=.GlobalEnv)
     }
 
     ## si SVR calcul des metriques par rotation
@@ -1897,4 +1898,27 @@ creationTablesCalcul.f <- function(){
     assign("TableMetrique", TableMetrique, envir=.GlobalEnv)
     print("tableau TableMetrique réalisé")
     ## print(names(TableMetrique))    # Pas utile sauf en développement.
+}
+
+########################################################################################################################
+calcPresAbs.f <- function()
+{
+    ## Purpose: Créer une table "TablePresAbs" à partir de la table de
+    ##          contingence
+    ## ----------------------------------------------------------------------
+    ## Arguments: aucun.
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date: 13 oct. 2010, 15:18
+
+    ## Pour avoir les bons noms de colonnes dans ce qui suit :
+    names(dimnames(contingence)) <- c("unite_observation", "code_espece")
+
+    ## On utilise la méthode "as.data.frame" pour la classe "table"
+    ## (fonctionne comme un reshape() en direction="long") :
+    TablePresAbs <- as.data.frame(as.table(contingence), responseName="pres_abs", stringsAsFactors=FALSE)
+
+    ## Seules les présences absences nous intéressent :
+    TablePresAbs$pres_abs[TablePresAbs$pres_abs > 0] <- 1
+
+    assign(x="TablePresAbs", value=TablePresAbs, envir=.GlobalEnv)
 }

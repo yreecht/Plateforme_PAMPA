@@ -189,3 +189,4 @@
 "RS.relative.donnees","la ","richesse spécifique relative (/ esp. des données)","f","'%'"
 "RS.relative.region","la ","richesse spécifique relative (/ esp. de la région)","f","'%'"
 "RS.relative.region.phylum","la ","richesse spécifique relative (/ esp. de la région et du phylum)","f","'%'"
+"freq.occurrence","la ","fréquence d'occurrence","f","'%'"

@@ -422,6 +422,7 @@ import.donnees.f = function()
     }
     rm(b)
     assign("contingence",contingence,envir=.GlobalEnv)
+    calcPresAbs.f()
 
     ## Attention, si la table de contingence avait ete cree anterieurement lors
     ## d'une utilisation des routines par exemple, et est toujours presente

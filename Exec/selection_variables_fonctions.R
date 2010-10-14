@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: Selection_variables_fonctions.R
-### Time-stamp: <2010-10-12 09:45:21 yreecht>
+### Time-stamp: <2010-10-13 14:23:04 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -170,12 +170,11 @@ champsRefEspeces.f <- function(site, ordered=FALSE)
     listeSite <- c("RUN" , "MAY" , "BA" , "BO" , "CB" , "CR" , "STM" , "NC")
 
     ## Noms des sites dont on doit exclure les colonnes :
-    sitesExclus <- grep(pattern=paste("^", SiteEtudie, "$", sep=""), x=listeSite, value=TRUE, invert=TRUE)
+    sitesExclus <- listeSite[ ! grepl(pattern=paste("^", SiteEtudie, "$", sep=""), x=listeSite)]
 
     ## champs ne correspondant pas au motif "(Site1|Site2|...)$" :
-    champs <- grep(paste("(", paste(sitesExclus, collapse="|"), ")$", sep=""),
-                   sort(colnames(especes)),
-                   value=TRUE, invert=TRUE)
+    champs <- sort(colnames(especes))[! grepl(paste("(", paste(sitesExclus, collapse="|"), ")$", sep=""),
+                                              sort(colnames(especes)))]
 
     ## Champs non-vides de la table 'espèces' :
     res <- sort(champs[sapply(champs,
@@ -222,7 +221,13 @@ champsReferentiels.f <- function(nomTable)
         ## Champs du référentiel espèces :
         cEspeces <- champsRefEspeces.f(siteEtudie)
 
-        switch(nomTable,
+        casTables <- c("listespunit"="listespunit",
+                       "TablePresAbs"="listespunit",
+                       "TableOccurrences"="listespunit",
+                       "unitespta"="unitespta",
+                       "TableBiodiv"="TableBiodiv")
+
+        switch(casTables[nomTable],
                TableBiodiv={
                    return(c("", sort(cPrincip[is.element(cPrincip, cUnitobs)]),   # champs principaux...
                             "", sort(cUnitobs[!is.element(cUnitobs, cPrincip)]))) # autres.
@@ -267,16 +272,29 @@ subsetToutesTables.f <- function(metrique, facteurs, selections, tableMetrique="
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date:  6 août 2010, 16:46
 
-    if (tableMetrique == "")
+    ## Si pas de table de métrique disponible ou déjà calculée
+    ## ("TableOcurrences" est calculée à partir de la sélection) :
+    if (is.element(tableMetrique, c("", "TableOccurrences")))
     {
         tableMetrique <- "listespunit"
+
+        ## Si pas de métrique disponible ou déjà calculée ("freq.occurrence" est calculée à partir de la sélection) :
+        if (is.element(metrique, c("", "freq.occurrence")))
+        {
+            metrique <- "tmp"
+            listespunit$tmp <- 1
+        }else{}
     }else{}
+
+    casTables <- c("listespunit"="listespunit",
+                   "TablePresAbs"="listespunit",
+                   "unitespta"="unitespta")
 
     dataMetrique <- eval(parse(text=tableMetrique))
 
     ## Subset en fonction de la table de métrique
-    switch(tableMetrique,
-           ## Cas de la table d'observation :
+    switch(casTables[tableMetrique],
+           ## Cas de la table d'observation ou des tables de présence :
            listespunit={
                 tmp <- cbind(dataMetrique[!is.na(dataMetrique[ , metrique]) , metrique, drop=FALSE],
                              unitobs[match(dataMetrique$unite_observation[!is.na(dataMetrique[ , metrique])],

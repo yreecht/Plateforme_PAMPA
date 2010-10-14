@@ -25,7 +25,7 @@ DefaultDirName={reg:HKLM\Software\PAMPA WP2,Path|{#InstallDir}}\{#ExecDir}
 DefaultGroupName={#MyAppName}
 AllowNoIcons=yes
 OutputDir=.
-OutputBaseFilename=setup_PAMPA_WP2-{#MyAppVersion}
+OutputBaseFilename=setup-u_PAMPA_WP2-{#MyAppVersion}
 ; SetupIconFile=Y:\tmp\1284538187_bluefish-icon.ico
 Compression=lzma
 SolidCompression=yes
@@ -41,10 +41,39 @@ Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescrip
 
 [Files]
 Source: ".\Exec\PAMPA WP2.bat"; DestDir: "{app}"; Flags: ignoreversion
-Source: ".\Exec\*"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\Exec\img\*"; DestDir: "{app}\img"; Flags: ignoreversion
 Source: ".\Exec\Doc\*"; DestDir: "{app}\Doc"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
+Source: ".\Exec\config.r"; DestDir: "{app}"; Flags: uninsneveruninstall onlyifdoesntexist
+Source: "Exec\anova.r"; DestDir: "{app}"
+Source: "Exec\arbre_regression.r"; DestDir: "{app}"
+Source: "Exec\barplots_occurrence.R"; DestDir: "{app}"
+Source: "Exec\boxplot_generique_calc.R"; DestDir: "{app}"
+Source: "Exec\calcul_simple.r"; DestDir: "{app}"
+Source: "Exec\command.r"; DestDir: "{app}"
+Source: "Exec\corresp-cat-benth.csv"; DestDir: "{app}"
+Source: "Exec\fonctions_base.R"; DestDir: "{app}"
+Source: "Exec\gestionmessages.r"; DestDir: "{app}"
+Source: "Exec\Global.r"; DestDir: "{app}"
+Source: "Exec\graphique.r"; DestDir: "{app}"
+Source: "Exec\graphique_benthos.r"; DestDir: "{app}"
+Source: "Exec\import.r"; DestDir: "{app}"
+Source: "Exec\importdefaut.r"; DestDir: "{app}"
+Source: "Exec\interface.r"; DestDir: "{app}"
+Source: "Exec\interface_fonctions.R"; DestDir: "{app}"
+Source: "Exec\load_packages.R"; DestDir: "{app}"
+Source: "Exec\mkfilegroupe.r"; DestDir: "{app}"
+Source: "Exec\modeles_lineaires_generique.R"; DestDir: "{app}"
+Source: "Exec\modeles_lineaires_interface.R"; DestDir: "{app}"
+Source: "Exec\modifinterface.r"; DestDir: "{app}"
+Source: "Exec\NomsVariables.csv"; DestDir: "{app}"
+Source: "Exec\PAMPA WP2.bat"; DestDir: "{app}"
+Source: "Exec\requetes.r"; DestDir: "{app}"
+Source: "Exec\Rprofile.site"; DestDir: "{app}"
+Source: "Exec\selection_variables_fonctions.R"; DestDir: "{app}"
+Source: "Exec\selection_variables_interface.R"; DestDir: "{app}"
+Source: "Exec\testfichier.r"; DestDir: "{app}"
+Source: "Exec\view.r"; DestDir: "{app}"
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; WorkingDir: {#InstallDir}
@@ -61,6 +90,7 @@ Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChang
 
 [Dirs]
 Name: "{#InstallDir}\Data"; Flags: uninsneveruninstall; Tasks: ; Languages:
+
 
 
 

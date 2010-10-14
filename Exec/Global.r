@@ -98,6 +98,9 @@ source("./Exec/boxplot_generique_calc.R", encoding="latin1")
 source("./Exec/modeles_lineaires_interface.R", encoding="latin1")
 source("./Exec/modeles_lineaires_generique.R", encoding="latin1")
 
+##################################################
+## Barplots sur les fréquences d'occurrence :
+source("./Exec/barplots_occurrence.R", encoding="latin1")
 
 tkfocus(tm)
 

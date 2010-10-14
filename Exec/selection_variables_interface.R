@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: Selection_variables_interface.R
-### Time-stamp: <2010-10-12 09:02:48 yreecht>
+### Time-stamp: <2010-10-14 13:17:27 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -435,6 +435,7 @@ verifVariables.f <- function(metrique, factGraph, factGraphSel, listFact, listFa
     champsVide <- sapply(subsetToutesTables.f(metrique=metrique, facteurs=facts, selections=selections,
                                 tableMetrique=tableMetrique , exclude=NULL),
                          function(x) {all(is.na(x))})
+
     if (sum(champsVide) > 0)
     {
         tkmessageBox(message=paste("Champ '",
@@ -456,7 +457,7 @@ verifVariables.f <- function(metrique, factGraph, factGraphSel, listFact, listFa
 
     ## ####################################################################################################
     ## Spécifique aux modèles linéaires :
-    if (nextStep == "modele_lineaire")
+    if (is.element(nextStep, c("modele_lineaire", "pres_abs")))
     {
         data <- subsetToutesTables.f(metrique=metrique, facteurs=facts, selections=selections,
                                      tableMetrique=tableMetrique)
@@ -722,16 +723,25 @@ titreSelVar.f <- function(type, nextStep)
 
     texts <- list(
                   ## Titre de fenêtre :
-                  winTitle=c(boxplot="boxplots", modele_lineaire="modèles linéaires"),
+                  winTitle=c(boxplot="boxplots",
+                             modele_lineaire="modèles linéaires",
+                             pres_abs="modèles linéaires présences/absences",
+                             freq_occurrence="fréquences d'occurrences"),
                   ## Texte pour le choix métrique :
                   metrique=c(boxplot="Métrique à représenter : ",
-                             modele_lineaire="Métrique expliquée : "),
+                             modele_lineaire="Métrique expliquée : ",
+                             pres_abs="Métrique : \"présences/absences\"",
+                             freq_occurrence="Métrique calculée : \"fréquence d'occurrence\""),
                   ## Texte pour le choix d'un facteur de séparation :
-                  factSep=c(boxplot="Créer un graphique par facteur..." ,
-                            modele_lineaire="Séparer les analyses par facteur...  (optionnel)"),
+                  factSep=c(boxplot="Créer un graphique par facteur...  (optionnel)" ,
+                            modele_lineaire="Séparer les analyses par facteur...  (optionnel)",
+                            pres_abs="Séparer les graphiques/analyses par facteur...  (optionnel)",
+                            freq_occurrence="Séparer les graphiques/analyses par facteur...  (optionnel)"),
                   ## Texte pour le choix du(des) facteur(s) explicatif(s) :
                   facteurs=c(boxplot="Choix du (des) facteur(s) de regroupement (sur un même graphique)" ,
-                             modele_lineaire="Choix du(des) facteur(s) explicatif(s)")## ,
+                             modele_lineaire="Choix du(des) facteur(s) explicatif(s)",
+                             pres_abs="Choix du(des) facteur(s) explicatif(s)/de regroupement",
+                             freq_occurrence="Choix du(des) facteur(s) explicatif(s)/de regroupement")## ,
                   ## =c(boxplot= , modele_lineaire=),
                   )
 
@@ -748,17 +758,25 @@ selectionVariables.f <- function(nextStep)
     ##            statistique,...)
     ## ----------------------------------------------------------------------
     ## Arguments: nextStep : étape suivante (chaîne de caractères parmi
-    ##                       "boxplot",... [appelé à s'étoffer])
+    ##                       "boxplot", "modele_lineaire",...
+    ##                       [appelé à s'étoffer])
     ## Note : les arguments de cette fonction peuvent changer à l'avenir
     ##        (ajouts)
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date:  6 août 2010, 14:38
 
-
-
     ## Variables :
     env <- environment()                    # Environnement courant
     Done <- tclVar(0)                       # Statut d'exécution
+
+    ## Étapes ne nécessitant pas de choix des variables :
+    nextStepMetriqueFixe <- c("pres_abs", "freq_occurrence")
+
+    ## Le même traitement des variables peut être appliqué pour différents "nextStep" :
+    casStep <- c("modele_lineaire"="modele_lineaire",
+                 "pres_abs"="modele_lineaire",
+                 "boxplot"="boxplot",
+                 "freq_occurrence"="freq_occurrence")
 
     ## Liste des métriques :
     metriques <- champsMetriques.f("listespunit", nextStep)
@@ -782,16 +800,31 @@ selectionVariables.f <- function(nextStep)
     WinSelection <- tktoplevel()          # Fenêtre principale
     tkwm.title(WinSelection, paste("Sélection des variables pour les ", titreSelVar.f(type="winTitle", nextStep), sep=""))
 
-    ## Choix de la métrique :
+    ## Métriques :
     FrameMetrique <- tkframe(WinSelection, borderwidth=2, relief="groove")
-    CB.metrique <- ttkcombobox(FrameMetrique, value=metriques, textvariable=MetriqueChoisie,
-                               state="readonly")
-    RB.unitespta <- tkradiobutton(FrameMetrique, variable=TableMetrique,
-                                    value="unitespta", text=".../ unité d'observation / espèce / classes de taille")
-    RB.listespunit <- tkradiobutton(FrameMetrique, variable=TableMetrique,
-                                    value="listespunit", text=".../ unité d'observation / espèce")
-    RB.TableBiodiv <- tkradiobutton(FrameMetrique, variable=TableMetrique,
-                                    value="TableBiodiv", text="...de biodiversité ( / unité d'observation)")
+    if (is.element(nextStep, nextStepMetriqueFixe))
+    {
+        switch(nextStep,
+               "pres_abs"={
+                   tclvalue(TableMetrique) <- "TablePresAbs"
+                   tclvalue(MetriqueChoisie) <- "pres_abs"
+               },
+               "freq_occurrence"={
+                   tclvalue(TableMetrique) <- "TableOccurrences"
+                   tclvalue(MetriqueChoisie) <- "freq.occurrence"
+               })
+    }else{                              # Uniquement si choix de métrique possible.
+        ## Choix de la métrique :
+
+        CB.metrique <- ttkcombobox(FrameMetrique, value=metriques, textvariable=MetriqueChoisie,
+                                   state="readonly")
+        RB.unitespta <- tkradiobutton(FrameMetrique, variable=TableMetrique,
+                                      value="unitespta", text=".../ unité d'observation / espèce / classes de taille")
+        RB.listespunit <- tkradiobutton(FrameMetrique, variable=TableMetrique,
+                                        value="listespunit", text=".../ unité d'observation / espèce")
+        RB.TableBiodiv <- tkradiobutton(FrameMetrique, variable=TableMetrique,
+                                        value="TableBiodiv", text="...de biodiversité ( / unité d'observation)")
+    }
 
     ## Choix du facteur de séparation des graphs + modalités :
     FrameFactGraph <- tkframe(WinSelection, borderwidth=2, relief="groove")
@@ -831,9 +864,12 @@ selectionVariables.f <- function(nextStep)
 
     ## ############
     ## Évènements :
-    tkbind(RB.listespunit, "<Leave>", function(){updateMetrique.f(nomTable=tclvalue(TableMetrique), env=env)})
-    tkbind(RB.unitespta, "<Leave>", function(){updateMetrique.f(nomTable=tclvalue(TableMetrique), env=env)})
-    tkbind(RB.TableBiodiv, "<Leave>", function(){updateMetrique.f(nomTable=tclvalue(TableMetrique), env=env)})
+    if (! is.element(nextStep, nextStepMetriqueFixe)) # Uniquement si choix de métrique possible.
+    {
+        tkbind(RB.listespunit, "<Leave>", function(){updateMetrique.f(nomTable=tclvalue(TableMetrique), env=env)})
+        tkbind(RB.unitespta, "<Leave>", function(){updateMetrique.f(nomTable=tclvalue(TableMetrique), env=env)})
+        tkbind(RB.TableBiodiv, "<Leave>", function(){updateMetrique.f(nomTable=tclvalue(TableMetrique), env=env)})
+    }else{}
 
     tkbind(RB.factGraphUnitobs, "<Leave>", function(){updateFactGraph.f(nomTable=tclvalue(FactGraphTbl), env=env)})
     tkbind(RB.factGraphRefesp, "<Leave>", function(){updateFactGraph.f(nomTable=tclvalue(FactGraphTbl), env=env)})
@@ -846,20 +882,26 @@ selectionVariables.f <- function(nextStep)
     ## #############################
     ## Positionnement des éléments :
 
-    ## Choix de la métrique :
     tkgrid(tklabel(WinSelection, text=" "))
-    tkgrid(tklabel(FrameMetrique, text=titreSelVar.f(type="metrique", nextStep)), sticky="w")
-    if (!is.benthos.f())                 # Table pas pertinent pour benthos.
+    tkgrid(tklabel(FrameMetrique, text=titreSelVar.f(type="metrique", nextStep)), sticky="we")
+
+    if (! is.element(nextStep, nextStepMetriqueFixe)) # Uniquement si choix de métrique possible.
     {
-        tkgrid(RB.unitespta, sticky="w")
-        if (nrow(unitespta) == 0)           # désactivation si pas de classe de taille dispo.
+        ## Choix de la métrique :
+
+        if (!is.benthos.f())                 # Table pas pertinente pour benthos.
         {
-            tkconfigure(RB.unitespta, state="disabled")
+            tkgrid(RB.unitespta, sticky="w")
+            if (nrow(unitespta) == 0)           # désactivation si pas de classe de taille dispo.
+            {
+                tkconfigure(RB.unitespta, state="disabled")
+            }else{}
         }else{}
+
+        tkgrid(RB.listespunit, sticky="w")
+        tkgrid(RB.TableBiodiv, CB.metrique, tklabel(FrameMetrique, text=" \n"), sticky="w")
     }else{}
 
-    tkgrid(RB.listespunit, sticky="w")
-    tkgrid(RB.TableBiodiv, CB.metrique, tklabel(FrameMetrique, text=" \n"), sticky="w")
     tkgrid(FrameMetrique, column=1, columnspan=3, sticky="w")
     tkgrid(tklabel(WinSelection))
 
@@ -912,7 +954,7 @@ selectionVariables.f <- function(nextStep)
                                         # suivante si les variables ne sont pas bonnes.
 
             ## ...Sinon, lancement de l'étape suivante :
-            switch(nextStep,
+            switch(casStep[nextStep],
                    boxplot={
 
                        ## tkmessageBox(message="BoxPlots")
@@ -928,6 +970,10 @@ selectionVariables.f <- function(nextStep)
                                            factAna=tclvalue(FacteurGraph), factAnaSel=factGraphSel,
                                            listFact=sapply(listFacteurs, tclvalue), listFactSel=listFactSel,
                                            tableMetrique=tclvalue(TableMetrique))
+                   },
+                   freq_occurrence={
+                       barplotOccurrence.f(factGraph=tclvalue(FacteurGraph), factGraphSel=factGraphSel,
+                                           listFact=sapply(listFacteurs, tclvalue), listFactSel=listFactSel)
                    },
                    tkmessageBox(message=paste("Aucune action (option '", nextStep, "' pas implémentée).", sep=""),
                                 icon="warning"))

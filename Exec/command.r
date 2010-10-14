@@ -3,21 +3,22 @@ RestaurerDonnees.f <- function ()
     print("fonction RestaurerDonnees.f activée")
     if (Jeuxdonnescoupe==1)
     {
-        obs <- SAUVobs
-        unitobs <- SAUVunitobs
-        contingence <- SAUVcontingence
-        unitesp <- SAUVunitesp
-        unit <- SAUVunit
-        assign("obs", obs, envir=.GlobalEnv)
-        assign("unitobs", unitobs, envir=.GlobalEnv)
-        assign("contingence", contingence, envir=.GlobalEnv)
-        assign("unitesp", unitesp, envir=.GlobalEnv)
-        assign("unit", unit, envir=.GlobalEnv)
+        ## obs <- SAUVobs
+        ## unitobs <- SAUVunitobs
+        ## contingence <- SAUVcontingence
+        ## unitesp <- SAUVunitesp
+        ## unit <- SAUVunit
+        assign("obs", SAUVobs, envir=.GlobalEnv)
+        assign("unitobs", SAUVunitobs, envir=.GlobalEnv)
+        assign("contingence", SAUVcontingence, envir=.GlobalEnv)
+        assign("unitesp", SAUVunitesp, envir=.GlobalEnv)
+        assign("unit", SAUVunit, envir=.GlobalEnv)
+        assign("TablePresAbs", SAUVTablePresAbs, envir=.GlobalEnv)
 
         if (unique(unitobs$type) != "LIT")
         {  # car pas de classes de tailles avec les recouvrements
-            unitespta <- SAUVunitespta
-            assign("unitespta", unitespta, envir=.GlobalEnv)
+            ## unitespta <- SAUVunitespta
+            assign("unitespta", SAUVunitespta, envir=.GlobalEnv)
         }
         ## si SVR calcul des metriques par rotation
         if (unique(unitobs$type) == "SVR")
@@ -25,9 +26,9 @@ RestaurerDonnees.f <- function ()
             unitesptar <- SAUVunitesptar
             unitespr <- SAUVunitespr
             unitr <- SAUVunitr
-            assign("unitesptar", unitesptar, envir=.GlobalEnv)
-            assign("unitespr", unitespr, envir=.GlobalEnv)
-            assign("unitr", unitr, envir=.GlobalEnv)
+            assign("unitesptar", SAUVunitesptar, envir=.GlobalEnv)
+            assign("unitespr", SAUVunitespr, envir=.GlobalEnv)
+            assign("unitr", SAUVunitr, envir=.GlobalEnv)
         }
         print("données sauvées réinitialisées dans les tables de base")
         ModifierInterfaceApresRestore.f("Aucun", "Aucune")

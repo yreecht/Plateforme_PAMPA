@@ -309,7 +309,12 @@ analysesExplo <- tkmenu(topMenu,tearoff=FALSE)
   tkadd(traitement,"command",label="Métrique par facteur espèce",command=GraphMetriqueParFacteurEspece.f)
   tkadd(traitement,"command",label="Métrique par facteur unités d'observation",command=GraphMetriqueParFacteurUnitobs.f)
 ## Ajout [yr: 11/08/2010]
-tkadd(traitement, "command", label="Boxplots \"à la carte\"...", command=function(){selectionVariables.f("boxplot")})
+tkadd(traitement, "command", label="Boxplots \"à la carte\"...",
+      command=function(){selectionVariables.f("boxplot") ; winRaise.f(tm)})
+## Ajout [yr: 14/10/2010]
+tkadd(traitement, "command", label="Fréquences d'occurrence...",
+      command=function(){selectionVariables.f("freq_occurrence") ; winRaise.f(tm)})
+
 
          # Menu deroulant de "regroupements"
   tkadd(regroupements,"command",label="1 Facteur du référentiel espèce",command=GraphGroup1factEsp.f)
@@ -358,6 +363,9 @@ tkadd(traitement, "command", label="Boxplots \"à la carte\"...", command=functio
 ## Ajout [yr: 18/08/2010]
 tkadd(benthos, "command", label="Boxplots \"à la carte\"...",
       command=function(){selectionVariables.f("boxplot") ; winRaise.f(tm)})
+## Ajout [yr: 14/10/2010]
+tkadd(benthos, "command", label="Fréquences d'occurrence...",
+      command=function(){selectionVariables.f("freq_occurrence") ; winRaise.f(tm)})
 
 
   # Menu deroulant de "Import de donnees"
@@ -394,8 +402,12 @@ tkadd(analyse,"separator")
 tkadd(analyse, "cascade", label="Analyses exploratoires", menu=analysesExplo)
 tkadd(analyse, "cascade", label="Modèles inférentiels", menu=modelesInferentiels)
 
-tkadd(modelesInferentiels, "command", label="Modèles linéaires",
+tkadd(modelesInferentiels, "command", label="Modèles linéaires 'à la carte'...",
       command=function(){selectionVariables.f("modele_lineaire") ; winRaise.f(tm)})
+## Ajout [yr: 13/10/2010]
+tkadd(modelesInferentiels, "command", label="Modèles linéaires sur 'présences/absences'...",
+      command=function(){selectionVariables.f("pres_abs") ; winRaise.f(tm)})
+
 
 
   #Menu deroulant de "Outils"

@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: comparaison_distri_generique.R
-### Time-stamp: <2010-10-12 15:51:33 yreecht>
+### Time-stamp: <2010-10-13 16:47:41 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -515,10 +515,11 @@ selRowCoefmat <- function(coefsMat, anovaLM, objLM)
                 sapply(facts[-c(interactions)],
                        function(fact)
                    {
-                       grep(":",
-                            grep(paste("^", fact, sep=""),
-                                 row.names(coefsMat), value=TRUE),
-                            value=TRUE, invert=TRUE, fixed=TRUE)
+                       grep(paste("^", fact, sep=""),
+                                 row.names(coefsMat), value=TRUE)[! grepl(":",
+                                                                          grep(paste("^", fact, sep=""),
+                                                                               row.names(coefsMat), value=TRUE),
+                                                                          fixed=TRUE)]
                    }, simplify=FALSE)## , as.vector)
         }
 
@@ -818,7 +819,7 @@ plotDist.f <- function(y, family, metrique, env=NULL,...)
 
 
 ########################################################################################################################
-diffSpatiales.f <- function(objLM, factSpatial, factTemp, Data)
+diffSpatiales.f <- function(objLM, factSpatial, factTemp, Data, exclude)
 {
     ## Purpose: Calcule et retourne la matrice de différences spatiales par
     ##          année (pour une utilisation avec la fonction 'glht').
@@ -827,6 +828,7 @@ diffSpatiales.f <- function(objLM, factSpatial, factTemp, Data)
     ##            factSpatial : nom du facteur spatial.
     ##            factTemp : nom du facteur temporel.
     ##            Data : données utilisées pour ajuster le modèle.
+    ##            exclude : facteur non analysé.
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date:  7 sept. 2010, 16:15
 
@@ -849,7 +851,7 @@ diffSpatiales.f <- function(objLM, factSpatial, factTemp, Data)
     colnames(Dspat) <- names(theta)
 
     ## Calculs des nombres de colonnes des facteurs et intéraction :
-    nlev <- combn(sapply(Data, function(x)
+    nlev <- combn(sapply(Data[ , ! is.element(colnames(Data), exclude)], function(x)
                      {
                          ifelse(is.factor(x),
                                 nlevels(x) - 1,
@@ -934,7 +936,7 @@ diffSpatiales.f <- function(objLM, factSpatial, factTemp, Data)
 
 
 ########################################################################################################################
-diffTemporelles.f <- function(objLM, factSpatial, factTemp, Data)
+diffTemporelles.f <- function(objLM, factSpatial, factTemp, Data, exclude)
 {
     ## Purpose: Calcule et retourne la matrice de différences temporelles par
     ##          statut(pour une utilisation avec la fonction 'glht').
@@ -943,6 +945,7 @@ diffTemporelles.f <- function(objLM, factSpatial, factTemp, Data)
     ##            factSpatial : nom du facteur spatial.
     ##            factTemp : nom du facteur temporel.
     ##            Data : données utilisées pour ajuster le modèle.
+    ##            exclude : facteur non analysé.
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date:  8 sept. 2010, 11:11
 
@@ -969,7 +972,8 @@ diffTemporelles.f <- function(objLM, factSpatial, factTemp, Data)
     colnames(Dtemp) <- names(theta)
 
     ## Calculs des nombres de colonnes des facteurs et intéraction :
-    nlev <- combn(sapply(Data, function(x)
+    nlev <- combn(sapply(Data[ , ! is.element(colnames(Data), exclude)],
+                         function(x)
                      {
                          ifelse(is.factor(x),
                                 nlevels(x) - 1,
@@ -1195,7 +1199,7 @@ is.temporal.f <- function(facteur)
 
 
 ########################################################################################################################
-compMultiplesLM.f <- function(objLM, Data, fact1, fact2, resFile)
+compMultiplesLM.f <- function(objLM, Data, fact1, fact2, resFile, exclude)
 {
     ## Purpose: Calculer et écrire les résultats des comparaisons multiples.
     ## ----------------------------------------------------------------------
@@ -1206,6 +1210,7 @@ compMultiplesLM.f <- function(objLM, Data, fact1, fact2, resFile)
     ##            fact2 : le nom du second facteur utilisé pour les
     ##                    comparaisons multiples.
     ##            resFile : la connection pour les sorties textes.
+    ##            exclude : facteur non analysé.
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date:  4 oct. 2010, 09:54
 
@@ -1229,12 +1234,14 @@ compMultiplesLM.f <- function(objLM, Data, fact1, fact2, resFile)
                    diffTemporelles.f(objLM=objLM,
                                      factSpatial=facts[-i],
                                      factTemp=facts[i],
-                                     Data=Data))
+                                     Data=Data,
+                                     exclude=exclude))
         }else{                          # ... sinon :
             difftmp <- diffSpatiales.f(objLM=objLM,
                                        factSpatial=facts[i],
                                        factTemp=facts[-i],
-                                       Data=Data)
+                                       Data=Data,
+                                       exclude=exclude)
             ## On réordonne d'après le second facteur (plus lisible) :
             assign(paste("diff", i, sep=""),
                    difftmp[order(sub("^([^:]+) :.+$", "\\1", row.names(difftmp))), ])
@@ -1471,7 +1478,7 @@ sortiesLM.f <- function(objLM, formule, metrique, factAna, modSel, listFact, Dat
         winSmartPlace.f(WinInfo)
 
         ## compMultiplesLM.f(objLM=objLM, Data=Data, factSpatial="statut_protection", factTemp="an", resFile=resFile)
-        compMultiplesLM.f(objLM=objLM, Data=Data, fact1=listFact[1], fact2=listFact[2], resFile=resFile)
+        compMultiplesLM.f(objLM=objLM, Data=Data, fact1=listFact[1], fact2=listFact[2], resFile=resFile, exclude=factAna)
 
         ## Représentation des interactions :
         X11()

@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: Boxplot_generique_calc.R
-### Time-stamp: <2010-10-14 17:05:01 yreecht>
+### Time-stamp: <2010-10-20 16:09:07 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -105,7 +105,7 @@ colBoxplot.f <- function(terms, data)
         n <- length(terms)
 
         ## Définition des couleurs :
-        col <- rep(heat.colors(n=length(unique(na.omit(data[ , terms[n - 1]])))),
+        col <- rep(rev(heat.colors(n=length(unique(na.omit(data[ , terms[n - 1]]))))),
                    each=ifelse(n == 2,
                                1,            # Pas de facteur imbriqué.
                                prod(sapply(data[ , terms[1:(n-2)], drop=FALSE], # nombres de niveaux du (des) facteur(s)
@@ -237,6 +237,8 @@ WP2boxplot.f <- function(metrique, factGraph, factGraphSel, listFact, listFactSe
     ##            tableMetrique : nom de la table de métriques.
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date:  6 août 2010, 16:34
+
+    pampaProfilingStart.f()
 
     ## Nettoyage des facteurs (l'interface de sélection produit des valeurs vides) :
     listFactSel <- listFactSel[unlist(listFact) != ""]
@@ -407,6 +409,7 @@ WP2boxplot.f <- function(metrique, factGraph, factGraphSel, listFact, listFactSe
         dev.off()
     }else{}
 
+    pampaProfilingEnd.f()
 }
 
 

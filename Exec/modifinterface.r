@@ -95,3 +95,29 @@ ModifierInterfaceApresRestore.f = function(Critere="Aucun",Valeur="NA")
 
     winRaise.f(tm)
 }
+
+########################################################################################################################
+statutPresAbs.f <- function()
+{
+    ## Purpose: Activer/désactiver les entrées du menu qui permettent de
+    ##          travailler sur les présences/absences et fréquences
+    ##          d'occurrence, en fonction du contexte.
+    ## !!! À mettre à jour à chaque modification des menus (en particulier si
+    ## des entrées intercallées sont ajoutées ou supprimées).
+    ## ----------------------------------------------------------------------
+    ## Arguments: aucun.
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date: 18 oct. 2010, 11:33
+
+    if (is.null(TablePresAbs))
+    {
+        tkentryconfigure(modelesInferentiels, 1, state="disabled")
+        tkentryconfigure(traitement, 11, state="disabled")
+        ## Ajouter le benthos [yr: 18/10/2010] [!!!]
+    }else{
+        tkentryconfigure(modelesInferentiels, 1, state="normal")
+        tkentryconfigure(traitement, 11, state="normal") # La position débute à 0 et tient compte des séparateurs.
+        ## Ajouter le benthos [yr: 18/10/2010] [!!!]
+    }
+}
+

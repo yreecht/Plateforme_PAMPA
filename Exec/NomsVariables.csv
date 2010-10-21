@@ -179,7 +179,7 @@
 "SDeltaPlus","le ","SDelta+","m",""
 "classe_taille","la ","classe de taille","f",""
 "colonie","le","nombre de colonies","m",""
-"recouvrement","le ","recouvrement","m","%"
+"recouvrement","le ","recouvrement","m","'%'"
 "taille_moyenne","la ","taille moyenne","f","cm"
 "CategB_general","la ","CategB_general","f",""
 "CategB_groupe","la ","CategB_groupe","f",""
@@ -190,3 +190,4 @@
 "RS.relative.region","la ","richesse spécifique relative (/ esp. de la région)","f","'%'"
 "RS.relative.region.phylum","la ","richesse spécifique relative (/ esp. de la région et du phylum)","f","'%'"
 "freq.occurrence","la ","fréquence d'occurrence","f","'%'"
+"CPUE","les ","CPUE","fp",""

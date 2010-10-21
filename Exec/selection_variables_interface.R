@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: Selection_variables_interface.R
-### Time-stamp: <2010-10-14 15:37:50 yreecht>
+### Time-stamp: <2010-10-19 18:11:37 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -460,7 +460,7 @@ verifVariables.f <- function(metrique, factGraph, factGraphSel, listFact, listFa
     if (is.element(nextStep, c("modele_lineaire", "pres_abs")))
     {
         data <- subsetToutesTables.f(metrique=metrique, facteurs=facts, selections=selections,
-                                     tableMetrique=tableMetrique)
+                                     tableMetrique=tableMetrique, add=NULL)
 
         ## Les facteurs doivent avoir au moins deux niveaux :
         if (any(sapply(data[ , !is.element(colnames(data), c(metrique, factGraph)), drop=FALSE],

@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: comparaison_distri_generique.R
-### Time-stamp: <2010-10-14 17:13:59 yreecht>
+### Time-stamp: <2010-10-19 18:30:40 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -852,8 +852,15 @@ diffSpatiales.f <- function(objLM, factSpatial, factTemp, Data, exclude)
                               rep(sDiff, each=nlevels(Data[ , factTemp])), sep=" : ")
     colnames(Dspat) <- names(theta)
 
+    ## Noms de colonnes ordonnés :
+    namesCol <- c(colnames(Data)[1],
+                  colnames(objLM$model[ , -1]))
+
+    namesCol <- namesCol[! is.element(namesCol, exclude)] # - colonne exclue
+
     ## Calculs des nombres de colonnes des facteurs et intéraction :
-    nlev <- combn(sapply(Data[ , ! is.element(colnames(Data), exclude)], function(x)
+    nlev <- combn(sapply(Data[ , namesCol],
+                         function(x)
                      {
                          ifelse(is.factor(x),
                                 nlevels(x) - 1,
@@ -898,7 +905,7 @@ diffSpatiales.f <- function(objLM, factSpatial, factTemp, Data, exclude)
     Dspat[ , premiereCol[posSpatial] - 1 + 1:nCol[posSpatial]] <- m[ , -1]
 
     ## Ajout des intéractions :
-    tmp2 <- Dspat[ , seq(from=premiereCol[posInteraction], length.out=nCol[posInteraction])]
+    tmp2 <- Dspat[ , seq(from=premiereCol[posInteraction], length.out=nCol[posInteraction]), drop=FALSE]
 
     l <- 1
     for (i in as.data.frame(combn(0:nCol[posSpatial], 2))) # pour chaque combinaison de statut :
@@ -973,8 +980,14 @@ diffTemporelles.f <- function(objLM, factSpatial, factTemp, Data, exclude)
 
     colnames(Dtemp) <- names(theta)
 
+    ## Noms de colonnes ordonnés :
+    namesCol <- c(colnames(Data)[1],
+                  colnames(objLM$model[ , -1]))
+
+    namesCol <- namesCol[! is.element(namesCol, exclude)] # - colonne exclue
+
     ## Calculs des nombres de colonnes des facteurs et intéraction :
-    nlev <- combn(sapply(Data[ , ! is.element(colnames(Data), exclude)],
+    nlev <- combn(sapply(Data[ , namesCol],
                          function(x)
                      {
                          ifelse(is.factor(x),
@@ -1005,9 +1018,10 @@ diffTemporelles.f <- function(objLM, factSpatial, factTemp, Data, exclude)
     Dtemp[ , seq(from=premiereCol[posTemp],
                  length.out=nCol[posTemp])] <- sapply(as.data.frame(d1), rep, nlevels(Data[ , factSpatial]))
 
+
     ## Différences sur les interactions :
     d2 <- Dtemp[ , seq(from=premiereCol[posInteraction],
-                        length.out=nCol[posInteraction])]
+                        length.out=nCol[posInteraction]), drop=FALSE]
 
     l <- nlevels(Data[ , factTemp]) + 1
     for (i in seq(from=0, length.out=nCol[posSpatial]))
@@ -1632,7 +1646,7 @@ modeleLineaireWP2.f <- function(metrique, factAna, factAnaSel, listFact, listFac
 
     ## Données pour la série d'analyses :
     tmpData <- subsetToutesTables.f(metrique=metrique, facteurs=facteurs, selections=selections,
-                                    tableMetrique=tableMetrique, exclude = NULL)
+                                    tableMetrique=tableMetrique, exclude = NULL, add=NULL)
 
     ## Identification des différents lots d'analyses à faire:
     if (factAna == "")                # Pas de facteur de séparation des graphiques.
@@ -1677,7 +1691,7 @@ modeleLineaireWP2.f <- function(metrique, factAna, factAnaSel, listFact, listFac
         {
             loiChoisie <- "BI"
         }else{
-            loiChoisie <- choixDistri.f(metrique=metrique, data=tmpDataMod[ , metrique, drop=FALSE])
+            loiChoisie <- choixDistri.f(metrique=metrique, Data=tmpDataMod[ , metrique, drop=FALSE])
         }
 
         if (!is.null(loiChoisie))

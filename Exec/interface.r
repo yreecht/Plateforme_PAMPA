@@ -313,9 +313,11 @@ tkadd(traitement,"command",label="Métrique par facteur unités d'observation",com
 tkadd(traitement,"separator")
 ## Ajout [yr: 11/08/2010]
 tkadd(traitement, "command", label="Boxplots \"à la carte\"...",
+      background="#fae18d",
       command=function(){selectionVariables.f("boxplot") ; winRaise.f(tm)})
 ## Ajout [yr: 14/10/2010]
 tkadd(traitement, "command", label="Fréquences d'occurrence...",
+      background="#fae18d",
       command=function(){selectionVariables.f("freq_occurrence") ; winRaise.f(tm)})
 
 
@@ -368,9 +370,11 @@ tkadd(traitement, "command", label="Fréquences d'occurrence...",
 tkadd(benthos,"separator")
 ## Ajout [yr: 18/08/2010]
 tkadd(benthos, "command", label="Boxplots \"à la carte\"...",
+      background="#fae18d",
       command=function(){selectionVariables.f("boxplot") ; winRaise.f(tm)})
 ## Ajout [yr: 14/10/2010]
 tkadd(benthos, "command", label="Fréquences d'occurrence...",
+      background="#fae18d",
       command=function(){selectionVariables.f("freq_occurrence") ; winRaise.f(tm)})
 
 
@@ -406,12 +410,15 @@ tkadd(benthos, "command", label="Fréquences d'occurrence...",
 ## Ajout [yr: 25/08/2010] :
 tkadd(analyse,"separator")
 tkadd(analyse, "cascade", label="Analyses exploratoires", menu=analysesExplo)
-tkadd(analyse, "cascade", label="Modèles inférentiels", menu=modelesInferentiels)
+tkadd(analyse, "cascade", label="Modèles inférentiels", menu=modelesInferentiels,
+      background="#fae18d")
 
 tkadd(modelesInferentiels, "command", label="Modèles linéaires 'à la carte'...",
+      background="#fae18d",
       command=function(){selectionVariables.f("modele_lineaire") ; winRaise.f(tm)})
 ## Ajout [yr: 13/10/2010]
 tkadd(modelesInferentiels, "command", label="Modèles linéaires sur 'présences/absences'...",
+      background="#fae18d",
       command=function(){selectionVariables.f("pres_abs") ; winRaise.f(tm)})
 
 

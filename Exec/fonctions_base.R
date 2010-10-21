@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: fonctions_base.R
-### Time-stamp: <2010-10-05 14:42:34 yreecht>
+### Time-stamp: <2010-10-20 16:19:24 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -35,7 +35,58 @@ if (!exists("grepl"))
     }
 }else{}                                 # Sinon rien à faire
 
+########################################################################################################################
+is.peche.f <- function()
+{
+    ## Purpose: Définir s'il s'ajit d'un jeu de données "pêche".
+    ## ----------------------------------------------------------------------
+    ## Arguments: aucun
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date: 19 oct. 2010, 15:45
 
+    if (length(unique(unitobs$type)) > 1)
+    {
+        stop("Plusieurs types d'observations")
+    }else{
+        return(is.element(as.character(unique(unitobs$type)),
+                          c("EMB", "DEB", "PSCI")))
+    }
+}
+
+
+########################################################################################################################
+pampaProfilingStart.f <- function()
+{
+    ## Purpose:
+    ## ----------------------------------------------------------------------
+    ## Arguments:
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date: 20 oct. 2010, 15:58
+
+    if (!is.null(getOption("pampaProfiling")) && getOption("pampaProfiling"))
+    {
+        filename <- paste("Rprof-", deparse(sys.call(-1)[[1]]), ".out", sep="")
+
+        Rprof(filename=filename, interval=0.1)
+    }else{}
+}
+
+
+
+########################################################################################################################
+pampaProfilingEnd.f <- function()
+{
+    ## Purpose:
+    ## ----------------------------------------------------------------------
+    ## Arguments:
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date: 20 oct. 2010, 15:58
+
+    if (!is.null(getOption("pampaProfiling")) && getOption("pampaProfiling"))
+    {
+        Rprof(filename=NULL)
+    }else{}
+}
 
 
 

@@ -1059,6 +1059,12 @@ unitespta.f <- function(){
                  unitobs$DimObs2[match(unitespta$unitobs, unitobs$unite_observation)])
         }
 
+        ## Certains NAs correspondent à des vrai zéros :
+        if (!all(is.na(obs$biomasse)))
+        {
+            unitespta$biomasse[is.na(unitespta$biomasse) & unitespta$nombre == 0] <- 0
+        }
+
     }else{
         ## alerte que les calculs de biomasse sont impossibles
         tkmessageBox(message="Calcul de biomasse impossible - Les tailles ne sont pas renseignées dans les observations")
@@ -1077,8 +1083,21 @@ unitespta.f <- function(){
     unitespta.p$an <- unitobs$an[match(unitespta.p$unitobs, unitobs$unite_observation)]
     unitespta$poids <- unitespta.p$poids
 
+    ## Certains NAs correspondent à des vrai zéros :
+    if (!all(is.na(obs$poids)))
+    {
+        unitespta$poids[is.na(unitespta$poids) & unitespta$nombre == 0] <- 0
+    }
+
+    ## ##################################################
     ## poids moyen
-    unitespta$poids_moyen <- unitespta$poids / unitespta$nombre
+    unitespta$poids_moyen <- apply(unitespta[ , c("nombre", "poids")], 1,
+                                   function(x)
+                               {
+                                   return(as.vector(ifelse(is.na(x[2]) || x[1] == 0,
+                                                           as.numeric(NA),
+                                                           x[2]/x[1])))
+                               })
 
     ## Presence - absence
     unitespta$pres_abs[unitespta$nombre != 0] <- as.integer(1) # pour avoir la richesse spécifique en 'integer'.1
@@ -1100,7 +1119,14 @@ unitespta.f <- function(){
         rayons$codesp <- rep(dimnames(rayons.t)[[2]], each = dim(rayons.t)[1], 1)
         assign("rayons", rayons, envir=.GlobalEnv)
         unitespta$rayonMax <- rayons$rayonMax
-        unitespta$densite <- unitespta$nombre / ((pi * unitespta$rayonMax)^2 )
+        unitespta$densite <- unitespta$nombre / (pi * (unitespta$rayonMax)^2 )
+
+        ## unitesp$densite <- unitesp$nombre /
+        ##     (pi * (as.vector(tapply(obs$dmin,
+        ##                             list(obs$unite_observation, obs$code_espece),
+        ##                             max, na.rm=TRUE)))^2)
+
+        unitesp$densite[unitesp$nombre == 0 & !is.na(unitesp$nombre)] <- 0
     }
 
     ## ajout des champs "an", "site", "biotope", "latitude", "longitude"
@@ -1113,7 +1139,7 @@ unitespta.f <- function(){
     unitespta$longitude <- unitobs$longitude[match(unitespta$unitobs, unitobs$unite_observation)]
 
     ## on renomme densite en CPUE pour les jeux de données pêche
-    if (length(typePeche)>1)
+    if (is.peche.f())                   # length(typePeche)>1
     {
         unitespta$CPUE <- unitespta$densite
         unitespta$densite <- NULL
@@ -1231,100 +1257,88 @@ unitesp.f <- function(){
 
 
     print("fonction unitesp.f activée")
+
+    ## ##################################################
     ## somme des abondances
     unitespT <- tapply(obs$nombre, list(obs$unite_observation, obs$code_espece), sum, na.rm = TRUE)
+    unitespT[is.na(unitespT)] <- 0      # Les NAs correspondent à des vrais zéros.
+
     ## Si video rotative, on divise par le nombre de rotation
     if (unique(unitobs$type) == "SVR")
     {
         unitespT <- unitespT / 3
     }
+    names(dimnames(unitespT)) <- c("unite_observation", "code_espece")
+
+    unitesp <- as.data.frame(as.table(unitespT), responseName="nombre")
+
 
     ## Euh... ce serait pas hyper dangeureux ce qui suit [!!!] [???] [yr: 01/10/2010]
     ## unitespT[is.na(unitespT)] <- as.integer(0) # Pour conserver des entiers
 
-    unitesp <- as.data.frame(matrix(data=NA, nrow=nrow(unitespT) * ncol(unitespT), ncol=3))
-    colnames(unitesp) = c("unite_observation", "code_espece", "nombre")
-    unitesp$nombre <- as.vector(unitespT, "integer")
-    unitesp$unite_observation <- rep(rownames(unitespT), ncol(unitespT))
-    unitesp$code_espece <- rep(colnames(unitespT), each = nrow(unitespT), 1)
-
     if (!is.benthos.f())                               # unique(unitobs$type) != "LIT"
     {
 
+        ## ##################################################
         ## biomasses
         biomasse.f()
 
+        ## ##################################################
         ## tailles moyennes ponderees
         if (ct==1)
         {
-            ## Calcul des tailles moyennes :
-            obs$taillecum <- obs$taille * obs$nombre # L*nb par ligne (=1obs exp X tr) # pas besoin de stocker dans
-                                        # obs. [yr: 01/10/2010]
-            y <- tapply(obs$nombre, list(obs$unite_observation, obs$code_espece), sum, na.rm=TRUE) # nb espXtr
-            z <- tapply(obs$taillecum, list(obs$unite_observation, obs$code_espece),
-                        function(x){if (all(is.na(x))) {return(NA)}else{return(sum(x, na.rm=TRUE))}}) # Pour éviter
-                                        # des sommes à zéro là où seulement des NAs.
+            unitesp$taille_moy <- as.vector(tapply(seq(length.out=nrow(obs)),
+                                                   list(obs$unite_observation, obs$code_espece),
+                                                   function(ii)
+                                               {
+                                                   weighted.mean(obs$taille[ii], obs$nombre[ii])
+                                               }))
+        }else{}
 
-            unitesp.t <- as.data.frame(matrix(NA, dim(z)[1]*dim(z)[2], 3))
-            colnames(unitesp.t) = c("unitobs", "code_espece", "taille_moy")
-            unitesp.t$taille_moy <- as.vector(z/y) # [!!!] On doit pouvoir faire plus simple. [yr: 28/09/2010]
-            ## unitesp.t$taille_moy[is.na(unitesp.t$taille_moy)] <- 0
-                                        # [!!!] Rhaa, mais c'est pas vrai cette manie de
-                                        # mettre les valeurs manquantes à zéro !!  [yr: 13/08/2010]
-            ## ##################################################
-            ## Est-ce que tout cela sert à qqch ? :
-            unitesp.t$unitobs <- rep(dimnames(z)[[1]], dim(z)[2])
-            unitesp.t$code_espece <- rep(dimnames(z)[[2]], each = dim(z)[1], 1)
-            unitesp.t$an <- unitobs$an[match(unitesp.t$unitobs, unitobs$unite_observation)]
-            ## ##################################################
-            obs$taillecum <- NULL
-
-            unitesp$taille_moy <- unitesp.t$taille_moy # [match(unitesp$unite_observation, unitesp.t$unitobs)] #faire un
-                                        # double match pour l'espece aussi
-            unitesp$taille_moy <- as.numeric(unitesp$taille_moy)
-        }
-
+        ## ##################################################
         ## biomasse
 
-        ## somme des biomasses par espece par unitobs
-        unitespT.b <- tapply(obs$biomasse, list(obs$unite_observation, obs$code_espece),
-                             function(x){if (all(is.na(x))) {return(NA)}else{return(sum(x, na.rm=TRUE))}}) # Pour éviter
-                                        # des sommes à zéro là où seulement des NAs.
-        unitesp.b <- as.data.frame(matrix(data=NA, nrow=dim(unitespT.b)[1] * dim(unitespT.b)[2], ncol=3))
-        colnames(unitesp.b) = c("unitobs", "code_espece", "biomasse")
-        ## ##################################################
-        ## Est-ce que tout cela sert à qqch ? :
-        unitesp.b$biomasse <- as.vector(unitespT.b) # On peut également compacter les lignes suivantes en une
-                                        # seule. [yr: 01/10/2010]... ou pas !
-        unitesp.b$unitobs <- rep(dimnames(unitespT.b)[[1]], dim(unitespT.b)[2])
-        unitesp.b$code_espece <- rep(dimnames(unitespT.b)[[2]], each = dim(unitespT.b)[1], 1)
-        unitesp.b$an <- unitobs$an[match(unitesp.b$unitobs, unitobs$unite_observation)]
-        ## ##################################################
+        unitesp$biomasse <- as.vector(tapply(obs$biomasse,
+                                             list(obs$unite_observation, obs$code_espece),
+                                             function(x)
+                                         {
+                                             if (all(is.na(x))) {return(NA)}else{return(sum(x, na.rm=TRUE))}
+                                         })) /
+                             (unitobs$DimObs1[match(unitesp$unite_observation, unitobs$unite_observation)] *
+                              unitobs$DimObs2[match(unitesp$unite_observation, unitobs$unite_observation)])
 
-        unitesp$biomasse <- unitesp.b$biomasse
-        unitesp$biomasse <- as.numeric(unitesp$biomasse) /
-            (unitobs$DimObs1[match(unitesp$unite_observation, unitobs$unite_observation)] *
-             unitobs$DimObs2[match(unitesp$unite_observation, unitobs$unite_observation)])
 
+        ## Certains NAs correspondent à des vrai zéros :
+        if (!all(is.na(obs$biomasse)))
+        {
+            unitesp$biomasse[is.na(unitesp$biomasse) & unitesp$nombre == 0] <- 0
+        }
+
+        ## ##################################################
         ## poids
+        unitesp$poids <- as.vector(tapply(obs$poids,
+                                          list(obs$unite_observation, obs$code_espece),
+                                          function(x) {if (all(is.na(x))) {return(NA)}else{return(sum(x, na.rm=TRUE))}}))
 
-        ## sommes des poids par espece par unitobs
-        unitespT.p <- tapply(obs$poids, list(obs$unite_observation, obs$code_espece), sum)
-        unitesp.p <- as.data.frame(matrix(data=NA, nrow=dim(unitespT.p)[1] * dim(unitespT.p)[2], ncol=3))
-        colnames(unitesp.p) = c("unitobs", "code_espece", "poids")
-        unitesp.p$poids <- as.vector(unitespT.p, "numeric")
-        ## ##################################################
-        ## Est-ce que tout cela sert à qqch ? :
-        unitesp.p$unitobs <- rep(dimnames(unitespT.p)[[1]], dim(unitespT.p)[2]) # préférer des ncol() plus explicites
-                                        # [yr: 01/10/2010]
-        unitesp.p$code_espece <- rep(dimnames(unitespT.p)[[2]], each = dim(unitespT.p)[1], 1)
-        unitesp.p$an <- unitobs$an[match(unitesp.p$unitobs, unitobs$unite_observation)]
-        ## ##################################################
-        unitesp$poids <- unitesp.p$poids
+        # Les NAs correspondent à des vrai zéros.
 
+        ## Certains NAs correspondent à des vrai zéros :
+        if (!all(is.na(obs$poids)))
+        {
+            unitesp$poids[is.na(unitesp$poids) & unitesp$nombre == 0] <- 0
+        }
+
+        ## ##################################################
         ## poids moyen
-        unitesp$poids_moyen <- unitesp$poids / unitesp$nombre
+        unitesp$poids_moyen <- apply(unitesp[ , c("nombre", "poids")], 1,
+                                     function(x)
+                                 {
+                                     return(as.vector(ifelse(is.na(x[2]) || x[1] == 0,
+                                                             as.numeric(NA),
+                                                             x[2]/x[1])))
+                                 })
 
+        ## ##################################################
         ## calcul densites (pour les pêches, ce calcul correspond aux captures par unite d'effort)
         if (unique(unitobs$type) != "SVR")
         {
@@ -1332,16 +1346,25 @@ unitesp.f <- function(){
                 (unitobs$DimObs1[match(unitesp$unite_observation, unitobs$unite_observation)] *
                  unitobs$DimObs2[match(unitesp$unite_observation, unitobs$unite_observation)])
         }else{
+            ## Simplifier [yr: 19/10/2010]
             ## on recherche la distance d'observation max de l'espece sur l'ensemble des rotations de la station
-            rayons.t <- tapply(obs$dmin, list(obs$unite_observation, obs$code_espece), max)
-            rayons <- as.data.frame(matrix(as.numeric(NA), dim(rayons.t)[1]*dim(rayons.t)[2], 3))
-            colnames(rayons) = c("unitobs", "codesp", "rayonMax")
-            rayons$rayonMax <- as.vector(rayons.t, "numeric")
-            rayons$unitobs <- rep(dimnames(rayons.t)[[1]])
-            rayons$codesp <- rep(dimnames(rayons.t)[[2]], each = dim(rayons.t)[1], 1)
-            assign("rayons", rayons, envir=.GlobalEnv)
-            unitesp$rayonMax <- rayons$rayonMax
-            unitesp$densite <- unitesp$nombre / ((pi * unitesp$rayonMax)^2 )
+            ## rayons.t <- tapply(obs$dmin, list(obs$unite_observation, obs$code_espece), max, na.rm=TRUE)
+            ## rayons <- as.data.frame(matrix(as.numeric(NA), dim(rayons.t)[1]*dim(rayons.t)[2], 3))
+            ## colnames(rayons) = c("unitobs", "codesp", "rayonMax")
+            ## rayons$rayonMax <- as.vector(rayons.t, "numeric")
+            ## rayons$unitobs <- rep(dimnames(rayons.t)[[1]])
+            ## rayons$codesp <- rep(dimnames(rayons.t)[[2]], each = dim(rayons.t)[1], 1)
+            ## assign("rayons", rayons, envir=.GlobalEnv)
+            ## unitesp$rayonMax <- rayons$rayonMax
+
+            ## unitesp$densite <- unitesp$nombre / ((pi * unitesp$rayonMax)^2 )
+
+            unitesp$densite <- unitesp$nombre /
+                (pi * (as.vector(tapply(obs$dmin,
+                                        list(obs$unite_observation, obs$code_espece),
+                                        max, na.rm=TRUE)))^2)
+
+            unitesp$densite[unitesp$nombre == 0 & !is.na(unitesp$nombre)] <- 0
         }
 
     }else{ # cas LIT
@@ -1362,7 +1385,9 @@ unitesp.f <- function(){
         ##                            listespunit[ , c("unite_observation", "code_espece")][, x]))
         unitesp$colonie <- as.vector(e)
         unitesp$colonie[is.na(unitesp$colonie)] <- 0 # [???]
-        unitesp$taille.moy.colonies <- unitesp$nombre / unitesp$colonie
+        unitesp$taille.moy.colonies <- apply(unitesp[ , c("nombre", "colonie")], 1,
+                                             function(x){ifelse(x[2] == 0, NA, x[1] / x[2])})
+
         rm(e)
     }
 
@@ -1371,13 +1396,17 @@ unitesp.f <- function(){
     unitesp$pres_abs[unitesp$nombre == 0] <- as.integer(0) # pour avoir la richesse spécifique en 'integer'.0
 
     ## Ajout des champs site, biotope, an, statut
-    unitesp$site <- unitobs$site[match(unitesp$unite_observation, unitobs$unite_observation)]
-    unitesp$biotope <- unitobs$biotope[match(unitesp$unite_observation, unitobs$unite_observation)]
-    unitesp$an <- unitobs$an[match(unitesp$unite_observation, unitobs$unite_observation)]
-    unitesp$statut_protection <- unitobs$statut_protection[match(unitesp$unite_observation, unitobs$unite_observation)]
+    ## unitesp$site <- unitobs$site[match(unitesp$unite_observation, unitobs$unite_observation)]
+    ## unitesp$biotope <- unitobs$biotope[match(unitesp$unite_observation, unitobs$unite_observation)]
+    ## unitesp$an <- unitobs$an[match(unitesp$unite_observation, unitobs$unite_observation)]
+    ## unitesp$statut_protection <- unitobs$statut_protection[match(unitesp$unite_observation, unitobs$unite_observation)]
+
+    unitesp <- cbind(unitesp,
+                     unitobs[match(unitesp$unite_observation, unitobs$unite_observation),
+                             c("site", "biotope", "an", "statut_protection")])
 
     ## on renomme densite en CPUE pour les jeux de données pêche
-    if (length(typePeche)>1)
+    if (is.peche.f())                   # length(typePeche)>1
     {
         unitesp$CPUE <- unitesp$densite
         unitesp$densite <- NULL
@@ -1566,13 +1595,14 @@ unit.f <- function(){
         ## suppression de l'indice de shannon (non pertinent)
         unit$shannon <- NULL
 
+        ## browser()
+
         ## richesse specifique relative  ## Remplacer par un "switch" ou même une construction plus
                                         # générique (e.g. construction et évaluation d'une expression dépendant du site
                                         # étudié) [yreecht: 22/07/2010] OK [yr: 08/10/2010]
 
         ## Phylum(s) présent(s) dans le jeux de données :
         phylums <- as.character(unique(na.omit(especes$Phylum[match(obs$code_espece, especes$code_espece)])))
-
 
         ## RS relative par rapp. au nombre d'espèces du site :
         unit$RS.relative.site <- (unit$richesse_specifique /
@@ -1636,7 +1666,7 @@ unit.f <- function(){
     }
 
     ## on renomme densite en CPUE pour les jeux de données pêche
-    if (length(typePeche)>1)
+    if (is.peche.f())                   # length(typePeche)>1
     {
         unit$CPUE <- unit$densite
         unit$densite <- NULL
@@ -1646,7 +1676,7 @@ unit.f <- function(){
     print("La table metriques par unite d'observation a ete creee : UnitobsMetriques.csv")
     write.csv(unit, file=paste(NomDossierTravail, "UnitobsMetriques.csv", sep=""), row.names = FALSE)
     ## carte de la CPUE pour les données de pêche NC
-    if ((length(typePeche)>1) & (siteEtudie == "NC"))
+    if (is.peche.f() & (siteEtudie == "NC")) # (length(typePeche)>1)
     {
         x11(width=50, height=30, pointsize=10)
         MapNC <- read.shape("./shapefiles/NewCaledonia_v7.shp", dbf.data = TRUE, verbose=TRUE, repair=FALSE)
@@ -1654,7 +1684,7 @@ unit.f <- function(){
         unit$latitude <- as.vector(unit$latitude , "numeric")
         unit$longitude <- as.vector(unit$longitude , "numeric")
         unitSymbols <- subset(unit, longitude>0)
-        symbols(unitSymbols$longitude, unitSymbols$latitude, unitSymbols$densite, add=T, # Nommer les arguments [yr: 30/07/2010]
+        symbols(unitSymbols$longitude, unitSymbols$latitude, unitSymbols$densite, add=TRUE, # Nommer les arguments [yr: 30/07/2010]
                 fg=colours()[seq(10, (nrow(unitSymbols)*10), by=10)], lwd=3) #
         title(main=paste("CPUE", typePeche))
     }
@@ -1910,15 +1940,22 @@ calcPresAbs.f <- function()
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 13 oct. 2010, 15:18
 
-    ## Pour avoir les bons noms de colonnes dans ce qui suit :
-    names(dimnames(contingence)) <- c("unite_observation", "code_espece")
+    if (nrow(contingence) > 0 && ncol(contingence) > 0) # Contingence ne doit pas être vide.
+    {
+        ## Pour avoir les bons noms de colonnes dans ce qui suit :
+        names(dimnames(contingence)) <- c("unite_observation", "code_espece")
 
-    ## On utilise la méthode "as.data.frame" pour la classe "table"
-    ## (fonctionne comme un reshape() en direction="long") :
-    TablePresAbs <- as.data.frame(as.table(contingence), responseName="pres_abs", stringsAsFactors=FALSE)
+        ## On utilise la méthode "as.data.frame" pour la classe "table"
+        ## (fonctionne comme un reshape() en direction="long") :
+        TablePresAbs <- as.data.frame(as.table(contingence), responseName="pres_abs", stringsAsFactors=FALSE)
 
-    ## Seules les présences absences nous intéressent :
-    TablePresAbs$pres_abs[TablePresAbs$pres_abs > 0] <- 1
+        ## Seules les présences absences nous intéressent :
+        TablePresAbs$pres_abs[TablePresAbs$pres_abs > 0] <- 1
 
-    assign(x="TablePresAbs", value=TablePresAbs, envir=.GlobalEnv)
+        assign(x="TablePresAbs", value=TablePresAbs, envir=.GlobalEnv)
+    }else{
+        assign(x="TablePresAbs", value=NULL, envir=.GlobalEnv)
+    }
+
+    statutPresAbs.f()
 }

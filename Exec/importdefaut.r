@@ -175,6 +175,13 @@ opendefault.f <- function ()
     levels(unitobs$caracteristique_1) <- c(levels(unitobs$caracteristique_1), "NA") # bon ça corrige l'erreur ci-dessous
                                         # mais est-ce bien nécessaire ? [yr: 23/08/2010]
     unitobs$caracteristique_1[is.na(unitobs$caracteristique_1)] <- "NA" # [!!!] Erreur !
+
+    ## ## Réorganisation des niveaux du facteur "statut_protection" pour avoir les bonnes couleurs dans les graphiques :
+    ## if (all(is.element(levels(unitobs$statut_protection), c("RE", "PP", "HR"))))
+    ## {
+    ##     levels(unitobs$statut_protection) <- sort(levels(unitobs$statut_protection), decreasing=TRUE)
+    ## }else{}
+
     if (unique(unitobs$caracteristique_1)[1]=="PecRec")
     {
         unitobs$DimObs1bis <- unitobs$DimObs1

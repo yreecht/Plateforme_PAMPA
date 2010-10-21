@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: modeles_lineaires_interface.R
-### Time-stamp: <2010-09-28 15:25:36 yreecht>
+### Time-stamp: <2010-10-19 17:26:03 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -82,14 +82,14 @@ scrollframeInterior <- function(env=rdenv()) {
 
 
 ########################################################################################################################
-choixDistri.f <- function(metrique, data)
+choixDistri.f <- function(metrique, Data)
 {
     ## Purpose: Aider l'utilisateur dans le choix d'une distribution de la
     ##          métrique et lancer les analyses adéquates.
     ## ----------------------------------------------------------------------
     ## Arguments: metrique : le nom de la métrique (variable dépendant)
     ##                       choisie.
-    ##            data : le jeu de données contenant la métrique.
+    ##            Data : le jeu de données contenant la métrique.
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 18 août 2010, 16:19
 
@@ -127,7 +127,7 @@ choixDistri.f <- function(metrique, data)
     Img.N <- tkrplot(FrameN,            # Création de l'image.
                      fun=function()
                  {
-                     plotDist.f(y=data[ , metrique], family="NO", metrique=metrique, env=env)
+                     plotDist.f(y=Data[ , metrique], family="NO", metrique=metrique, env=env)
                  },
                      vscale=vscale, hscale=hscale, pointsize=pointsize)
 
@@ -139,21 +139,21 @@ choixDistri.f <- function(metrique, data)
     FrameLogN <- tkframe(WinDistri, borderwidth=2, relief="groove")
     Img.LogN <- tkrplot(FrameLogN, fun=function() # Création de l'image.
                     {
-                        plotDist.f(y=data[ , metrique], family="LOGNO", metrique=metrique, env=env)
+                        plotDist.f(y=Data[ , metrique], family="LOGNO", metrique=metrique, env=env)
                     },
                         vscale=vscale, hscale=hscale, pointsize=pointsize)
 
     RB.LogN <- tkradiobutton(FrameLogN, variable=LoiChoisie, value="LOGNO", # bouton de sélection.
                              text=paste("loi log-Normale (AIC=", round(distList[["LOGNO"]]$aic, 0), "). ", sep=""))
 
-    if (is.integer(data[ , metrique]))
+    if (is.integer(Data[ , metrique]))
     {
         ## Frame pour la loi de Poisson :
         FramePois <- tkframe(WinDistri, borderwidth=2, relief="groove")
         Img.Pois <- tkrplot(FramePois,  # Création de l'image.
                             fun=function()
                         {
-                            plotDist.f(y=data[ , metrique], family="PO", metrique=metrique, env=env)
+                            plotDist.f(y=Data[ , metrique], family="PO", metrique=metrique, env=env)
                         },
                             vscale=vscale, hscale=hscale, pointsize=pointsize)
 
@@ -166,7 +166,7 @@ choixDistri.f <- function(metrique, data)
         Img.NBinom <- tkrplot(FrameNBinom, # Création de l'image.
                               fun=function()
                           {
-                              plotDist.f(y=data[ , metrique], family="NBI", metrique=metrique, env=env)
+                              plotDist.f(y=Data[ , metrique], family="NBI", metrique=metrique, env=env)
                           },
                               vscale=vscale, hscale=hscale, pointsize=pointsize)
 
@@ -209,7 +209,7 @@ choixDistri.f <- function(metrique, data)
 
 
     ## Pour les données entières seulement :
-    if (is.integer(data[ , metrique]))
+    if (is.integer(Data[ , metrique]))
     {
         tkgrid(Img.Pois, columnspan=2)
         tkgrid(RB.Pois, sticky="e")

@@ -3,8 +3,8 @@
 ########################################################################################################################
 ## Zone éditable :
 
-## ##########
-## Exemple : faites de même avec vos jeux de donnée (sans les commentaires -- "## " -- en début de ligne.)
+## #########################################################################################################
+## Exemple : faites de même avec vos jeux de donnée (sans les commentaires -- "## " -- en début de ligne.) :
 
 ## #### RUN :
 ## SiteEtudie <- "RUN"
@@ -16,6 +16,10 @@
 
 
 
+     ######################################
+     ### Copiez votre configuration ici ###
+     ######################################
+
 
 
 
@@ -23,6 +27,33 @@
 ## Fin de la zone éditable
 ########################################################################################################################
 
+## Type de pêche.
+typePeche <- c("")
+
+## Vérification de l'existances de la configuration :
+requiredVar <- c("SiteEtudie", "fileName1", "fileName2", "fileName3", "nameWorkspace")
+existVar <- sapply(requiredVar, exists)
+
+if (any(! existVar))                    # Si au moins une des variables n'est pas définie.
+{
+    pluriel <- sum(! existVar) > 1
+
+    tkmessageBox(message=paste(ifelse(pluriel,
+                                      "Les variables suivantes ne sont pas définies ",
+                                      "La variable suivante n'est pas définie "),
+                               "dans votre fichier \"", basePath, "/Exec/config.r\" :\n\n\t*  ",
+                               paste(requiredVar[! existVar], collapse="\n\t*  "),
+                               "\n\nVous devez éditer le fichier.", sep=""),
+                 icon="error")
+
+    if (getOption("editor") != "")
+    {
+        file.edit(paste(basePath, "/Exec/config.r", sep=""), title="Éditez \"config.r\" (zone éditable uniquement)")
+    }else{}
+
+    stop("Configuration incorrecte : relancez la plateforme une fois la configuration effectuée.")
+
+}else{}
 
 #### Logo :
 fileimage <- "./Exec/img/pampa2.GIF"
@@ -34,8 +65,10 @@ nbColMax <- 30
 GraphPartMax <- 0.95
 choixPDF <- 0
 Jeuxdonnescoupe <- 0
+
 ## variables d'environnement pour l'interface
 lang <- "FR"
+
 
 pathMaker.f <- function()
 {
@@ -57,15 +90,21 @@ pathMaker.f <- function()
 
 pathMaker.f()
 
+assign("typePeche", typePeche)
+## ! cette variable sert visiblement à choisir le type de graphique. le code ci dessous est dupliqué dans plusieurs fonctions
+## !#on renomme densite en CPUE pour les jeux de données pêche
+## !if (length(typePeche)>1) {
+## !   unit$CPUE <- unit$densite
+## !   unit$densite = NULL
+## ! }
+
+
 assign("siteEtudie", SiteEtudie, envir=.GlobalEnv)
 assign("fileimage", fileimage, envir=.GlobalEnv)
 assign("Jeuxdonnescoupe", Jeuxdonnescoupe, envir=.GlobalEnv)
 
 assign("nbColMax", nbColMax, envir=.GlobalEnv)
 assign("GraphPartMax", GraphPartMax, envir=.GlobalEnv)
-
-typePeche <- ""
-assign("typePeche", typePeche)
 
 ########################################################################################################################
 ## Ajouts pour les graphs génériques [yr: 13/08/2010] :
@@ -75,10 +114,3 @@ assign("varNames", read.csv(paste(basePath, "/Exec/NomsVariables.csv", sep=""),
                             header=TRUE, row.names=1, stringsAsFactors=FALSE),
        envir=.GlobalEnv)
 
-
-## ! cette variable sert visiblement à choisir le type de graphique. le code ci dessous est dupliqué dans plusieurs fonctions
-## !#on renomme densite en CPUE pour les jeux de données pêche
-## !if (length(typePeche)>1) {
-## !   unit$CPUE <- unit$densite
-## !   unit$densite = NULL
-## ! }

@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: barplots_occurrence.R
-### Time-stamp: <2010-10-14 16:10:35 yreecht>
+### Time-stamp: <2010-10-19 17:36:40 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -114,7 +114,7 @@ barplotOccurrence.f <- function(factGraph, factGraphSel, listFact, listFactSel)
                               main=mainTitle,
                               xlab=Capitalize.f(varNames[tail(listFact, 1), "nom"]),
                               ylab="Fréquences d'occurrence relatives (%)",
-                              col=heat.colors(nrow(heights)),
+                              col=rev(heat.colors(nrow(heights))),
                               legend.text=ifelse(length(listFact) > 1, TRUE, FALSE),
                               args.legend=list("x"="topright", "inset"=-0.08, "xpd"=NA,
                                                "title"=Capitalize.f(varNames[listFact[1], "nom"])))

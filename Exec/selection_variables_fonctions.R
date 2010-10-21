@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: Selection_variables_fonctions.R
-### Time-stamp: <2010-10-13 14:23:04 yreecht>
+### Time-stamp: <2010-10-21 12:04:55 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -256,7 +256,8 @@ champsReferentiels.f <- function(nomTable)
 
 
 ########################################################################################################################
-subsetToutesTables.f <- function(metrique, facteurs, selections, tableMetrique="", exclude=NULL)
+subsetToutesTables.f <- function(metrique, facteurs, selections, tableMetrique="",
+                                 exclude=NULL, add=c("code_espece", "unite_observation"))
 {
     ## Purpose: Extraire les données utiles uniquement, d'après les métrique
     ##          et facteur(s) séléctionnés, ainsi que leur(s) sélection(s) de
@@ -269,6 +270,8 @@ subsetToutesTables.f <- function(metrique, facteurs, selections, tableMetrique="
     ##            tableMetrique : le nom de la table des métriques.
     ##            exclude : niveau de facteur à ne pas prendre en compte pour
     ##                      le subset.
+    ##            add : champs (de la table de métrique) à ajouter aux
+    ##                  données.
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date:  6 août 2010, 16:46
 
@@ -292,11 +295,18 @@ subsetToutesTables.f <- function(metrique, facteurs, selections, tableMetrique="
 
     dataMetrique <- eval(parse(text=tableMetrique))
 
+    if (!is.null(add))
+    {
+        metriques <- c(metrique, add[is.element(add, colnames(dataMetrique))])
+    }else{
+        metriques <- metrique
+    }
+
     ## Subset en fonction de la table de métrique
     switch(casTables[tableMetrique],
            ## Cas de la table d'observation ou des tables de présence :
            listespunit={
-                tmp <- cbind(dataMetrique[!is.na(dataMetrique[ , metrique]) , metrique, drop=FALSE],
+                tmp <- cbind(dataMetrique[!is.na(dataMetrique[ , metrique]) , metriques, drop=FALSE],
                              unitobs[match(dataMetrique$unite_observation[!is.na(dataMetrique[ , metrique])],
                                            unitobs$unite_observation), # ajout des colonnes sélectionnées d'unitobs
                                      facteurs[is.element(facteurs, colnames(unitobs))], drop=FALSE],
@@ -306,7 +316,7 @@ subsetToutesTables.f <- function(metrique, facteurs, selections, tableMetrique="
            },
            ## Cas de la table d'observations par classes de taille :
            unitespta={
-               tmp <- cbind(dataMetrique[!is.na(dataMetrique[ , metrique]) , c(metrique, "classe_taille"), drop=FALSE],
+               tmp <- cbind(dataMetrique[!is.na(dataMetrique[ , metrique]) , c(metriques, "classe_taille"), drop=FALSE],
                              unitobs[match(dataMetrique$unite_observation[!is.na(dataMetrique[ , metrique])],
                                            unitobs$unite_observation), # ajout des colonnes sélectionnées d'unitobs
                                      facteurs[is.element(facteurs, colnames(unitobs))], drop=FALSE],
@@ -315,7 +325,7 @@ subsetToutesTables.f <- function(metrique, facteurs, selections, tableMetrique="
                                      facteurs[is.element(facteurs, colnames(especes))], drop=FALSE])
            },
            ## Autres cas :
-           tmp <- cbind(dataMetrique[!is.na(dataMetrique[ , metrique]) , metrique, drop=FALSE],
+           tmp <- cbind(dataMetrique[!is.na(dataMetrique[ , metrique]) , metriques, drop=FALSE],
                         unitobs[match(dataMetrique$unite_observation[!is.na(dataMetrique[ , metrique])],
                                       unitobs$unite_observation), # ajout des colonnes sélectionnées d'unitobs.
                                 facteurs[is.element(facteurs, colnames(unitobs))], drop=FALSE])
@@ -351,7 +361,7 @@ subsetToutesTables.f <- function(metrique, facteurs, selections, tableMetrique="
     }else{}
 
     ## Conversion des biomasses et densités -> /100m² :
-    if (any(is.element(colnames(tmp), c("biomasse", "densite"))))
+    if (any(is.element(colnames(tmp), c("biomasse", "densite"))) && !is.peche.f())
     {
         tmp[ , is.element(colnames(tmp),
                           c("biomasse", "densite"))] <- 100 * tmp[, is.element(colnames(tmp),
@@ -361,6 +371,128 @@ subsetToutesTables.f <- function(metrique, facteurs, selections, tableMetrique="
     return(tmp)
 }
 
+########################################################################################################################
+tableRegroupementCritere.f <- function(Data, metrique, facteurs, listFact)
+{
+    ## Purpose:
+    ## ----------------------------------------------------------------------
+    ## Arguments:
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date: 18 oct. 2010, 15:47
+
+    ## traitements selon le type de métrique :
+    casMetrique <- c("nombre"="sum",
+                     "taille_moy"="w.mean",
+                     "biomasse"="sum",
+                     "poids"="sum",
+                     "poids_moyen"="w.mean",
+                     "densite"="sum",
+                     "CPUE"="sum",
+                     "pres_abs"="pres")
+
+    ## Expression contenant la liste des facteurs de regroupement des observations :
+    exprFacteurs <- parse(text=paste("list(", paste(facteurs, collapse=", "), ")", sep=""))
+
+
+    ## Ajout du champs nombre pour le calcul des moyennes pondérées si
+    if (casMetrique[metrique] == "w.mean" && ! is.element("nombre", colnames(Data)))
+    {
+        Data <- cbind(Data,
+                      nombre=listespunit$nombre[match(apply(Data[ , c("code_espece", "unite_observation")],
+                                                            1, paste, collapse="*"),
+                                                      apply(listespunit[ , c("code_espece", "unite_observation")],
+                                                            1, paste, collapse="*"))])
+
+        nbAdded <- TRUE
+    }else{
+        nbAdded <- FALSE
+    }
+
+    ## Aggrégation de la métrique :
+    switch(casMetrique[metrique],
+           "sum"={
+               res <- with(Data,
+                           tapply(eval(parse(text=metrique)),
+                                  eval(exprFacteurs),
+                                  sum, na.rm=TRUE))
+           },
+           "w.mean"={
+               res <- with(Data,
+                           tapply(1:nrow(Data),
+                                  eval(exprFacteurs),
+                                  function(ii)
+                              {
+                                  weighted.mean(eval(parse(text=metrique))[ii],
+                                                nombre[ii],
+                                                na.rm=TRUE)
+                              }))
+           },
+           "pres"={
+               res <- with(Data,
+                           tapply(eval(parse(text=metrique)),
+                                  eval(exprFacteurs),
+                                  function(x)
+                              {
+                                  ifelse(all(is.na(x)), # Cas où il n'y a que des NAs.
+                                         NA,
+                                         ifelse(any(x > 0, na.rm=TRUE), # Sinon...
+                                                1, # ...présence si au moins une observation dans le groupe.
+                                                0))
+                              }))
+           },
+           )
+
+    ## Nom des dimensions
+    names(dimnames(res)) <- c(facteurs)
+
+    ## Transformation vers format long :
+    reslong <- as.data.frame(as.table(res), responseName=metrique)
+    reslong <- reslong[ , c(tail(colnames(reslong), 1), head(colnames(reslong), -1))] # métrique en première.
+
+    ## ## Transformation vers format long :
+    ## reslong <- reshape(as.data.frame(res),
+    ##                    idvar=names(dimnames(res))[1], ids=row.names(res),
+    ##                    times=colnames(res), timevar=names(dimnames(res))[2],
+    ##                    varying=list(colnames(res)), v.names=metrique,
+    ##                    direction="long",
+    ##                    new.row.names=seq(length.out=nrow(res) * ncol(res)))[ , c(2, 1, 3)]
+
+    for (iFact in listFact)
+    {
+        factReduced <- with(Data,
+                            tapply(eval(parse(text=iFact)),
+                                   eval(exprFacteurs),
+                                   function(x)
+                               {
+                                   if (length(x) > 1 && length(unique(x)) > 1) # On doit n'avoir qu'une seule
+                                        # modalité...
+                                   {
+                                       return(NULL)                  # ...sinon on retourne NULL
+                                   }else{
+                                       unique(as.character(x))
+                                   }
+                               }))
+
+        ## On ajoute la colonne, sauf s'il y a des éléments nuls (la fonction renvoie NULL) :
+        if (any(is.null(unlist(factReduced)))) # unlist() pour les cas où il n'y a que des NULLs.
+        {
+            warning("Un des facteurs annexes est surement un sous-ensemble du(des) facteur(s) de regroupement des observations.")
+            return(NULL)
+        }else{
+            colNames <- c(colnames(reslong), iFact)
+            reslong <- cbind(reslong,
+                             as.vector(factReduced))
+            colnames(reslong) <- colNames
+        }
+    }
+
+
+    return(reslong)
+
+    ## head(expand.grid(levels(factor(Data$unite_observation)), levels(factor(Data$interet.chasseRUN))))
+    ## head(expand.grid(levels(factor(Data$unite_observation)), levels(factor(Data[ , facteur]))))
+
+}
 
 
 

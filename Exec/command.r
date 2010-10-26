@@ -14,8 +14,11 @@ RestaurerDonnees.f <- function ()
         assign("unitesp", SAUVunitesp, envir=.GlobalEnv)
         assign("unit", SAUVunit, envir=.GlobalEnv)
         assign("TablePresAbs", SAUVTablePresAbs, envir=.GlobalEnv)
+        assign("listespunit", SAUVlistespunit, envir=.GlobalEnv)
+        assign("TableBiodiv", SAUVTableBiodiv, envir=.GlobalEnv)
+        assign("TableMetrique", SAUVTableMetrique, envir=.GlobalEnv)
 
-        if (unique(unitobs$type) != "LIT")
+        if (!is.benthos.f())               # unique(unitobs$type) != "LIT"
         {  # car pas de classes de tailles avec les recouvrements
             ## unitespta <- SAUVunitespta
             assign("unitespta", SAUVunitespta, envir=.GlobalEnv)
@@ -23,9 +26,9 @@ RestaurerDonnees.f <- function ()
         ## si SVR calcul des metriques par rotation
         if (unique(unitobs$type) == "SVR")
         {
-            unitesptar <- SAUVunitesptar
-            unitespr <- SAUVunitespr
-            unitr <- SAUVunitr
+            ## unitesptar <- SAUVunitesptar
+            ## unitespr <- SAUVunitespr
+            ## unitr <- SAUVunitr
             assign("unitesptar", SAUVunitesptar, envir=.GlobalEnv)
             assign("unitespr", SAUVunitespr, envir=.GlobalEnv)
             assign("unitr", SAUVunitr, envir=.GlobalEnv)
@@ -80,6 +83,7 @@ SelectionUnBiotope.f <- function ()
     obs <- UnBiotopeDansObs.f()
     assign("obs", obs, envir=.GlobalEnv)
     creationTablesBase.f()
+    creationTablesCalcul.f()
     ModifierInterfaceApresSelection.f(bio, dim(obs)[1])
     gestionMSGinfo.f("Biotopeselectionne", dim(obs)[1])
 }
@@ -99,6 +103,7 @@ SelectionUnCritereEsp.f <- function ()
     obs <- UnCritereEspDansObs.f()
     assign("obs", obs, envir=.GlobalEnv)
     creationTablesBase.f()
+    creationTablesCalcul.f()
     ModifierInterfaceApresSelection.f(paste(factesp[1], ":", selectfactesp), dim(obs)[1])
     ## gestionMSGinfo.f("Critereselectionne", dim(obs)[1])
 }
@@ -116,6 +121,7 @@ SelectionUnCritereUnitobs.f <- function ()
     obs <- UnCritereUnitobsDansObs.f()
     assign("obs", obs, envir=.GlobalEnv)
     creationTablesBase.f()
+    creationTablesCalcul.f()
     ModifierInterfaceApresSelection.f(paste(fact[1], ":", selectfactunitobs), dim(obs)[1])
     ## gestionMSGinfo.f("Critereselectionne", dim(obs)[1])
 }
@@ -133,6 +139,7 @@ SelectionUneFamille.f <- function ()
     obs <- UneFamilleDansObs.f()
     assign("obs", obs, envir=.GlobalEnv)
     creationTablesBase.f()
+    creationTablesCalcul.f()
     ModifierInterfaceApresSelection.f(fa, dim(obs)[1])
     gestionMSGinfo.f("Familleselectionne", dim(obs)[1])
 }
@@ -150,6 +157,7 @@ SelectionUnPhylum.f <- function ()
     obs <- UnPhylumDansObs.f()
     assign("obs", obs, envir=.GlobalEnv)
     creationTablesBase.f()
+    creationTablesCalcul.f()
     ModifierInterfaceApresSelection.f(phy, dim(obs)[1])
     gestionMSGinfo.f("Phylumselectionne", dim(obs)[1])
 }
@@ -167,6 +175,7 @@ SelectionUneClasse.f <- function ()
     obs <- UneClasseDansObs.f()
     assign("obs", obs, envir=.GlobalEnv)
     creationTablesBase.f()
+    creationTablesCalcul.f()
     ModifierInterfaceApresSelection.f(cla, dim(obs)[1])
     gestionMSGinfo.f("Classeselectionne", dim(obs)[1])
 }
@@ -182,6 +191,7 @@ SelectionUnOrdre.f <- function ()
     obs <- UnOrdreDansObs.f()
     assign("obs", obs, envir=.GlobalEnv)
     creationTablesBase.f()
+    creationTablesCalcul.f()
     ModifierInterfaceApresSelection.f(ord, dim(obs)[1])
     gestionMSGinfo.f("Ordreselectionne", dim(obs)[1])
 }
@@ -198,6 +208,7 @@ SelectionUneCatBenth.f <- function ()
     obs <- UneCatBenthDansObs.f()
     assign("obs", obs, envir=.GlobalEnv)
     creationTablesBase.f()
+    creationTablesCalcul.f()
     ModifierInterfaceApresSelection.f(selectcb, dim(obs)[1])
     gestionMSGinfo.f("CatBenthselectionne", dim(obs)[1])
 }
@@ -215,6 +226,7 @@ selectionEspeceStatut.f <- function ()
     obs <- UnStatutDansObs.f()
     assign("obs", obs, envir=.GlobalEnv)
     creationTablesBase.f()
+    creationTablesCalcul.f()
     ModifierInterfaceApresSelection.f(statut, dim(obs)[1])
     gestionMSGinfo.f("Statutselectionne", dim(obs)[1])
 }

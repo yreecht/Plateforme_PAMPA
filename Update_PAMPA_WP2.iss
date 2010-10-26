@@ -2,9 +2,9 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "PAMPA WP2"
-#define MyAppVersion "0.98-3"
+#define MyAppVersion "0.99-1"
 #define MyAppPublisher "Ifremer"
-#define MyAppURL "http://www.example.com/"
+#define MyAppURL "https://www.ifremer.fr/ezprod/index.php/pampa/"
 #define MyAppExeName "PAMPA WP2.bat"
 #define InstallDir "C:\PAMPA"
 #define ExecDir "Exec"
@@ -48,7 +48,7 @@ Source: ".\Exec\config.r"; DestDir: "{app}"; Flags: uninsneveruninstall onlyifdo
 Source: "Exec\anova.r"; DestDir: "{app}"
 Source: "Exec\arbre_regression.r"; DestDir: "{app}"
 Source: "Exec\barplots_occurrence.R"; DestDir: "{app}"
-Source: "Exec\boxplot_generique_calc.R"; DestDir: "{app}"
+Source: "Exec\boxplots_esp_generiques.R"; DestDir: "{app}"
 Source: "Exec\calcul_simple.r"; DestDir: "{app}"
 Source: "Exec\command.r"; DestDir: "{app}"
 Source: "Exec\corresp-cat-benth.csv"; DestDir: "{app}"
@@ -74,6 +74,7 @@ Source: "Exec\selection_variables_fonctions.R"; DestDir: "{app}"
 Source: "Exec\selection_variables_interface.R"; DestDir: "{app}"
 Source: "Exec\testfichier.r"; DestDir: "{app}"
 Source: "Exec\view.r"; DestDir: "{app}"
+Source: "Exec\boxplots_unitobs_generiques.R"; DestDir: "{app}"
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; WorkingDir: {#InstallDir}
@@ -90,6 +91,10 @@ Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChang
 
 [Dirs]
 Name: "{#InstallDir}\Data"; Flags: uninsneveruninstall; Tasks: ; Languages:
+
+
+
+
 
 
 

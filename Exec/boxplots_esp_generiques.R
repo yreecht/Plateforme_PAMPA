@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: Boxplot_generique_calc.R
-### Time-stamp: <2010-10-20 16:09:07 yreecht>
+### Time-stamp: <2010-10-25 17:59:48 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -11,24 +11,38 @@
 ### Fonctions de traitement des données et des graphiques pour la création de boxplots "à la carte".
 ####################################################################################################
 
-dropLevels.f <- function(df)
+dropLevels.f <- function(df, which=NULL)
 {
     ## Purpose: Supprimer les 'levels' non utilisés des facteurs d'une
     ##          data.frame.
     ## ----------------------------------------------------------------------
     ## Arguments: df : une data.frame
+    ##            which : indice des colonnes à inclure (toutes par défaut).
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 10 août 2010, 13:29
 
     if (class(df) != "data.frame")
     {
-        stop("'x' doit être une data.frame")
+        stop("'df' doit être une data.frame")
     }else{
-        x <- as.data.frame(sapply(df, function(x)
-                              {
-                                  return(x[ ,drop=TRUE])
-                              }, simplify=FALSE),
-                           stringsAsFactors=FALSE)
+        if (is.null(which))
+        {
+            x <- as.data.frame(sapply(df, function(x)
+                                  {
+                                      return(x[ ,drop=TRUE])
+                                  }, simplify=FALSE),
+                               stringsAsFactors=FALSE)
+        }else{                          # Cas où seulement certaines colones sont traitées.
+            x <- df
+
+            x[ , which] <- as.data.frame(sapply(df[ , which, drop=FALSE],
+                                                function(x)
+                                            {
+                                                return(x[ ,drop=TRUE])
+                                            }, simplify=FALSE),
+                                         stringsAsFactors=FALSE)
+        }
+
         return(x)
     }
 }

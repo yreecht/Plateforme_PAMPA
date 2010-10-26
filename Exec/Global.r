@@ -91,7 +91,8 @@ source("./Exec/selection_variables_interface.R", encoding="latin1")
 
 ##################################################
 ## Nouveaux boxplots :
-source("./Exec/boxplot_generique_calc.R", encoding="latin1")
+source("./Exec/boxplots_esp_generiques.R", encoding="latin1")
+source("./Exec/boxplots_unitobs_generiques.R", encoding="latin1")
 
 ##################################################
 ## Analyses statistiques :

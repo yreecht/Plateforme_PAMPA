@@ -45,7 +45,7 @@ critereespref.f <- function ()
     {
         tkinsert(tl, "end", facts[i])
     }
-    tkselection.set(tl, 0)
+    ## tkselection.set(tl, 0)
 
     OnOK <- function ()
     {
@@ -56,6 +56,8 @@ critereespref.f <- function ()
     OK.but <-tkbutton(aa, text="OK", command=OnOK)
     tkgrid(OK.but)
     tkfocus(aa)
+    winSmartPlace.f(aa)
+
     tkwait.window(aa)
     ## rm(a)
 } # fin critereespref.f
@@ -127,24 +129,33 @@ ChoixFacteurSelect.f <- function (tableselect, monchamp, Nbselectmax, ordre, mav
     winfac <- tktoplevel(width = 80)
     tkwm.title(winfac, paste("Selection des valeurs de ", monchamp, sep=""))
     scr <- tkscrollbar(winfac, repeatinterval=5, command=function(...)tkyview(tl, ...))
+
     if (Nbselectmax=="single"||Nbselectmax=="multiple") # [???] à quoi ça sert de faire ça, puisque la fonction ne gère
                                         # pas les erreurs ! [yr: 30/09/2010]
     {
-        tl <- tklistbox(winfac, height=20, width=50, selectmode=Nbselectmax, yscrollcommand=function(...)tkset(scr, ...), background="white")
+        tl <- tklistbox(winfac, height=20, width=50, selectmode=Nbselectmax,
+                        yscrollcommand=function(...)tkset(scr, ...), background="white")
     }
-    tkgrid(tklabel(winfac, text=paste("Liste des valeurs de ", monchamp, " presents\n Plusieurs sélections POSSIBLES\n\nATTENTION : première valeur sélectionnée par défaut", sep="")))
+    tkgrid(tklabel(winfac, text=paste("Liste des valeurs de ", monchamp,
+                           " presents\n Plusieurs sélections POSSIBLES\n\nATTENTION :",
+                           " première valeur sélectionnée par défaut", sep="")))
     tkgrid(tl, scr)
     tkgrid.configure(scr, rowspan=4, sticky="nsw")
+
     if (ordre==1)
     {
         maliste <- sort(as.character(unique(tableselect)))
     }
+
     a <- length(maliste)
+
     for (i in (1:a))
     {
         tkinsert(tl, "end", maliste[i])
     }
-    tkselection.set(tl, 0)
+    ## tkselection.set(tl, 0)
+
+
     OnOK <- function ()
     {
         selectfact <- (maliste[as.numeric(tkcurselection(tl))+1])
@@ -155,6 +166,8 @@ ChoixFacteurSelect.f <- function (tableselect, monchamp, Nbselectmax, ordre, mav
     OK.but <-tkbutton(winfac, text="OK", command=OnOK)
     tkgrid(OK.but)
     tkfocus(winfac)
+    winSmartPlace.f(winfac)
+
     tkwait.window(winfac)
 
     ## !améliorations possibles
@@ -245,7 +258,7 @@ choixunfacteurUnitobs.f <- function ()
     {
         tkinsert(tl, "end", facts[i])
     }
-    tkselection.set(tl, 0)
+    ## tkselection.set(tl, 0)
 
     OnOK <- function ()
     {
@@ -259,6 +272,8 @@ choixunfacteurUnitobs.f <- function ()
     OK.but <-tkbutton(aa, text="OK", command=OnOK)
     tkgrid(OK.but)
     tkfocus(aa)
+    winSmartPlace.f(aa)
+
     tkwait.window(aa)
 } # fin choixunfacteurUnitobs
 
@@ -1033,14 +1048,16 @@ UnCritereEspDansObs.f <- function ()
     critereespref.f()
     obs[, factesp] <- especes[, factesp][match(obs$code_espece, especes$code_espece)]
 
-    print(head(obs))
-    ChoixFacteurSelect.f(tableselect=obs[, factesp], monchamp=factesp,
-                         Nbselectmax="multiple", ordre=1, mavar="selectfactesp")
-    print(selectfactesp)
-    obs <- subset(obs, is.element(obs[, factesp], selectfactesp))
+    ## print(head(obs))
+    ## ChoixFacteurSelect.f(tableselect=obs[, factesp], monchamp=factesp,
+    ##                      Nbselectmax="multiple", ordre=1, mavar="selectfactesp")
+    selectfactesp <- selectModWindow.f(factesp, obs, selectmode="extended")
+    assign("selectfactesp", selectfactesp, envir=.GlobalEnv)
+    ## print(selectfactesp)
+    obs <- dropLevels.f(subset(obs, is.element(obs[, factesp], selectfactesp)), which="code_espece")
     gestionMSGaide.f("etapeselected")
-    Jeuxdonnescoupe <- 1
-    assign("Jeuxdonnescoupe", Jeuxdonnescoupe, envir=.GlobalEnv)
+    ## Jeuxdonnescoupe <- 1
+    assign("Jeuxdonnescoupe", 1, envir=.GlobalEnv)
     return(obs)
 }
 
@@ -1061,12 +1078,14 @@ UnCritereUnitobsDansObs.f <- function ()
     choixunfacteurUnitobs.f()
     factunitobs <- fact
     obs[, factunitobs] <- unitobs[, factunitobs][match(obs$unite_observation, unitobs$unite_observation)]
-    print(head(obs))
-    ChoixFacteurSelect.f(obs[, factunitobs], factunitobs, "multiple", 1, "selectfactunitobs")
+    ## print(head(obs))
+    ## ChoixFacteurSelect.f(obs[, factunitobs], factunitobs, "multiple", 1, "selectfactunitobs")
+    selectfactunitobs <- selectModWindow.f(factunitobs, obs, selectmode="extended")
+    assign("selectfactunitobs", selectfactunitobs, envir=.GlobalEnv)
     print(selectfactunitobs)
-    obs <- subset(obs, is.element(obs[, factunitobs], selectfactunitobs))
+    obs <- dropLevels.f(subset(obs, is.element(obs[, factunitobs], selectfactunitobs)),
+                        which="unite_observation") # Vérifier si c'est correct [!!!]
     gestionMSGaide.f("etapeselected")
-    Jeuxdonnescoupe <- 1
-    assign("Jeuxdonnescoupe", Jeuxdonnescoupe, envir=.GlobalEnv)
+    assign("Jeuxdonnescoupe", 1, envir=.GlobalEnv)
     return(obs)
 }

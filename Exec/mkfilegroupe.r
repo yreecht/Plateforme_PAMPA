@@ -103,7 +103,7 @@ grpespcalc.f <- function(x)
 
     ## calcul Richesse Specifique
     unitesp[, x] <- especes[, x][match(unitesp$code_espece, especes$code_espece)]
-    grpespT3 <- tapply(unitesp$pres_abs, list(unitesp$unite_observation, unitesp[, x]), na.rm = TRUE, sum)
+    grpespT3 <- tapply(unitesp$pres_abs, list(unitesp$unite_observation, unitesp[, x]), sum, na.rm = TRUE)
     grpesp.RS <- as.data.frame(matrix(NA, dim(grpespT3)[1]*dim(grpespT3)[2], 3))
     colnames(grpesp.RS) = c("unitobs", x, "RS")
     grpesp.RS$RS <- as.vector(grpespT3)
@@ -1062,7 +1062,15 @@ unitespta.f <- function(){
         ## Certains NAs correspondent à des vrai zéros :
         if (!all(is.na(obs$biomasse)))
         {
-            unitespta$biomasse[is.na(unitespta$biomasse) & unitespta$nombre == 0] <- 0
+            ## Especes pour lesquelles aucune biomasse n'est calculée.
+            espSansBiom <- tapply(unitespta$biomasse, unitespta$code_espece,
+                                  function(x)all(is.na(x) | x == 0))
+            espSansBiom <- names(espSansBiom)[espSansBiom]
+
+            ## Ajout des vrais zéros :
+            unitespta$biomasse[is.na(unitespta$biomasse) &
+                               unitespta$nombre == 0 &
+                               !is.element(unitespta$code_espece, espSansBiom)] <- 0
         }
 
     }else{
@@ -1311,7 +1319,15 @@ unitesp.f <- function(){
         ## Certains NAs correspondent à des vrai zéros :
         if (!all(is.na(obs$biomasse)))
         {
-            unitesp$biomasse[is.na(unitesp$biomasse) & unitesp$nombre == 0] <- 0
+            ## Especes pour lesquelles aucune biomasse n'est calculée.
+            espSansBiom <- tapply(unitesp$biomasse, unitesp$code_espece,
+                                  function(x)all(is.na(x) | x == 0))
+            espSansBiom <- names(espSansBiom)[espSansBiom]
+
+            ## Ajout des vrais zéros :
+            unitesp$biomasse[is.na(unitesp$biomasse) &
+                             unitesp$nombre == 0 &
+                             !is.element(unitesp$code_espece, espSansBiom)] <- 0
         }
 
         ## ##################################################
@@ -1829,6 +1845,7 @@ creationTablesBase.f <- function(){
         assign("SAUVunitesp", unitesp, envir=.GlobalEnv)
         assign("SAUVunit", unit, envir=.GlobalEnv)
         assign("SAUVTablePresAbs", TablePresAbs, envir=.GlobalEnv)
+        assign("SAUVlistespunit", listespunit, envir=.GlobalEnv)
     }
 
     ## si SVR calcul des metriques par rotation
@@ -1928,6 +1945,12 @@ creationTablesCalcul.f <- function(){
     assign("TableMetrique", TableMetrique, envir=.GlobalEnv)
     print("tableau TableMetrique réalisé")
     ## print(names(TableMetrique))    # Pas utile sauf en développement.
+
+    if (Jeuxdonnescoupe==0)
+    {
+        assign("SAUVTableBiodiv", TableBiodiv, envir=.GlobalEnv)
+        assign("SAUVTableMetrique", TableMetrique, envir=.GlobalEnv)
+    }else{}
 }
 
 ########################################################################################################################

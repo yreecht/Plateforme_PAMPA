@@ -312,9 +312,13 @@ tkadd(traitement,"command",label="Métrique par facteur unités d'observation",com
 ## Ajout [yr: 14/10/2010]
 tkadd(traitement,"separator")
 ## Ajout [yr: 11/08/2010]
-tkadd(traitement, "command", label="Boxplots \"à la carte\"...",
+tkadd(traitement, "command", label="Boxplots métrique /espèce/unité d'observation...",
       background="#fae18d",
-      command=function(){selectionVariables.f("boxplot") ; winRaise.f(tm)})
+      command=function(){selectionVariables.f("boxplot.esp") ; winRaise.f(tm)})
+## Ajout [yr: 25/10/2010]
+tkadd(traitement, "command", label="Boxplots métrique /unité d'observation (toutes esp.)...",
+      background="#fae18d",
+      command=function(){selectionVariables.f("boxplot.unitobs") ; winRaise.f(tm)})
 ## Ajout [yr: 14/10/2010]
 tkadd(traitement, "command", label="Fréquences d'occurrence...",
       background="#fae18d",
@@ -371,7 +375,7 @@ tkadd(benthos,"separator")
 ## Ajout [yr: 18/08/2010]
 tkadd(benthos, "command", label="Boxplots \"à la carte\"...",
       background="#fae18d",
-      command=function(){selectionVariables.f("boxplot") ; winRaise.f(tm)})
+      command=function(){selectionVariables.f("boxplot.esp") ; winRaise.f(tm)})
 ## Ajout [yr: 14/10/2010]
 tkadd(benthos, "command", label="Fréquences d'occurrence...",
       background="#fae18d",

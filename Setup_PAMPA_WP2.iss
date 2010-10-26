@@ -2,9 +2,9 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "PAMPA WP2"
-#define MyAppVersion "0.98-3"
+#define MyAppVersion "0.99-1"
 #define MyAppPublisher "Ifremer"
-#define MyAppURL "http://www.example.com/"
+#define MyAppURL "https://www.ifremer.fr/ezprod/index.php/pampa/"
 #define MyAppExeName "PAMPA WP2.bat"
 #define InstallDir "C:\PAMPA"
 #define ExecDir "Exec"
@@ -61,6 +61,9 @@ Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChang
 
 [Dirs]
 Name: "{#InstallDir}\Data"; Flags: uninsneveruninstall; Tasks: ; Languages:
+
+
+
 
 
 

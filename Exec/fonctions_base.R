@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: fonctions_base.R
-### Time-stamp: <2010-10-20 16:19:24 yreecht>
+### Time-stamp: <2010-10-29 14:55:31 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -49,7 +49,7 @@ is.peche.f <- function()
         stop("Plusieurs types d'observations")
     }else{
         return(is.element(as.character(unique(unitobs$type)),
-                          c("EMB", "DEB", "PSCI")))
+                          c("EMB", "DEB", "PSCI", "PecRec")))
     }
 }
 

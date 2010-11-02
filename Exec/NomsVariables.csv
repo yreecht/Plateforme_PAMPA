@@ -191,3 +191,6 @@
 "RS.relative.region.phylum","la ","richesse spécifique relative (/ esp. de la région et du phylum)","f","'%'"
 "freq.occurrence","la ","fréquence d'occurrence","f","'%'"
 "CPUE","les ","CPUE","fp",""
+"CPUEbiomasse","les ","CPUE (biomasse)","fp",""
+"prop.abondance.CL","les ","proportions d´abondances par classe de taille","fp","'%'"
+"prop.biomasse.CL","les ","proportions de biomasse par classe de taille","fp","'%'"

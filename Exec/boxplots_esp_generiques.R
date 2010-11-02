@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: Boxplot_generique_calc.R
-### Time-stamp: <2010-10-25 17:59:48 yreecht>
+### Time-stamp: <2010-10-28 17:13:07 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -149,7 +149,7 @@ openDevice.f <- function(noGraph, metrique, factGraph, listFact)
                  (getOption("P.nrowGraph") * getOption("P.ncolGraph"))) == 1)
             {
                 print(paste("Fenêtre", noGraph))
-                X11(width=50, height=20, pointsize=10)
+                X11(width=60, height=35, pointsize=10)
                 par(mfrow=c(getOption("P.nrowGraph"), getOption("P.ncolGraph")))
             }else{}
         }else{                      # Pas plusieurs graphs par page.
@@ -209,12 +209,13 @@ legendBoxplot.f <- function(terms, data)
 
         ## Légende :
         legend("topright", names, col=colors,
-               pch = 15, cex =0.9, title=varNames[terms[n - 1], "nom"])
+               pch = 15, pt.cex=1.2,
+               cex =0.9, title=varNames[terms[n - 1], "nom"])
     }
 }
 
 ########################################################################################################################
-graphTitle.f <- function(metrique, modGraphSel, factGraph, listFact, model=NULL)
+graphTitle.f <- function(metrique, modGraphSel, factGraph, listFact, model=NULL, type="espece")
 {
     ## Purpose:
     ## ----------------------------------------------------------------------
@@ -225,15 +226,164 @@ graphTitle.f <- function(metrique, modGraphSel, factGraph, listFact, model=NULL)
     return(paste(ifelse(is.null(model),
                         "valeurs de ",
                         paste(model, " pour ", varNames[metrique, "article"], sep="")),
-                 varNames[metrique, "nom"],
-                 ifelse(modGraphSel == "", # Facteur de séparation uniquement si défini.
-                        "",
-                        paste("\npour le champ '", factGraph, "' = ", modGraphSel, sep="")),
+                 varNames[metrique, "nom"], " agrégé",
+                 switch(varNames[metrique, "genre"], # Accord de "agrégé".
+                        f="e", fp="es", mp="s", ""),
+                 switch(type,
+                        "espece"=" par espèce et unité d'observation",
+                        "unitobs"=" par unité d'observation",
+                        ""),
+                 switch(type,
+                        "espece"={
+                            ifelse(modGraphSel == "", # Facteur de séparation uniquement si défini.
+                                   "",
+                                   paste("\npour le champ '", factGraph, "' = ", modGraphSel, sep=""))
+                        },
+                        "unitobs"={
+                            ifelse(modGraphSel[1] == "", # Facteur de séparation uniquement si défini.
+                                   "\npour toutes les espèces",
+                                   paste("\npour les espèces correspondant à '", factGraph, "' = (",
+                                         paste(modGraphSel, collapse=", "), ")", sep=""))
+                        },
+                        ""),
                  "\n selon ",
                  paste(sapply(listFact[length(listFact):1],
                               function(x)paste(varNames[x, c("article", "nom")], collapse="")),
                        collapse=" et "),
                  "\n", sep=""))
+}
+
+
+########################################################################################################################
+plotValMoyennes.f <- function(moyennes, objBP)
+{
+    ## Purpose:
+    ## ----------------------------------------------------------------------
+    ## Arguments:
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date: 26 oct. 2010, 15:43
+
+    ## Propriétés des boîtes à moustaches + points hors boîtes + maximum du graphique :
+    pointsOut <- as.list(tapply(objBP$out, objBP$group, function(x)x))
+    pointsOut[as.character(which(!is.element(seq(length.out=ncol(objBP$stats)), as.numeric(names(pointsOut)))))] <- NA
+
+    x <- rbind(objBP$stats,
+               matrix(sapply(pointsOut,
+                             function(x)
+                         {
+                             c(sort(x, na.last=TRUE),
+                               rep(NA, max(sapply(pointsOut, length)) - length(x)))
+                         }),
+                      ncol=length(pointsOut))[ , order(as.numeric(names(pointsOut))), drop=FALSE],
+               max(c(objBP$out, objBP$stats), na.rm=TRUE))
+
+    x <- apply(x, 2, sort, na.last=TRUE)
+
+    ## Proportions occupées par les différentes parties des boites à moustaches :
+    xprop <- apply(x, 2, function(cln)(tail(cln, -1) - head(cln, -1))/max(cln, na.rm=TRUE))
+
+    ## Ordre de priorité décroissante des positions où écrire :
+    ord <- c(3, 4, 2, seq(from=5, to=nrow(xprop)), 1)
+
+    ## Première position (dans l'ordre décroissant de priorité) remplissant le critère (> 5.5% de la zone graphique) :
+    xi <- sapply(seq(length.out=ncol(xprop)), function(i)which(xprop[ord , i] > 0.055)[1])
+
+    ## Écriture des valeurs de moyennes sur le graphique :
+    text(x=seq_along(xi), y=sapply(seq_along(xi), function(i)x[ord[xi][i], i]),
+         labels=as.character(round(moyennes, digits=unlist(options("P.NbDecimal")))),
+         col=getOption("P.valMoyenneCol"), adj=c(0.5, -0.4),
+         cex=0.9)
+
+}
+
+########################################################################################################################
+plotPetitsEffectifs.f <- function(objBP, nbmin=20)
+{
+    ## Purpose:
+    ## ----------------------------------------------------------------------
+    ## Arguments:
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date: 27 oct. 2010, 10:39
+
+    if (any(objBP$n < nbmin & objBP$n > 0, na.rm=TRUE))
+    {
+        msg <- c(
+                 ## Affichage d'avertissement pour  > X% du max retiré :
+                 if (getOption("P.maxExclu"))
+                 {
+                     paste("Enregistrements > ", 100 * getOption("P.GraphPartMax"), "% du maximum retirés\n", sep="")
+                 }else{},
+                 paste("petit effectif (< ", nbmin, ")", sep=""))
+
+        ## "Légende" :
+        legend("top",
+               msg,
+               cex =0.9, text.col="red", merge=FALSE, adj=c(0, 0.2),
+               pch=rev(c(24, NA)[seq_along(msg)]),
+               col="red3", pt.bg="gold", pt.cex=1.2)
+
+
+        ## Propriétés des boîtes à moustaches + points hors boîtes + maximum du graphique :
+        pointsOut <- as.list(tapply(objBP$out, objBP$group, function(x)x))
+        pointsOut[as.character(which(!is.element(seq(length.out=ncol(objBP$stats)), as.numeric(names(pointsOut)))))] <- NA
+
+        x <- rbind(min(c(objBP$out, objBP$stats), na.rm=TRUE),
+                   objBP$stats,
+                   matrix(sapply(pointsOut,
+                                 function(x)
+                             {
+                                 c(sort(x, na.last=TRUE),
+                                   rep(NA, max(sapply(pointsOut, length)) - length(x)))
+                             }),
+                          ncol=length(pointsOut))[ , order(as.numeric(names(pointsOut))), drop=FALSE],
+                   max(c(objBP$out, objBP$stats), na.rm=TRUE))
+
+        x <- apply(x, 2, sort, na.last=TRUE)
+
+        ## Proportions occupées par les différentes parties des boites à moustaches :
+        xprop <- apply(x, 2, function(cln)(tail(cln, -1) - head(cln, -1))/max(cln, na.rm=TRUE))
+
+        ord <- c(seq(from=nrow(xprop), to=6), 1, 5, 2, 4, 3) # Ordre de priorité des positions où écrire.
+
+        ## Première position (ordre décroissant de priorité) remplissant le critère (> 8% de la zone graphique) :
+        xi <- sapply(seq(length.out=ncol(xprop)), function(i){which(xprop[ord , i] > 0.08)[1]})
+
+        idx <- which(objBP$n < nbmin & objBP$n > 0)
+
+        ampli <- max(c(objBP$out, objBP$stats), na.rm=TRUE) - min(c(objBP$out, objBP$stats), na.rm=TRUE)
+
+        invisible(sapply(seq_along(xi)[idx],
+                         function(i)
+                     {
+                         points(x=i,
+                                y=x[ifelse(ord[xi][i] == 1, 1, ord[xi][i] + 1), i] +
+                                  ifelse(ord[xi][i] == 1, # Ajustement vertical si en bas.
+                                         0.04 * ampli,
+                                         ifelse(ord[xi][i] == nrow(xprop), #... si tout en haut.
+                                                -0.04 * ampli,
+                                                -0.04 * ampli)),
+                                pch=24, col = "red3", bg = "gold", cex=1.2)
+
+                         ## text(x=i, y=x[ifelse(ord[xi][i] == 1, 1, ord[xi][i] + 1), i],
+                         ##      "PE", col="red",
+                         ##      adj=c(0.5,
+                         ##            ifelse(ord[xi][i] == 1, # Ajustement vertical si en bas.
+                         ##                   -0.1,
+                         ##                   ifelse(ord[xi][i] == nrow(xprop), #... si tout en haut.
+                         ##                          1.4,
+                         ##                          1.4))), # ...autrement.
+                         ##      cex=0.9)
+                     }))
+
+    }else{
+        ## Affichage d'avertissement pour  > X% du max retiré :
+        if (getOption("P.maxExclu"))
+        {
+            legend("top",
+                   paste("Enregistrements > ", 100 * getOption("P.GraphPartMax"), "% du maximum retirés\n", sep=""),
+                   cex =0.9, col="red", text.col="red", merge=FALSE)
+        }else{}
+    }
 }
 
 
@@ -334,7 +484,7 @@ WP2boxplot.f <- function(metrique, factGraph, factGraphSel, listFact, listFactSe
         ## Titre (d'après les métriques, modalité du facteur de séparation et facteurs de regroupement) :
         mainTitle <- graphTitle.f(metrique=metrique,
                                   modGraphSel=modGraphSel, factGraph=factGraph,
-                                  listFact=listFact)
+                                  listFact=listFact, type="espece")
 
         ## Les couleurs pour l'identification des modalités du facteur de second niveau :
         colors <- colBoxplot.f(terms=attr(terms(exprBP), "term.labels"), data=tmpDataMod)
@@ -350,7 +500,11 @@ WP2boxplot.f <- function(metrique, factGraph, factGraphSel, listFact, listFactSe
         tmpBP <- boxplot(exprBP, data=tmpDataMod,
                          main=mainTitle, ylab=ylab,  ## Capitalize.f(varNames[metrique, "nom"]),
                          varwidth = TRUE, las=2,
-                         col=colors)
+                         col=colors,
+                         ylim=c(min(tmpDataMod[ , metrique], na.rm=TRUE),
+                                max(tmpDataMod[ , metrique], na.rm=TRUE) +
+                                  0.1*(max(tmpDataMod[ , metrique], na.rm=TRUE) -
+                                       min(tmpDataMod[ , metrique], na.rm=TRUE))))
 
         ## #################### Informations supplémentaires sur les graphiques ####################
 
@@ -390,10 +544,11 @@ WP2boxplot.f <- function(metrique, factGraph, factGraphSel, listFact, listFactSe
         ## ... valeurs :
         if (getOption("P.valMoyenne"))
         {
-            text(1.2 * Moyenne, col = getOption("P.valMoyenneCol"), cex = 0.9, # On pourrait utiliser
-                                        # tmpBP$stats[5, ] à la place ?
-                 labels=as.character(round(Moyenne, digits=unlist(options("P.NbDecimal")))))
+            plotValMoyennes.f(moyennes=Moyenne, objBP=tmpBP)
         }else{}
+
+        ## Avertissement pour les petits effectifs :
+        plotPetitsEffectifs.f(objBP=tmpBP, nbmin=5)
 
         ## Nombres d'observations :
         if (getOption("P.NbObs"))
@@ -408,13 +563,13 @@ WP2boxplot.f <- function(metrique, factGraph, factGraphSel, listFact, listFactSe
                    cex =0.9, col=getOption("P.NbObsCol"), text.col="orange", merge=FALSE)
         }else{}
 
-        ## Affichage d'avertissement pour  > X% du max retiré :
-        if (getOption("P.maxExclu"))
-        {
-            legend("top",
-                   paste("Enregistrements > ", 100 * getOption("P.GraphPartMax"), "% du maximum retirés", sep=""),
-                   cex =0.9, col="red", text.col="red", merge=FALSE)
-        }else{}
+        ## ## Affichage d'avertissement pour  > X% du max retiré :
+        ## if (getOption("P.maxExclu"))
+        ## {
+        ##     legend("top",
+        ##            paste("Enregistrements > ", 100 * getOption("P.GraphPartMax"), "% du maximum retirés", sep=""),
+        ##            cex =0.9, col="red", text.col="red", merge=FALSE)
+        ## }else{}
     }  ## Fin de boucle graphique.
 
     ## On ferme les périphériques PDF :

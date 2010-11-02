@@ -679,60 +679,74 @@ indicesDiv.f <- function ()
 {
     print("fonction indicesDiv.f activée")
     ## importation du referentiel especes
-    tab_sp <- especes
+    ## tab_sp <- especes
 
-    ## tableau avec genre et famille
-    sp.taxon <- data.frame(matrix(NA, ncol(contingence), 5))
-    IdentifiantsEspeces <- colnames(contingence)
-    rownames(sp.taxon) <- IdentifiantsEspeces
+    ## ON PEUT FAIRE BEAUCOUP PLUS SIMPLE ET DIRECT QUE TOUT CE QUI SUIT [yr: 28/10/2010]
+
+    ## ## tableau avec genre et famille
+    ## sp.taxon <- data.frame(matrix(NA, ncol(contingence), 5))
+    ## IdentifiantsEspeces <- colnames(contingence)
+    ## rownames(sp.taxon) <- IdentifiantsEspeces
+    ## colnames(sp.taxon) <- c("genre", "famille", "ordre", "classe", "phylum")
+
+    ## ## recherche du genre, de la famille, de l'ordre, de la classe et du phylum
+    ## correspondance <- match(IdentifiantsEspeces, especes$code_espece, nomatch=NA, incomparables = FALSE)
+
+    ## genre <- tab_sp$Genre[correspondance]
+    ## famille <- tab_sp$Famille[correspondance]
+    ## ordre <- tab_sp$Ordre[correspondance]
+    ## classe <- tab_sp$Classe[correspondance]
+    ## phylum <- tab_sp$Phylum[correspondance]
+
+    ## sp.taxon$genre <- genre
+    ## sp.taxon$famille <- famille
+    ## sp.taxon$ordre <- ordre
+    ## sp.taxon$classe <- classe
+    ## sp.taxon$phylum <- phylum
+
+    ## tableau avec genre, famille, etc.
+    sp.taxon <- especes[match(colnames(contingence), especes$code_espece, nomatch=NA, incomparables = FALSE),
+                        c("Genre", "Famille", "Ordre", "Classe", "Phylum")]
+
     colnames(sp.taxon) <- c("genre", "famille", "ordre", "classe", "phylum")
-
-    ## recherche du genre, de la famille, de l'ordre, de la classe et du phylum
-    correspondance <- match(IdentifiantsEspeces, tab_sp$code_espece, nomatch=NA, incomparables = FALSE)
-
-    genre <- tab_sp$Genre[correspondance]
-    famille <- tab_sp$Famille[correspondance]
-    ordre <- tab_sp$Ordre[correspondance]
-    classe <- tab_sp$Classe[correspondance]
-    phylum <- tab_sp$Phylum[correspondance]
-
-    sp.taxon$genre <- genre
-    sp.taxon$famille <- famille
-    sp.taxon$ordre <- ordre
-    sp.taxon$classe <- classe
-    sp.taxon$phylum <- phylum
+    rownames(sp.taxon) <- colnames(contingence)
 
     ## retrait des lignes ayant un niveau taxonomique manquant dans sp.taxon et dans contingence (en colonnes)
-    manque_gn <- which(is.na(sp.taxon$genre))
-    if (length(manque_gn) != 0)
-    {
-        sp.taxon <- sp.taxon[-manque_gn, , drop=FALSE]
-        contingence <- contingence[, -manque_gn, drop=FALSE]
-    }
-    manque_fa <- which(is.na(sp.taxon$famille))
-    if (length(manque_fa) != 0)
-    {
-        sp.taxon <- sp.taxon[-manque_fa, , drop=FALSE]
-        contingence <- contingence[, -manque_fa, drop=FALSE]
-    }
-    manque_or <- which(is.na(sp.taxon$ordre))
-    if (length(manque_or) != 0)
-    {
-        sp.taxon <- sp.taxon[-manque_or, , drop=FALSE]
-        contingence <- contingence[, -manque_or, drop=FALSE]
-    }
-    manque_cl <- which(is.na(sp.taxon$classe))
-    if (length(manque_cl) != 0)
-    {
-        sp.taxon <- sp.taxon[-manque_cl, , drop=FALSE]
-        contingence <- contingence[, -manque_cl, drop=FALSE]
-    }
-    manque_ph <- which(is.na(sp.taxon$phylum))
-    if (length(manque_ph) != 0)
-    {
-        sp.taxon <- sp.taxon[-manque_ph, , drop=FALSE]
-        contingence <- contingence[, -manque_ph, drop=FALSE]
-    }
+
+    manque.taxon <- apply(sp.taxon, 1, function(x){any(is.na(x))})
+    sp.taxon <- sp.taxon[! manque.taxon, , drop=FALSE]
+    contingence <- contingence[, ! manque.taxon, drop=FALSE]
+
+    ## manque_gn <- which(is.na(sp.taxon$genre))
+    ## if (length(manque_gn) != 0)
+    ## {
+    ##     sp.taxon <- sp.taxon[-manque_gn, , drop=FALSE]
+    ##     contingence <- contingence[, -manque_gn, drop=FALSE]
+    ## }
+    ## manque_fa <- which(is.na(sp.taxon$famille))
+    ## if (length(manque_fa) != 0)
+    ## {
+    ##     sp.taxon <- sp.taxon[-manque_fa, , drop=FALSE]
+    ##     contingence <- contingence[, -manque_fa, drop=FALSE]
+    ## }
+    ## manque_or <- which(is.na(sp.taxon$ordre))
+    ## if (length(manque_or) != 0)
+    ## {
+    ##     sp.taxon <- sp.taxon[-manque_or, , drop=FALSE]
+    ##     contingence <- contingence[, -manque_or, drop=FALSE]
+    ## }
+    ## manque_cl <- which(is.na(sp.taxon$classe))
+    ## if (length(manque_cl) != 0)
+    ## {
+    ##     sp.taxon <- sp.taxon[-manque_cl, , drop=FALSE]
+    ##     contingence <- contingence[, -manque_cl, drop=FALSE]
+    ## }
+    ## manque_ph <- which(is.na(sp.taxon$phylum))
+    ## if (length(manque_ph) != 0)
+    ## {
+    ##     sp.taxon <- sp.taxon[-manque_ph, , drop=FALSE]
+    ##     contingence <- contingence[, -manque_ph, drop=FALSE]
+    ## }
 
     ## le jeu de donnees doit comporter au moins 2 genres et 2 unité d'observations sinon la fonction taxa2dist ne fonctionne pas
     if (length(unique(sp.taxon$genre))>2)
@@ -752,7 +766,7 @@ indicesDiv.f <- function ()
         assign("div", div, envir=.GlobalEnv)
         assign("taxdis", taxdis, envir=.GlobalEnv)
         assign("ind_div", ind_div, envir=.GlobalEnv)
-        assign("unit", unit)
+        ## assign("unit", unit)
     }
     assign("sp.taxon", sp.taxon, envir=.GlobalEnv)
 } #fin IndicesDiv

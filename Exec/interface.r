@@ -312,16 +312,16 @@ tkadd(traitement,"command",label="Métrique par facteur unités d'observation",com
 ## Ajout [yr: 14/10/2010]
 tkadd(traitement,"separator")
 ## Ajout [yr: 11/08/2010]
-tkadd(traitement, "command", label="Boxplots métrique /espèce/unité d'observation...",
-      background="#fae18d",
+tkadd(traitement, "command", label="Boxplots métrique /espèce/unité d'observation + Biodiversité...",
+      background="#FFFBCF",
       command=function(){selectionVariables.f("boxplot.esp") ; winRaise.f(tm)})
 ## Ajout [yr: 25/10/2010]
-tkadd(traitement, "command", label="Boxplots métrique /unité d'observation (toutes esp.)...",
-      background="#fae18d",
+tkadd(traitement, "command", label="Boxplots métrique /unité d'observation...",
+      background="#FFFBCF",
       command=function(){selectionVariables.f("boxplot.unitobs") ; winRaise.f(tm)})
 ## Ajout [yr: 14/10/2010]
 tkadd(traitement, "command", label="Fréquences d'occurrence...",
-      background="#fae18d",
+      background="#FFFBCF",
       command=function(){selectionVariables.f("freq_occurrence") ; winRaise.f(tm)})
 
 
@@ -373,12 +373,16 @@ tkadd(traitement, "command", label="Fréquences d'occurrence...",
 ## Ajout [yr: 14/10/2010]
 tkadd(benthos,"separator")
 ## Ajout [yr: 18/08/2010]
-tkadd(benthos, "command", label="Boxplots \"à la carte\"...",
-      background="#fae18d",
+tkadd(benthos, "command", label="Boxplots métrique /espèce/unité d'observation + Biodiversité...",
+      background="#FFFBCF",
       command=function(){selectionVariables.f("boxplot.esp") ; winRaise.f(tm)})
+## Ajout [yr: 25/10/2010]
+tkadd(benthos, "command", label="Boxplots métrique /unité d'observation...",
+      background="#FFFBCF",
+      command=function(){selectionVariables.f("boxplot.unitobs") ; winRaise.f(tm)})
 ## Ajout [yr: 14/10/2010]
 tkadd(benthos, "command", label="Fréquences d'occurrence...",
-      background="#fae18d",
+      background="#FFFBCF",
       command=function(){selectionVariables.f("freq_occurrence") ; winRaise.f(tm)})
 
 
@@ -403,8 +407,10 @@ tkadd(benthos, "command", label="Fréquences d'occurrence...",
   tkadd(selection,"checkbutton",label="Par classe ",variable=SelectClasse,onvalue=1,offvalue=0,command = SelectionUneClasse.f)
   tkadd(selection,"cascade",label="Par statut", menu=statut)
   tkadd(selection,"separator")
-  tkadd(selection,"command",label="Autre critère (référentiel espèce)",command = SelectionUnCritereEsp.f)
-  tkadd(selection,"command",label="Autre critère (unité d'observation)",command = SelectionUnCritereUnitobs.f)
+  tkadd(selection,"command",label="Autre critère (référentiel espèce)",
+        command = function(){SelectionUnCritereEsp.f() ; winRaise.f(tm)})
+  tkadd(selection,"command",label="Autre critère (unité d'observation)",
+        command = function(){SelectionUnCritereUnitobs.f() ; winRaise.f(tm)})
 
   # Menu deroulant de "Statistiques"
   tkadd(analyse,"cascade",label="ANOVA",menu=Anova)
@@ -415,15 +421,21 @@ tkadd(benthos, "command", label="Fréquences d'occurrence...",
 tkadd(analyse,"separator")
 tkadd(analyse, "cascade", label="Analyses exploratoires", menu=analysesExplo)
 tkadd(analyse, "cascade", label="Modèles inférentiels", menu=modelesInferentiels,
-      background="#fae18d")
+      background="#FFFBCF")
 
-tkadd(modelesInferentiels, "command", label="Modèles linéaires 'à la carte'...",
-      background="#fae18d",
+tkadd(modelesInferentiels, "command", label="Modèles linéaires métrique /espèce/unité d'observation + Biodiversité...",
+      background="#FFFBCF",
       command=function(){selectionVariables.f("modele_lineaire") ; winRaise.f(tm)})
+## Ajout [yr: 26/10/2010]
+tkadd(modelesInferentiels, "command", label="Modèles linéaires métrique /unité d'observation...",
+      background="#FFFBCF",
+      command=function(){selectionVariables.f("modele_lineaire.unitobs") ; winRaise.f(tm)})
 ## Ajout [yr: 13/10/2010]
 tkadd(modelesInferentiels, "command", label="Modèles linéaires sur 'présences/absences'...",
-      background="#fae18d",
+      background="#FFFBCF",
       command=function(){selectionVariables.f("pres_abs") ; winRaise.f(tm)})
+
+
 
 
 
@@ -447,7 +459,7 @@ tkadd(modelesInferentiels, "command", label="Modèles linéaires sur 'présences/ab
 
 # Premier niveau de menu
   tkadd(topMenu,"cascade",label="Importation",menu=import)
-  tkadd(topMenu,"cascade",label="Selection et recalcul", state="disabled", menu=selection)
+  tkadd(topMenu,"cascade",label="Sélection et recalcul", state="disabled", menu=selection)
   tkadd(topMenu,"cascade",label="Graphiques", state="disabled",menu=traitement)
   tkadd(topMenu,"cascade",label="Graphiques Benthos", state="disabled",menu=benthos)
   tkadd(topMenu,"cascade",label="Statistiques", state="disabled",menu=analyse)

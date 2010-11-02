@@ -97,7 +97,8 @@ source("./Exec/boxplots_unitobs_generiques.R", encoding="latin1")
 ##################################################
 ## Analyses statistiques :
 source("./Exec/modeles_lineaires_interface.R", encoding="latin1")
-source("./Exec/modeles_lineaires_generique.R", encoding="latin1")
+source("./Exec/modeles_lineaires_esp_generiques.R", encoding="latin1")
+source("./Exec/modeles_lineaires_unitobs_generiques.R", encoding="latin1")
 
 ##################################################
 ## Barplots sur les fréquences d'occurrence :

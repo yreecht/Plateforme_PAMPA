@@ -971,7 +971,8 @@ unitespta.f <- function(){
     }else{
         ## si le champ taille contient uniquement des valeurs a NA
         if (length(unique(obs$taille))==1 & NA %in% unique(obs$taille)==TRUE) # [!!!] remplacer par all(is.na()) ??
-                                        # + inconsistence avec la première clause (il ne devrait pas y avoir de NAs ici)
+                                        # !!Non!! + inconsistence avec la première clause (il ne devrait pas y avoir de
+                                        # NAs ici) !!Non!!
                                         # [yr: 13/08/2010]
         {
             ct <- 2
@@ -1146,11 +1147,49 @@ unitespta.f <- function(){
     unitespta$latitude <- unitobs$latitude[match(unitespta$unitobs, unitobs$unite_observation)]
     unitespta$longitude <- unitobs$longitude[match(unitespta$unitobs, unitobs$unite_observation)]
 
-    ## on renomme densite en CPUE pour les jeux de données pêche
+    ## ##################################################
+    ## Proportion d'abondance par classe de taille :
+    abondance <- with(unitespta, tapply(densite, list(unitobs, code_espece, classe_taille),
+                                        function(x){x})) # -> tableau à 3D.
+
+    ## Sommes d'abondances pour chaque unitobs pour chaque espèce :
+    sommesCT <- apply(abondance, c(1, 2), sum, na.rm=TRUE)
+
+    ## Calcul des proportions d'abondance -> tableau 3D :
+    propAbondance <- sweep(abondance, c(1, 2), sommesCT, FUN="/")
+    names(dimnames(propAbondance)) <- c("unite_observation", "code_espece", "classe_taille")
+
+    ## Mise au format colonne + % :
+    unitespta$prop.abondance.CL <- 100 * as.data.frame(as.table(propAbondance),
+                                                       responseName="prop.abondance.CL",
+                                                       stringsAsFactors=FALSE)$prop.abondance.CL
+
+    ## ##################################################
+    ## Proportion de biomasse par classe de taille :
+    biomasses <- with(unitespta, tapply(biomasse, list(unitobs, code_espece, classe_taille),
+                                        function(x){x})) # -> tableau à 3D.
+
+    ## Sommes de biomasses pour chaque unitobs pour chaque espèce :
+    sommesCT <- apply(biomasses, c(1, 2), sum, na.rm=TRUE)
+
+    ## Calcul des proportions de biomasse -> tableau 3D :
+    propBiomasse <- sweep(biomasses, c(1, 2), sommesCT, FUN="/")
+    names(dimnames(propBiomasse)) <- c("unite_observation", "code_espece", "classe_taille")
+
+    ## Mise au format colonne + % :
+    unitespta$prop.biomasse.CL <- 100 * as.data.frame(as.table(propBiomasse),
+                                                      responseName="prop.biomasse.CL",
+                                                      stringsAsFactors=FALSE)$prop.biomasse.CL
+
+    ## #################################################
+    ## on renomme densite et biomasse en CPUE
+    ## pour les jeux de données pêche
     if (is.peche.f())                   # length(typePeche)>1
     {
         unitespta$CPUE <- unitespta$densite
         unitespta$densite <- NULL
+        unitespta$CPUEbiomasse <- unitespta$biomasse
+        unitespta$biomasse <- NULL
     }
 
     unitespta$unite_observation <- unitespta$unitobs # Pour compatibilité avec le nouveau système de graphiques.
@@ -1380,8 +1419,11 @@ unitesp.f <- function(){
                                         list(obs$unite_observation, obs$code_espece),
                                         max, na.rm=TRUE)))^2)
 
-            unitesp$densite[unitesp$nombre == 0 & !is.na(unitesp$nombre)] <- 0
         }
+
+        ## Ajout des vrais zéros :
+        unitesp$densite[unitesp$nombre == 0 & !is.na(unitesp$nombre)] <- 0
+
 
     }else{ # cas LIT
 
@@ -1426,6 +1468,8 @@ unitesp.f <- function(){
     {
         unitesp$CPUE <- unitesp$densite
         unitesp$densite <- NULL
+        unitesp$CPUEbiomasse <- unitesp$biomasse
+        unitesp$biomasse <- NULL
     }
 
     ## Ecriture du fichier des unités d'observations par espèce en sortie
@@ -1521,12 +1565,17 @@ unit.f <- function(){
     print("fonction unit.f activée")
 
     ## somme des abondances
-    uniti <- tapply(obs$nombre, obs$unite_observation, sum, na.rm = TRUE)
-    unit <- as.data.frame(matrix(NA, dim(uniti)[1], 2))
-    colnames(unit) = c("unitobs", "nombre")
-    unit$nombre <- as.integer(uniti)    # 'as.numeric' changé pour avoir des entiers.
-    unit$unitobs <- rownames(uniti)
-    rm(uniti)
+    ## uniti <- tapply(obs$nombre, obs$unite_observation, sum, na.rm = TRUE)
+    ## unit <- as.data.frame(matrix(NA, dim(uniti)[1], 2))
+    ## unit$nombre <- as.integer(uniti)    # 'as.numeric' changé pour avoir des entiers.
+    ## unit$unitobs <- rownames(uniti)
+    ## rm(uniti)
+
+    unit <- as.data.frame(as.table(tapply(obs$nombre, obs$unite_observation, sum, na.rm = TRUE))
+                          , responseName="nombre")
+    colnames(unit)[1] = c("unitobs")
+
+    unit$nombre[is.na(unit$nombre)] <- 0      # Les NAs correspondent à des vrais zéros.
 
     if (!is.benthos.f())                # unique(unitobs$type) != "LIT"
     {
@@ -1538,12 +1587,13 @@ unit.f <- function(){
                          function(x){if (all(is.na(x))) {return(NA)}else{return(sum(x, na.rm=TRUE))}}) # Pour éviter
                                         # des sommes à zéro là où seulement des NAs. ## sum)
         unit$biomasse <- unit.b[match(unit$unitobs, rownames(unit.b))]
-        unit$biomasse[is.na(unit$biomasse)] <- 0
+
+
 
         if (unique(unitobs$type) != "SVR")
         {
             ## calcul biomasse
-            unit$nombre[is.na(unit$nombre)] <- as.integer(0) # pour conserver des entiers
+            ## unit$nombre[is.na(unit$nombre)] <- 0 # as.integer() pour conserver des entiers [???]
             unit$biomasse <- as.numeric(unit$biomasse) /
                 (unitobs$DimObs1[match(unit$unitobs, unitobs$unite_observation)] *
                  unitobs$DimObs2[match(unit$unitobs, unitobs$unite_observation)])
@@ -1559,12 +1609,23 @@ unit.f <- function(){
         }else{
             ## calcul densite d'abondance
             unit$nombre <- unit$nombre / 3
-            unit$nombre[is.na(unit$nombre)] <- as.integer(0) # pour conserver des entiers
-            unit$densite <- unit$nombre / (pi * 25)
-            unit$densite[is.na(unit$densite)] <- 0
-            unit$biomasse <- unit$biomasse / (pi * 25)
-            ## unit$biomasse[is.na(unit$biomassee)] <- 0 # [!!!] encore encore une fois, quelle horreur  [yr: 13/08/2010]
+            unit$nombre[is.na(unit$nombre)] <- 0 # as.integer() pour conserver des entiers ?
+            unit$densite <- unit$nombre / (pi * 25)          # [!!!][???] Pourquoi la distance d'observation est fixe
+                                                             # [!!!][???] dans ce cas-ci (5m) alors qu'elle est
+            unit$biomasse <- unit$biomasse / (pi * 25)       # [!!!][???] "dynamique" dans unitesp.f() ?
         }
+
+        ## Certains NAs correspondent à des vrai zéros :
+        if (!all(is.na(obs$biomasse)))  # Si les biomasses ne sont pas calculables, inutile de mettre les zéros !
+        {
+            ## Ajout des vrais zéros :
+            unit$biomasse[is.na(unit$biomasse) & unit$nombre == 0] <- 0
+        }
+
+        ## Ajout des vrais zéros de densité :
+        unitesp$densite[unitesp$nombre == 0 & !is.na(unitesp$nombre)] <- 0
+
+        ## ##################################################
         ## calcul richesse specifique
         unit$richesse_specifique <- as.integer(tapply(unitesp$pres_abs,
                                                       unitesp$unite_observation, sum, na.rm=TRUE)) # changé pour avoir
@@ -1575,16 +1636,16 @@ unit.f <- function(){
         ## calcul de l'indice de Simpson
         ## le calcul se fait sur les $nombre il n'y a donc aucune espece exclue pour le calcul de ces metriques
         unitespT <- tapply(obs$nombre, list(obs$unite_observation, obs$code_espece), sum, na.rm = TRUE)
-        unitespT[is.na(unitespT)] <- as.integer(0) # pour conserver des entiers
-        ot <- apply(unitespT, 1, na.rm = TRUE, sum)
+        unitespT[is.na(unitespT)] <- 0 # as.integer() pour conserver des entiers ?
+        ot <- apply(unitespT, 1, sum, na.rm = TRUE)
         a <- sweep(unitespT, 1, ot, FUN="/")
         sim <- a^2
         sim[is.nan(sim)] <- 0
-        sim <- apply(sim, 1, na.rm = TRUE, sum)
+        sim <- apply(sim, 1, sum, na.rm = TRUE)
         sim <- as.data.frame(sim)
         sim$sim <- as.numeric(sim$sim)
-        unit$simpson <- NA
-        unit$simpson <- sim$sim[match(unit$unitobs, rownames(sim))]
+        unit$simpson <- NA                                          # inutile
+        unit$simpson <- sim$sim[match(unit$unitobs, rownames(sim))] # inutile
         unit$simpson[is.na(unit$simpson)] <- 0
         unit$l.simpson <- 1 - unit$simpson
         rm(sim)
@@ -1651,12 +1712,9 @@ unit.f <- function(){
     }
 
     ## ajout des champs "an", "site", "statut_protection", "biotope", "latitude", "longitude"
-    unit$an <- unitobs$an[match(unit$unitobs, unitobs$unite_observation)]
-    unit$site <- unitobs$site[match(unit$unitobs, unitobs$unite_observation)]
-    unit$statut_protection <- unitobs$statut_protection[match(unit$unitobs, unitobs$unite_observation)]
-    unit$biotope <- unitobs$biotope[match(unit$unitobs, unitobs$unite_observation)]
-    unit$latitude <- unitobs$latitude[match(unit$unitobs, unitobs$unite_observation)]
-    unit$longitude <- unitobs$longitude[match(unit$unitobs, unitobs$unite_observation)]
+    unit <- cbind(unit,
+                  unitobs[match(unit$unitobs, unitobs$unite_observation),
+                          c("an", "site", "statut_protection", "biotope", "latitude", "longitude")])
 
     assign("unit", unit, envir=.GlobalEnv)
 
@@ -1686,6 +1744,8 @@ unit.f <- function(){
     {
         unit$CPUE <- unit$densite
         unit$densite <- NULL
+        unit$CPUEbiomasse <- unit$biomasse
+        unit$biomasse <- NULL
     }
 
     ## message de creation de la table unit

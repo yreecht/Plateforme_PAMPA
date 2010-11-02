@@ -157,6 +157,9 @@ opendefault.f <- function ()
 {
 
     print("fonction opendefault activée !!")
+    pathMaker.f()                       # MàJ des variables "fileNameUnitObs", "fileNameObs", "fileNameRefEsp". Pour les
+                                        # cas où les variables fileName1-3 auraient changé.
+
     print(paste("chargement de ", fileNameUnitObs, fileNameObs, fileNameRefEsp))
 
     tkconfigure(ResumerEspaceTravail, text=paste("Espace de travail : ", nameWorkspace))
@@ -182,7 +185,7 @@ opendefault.f <- function ()
     ##     levels(unitobs$statut_protection) <- sort(levels(unitobs$statut_protection), decreasing=TRUE)
     ## }else{}
 
-    if (unique(unitobs$caracteristique_1)[1]=="PecRec")
+    if (unique(unitobs$type)[1]=="PecRec")
     {
         unitobs$DimObs1bis <- unitobs$DimObs1
         x.lt <- as.POSIXlt(as.character(unitobs$heure), format="%Hh%M")
@@ -193,9 +196,9 @@ opendefault.f <- function ()
         {
             if (unitobs$heureEnq[i] < unitobs$heureDeb[i])
             {
-                unitobs$DimObs1bis[i] <- (24-unitobs$heureDeb[i])+unitobs$heureEnq[i]
+                unitobs$DimObs1bis[i] <- (24 - unitobs$heureDeb[i]) + unitobs$heureEnq[i]
             }else{
-                unitobs$DimObs1bis[i] <- unitobs$heureEnq[i]-unitobs$heureDeb[i]
+                unitobs$DimObs1bis[i] <- unitobs$heureEnq[i] - unitobs$heureDeb[i]
             }
         }
         unitobs$DimObs1 <- unitobs$DimObs1bis

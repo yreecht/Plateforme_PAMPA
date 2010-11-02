@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: Selection_variables_interface.R
-### Time-stamp: <2010-10-25 11:11:02 yreecht>
+### Time-stamp: <2010-10-28 15:01:56 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -463,11 +463,18 @@ verifVariables.f <- function(metrique, factGraph, factGraphSel, listFact, listFa
                                                                           tableMetrique=tableMetrique,
                                                                           add=c("unite_observation", "code_espece")),
                                                 metrique=metrique,
-                                                facteurs=c("unite_observation"),
+                                                facteurs=if(tableMetrique == "unitespta" &&
+                                                            factGraph != "classe_taille")
+                                                         {
+                                                             c("unite_observation", "classe_taille")
+                                                         }else{
+                                                             c("unite_observation")
+                                                         },
                                                 listFact=listFact[unlist(listFact) != ""])))
         {
             tkmessageBox(message=paste("Un des facteurs de regroupement est une sous-catégorie",
-                                       "\nd'un des facteurs d'agrégation (e.g. espèce -> Famille).",
+
+                         "\nd'un des facteurs d'agrégation (e.g. espèce -> Famille).",
                                        "\n\nLes données ne peuvent être agrégées !", sep=""),
                      icon="warning")
             return(0)
@@ -616,8 +623,11 @@ updateFactGraph.f <- function(nomTable, env)
     switch(nomTable,
            ## Si table "référentiel d'espèce" :
            refesp={
-               evalq(tkconfigure(CB.factGraph, value=champsRefEspeces.f(siteEtudie, ordered=TRUE)), envir=env)
-               evalq(if (!is.element(tclvalue(FacteurGraph), champsRefEspeces.f(siteEtudie)))
+               evalq(tkconfigure(CB.factGraph,
+                                 value=champsRefEspeces.f(siteEtudie, ordered=TRUE,
+                                                          tableMetrique=tclvalue(TableMetrique))), envir=env)
+               evalq(if (!is.element(tclvalue(FacteurGraph),
+                                     champsRefEspeces.f(siteEtudie, tableMetrique=tclvalue(TableMetrique))))
                  {
                      tclvalue(FacteurGraph) <- "" # réinitialisation
                  }, envir=env)
@@ -743,28 +753,44 @@ titreSelVar.f <- function(type, nextStep)
     texts <- list(
                   ## Titre de fenêtre :
                   winTitle=c(boxplot.esp="boxplots (métrique/espèce/unité d'observation)",
-                             modele_lineaire="modèles linéaires",
+                             modele_lineaire="modèles linéaires (métrique/espèce/unité d'observation)",
                              pres_abs="modèles linéaires présences/absences",
                              freq_occurrence="fréquences d'occurrences",
-                             boxplot.unitobs="boxplots (métrique agrégée/unité d'observation)"),
+                             boxplot.unitobs="boxplots (métrique agrégée/unité d'observation)",
+                             modele_lineaire.unitobs="modèles linéaires (métrique/unité d'observation)"),
                   ## Texte pour le choix métrique :
                   metrique=c(boxplot.esp="Métrique (/espèce/unité d'observation) à représenter : ",
                              modele_lineaire="Métrique expliquée : ",
                              pres_abs="Métrique : \"présences/absences\"",
                              freq_occurrence="Métrique calculée : \"fréquence d'occurrence\"",
-                             boxplot.unitobs="Métrique (agrégée / unité d'observation) à représenter"),
+                             boxplot.unitobs="Métrique (agrégée / unité d'observation) à représenter",
+                             modele_lineaire.unitobs="Métrique expliquée : "),
                   ## Texte pour le choix d'un facteur de séparation :
                   factSep=c(boxplot.esp="Créer un graphique par facteur...  (optionnel)" ,
                             modele_lineaire="Séparer les analyses par facteur...  (optionnel)",
                             pres_abs="Séparer les graphiques/analyses par facteur...  (optionnel)",
                             freq_occurrence="Séparer les graphiques/analyses par facteur...  (optionnel)",
-                            boxplot.unitobs="Sélection d'espèce(s) selon un critère...  (optionnel)"),
+                            boxplot.unitobs="Sélection d'espèce(s) selon un critère...  (optionnel)",
+                            modele_lineaire.unitobs="Sélection d'espèce(s) selon un critère...  (optionnel)"),
                   ## Texte pour le choix du(des) facteur(s) explicatif(s) :
                   facteurs=c(boxplot.esp="Choix du (des) facteur(s) de regroupement (sur un même graphique)" ,
                              modele_lineaire="Choix du(des) facteur(s) explicatif(s)",
                              pres_abs="Choix du(des) facteur(s) explicatif(s)",
                              freq_occurrence="Choix du(des) facteur(s) explicatif(s)/de regroupement",
-                             boxplot.unitobs="Choix du (des) facteur(s) de regroupement (sur un même graphique)")## ,
+                             boxplot.unitobs="Choix du (des) facteur(s) de regroupement (sur un même graphique)",
+                             modele_lineaire.unitobs="Choix du(des) facteur(s) explicatif(s)"),
+                  tabListesp=c(boxplot.esp=".../ unité d'observation / espèce" ,
+                               modele_lineaire=".../ unité d'observation / espèce",
+                               pres_abs=".../ unité d'observation / espèce",
+                               freq_occurrence=".../ unité d'observation / espèce",
+                               boxplot.unitobs=".../ unité d'observation",
+                               modele_lineaire.unitobs=".../ unité d'observation"),
+                  tabListespCT=c(boxplot.esp=".../ unité d'observation / espèce / classes de taille" ,
+                                 modele_lineaire=".../ unité d'observation / espèce / classes de taille",
+                                 pres_abs=".../ unité d'observation / espèce / classes de taille",
+                                 freq_occurrence=".../ unité d'observation / espèce / classes de taille",
+                                 boxplot.unitobs=".../ unité d'observation / classes de taille",
+                                 modele_lineaire.unitobs=".../ unité d'observation / classes de taille")
                   ## =c(boxplot= , modele_lineaire=),
                   )
 
@@ -802,14 +828,18 @@ selectionVariables.f <- function(nextStep)
     nextStepGraph <- c("boxplot.esp", "freq_occurrence", "boxplot.unitobs")
 
     ## Étapes sans classes de taille :
-    nextStepSansCT <- c("boxplot.unitobs", "modele_lineaire.unitobs")
+    nextStepSansCT <- c("")
+
+    ## Étapes avec agrégation par unitobs :
+    nextStepUnitobs <- c("boxplot.unitobs", "modele_lineaire.unitobs")
 
     ## Le même traitement des variables peut être appliqué pour différents "nextStep" :
     casStep <- c("modele_lineaire"="modele_lineaire",
                  "pres_abs"="modele_lineaire",
                  "boxplot.esp"="boxplot.esp",
                  "freq_occurrence"="freq_occurrence",
-                 "boxplot.unitobs"="boxplot.unitobs")
+                 "boxplot.unitobs"="boxplot.unitobs",
+                 "modele_lineaire.unitobs"="modele_lineaire.unitobs")
 
     ## Liste des métriques :
     metriques <- champsMetriques.f("listespunit", nextStep)
@@ -940,7 +970,7 @@ selectionVariables.f <- function(nextStep)
         tkgrid(RB.listespunit, sticky="w")
         tkgrid(RB.TableBiodiv, CB.metrique, tklabel(FrameMetrique, text=" \n"), sticky="w")
 
-        if (is.element(nextStep, nextStepSansCT)) # Désactivation temporaire de la biodiversité (en attendant fonctions
+        if (is.element(nextStep, nextStepUnitobs)) # Désactivation temporaire de la biodiversité (en attendant fonctions
                                         # de recalcul).
         {
             tkconfigure(RB.TableBiodiv, state="disabled")
@@ -961,11 +991,11 @@ selectionVariables.f <- function(nextStep)
     tkgrid(RB.factGraphRefesp, sticky="w")
     tkgrid(tklabel(WinSelection), column=4)
 
-    tkconfigure(CB.factGraph, value=champsRefEspeces.f(siteEtudie, ordered=TRUE))
+    tkconfigure(CB.factGraph,
+                value=champsRefEspeces.f(siteEtudie, ordered=TRUE, tableMetrique=tclvalue(TableMetrique)))
     ## tkconfigure(CB.metrique, value=champsMetriques.f(tclvalue(TableMetrique), nextStep)) # inutile
 
-    if (is.element(nextStep, nextStepSansCT)) # Désactivation temporaire de la biodiversité (en attendant fonctions
-                                        # de recalcul).
+    if (is.element(nextStep, nextStepUnitobs)) # Pas pertinent pour de l'agrégation /unitobs.
     {
         tkconfigure(RB.factGraphUnitobs, state="disabled")
     }else{}
@@ -1017,10 +1047,10 @@ selectionVariables.f <- function(nextStep)
                    modele_lineaire={
 
                        ## tkmessageBox(message="Modèles linéaires")
-                       modeleLineaireWP2.f(metrique=tclvalue(MetriqueChoisie),
-                                           factAna=tclvalue(FacteurGraph), factAnaSel=factGraphSel,
-                                           listFact=sapply(listFacteurs, tclvalue), listFactSel=listFactSel,
-                                           tableMetrique=tclvalue(TableMetrique))
+                       modeleLineaireWP2.esp.f(metrique=tclvalue(MetriqueChoisie),
+                                               factAna=tclvalue(FacteurGraph), factAnaSel=factGraphSel,
+                                               listFact=sapply(listFacteurs, tclvalue), listFactSel=listFactSel,
+                                               tableMetrique=tclvalue(TableMetrique))
                    },
                    freq_occurrence={
                        barplotOccurrence.f(factGraph=tclvalue(FacteurGraph), factGraphSel=factGraphSel,
@@ -1031,6 +1061,12 @@ selectionVariables.f <- function(nextStep)
                                             factGraph=tclvalue(FacteurGraph), factGraphSel=factGraphSel,
                                             listFact=sapply(listFacteurs, tclvalue), listFactSel=listFactSel,
                                             tableMetrique=tclvalue(TableMetrique))
+                   },
+                   modele_lineaire.unitobs={
+                        modeleLineaireWP2.unitobs.f(metrique=tclvalue(MetriqueChoisie),
+                                                    factAna=tclvalue(FacteurGraph), factAnaSel=factGraphSel,
+                                                    listFact=sapply(listFacteurs, tclvalue), listFactSel=listFactSel,
+                                                    tableMetrique=tclvalue(TableMetrique))
                    },
                    tkmessageBox(message=paste("Aucune action (option '", nextStep, "' pas implémentée).", sep=""),
                                 icon="warning"))

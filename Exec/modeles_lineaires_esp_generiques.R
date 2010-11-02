@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: comparaison_distri_generique.R
-### Time-stamp: <2010-10-19 18:30:40 yreecht>
+### Time-stamp: <2010-10-26 10:48:58 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -1098,7 +1098,8 @@ modelType.f <- function(objLM, Log)
 
 
 ########################################################################################################################
-resFileLM.f <- function(objLM, metrique, factAna, modSel, listFact, Log=FALSE,  prefix=NULL, ext="txt", sufixe=NULL)
+resFileLM.f <- function(objLM, metrique, factAna, modSel, listFact,
+                        Log=FALSE,  prefix=NULL, ext="txt", sufixe=NULL, type="espece")
 {
     ## Purpose: Définit les noms du fichiers pour les résultats des modèles
     ##          linéaires. L'extension et un prefixe peuvent êtres précisés,
@@ -1114,6 +1115,7 @@ resFileLM.f <- function(objLM, metrique, factAna, modSel, listFact, Log=FALSE,  
     ##            prefix : préfixe du nom de fichier.
     ##            sufixe : un sufixe pour le nom de fichier.
     ##            ext : extension du fichier.
+    ##            type : type de modèle (traitement conditionnel).
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date:  8 sept. 2010, 15:48
 
@@ -1128,9 +1130,25 @@ resFileLM.f <- function(objLM, metrique, factAna, modSel, listFact, Log=FALSE,  
                       ## Métrique analysée :
                       metrique, "_",
                       ## si facteur de séparation des analyses :
-                      ifelse(factAna == "",
-                             "",
-                             paste(factAna, "(", ifelse(modSel != "", modSel, "toutes"), ")_", sep="")),
+                      "Agr-",
+                      switch(type,
+                             "espece"="espece+unitobs_",
+                             "unitobs"="unitobs_",
+                             ""),
+                      switch(type,
+                             "espece"={
+                                 ifelse(factAna == "",
+                                        "",
+                                        paste(factAna, "(", ifelse(modSel[1] != "", modSel, "toutes"), ")_", sep=""))
+                             },
+                             "unitobs"={
+                                 ifelse(factAna == "",
+                                        "(toutes espèces)_",
+                                        paste(factAna, "(", ifelse(modSel[1] != "",
+                                                                   paste(modSel, collapse="+"),
+                                                                   "toutes"), ")_", sep=""))
+                             },
+                             ""),
                       ## liste des facteurs de l'analyse
                       paste(listFact, collapse="-"),
                       ## sufixe :
@@ -1433,7 +1451,8 @@ signifParamLM.f <- function(objLM, resFile)
 
 
 ########################################################################################################################
-sortiesLM.f <- function(objLM, formule, metrique, factAna, modSel, listFact, Data, Log=FALSE, sufixe=NULL)
+sortiesLM.f <- function(objLM, formule, metrique, factAna, modSel, listFact, Data,
+                        Log=FALSE, sufixe=NULL, type="espece")
 {
     ## Purpose: Formater les résultats de lm et les écrire dans un fichier
     ## ----------------------------------------------------------------------
@@ -1446,6 +1465,8 @@ sortiesLM.f <- function(objLM, formule, metrique, factAna, modSel, listFact, Dat
     ##            Data : les données utilisées.
     ##            Log : données log-transformées ou non (booléen).
     ##            sufixe : un sufixe pour le nom de fichier.
+    ##            type : type d'analyse, pour traitement conditionnel des
+    ##                   titres et noms de fichiers.
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 25 août 2010, 16:19
 
@@ -1468,7 +1489,7 @@ sortiesLM.f <- function(objLM, formule, metrique, factAna, modSel, listFact, Dat
 
     ## Chemin et nom de fichier :
     resFile <- resFileLM.f(objLM=objLM, metrique=metrique, factAna=factAna, modSel=modSel, listFact=listFact,
-                           Log=Log, sufixe=sufixe)
+                           Log=Log, sufixe=sufixe, type=type)
     on.exit(close(resFile), add=TRUE)
 
 
@@ -1512,7 +1533,8 @@ sortiesLM.f <- function(objLM, formule, metrique, factAna, modSel, listFact, Dat
         ## Représentation des interactions :
         mainTitle <- graphTitle.f(metrique=metrique,
                                   modGraphSel=modSel, factGraph=factAna,
-                                  listFact=listFact, model="Graphique d'intéractions")
+                                  listFact=listFact, model="Graphique d'intéractions",
+                                  type=type)
         X11()
         par(mar=c(5, 4, 5, 2) + 0.1)
         with(Data,
@@ -1549,7 +1571,8 @@ sortiesLM.f <- function(objLM, formule, metrique, factAna, modSel, listFact, Dat
 
     subTitle <- graphTitle.f(metrique=metrique,
                              modGraphSel=modSel, factGraph=factAna,
-                             listFact=listFact, model=modelType.f(objLM=objLM, Log=Log))
+                             listFact=listFact, model=modelType.f(objLM=objLM, Log=Log),
+                             type=type)
 
     X11(width=45, height=35)
     par(mfrow=c(2, 2), oma=c(0, 0, 4.7, 0))
@@ -1618,7 +1641,7 @@ calcLM.f <- function(loiChoisie, formule, metrique, Data)
 
 
 ########################################################################################################################
-modeleLineaireWP2.f <- function(metrique, factAna, factAnaSel, listFact, listFactSel, tableMetrique)
+modeleLineaireWP2.esp.f <- function(metrique, factAna, factAnaSel, listFact, listFactSel, tableMetrique)
 {
     ## Purpose: Gestions des différentes étapes des modèles linéaires.
     ## ----------------------------------------------------------------------
@@ -1709,7 +1732,7 @@ modeleLineaireWP2.f <- function(metrique, factAna, factAnaSel, listFact, listFac
 
             res <- calcLM.f(loiChoisie=loiChoisie, formule=formule, metrique=metrique, Data=tmpDataMod)
 
-            res <<- res
+            resLM <<- res
 
             sortiesLM.f(objLM=res, formule=formule, metrique=metrique,
                         factAna=factAna, modSel=modSel, listFact=listFact,

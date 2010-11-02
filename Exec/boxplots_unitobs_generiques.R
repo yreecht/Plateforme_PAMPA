@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: boxplots_ttesp_generic.R
-### Time-stamp: <2010-10-25 11:47:19 yreecht>
+### Time-stamp: <2010-10-28 15:34:35 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -30,7 +30,11 @@ graphTitle.unitobs.f <- function(metrique, modGraphSel, factGraph, listFact, mod
                  " par unité d'observation",
                  ifelse(modGraphSel[1] == "", # Facteur de séparation uniquement si défini.
                         "\npour toutes les espèces",
-                        paste("\npour les espèces correspondant à '", factGraph, "' = (",
+                        paste(switch(factGraph,
+                                     "classe_taille"="\npour les individus correspondant à '", # Cas des classes de
+                                        # tailles.
+                                     "\npour les espèces correspondant à '"),
+                              factGraph, "' = (",
                               paste(modGraphSel, collapse=", "), ")", sep="")),
                  "\n selon ",
                  paste(sapply(listFact[length(listFact):1],
@@ -91,10 +95,18 @@ WP2boxplot.unitobs.f <- function(metrique, factGraph, factGraphSel, listFact, li
     }
 
     ## Agrégation des observations / unité d'observation :
-    tmpData <- agregationTableParCritere.f(Data=tmpData,
-                                           metrique=metrique,
-                                           facteurs=c("unite_observation"),
-                                           listFact=listFact)
+    if (tableMetrique == "unitespta" && factGraph != "classe_taille")
+    {
+        tmpData <- agregationTableParCritere.f(Data=tmpData,
+                                               metrique=metrique,
+                                               facteurs=c("unite_observation", "classe_taille"),
+                                               listFact=listFact)
+    }else{
+        tmpData <- agregationTableParCritere.f(Data=tmpData,
+                                               metrique=metrique,
+                                               facteurs=c("unite_observation"),
+                                               listFact=listFact)
+    }
 
     ## Sauvegarde temporaire des données utilisées pour les graphiques (attention : écrasée à chaque nouvelle série de
     ## graphiques) :
@@ -125,9 +137,9 @@ WP2boxplot.unitobs.f <- function(metrique, factGraph, factGraphSel, listFact, li
         par(mar=c(9, 5, 8, 1), mgp=c(3.5, 1, 0)) # paramètres graphiques.
 
         ## Titre (d'après les métriques, modalité du facteur de séparation et facteurs de regroupement) :
-        mainTitle <- graphTitle.unitobs.f(metrique=metrique,
-                                          modGraphSel=iFactGraphSel, factGraph=factGraph,
-                                          listFact=listFact)
+        mainTitle <- graphTitle.f(metrique=metrique,
+                                  modGraphSel=iFactGraphSel, factGraph=factGraph,
+                                  listFact=listFact, type="unitobs")
 
         ## Les couleurs pour l'identification des modalités du facteur de second niveau :
         colors <- colBoxplot.f(terms=attr(terms(exprBP), "term.labels"), data=tmpData)
@@ -143,7 +155,11 @@ WP2boxplot.unitobs.f <- function(metrique, factGraph, factGraphSel, listFact, li
         tmpBP <- boxplot(exprBP, data=tmpData,
                          main=mainTitle, ylab=ylab,  ## Capitalize.f(varNames[metrique, "nom"]),
                          varwidth = TRUE, las=2,
-                         col=colors)
+                         col=colors,
+                         ylim=c(min(tmpData[ , metrique], na.rm=TRUE),
+                                max(tmpData[ , metrique], na.rm=TRUE) +
+                                  0.1*(max(tmpData[ , metrique], na.rm=TRUE) -
+                                       min(tmpData[ , metrique], na.rm=TRUE))))
 
         ## #################### Informations supplémentaires sur les graphiques ####################
 
@@ -183,10 +199,11 @@ WP2boxplot.unitobs.f <- function(metrique, factGraph, factGraphSel, listFact, li
         ## ... valeurs :
         if (getOption("P.valMoyenne"))
         {
-            text(1.2 * Moyenne, col = getOption("P.valMoyenneCol"), cex = 0.9, # On pourrait utiliser
-                                        # tmpBP$stats[5, ] à la place ?
-                 labels=as.character(round(Moyenne, digits=unlist(options("P.NbDecimal")))))
+            plotValMoyennes.f(moyennes=Moyenne, objBP=tmpBP)
         }else{}
+
+        ## Avertissement pour les petits effectifs :
+        plotPetitsEffectifs.f(objBP=tmpBP, nbmin=5)
 
         ## Nombres d'observations :
         if (getOption("P.NbObs"))
@@ -201,13 +218,6 @@ WP2boxplot.unitobs.f <- function(metrique, factGraph, factGraphSel, listFact, li
                    cex =0.9, col=getOption("P.NbObsCol"), text.col="orange", merge=FALSE)
         }else{}
 
-        ## Affichage d'avertissement pour  > X% du max retiré :
-        if (getOption("P.maxExclu"))
-        {
-            legend("top",
-                   paste("Enregistrements > ", 100 * getOption("P.GraphPartMax"), "% du maximum retirés", sep=""),
-                   cex =0.9, col="red", text.col="red", merge=FALSE)
-        }else{}
     }  ## Fin de graphique.
 
     ## On ferme les périphériques PDF :

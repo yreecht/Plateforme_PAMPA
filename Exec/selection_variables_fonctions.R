@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: Selection_variables_fonctions.R
-### Time-stamp: <2010-10-25 15:47:22 yreecht>
+### Time-stamp: <2010-11-02 15:00:29 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -38,7 +38,7 @@ has.no.pres.abs <- function(nextStep, tableMetrique)
     ##            tableMetrique : la table de métrique.
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 12 oct. 2010, 09:07
-    if (is.element(nextStep, c("boxplot.esp")) |     # pas proposé si on fait des boxplots.
+    if (is.element(nextStep, c("boxplot.esp", "boxplot.unitobs")) |     # pas proposé si on fait des boxplots.
         length(unique(na.omit(get(tableMetrique, # "            " une seule modalité.
                                   envir=.GlobalEnv)$pres_abs))) < 2)
     {
@@ -134,11 +134,11 @@ champsUnitobs.f <- function(ordered=FALSE, tableMetrique="")
     if (ordered)
     {
         res <- c(if (tableMetrique == "unitespta")
-             {
-                 c("classe_taille", "")
-             }else{
-                 ""
-             },
+                 {
+                     c("classe_taille", "")
+                 }else{
+                     ""
+                 },
                  sort(cPrincip[is.element(cPrincip, res)]),
                  "", sort(res[!is.element(res, cPrincip)]))
     }else{}
@@ -148,7 +148,7 @@ champsUnitobs.f <- function(ordered=FALSE, tableMetrique="")
 
 
 ########################################################################################################################
-champsRefEspeces.f <- function(site, ordered=FALSE)
+champsRefEspeces.f <- function(site, ordered=FALSE, tableMetrique="")
 {
     ## Purpose: Retourne la liste des champs du référentiel espèces après
     ##          avoir supprimé ceux ne correspondant pas au site étudié ainsi
@@ -157,6 +157,9 @@ champsRefEspeces.f <- function(site, ordered=FALSE)
     ## Arguments: site : le site étudié (chaîne de caractères).
     ##            ordered : faire apparaître les champs principaux en
     ##                      premiers ? (booléen, optionnel)
+    ##            tableMetrique : nom de la table de métriques (pour pouvoir
+    ##                            ajouter le champs classe de taille, même
+    ##                            si ne fait pas partie de cette table).
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date:  3 août 2010, 11:16
 
@@ -184,7 +187,13 @@ champsRefEspeces.f <- function(site, ordered=FALSE)
     ## Champs principaux en premiers :
     if (ordered)
     {
-        res <- c("", sort(cPrincip[is.element(cPrincip, res)]),
+        res <- c(if (tableMetrique == "unitespta")
+                 {
+                     c("classe_taille", "")
+                 }else{
+                     ""
+                 },
+                 sort(cPrincip[is.element(cPrincip, res)]),
                  "", sort(res[!is.element(res, cPrincip)]))
     }else{}
 
@@ -373,7 +382,7 @@ subsetToutesTables.f <- function(metrique, facteurs, selections, tableMetrique="
 
 
 ########################################################################################################################
-agregationTableParCritere.f <- function(Data, metrique, facteurs, listFact)
+agregationTableParCritere.f <- function(Data, metrique, facteurs, listFact=NULL)
 {
     ## Purpose: Agréger les données selon un ou plusieurs facteurs.
     ## ----------------------------------------------------------------------
@@ -395,23 +404,66 @@ agregationTableParCritere.f <- function(Data, metrique, facteurs, listFact)
                      "poids_moyen"="w.mean",
                      "densite"="sum",
                      "CPUE"="sum",
-                     "pres_abs"="pres")
+                     "CPUEbiomasse"="sum",
+                     "pres_abs"="pres",
+                     "prop.abondance.CL"="w.mean.prop", # Pas bon [!!!]
+                     "prop.biomasse.CL"="w.mean.prop.bio",  # Pas bon [!!!]
+                     ## Benthos :
+                     "colonie"="sum",
+                     "recouvrement"="sum",
+                     "taille.moy.colonies"="w.mean.colonies")
 
     ## Ajout du champs nombre pour le calcul des moyennes pondérées s'il est absent :
-    if (casMetrique[metrique] == "w.mean" && ! is.element("nombre", colnames(Data)))
+    if ((casMetrique[metrique] == "w.mean" || casMetrique[metrique] == "w.mean.prop"))
     {
         if (is.element("classe_taille", colnames(Data)))
         {
-            Data$nombre <- unitespta$nombre[match(apply(Data[ , c("code_espece", "unite_observation")],
+            Data <- merge(Data,
+                          unitespta[ , c("code_espece", "unite_observation", "classe_taille", "nombre")],
+                          by=c("code_espece", "unite_observation", "classe_taille"))
+
+            ## Ajout de l'abondance totale /espèce/unité d'observation :
+            nbTot <- tapply(unitespta$nombre,
+                            as.list(unitespta[ , c("code_espece", "unite_observation")]),
+                            sum, na.rm=TRUE)
+
+            Data <- merge(Data,
+                          as.data.frame(as.table(nbTot), responseName="nombre.tot"))
+        }else{
+            Data <- merge(Data,
+                          unitespta[ , c("code_espece", "unite_observation", "nombre")],
+                          by=c("code_espece", "unite_observation"))
+        }
+    }else{}
+
+    ## Ajout du champs biomasse pour les proportions de biomasses par classe de taille :
+    if (casMetrique[metrique] == "w.mean.prop.bio")
+    {
+        Data <- merge(Data,
+                      unitespta[ , c("code_espece", "unite_observation", "classe_taille", "biomasse")],
+                      by=c("code_espece", "unite_observation", "classe_taille"))
+
+        ## Ajout de la biomasse totale /espèce/unité d'observation :
+        biomTot <- tapply(unitespta$biomasse,
+                          as.list(unitespta[ , c("code_espece", "unite_observation")]),
+                          function(x)
+                      {
+                          ifelse(all(is.na(x)),
+                                 NA,
+                                 sum(x, na.rm=TRUE))
+                      })
+
+        Data <- merge(Data,
+                      as.data.frame(as.table(biomTot), responseName="biomasse.tot"))
+    }
+
+    ## Ajout du champs colonie pour le calcul des moyennes pondérées s'il est absent :
+    if (casMetrique[metrique] == "w.mean.colonies" && ! is.element("colonie", colnames(Data)))
+    {
+        Data$colonie <- listespunit$colonie[match(apply(Data[ , c("code_espece", "unite_observation")],
                                                         1, paste, collapse="*"),
                                                   apply(listespunit[ , c("code_espece", "unite_observation")],
                                                         1, paste, collapse="*"))]
-        }else{
-            Data$nombre <- listespunit$nombre[match(apply(Data[ , c("code_espece", "unite_observation")],
-                                                          1, paste, collapse="*"),
-                                                    apply(listespunit[ , c("code_espece", "unite_observation")],
-                                                          1, paste, collapse="*"))]
-        }
     }else{}
 
     ## Agrégation de la métrique selon les facteurs :
@@ -438,6 +490,56 @@ agregationTableParCritere.f <- function(Data, metrique, facteurs, listFact)
                                                   na.rm=TRUE))
                          })
            },
+           "w.mean.colonies"={
+               res <- tapply(1:nrow(Data),
+                             as.list(Data[ , facteurs, drop=FALSE]),
+                             function(ii)
+                         {
+                             ifelse(all(is.na(Data[ii, metrique])),
+                                    NA,
+                                    weighted.mean(Data[ii, metrique],
+                                                  Data[ii, "colonie"],
+                                                  na.rm=TRUE))
+                         })
+           },
+           "w.mean.prop"={
+               res <- tapply(1:nrow(Data),
+                             as.list(Data[ , facteurs, drop=FALSE]),
+                             function(ii)
+                         {
+                             ifelse(all(is.na(Data[ii, metrique])) || sum(Data[ii, "nombre.tot"], na.rm=TRUE) == 0,
+                                    NA,
+                                    ifelse(all(na.omit(Data[ii, metrique]) == 0), # Pour ne pas avoir NaN.
+                                           0,
+                                           (sum(Data[ii, "nombre"][ !is.na(Data[ii, metrique])], na.rm=TRUE) /
+                                             sum(Data[ii, "nombre.tot"], na.rm=TRUE)) *
+                                           ## Correction si la classe de taille n'est pas un facteur d'agrégation
+                                           ## (sinon valeur divisée par le nombre de classes présentes) :
+                                           ifelse(is.element("classe_taille", facteurs),
+                                                  100,
+                                                  100 * length(unique(Data$classe_taille)))))
+                         })
+
+           },
+           "w.mean.prop.bio"={
+               res <- tapply(1:nrow(Data),
+                             as.list(Data[ , facteurs, drop=FALSE]),
+                             function(ii)
+                         {
+                             ifelse(all(is.na(Data[ii, metrique])) || sum(Data[ii, "biomasse.tot"], na.rm=TRUE) == 0,
+                                    NA,
+                                    ifelse(all(na.omit(Data[ii, metrique]) == 0), # Pour ne pas avoir NaN.
+                                           0,
+                                           (sum(Data[ii, "biomasse"][ !is.na(Data[ii, metrique])], na.rm=TRUE) /
+                                             sum(Data[ii, "biomasse.tot"], na.rm=TRUE)) *
+                                           ## Correction si la classe de taille n'est pas un facteur d'agrégation
+                                           ## (sinon valeur divisée par le nombre de classes présentes) :
+                                           ifelse(is.element("classe_taille", facteurs),
+                                                  100,
+                                                  100 * length(unique(Data$classe_taille)))))
+                         })
+
+           },
            "pres"={
                res <- tapply(Data[ , metrique],
                              as.list(Data[ , facteurs, drop=FALSE]),
@@ -460,23 +562,26 @@ agregationTableParCritere.f <- function(Data, metrique, facteurs, listFact)
     reslong <- reslong[ , c(tail(colnames(reslong), 1), head(colnames(reslong), -1))] # métrique en première.
 
     ## Agrégartion et ajout des facteurs supplémentaires :
-    reslong <- cbind(reslong,
-                     sapply(Data[ , listFact, drop=FALSE],
-                            function(fact)
-                        {
-                            tapply(fact,
-                                   as.list(Data[ , facteurs, drop=FALSE]),
-                                   function(x)
-                               {
-                                   if (length(x) > 1 && length(unique(x)) > 1) # On doit n'avoir qu'une seule
-                                        # modalité...
+    if (!is.null(listFact))
+    {
+        reslong <- cbind(reslong,
+                         sapply(Data[ , listFact, drop=FALSE],
+                                function(fact)
+                            {
+                                tapply(fact,
+                                       as.list(Data[ , facteurs, drop=FALSE]),
+                                       function(x)
                                    {
-                                       return(NULL)                  # ...sinon on retourne NULL
-                                   }else{
-                                       unique(as.character(x))
-                                   }
-                               })
-                        }))
+                                       if (length(x) > 1 && length(unique(x)) > 1) # On doit n'avoir qu'une seule
+                                        # modalité...
+                                       {
+                                           return(NULL)                  # ...sinon on retourne NULL
+                                       }else{
+                                           unique(as.character(x))
+                                       }
+                                   })
+                            }))
+    }else{}
 
     ## Vérification des facteurs supplémentaires agrégés. Il ne doit pas y avoir d'élément nul (la fonction précédente
     ## renvoie NULL si plusieurs niveaux de facteurs, i.e. le facteur est un sous ensemble d'un des facteurs
@@ -489,6 +594,250 @@ agregationTableParCritere.f <- function(Data, metrique, facteurs, listFact)
         return(reslong)
     }
 }
+
+
+########################################################################################################################
+presAbs.f <- function(nombres, logical=FALSE)
+{
+    ## Purpose: Renvoie les présences/absences d'après les nombres.
+    ## ----------------------------------------------------------------------
+    ## Arguments: nombres : vecteur de nombre d'individus.
+    ##            logical : faut-il renvoyer les résultats sous forme de
+    ##                      booléens, ou 0/1 (booléen).
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date: 29 oct. 2010, 10:20
+
+    if (any(nombres < 0, na.rm=TRUE))
+    {
+        stop("effectifs inférieurs à 0 !")
+    }else{}
+
+    if (logical)
+    {
+        return(nombres > 0)
+    }else{
+        nombres[nombres > 0] <- 1
+        return(nombres)
+    }
+}
+
+########################################################################################################################
+calcBiodiv.f <- function(Data, unitobs="unite_observation", code.especes="code_espece", nombres="nombre")
+{
+    ## Purpose: calcul des indices de biodiversité
+    ## ----------------------------------------------------------------------
+    ## Arguments: Data : les données à partir desquelles calculer les
+    ##                   indices. Doivent comporter au minimum (colones) :
+    ##                     * unités d'observations/sites
+    ##                     * espèces présentes
+    ##                     * nombre d'individus /espèce/unitobs.
+    ##            unitobs : nom de la colone d'unités d'observation.
+    ##            especes : nom de la colone d'espèces.
+    ##            nombres : nom de la colone de nombres.
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date: 29 oct. 2010, 08:58
+
+    ## Suppréssion de tout ce qui n'a pas de genre (peut être du non biotique) :
+    Data <- Data[especes$Genre[match(Data$code_espece, especes$code_espece)] != "ge.", ]
+
+    ## Suppression des niveaux de facteur inutilisés :
+    Data <- dropLevels.f(df=Data)
+
+    ## Si les données ne sont pas encore agrégées /espèce/unitobs on le fait ici :
+    if (nrow(Data) > nrow(expand.grid(unique(Data[ , unitobs]), unique(Data[ , code.especes]))))
+    {
+        Data <- agregationTableParCritere.f(Data=Data, metrique=nombres,
+                                            facteurs=c(unitobs, code.especes),
+                                            listFact=NULL)
+    }else{}
+
+    df.biodiv <- as.data.frame(as.table(tapply(Data[ , nombres],
+                                               Data[ , unitobs],
+                                               sum, na.rm=TRUE)))
+
+    colnames(df.biodiv) <- c(unitobs, nombres)
+
+    ## ##################################################
+    ## Richesse spécifique :
+    Data$pres.abs <- presAbs.f(nombres=Data[ , nombres], logical = FALSE)
+
+    df.biodiv$richesse.specifique <- tapply(Data$pres.abs,
+                                            Data[ , unitobs], sum, na.rm=TRUE)
+
+    ## richesses specifiques relatives :
+
+    ## Phylum(s) présent(s) dans le jeux de données :
+    phylums <- as.character(unique(na.omit(especes$Phylum[match(Data[ , code.especes],
+                                                                especes$code_espece)])))
+
+    ## RS relative par rapp. au nombre d'espèces du site :
+    df.biodiv$RS.relative.site <- (df.biodiv$richesse.specifique /
+                                   nrow(subset(especes,
+                                               eval(parse(text=paste("Obs", siteEtudie, sep=""))) == "oui"))) * 100
+
+    ## RS relative par rapp. au nombre d'espèces du site et du(des) phylum(s) concerné(s) (jeu de données) :
+    df.biodiv$RS.relative.site.phylum <- (df.biodiv$richesse.specifique /
+                                          nrow(subset(especes,
+                                                      eval(parse(text=paste("Obs", siteEtudie, sep=""))) == "oui" &
+                                                      is.element(Phylum, phylums)))) * 100
+
+    ## RS relative par rapp. au nombre d'espèces des données :
+    df.biodiv$RS.relative.donnees <- (df.biodiv$richesse.specifique /
+                                      nrow(subset(especes,
+                                                  is.element(code_espece, Data[ , code.especes])))) * 100
+
+    ## ## RS relative par rapp. au nombre d'espèces des données + des phyla présents :
+    ## Inutile : "RS.relative.donnees" est par définition limitée au phyla présents !
+
+    ## RS relative par rapp. au nombre d'espèces au niveau régional (OM ou méditerrannée) :
+    df.biodiv$RS.relative.region <- (df.biodiv$richesse.specifique /
+                                     nrow(especes)) * 100
+
+    ## RS relative par rapp. au nombre d'espèces au niveau régional (OM ou méditerrannée) et
+    ## du(des) phylum(s) concerné(s) (jeu de données) :
+    df.biodiv$RS.relative.region.phylum <- (df.biodiv$richesse.specifique /
+                                            nrow(subset(especes, is.element(Phylum, phylums)))) * 100
+
+    ## ##################################################
+    ## Indices de Simpson et Shannon et dérivés :
+
+    matNombres <- tapply(Data[ , nombres], # Matrice de nombres d'individus /espèce/unitobs.
+                         list(Data[ , unitobs], Data[ , code.especes]),
+                         sum, na.rm=TRUE)
+
+    matNombres[is.na(matNombres)] <- 0  # Vrais zéros
+
+    ## Proportion d'individus de chaque espèce dans l'unitobs :
+    propIndiv <- sweep(matNombres, 1,                           #
+                       apply(matNombres, 1, sum, na.rm = TRUE), # Nombre d'individus / unitobs ; équiv df.biodiv$nombre.
+                       FUN="/")
+
+    ## Indices de Simpson.
+    df.biodiv$simpson <- apply(propIndiv^2, 1, sum, na.rm=TRUE)
+    df.biodiv$l.simpson <- 1 - df.biodiv$simpson
+
+    ## calcul de l'indice de Shannon :
+    df.biodiv$shannon <- -1 * apply(propIndiv * log(propIndiv), 1, sum, na.rm=TRUE)
+
+    ## calcul de l'indice de Pielou :
+    df.biodiv$pielou <- df.biodiv$shannon / log(df.biodiv$richesse.specifique)
+
+    ## calcul de l'indice de Hill :
+    df.biodiv$hill <- (1 - df.biodiv$simpson) / exp(df.biodiv$shannon)
+                                        # équiv df.biodiv$l.simpson / exp(df.biodiv$shannon)
+
+    ## suppression de l'indice de shannon (non pertinent)
+    df.biodiv$shannon <- NULL
+
+    ## ##################################################
+    ## Indices de biodiversité taxonomique :
+    df.biodivTaxo <- calcBiodivTaxo.f(Data=Data,
+                                      unitobs = unitobs, code.especes = code.especes, nombres = nombres,
+                                      global = FALSE, printInfo = FALSE)
+
+    if (!is.null(df.biodivTaxo))
+    {
+        df.biodiv <- cbind(df.biodiv,
+                           df.biodivTaxo[match(df.biodiv[ ,unitobs], row.names(df.biodivTaxo)), ])
+    }else{}
+
+    return(df.biodiv)
+}
+
+########################################################################################################################
+calcBiodivTaxo.f <- function(Data, unitobs="unite_observation", code.especes="code_espece", nombres="nombre",
+                             global=FALSE, printInfo=FALSE)
+{
+    ## Purpose: Calcul des indices de biodiversité basés sur la taxonomie.
+    ## ----------------------------------------------------------------------
+    ## Arguments: Data : les données à partir desquelles calculer les
+    ##                   indices. Doivent comporter au minimum (colones) :
+    ##                     * unités d'observations/sites
+    ##                     * espèces présentes
+    ##                     * nombre d'individus /espèce/unitobs.
+    ##            unitobs : nom de la colone d'unités d'observation.
+    ##            especes : nom de la colone d'espèces.
+    ##            nombres : nom de la colone de nombres.
+    ##            global : est-ce que les résultats doivent être exportés
+    ##                     globalement (booléen).
+    ##            printInfo : affichage des infos ? (booléen).
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date: 29 oct. 2010, 14:30
+
+    ## Suppréssion de tout ce qui n'a pas de genre (peut être du non biotique) :
+    Data <- Data[especes$Genre[match(Data$code_espece, especes$code_espece)] != "ge.", ]
+
+    ## Suppression des niveaux de facteur inutilisés :
+    Data <- dropLevels.f(df=Data)
+
+    ## Si les données ne sont pas encore agrégées /espèce/unitobs on le fait ici :
+    if (nrow(Data) > nrow(expand.grid(unique(Data[ , unitobs]), unique(Data[ , code.especes]))))
+    {
+        Data <- agregationTableParCritere.f(Data=Data, metrique=nombres,
+                                            facteurs=c(unitobs, code.especes),
+                                            listFact=NULL)
+    }else{}
+
+    ## Table de contingence unitobs-espèces :
+    contingence <- tapply(Data[ , nombres],
+                          list(Data[ , unitobs], Data[ , code.especes]),
+                          sum, na.rm=TRUE)
+
+    contingence[is.na(contingence)] <- 0 # Vrais zéros.
+
+    ## tableau avec genre, famille, etc.
+    sp.taxon <- dropLevels.f(especes[match(colnames(contingence),
+                                           especes$code_espece, nomatch=NA, incomparables = FALSE),
+                                     c("Genre", "Famille", "Ordre", "Classe", "Phylum")])
+
+    ## colnames(sp.taxon) <- c("genre", "famille", "ordre", "classe", "phylum")
+    rownames(sp.taxon) <- colnames(contingence)
+
+    ## retrait des lignes ayant un niveau taxonomique manquant dans sp.taxon et dans contingence (en colonnes) :
+    manque.taxon <- apply(sp.taxon, 1, function(x){any(is.na(x))})
+    sp.taxon <- sp.taxon[! manque.taxon, , drop=FALSE]
+    contingence <- contingence[, ! manque.taxon, drop=FALSE]
+
+    ## Calcul des indices (librairie "vegan") :
+    if (length(unique(sp.taxon$Genre)) > 2)
+    {
+        ## calcul des distances taxonomiques entre les especes
+        taxdis <- taxa2dist(sp.taxon, varstep=TRUE, check=TRUE)
+
+        ## Function finds indices of taxonomic diversity and distinctiness, which are averaged taxonomic distances among
+        ## species or individuals in the community...
+        divTaxo <- taxondive(contingence, taxdis)
+
+        ## mise de divTaxo sous forme de data.frame :
+        df.biodivTaxo <- as.data.frame(divTaxo[c("D", "Dstar",
+                                                 "Lambda", "Dplus", "SDplus")])
+
+        colnames(df.biodivTaxo) <- c("Delta", "DeltaEtoile",
+                                     "LambdaPlus", "DeltaPlus", "SDeltaPlus") # [!!!] "LambdaPlus" ? vraiment ? [???]
+
+        ## affichage des valeurs attendues :
+        if (printInfo)
+        {
+            message(paste("La valeur théorique de Delta est :" , round(divTaxo[["ED"]], 3)))
+            message(paste("La valeur théorique de Delta* est :" , round(divTaxo[["EDstar"]], 3)))
+            message(paste("La valeur théorique de Delta+ est :" , round(divTaxo[["EDplus"]], 3)))
+        }else{}
+
+        ## Résultats :
+        if (global)
+        {
+            ## Création des objets dans l'environnement global
+            assign("div", divTaxo, envir=.GlobalEnv)
+            assign("taxdis", taxdis, envir=.GlobalEnv)
+            assign("ind_div", df.biodivTaxo, envir=.GlobalEnv)
+        }else{
+            return(df.biodivTaxo)
+        }
+    }else{                              # nombre de genre < 2.
+        warning("Nombre de genre < 1 : les indices de diversité taxonomique ne peuvent être calculés.")
+    }
+}
+
 
 
 

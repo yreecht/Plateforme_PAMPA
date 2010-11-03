@@ -1135,7 +1135,7 @@ unitespta.f <- function(){
         ##                             list(obs$unite_observation, obs$code_espece),
         ##                             max, na.rm=TRUE)))^2)
 
-        unitesp$densite[unitesp$nombre == 0 & !is.na(unitesp$nombre)] <- 0
+        unitespta$densite[unitespta$nombre == 0 & !is.na(unitespta$nombre)] <- 0
     }
 
     ## ajout des champs "an", "site", "biotope", "latitude", "longitude"
@@ -1166,20 +1166,23 @@ unitespta.f <- function(){
 
     ## ##################################################
     ## Proportion de biomasse par classe de taille :
-    biomasses <- with(unitespta, tapply(biomasse, list(unitobs, code_espece, classe_taille),
-                                        function(x){x})) # -> tableau à 3D.
+    if (!is.null(unitespta$biomasse))
+    {
+        biomasses <- with(unitespta, tapply(biomasse, list(unitobs, code_espece, classe_taille),
+                                            function(x){x})) # -> tableau à 3D.
 
-    ## Sommes de biomasses pour chaque unitobs pour chaque espèce :
-    sommesCT <- apply(biomasses, c(1, 2), sum, na.rm=TRUE)
+        ## Sommes de biomasses pour chaque unitobs pour chaque espèce :
+        sommesCT <- apply(biomasses, c(1, 2), sum, na.rm=TRUE)
 
-    ## Calcul des proportions de biomasse -> tableau 3D :
-    propBiomasse <- sweep(biomasses, c(1, 2), sommesCT, FUN="/")
-    names(dimnames(propBiomasse)) <- c("unite_observation", "code_espece", "classe_taille")
+        ## Calcul des proportions de biomasse -> tableau 3D :
+        propBiomasse <- sweep(biomasses, c(1, 2), sommesCT, FUN="/")
+        names(dimnames(propBiomasse)) <- c("unite_observation", "code_espece", "classe_taille")
 
-    ## Mise au format colonne + % :
-    unitespta$prop.biomasse.CL <- 100 * as.data.frame(as.table(propBiomasse),
-                                                      responseName="prop.biomasse.CL",
-                                                      stringsAsFactors=FALSE)$prop.biomasse.CL
+        ## Mise au format colonne + % :
+        unitespta$prop.biomasse.CL <- 100 * as.data.frame(as.table(propBiomasse),
+                                                          responseName="prop.biomasse.CL",
+                                                          stringsAsFactors=FALSE)$prop.biomasse.CL
+    }else{}
 
     ## #################################################
     ## on renomme densite et biomasse en CPUE
@@ -1188,7 +1191,7 @@ unitespta.f <- function(){
     {
         unitespta$CPUE <- unitespta$densite
         unitespta$densite <- NULL
-        unitespta$CPUEbiomasse <- unitespta$biomasse
+        unitespta$CPUEbiomasse <- unitespta$biomasse # Fonctionne même si biomasse n'existe pas.
         unitespta$biomasse <- NULL
     }
 

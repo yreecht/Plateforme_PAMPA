@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: Selection_variables_fonctions.R
-### Time-stamp: <2010-11-02 15:00:29 yreecht>
+### Time-stamp: <2010-11-03 09:48:00 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -395,6 +395,9 @@ agregationTableParCritere.f <- function(Data, metrique, facteurs, listFact=NULL)
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 18 oct. 2010, 15:47
 
+    ## Informations (l'étape peut être longue) :
+    WinInfo <- agregation.info.f()
+
     ## traitements selon le type de métrique :
     casMetrique <- c("nombre"="sum",
                      "taille_moyenne"="w.mean",
@@ -582,6 +585,9 @@ agregationTableParCritere.f <- function(Data, metrique, facteurs, listFact=NULL)
                                    })
                             }))
     }else{}
+
+    ## Fermeture de la fenêtre d'information
+    close.info.f(WinInfo)
 
     ## Vérification des facteurs supplémentaires agrégés. Il ne doit pas y avoir d'élément nul (la fonction précédente
     ## renvoie NULL si plusieurs niveaux de facteurs, i.e. le facteur est un sous ensemble d'un des facteurs
@@ -837,6 +843,47 @@ calcBiodivTaxo.f <- function(Data, unitobs="unite_observation", code.especes="co
         warning("Nombre de genre < 1 : les indices de diversité taxonomique ne peuvent être calculés.")
     }
 }
+
+########################################################################################################################
+agregation.info.f <- function()
+{
+    ## Purpose: fenêtre d'information sur les agrégations en cours.
+    ## ----------------------------------------------------------------------
+    ## Arguments: aucun
+    ## Output : objet de fenêtre (pour pouvoir la détruire).
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date:  3 nov. 2010, 09:34
+
+    WinInfo <- tktoplevel()
+
+    tkwm.title(WinInfo, "Information")
+
+    tkgrid(tklabel(WinInfo, text="\t "),
+           tklabel(WinInfo, text="\tAgrégation des données en cours...\n"),
+           tklabel(WinInfo, text="\t "),
+           sticky="w")
+    tkgrid(tklabel(WinInfo, text="\t "),
+           tklabel(WinInfo,
+                   text=paste("(cette fenêtre se fermera automatiquement)\n", sep="")),
+           sticky="w")
+    tkfocus(WinInfo)
+    winSmartPlace.f(WinInfo)
+
+    return(WinInfo)
+}
+
+########################################################################################################################
+close.info.f <- function(WinInfo)
+{
+    ## Purpose: Fermer une fenêtre d'information.
+    ## ----------------------------------------------------------------------
+    ## Arguments: WinInfo : objet d'identification de fenêtre.
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date:  3 nov. 2010, 09:37
+
+    tkdestroy(WinInfo)
+}
+
 
 
 

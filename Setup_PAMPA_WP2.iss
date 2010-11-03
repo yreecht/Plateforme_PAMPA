@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "PAMPA WP2"
-#define MyAppVersion "0.99-2"
+#define MyAppVersion "0.99-3"
 #define MyAppPublisher "Ifremer"
 #define MyAppURL "https://www.ifremer.fr/ezprod/index.php/pampa/"
 #define MyAppExeName "PAMPA WP2.bat"
@@ -44,6 +44,7 @@ Source: ".\Exec\PAMPA WP2.bat"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\Exec\*"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\Exec\img\*"; DestDir: "{app}\img"; Flags: ignoreversion
 Source: ".\Exec\Doc\*"; DestDir: "{app}\Doc"; Flags: ignoreversion
+Source: ".\Exec\config.r"; DestDir: "{app}"; Flags: uninsneveruninstall
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
@@ -61,6 +62,8 @@ Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChang
 
 [Dirs]
 Name: "{#InstallDir}\Data"; Flags: uninsneveruninstall; Tasks: ; Languages:
+
+
 
 
 

@@ -1,3 +1,101 @@
+
+########################################################################################################################
+
+
+selectionObs.SVR.f <- function()
+{
+    ## Purpose: Définir le seuil de Dmin (en m) au-dessus duquel les
+    ##          observations ne sont pas prises en compte.
+    ## ----------------------------------------------------------------------
+    ## Arguments: aucun
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date:  8 nov. 2010, 10:29
+
+    onOK.selectionObs.SVR.f <- function()
+    {
+        ## Purpose: Action lorsque le bouton de choix de seuil pour les SVR est
+        ##          cliqué.
+        ## ----------------------------------------------------------------------
+        ## Arguments: aucun
+        ## ----------------------------------------------------------------------
+        ## Author: Yves Reecht, Date:  8 nov. 2010, 12:01
+
+        if (tclvalue(Suppr) == "1")
+        {
+            if (!is.na(as.numeric(tclvalue(Level))))
+            {
+                tclvalue(Done) <- "1"
+            }else{
+                tclvalue(Done) <- "2"
+            }
+        }else{
+            tclvalue(Level) <- Inf
+            tclvalue(Done) <- "1"
+        }
+    }
+
+    dminDefault <- 5                    # 5m par défaut.
+
+    Done <- tclVar("0")
+    Suppr <- tclVar("1")                # Seuil utilisé par défaut.
+    Level <- tclVar(dminDefault)        # tclVar pour le seuil (initialisée au défaut).
+
+    WinSVR <- tktoplevel()
+
+    CB.supprObs <- tkcheckbutton(WinSVR, variable=Suppr)
+    E.supprLevel <- tkentry(WinSVR, width=3, textvariable=Level)
+
+    FrameBT <- tkframe(WinSVR)
+    BT.OK <- tkbutton(FrameBT, text="   OK   ",
+                      command=onOK.selectionObs.SVR.f)
+
+    tkbind(WinSVR, "<Destroy>", function(){tclvalue(Done) <- "3"}) # En cas de destruction de fenêtre.
+    tkbind(E.supprLevel, "<Return>", onOK.selectionObs.SVR.f)
+
+    ## Placement des éléments graphiques :
+    tkgrid(tklabel(WinSVR, text=""))
+
+    tkgrid(tklabel(WinSVR, text="\t"),
+           CB.supprObs,
+           tklabel(WinSVR, text="  Ne conserver que les observations pour lesquelles Dmin =< "),
+           E.supprLevel,
+           tklabel(WinSVR, text="m ?\t "))
+
+    tkgrid(tklabel(FrameBT, text="\n\t"),
+           BT.OK,
+           tklabel(FrameBT, text="\t\n"))
+    tkgrid(FrameBT, column=0, columnspan=5)
+
+    tkfocus(E.supprLevel)
+
+    winSmartPlace.f(WinSVR, xoffset=-200, yoffset=-50)
+
+    repeat
+    {
+        tkwait.variable(Done)           # attente d'une modification de statut.
+
+        switch(tclvalue(Done),
+               "1"={                    # Statut OK :
+                   tkdestroy(WinSVR)
+                   return(as.numeric(tclvalue(Level)))
+               },
+               "2"={                    # Le seuil n'est pas numérique :
+                   tkmessageBox(message="Vous devez choisir un seuil numérique (séparateur '.')",
+                                icon="error")
+                   tclvalue(Done) <- "0"
+                   tkfocus(E.supprLevel)
+                   winRaise.f(WinSVR)
+                   next()
+               },
+               "3"={                    # Destruction de la fenêtre :
+                   return(NULL)
+               })
+    }
+
+    tkdestroy(WinSVR)
+}
+
+########################################################################################################################
 ## Choix des fichiers de donnees source en .txt
 openUnitobs.f <- function()
 {
@@ -187,28 +285,31 @@ opendefault.f <- function ()
 
     if (unique(unitobs$type)[1]=="PecRec")
     {
-        unitobs$DimObs1bis <- unitobs$DimObs1
         x.lt <- as.POSIXlt(as.character(unitobs$heure), format="%Hh%M")
         unitobs$heureEnq <- x.lt$hour + x.lt$min/60 + x.lt$sec/3600
         x.lt <- as.POSIXlt(as.character(unitobs$DimObs1), format="%Hh%M")
         unitobs$heureDeb <- x.lt$hour + x.lt$min/60 + x.lt$sec/3600
-        for (i in 1:nrow(unitobs))      # [!!!] sans doute possibilité de vectoriser ce calcul [yr: 24/08/2010]
-        {
-            if (unitobs$heureEnq[i] < unitobs$heureDeb[i])
-            {
-                unitobs$DimObs1bis[i] <- (24 - unitobs$heureDeb[i]) + unitobs$heureEnq[i]
-            }else{
-                unitobs$DimObs1bis[i] <- unitobs$heureEnq[i] - unitobs$heureDeb[i]
-            }
-        }
-        unitobs$DimObs1 <- unitobs$DimObs1bis
 
 
-        unitobs <- unitobs[, c("AMP", "unite_observation", "type", "site", "station", "caracteristique_1", "caracteristique_2",
-                               "fraction_echantillonnee", "jour", "mois", "an",
-                               "heure", "nebulosite", "direction_vent", "force_vent", "etat_mer", "courant", "maree", "phase_lunaire",
-                               "latitude", "longitude", "statut_protection", "avant_apres", "biotope", "biotope_2",
-                               "habitat1", "habitat2", "habitat3", "visibilite", "prof_min", "prof_max", "DimObs1", "DimObs2", "nb_plong", "plongeur")]
+        unitobs$DimObs1 <- sapply(seq(length.out=nrow(unitobs)),
+                                  function(i)
+                              {
+                                  switch(as.character(unitobs$heureEnq[i] < unitobs$heureDeb[i]),
+                                         "TRUE"=(24 - unitobs$heureDeb[i]) + unitobs$heureEnq[i],
+                                         "FALSE"=unitobs$heureEnq[i] - unitobs$heureDeb[i],
+                                         "NA"=NA)
+                              })
+
+        unitobs$DimObs1[unitobs$DimObs1 == 0] <- NA
+
+        ## unitobs <- unitobs[, c("AMP", "unite_observation", "type", "site", "station",
+        ##                        "caracteristique_1", "caracteristique_2", "fraction_echantillonnee",
+        ##                        "jour", "mois", "an", "heure", "nebulosite", "direction_vent",
+        ##                        "force_vent", "etat_mer", "courant", "maree", "phase_lunaire",
+        ##                        "latitude", "longitude", "statut_protection", "avant_apres",
+        ##                        "biotope", "biotope_2", "habitat1", "habitat2", "habitat3",
+        ##                        "visibilite", "prof_min", "prof_max", "DimObs1", "DimObs2",
+        ##                        "nb_plong", "plongeur")]
     }
 
     if (nrow(unitobs)!=0)
@@ -242,13 +343,24 @@ opendefault.f <- function ()
     ## assign("refSpatial", refSpatial, envir=.GlobalEnv)
 
     obs <- read.table(fileNameObs, sep="\t", dec=".", header=TRUE, encoding="latin1")
+
     if (unique(unitobs$type) != "SVR")
     {
-        names(obs)=c("unite_observation", "secteur", "code_espece", "sexe", "taille", "classe_taille", "poids", "nombre", "dmin", "dmax")
+        colnames(obs) <- c("unite_observation", "secteur", "code_espece", "sexe", "taille", "classe_taille", "poids", "nombre", "dmin", "dmax")
     }else{
-        names(obs)=c("unite_observation", "rotation", "secteur", "code_espece", "sexe", "taille", "classe_taille", "poids", "nombre", "dmin", "dmax")
+        colnames(obs) <- c("unite_observation", "rotation", "secteur", "code_espece", "sexe", "taille", "classe_taille", "poids", "nombre", "dmin", "dmax")
         obs$rotation <- as.numeric(obs$rotation)
+
+        dminMax <- NULL
+        while (is.null(dminMax))
+        {
+            dminMax <- selectionObs.SVR.f()
+        }
+
+        obs <- subset(obs, dmin <= dminMax)
     }
+
+
     ## remplacement des -999 en NA
     if (as.logical(nrow(obs)))                      # !=0
     {

@@ -122,6 +122,7 @@ ChoixOptionsGraphiquesBenthos.f <- function ()
         tkconfigure(cTypeCarac, state="disabled")
         tkconfigure(cTypeAnCarac, state="disabled")
     }
+
     if (length(unique(unitobs$an))<=1) # on vérifie que le regroupement puisse avoir lieu sur au moins deux valeurs
     {
         tkconfigure(cTypeAn, state="disabled")
@@ -131,11 +132,13 @@ ChoixOptionsGraphiquesBenthos.f <- function ()
         tkconfigure(cTypeAnSite, state="disabled")
         tkconfigure(cTypeAnCarac, state="disabled")
     }
+
     if (length(unique(unitobs$site))<=1) # on vérifie que le regroupement puisse avoir lieu sur au moins deux valeurs
     {
         tkconfigure(cTypeSite, state="disabled")
         tkconfigure(cTypeAnSite, state="disabled")
     }
+
     if (unique(unitobs$type)!="LIT") # on vérifie que le regroupement puisse avoir lieu sur au moins deux valeurs
     {
         tkconfigure(cTypeCatbent, state="disabled")
@@ -196,6 +199,7 @@ ChoixOptionsGraphiquesBenthos.f <- function ()
         assign("choixgraph", choixgraph, envir=.GlobalEnv)
         print(choixgraph)
     }
+
     OK.but <- tkbutton(choixGraphiques, text="OK", command=OnOK)
     tkgrid(OK.but)
     tkfocus(choixGraphiques)
@@ -212,13 +216,17 @@ GraphiqueMetriqueXFacteurs.f <- function (metrique, facteurMenu, selectfacteurMe
 
     print(paste("graphique pour", selectfacteurMenu, " et la métrique", metrique, ": ", length(spunit[, metrique]),
                 "observations"))
+
     spunit <- subset(objtable, objtable$biotope==selectbiotope) # [!!!] pourquoi plusieurs assignations de spunit ???
                                         # [yr: 01/08/2010]
+
     if (choixgraph["maxExclu"]==1)      # 1
     {
-        spunit[, metrique][which(spunit[, metrique]>GraphPartMax*max(spunit[, metrique], na.rm=T))] <- NA
+        spunit[, metrique][which(spunit[, metrique]>GraphPartMax*max(spunit[, metrique], na.rm= TRUE))] <- NA
     }
+
     print(paste("NbObs pour", facteurMenu, " : ", length(spunit[, metrique])))
+
     if (length(unique(listespunit[, metrique]))>1)
     {
         ## on vérifie que la metrique a été calculée pour le facteur sélectionné
@@ -233,8 +241,9 @@ GraphiqueMetriqueXFacteurs.f <- function (metrique, facteurMenu, selectfacteurMe
                 {
                     x11(width=50, height=20, pointsize=10)
                 }
+
                 par(mar=c(10, 3, 3, 1), mgp=c(0, 0, 0))
-                boxplot(spunit[, metrique] ~spunit$an, data=spunit, varwidth = TRUE, ylab=metrique, las=2,
+                boxplot(spunit[, metrique] ~ spunit$an, data=spunit, varwidth = TRUE, ylab=metrique, las=2,
                         main=paste("Valeurs de", metrique, "\n pour le champ '", facteurMenu, "' =", selectfacteurMenu,
                         " selon l'année \n"))
 
@@ -246,17 +255,21 @@ GraphiqueMetriqueXFacteurs.f <- function (metrique, facteurMenu, selectfacteurMe
                     legend("topleft", "Nombre d'enregistrement par Boxplot",
                            cex =0.7, col="orange", text.col="orange", merge=FALSE)
                 }
-                Moyenne <- as.vector(tapply(spunit[, metrique], spunit$an, na.rm = T, mean))
+
+                Moyenne <- as.vector(tapply(spunit[, metrique], spunit$an, na.rm = TRUE, mean))
                 if (choixgraph["PtMoyenneBleu"]==1)
                 {
                     points(Moyenne, pch=19, col="blue")
                 }
+
                 if (choixgraph["ChiffreMoyenneBleu"]==1)
                 {
                     text(Moyenne+(Moyenne/10), col = "blue", cex = 0.8,
                          labels=as.character(round(Moyenne, digits=Nbdecimales)))
                 }
+
                 abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
+
                 if (choixgraph["maxExclu"]==1)
                 {
                     legend("top", "Enregistrements > 95% du maximum retirés",
@@ -280,14 +293,17 @@ Graphgenerique.f <- function (facteurMenu, facteurmultiGraph, metrique=NULL)
 
     matable <- "listespunit"
     objtable <- eval(parse(text=matable))
+
     if (is.null(metrique))
     {
         choixchamptable.f(matable)
         metrique <- champtrouve
     }
     print(metrique)
+
     ## Choix du facteur de regroupement factesp pour facteurmultiGraph
     critereespref.f()
+
     print(factesp)
     objtable[, factesp] <- especes[, factesp][match(objtable$code_espece, especes$code_espece)]
     objtable[, factesp] <- factor(objtable[, factesp])
@@ -297,6 +313,8 @@ Graphgenerique.f <- function (facteurMenu, facteurmultiGraph, metrique=NULL)
                                      "ACS", "ACT", "CB", "CE", "CF", "CM", "CMR", "CS", "CME", "HC",
                                      "CBL", "CHL", "CTU", "OT", "SC", "SP", "ZO", "RKC", "DC",
                                      "DCA", "R", "RC", "S", "SI"))
+
+    ## Simplifiable [!!!] :
     objtable$Famille <- especes$Famille[match(objtable$code_espece, especes$code_espece)]
     objtable$Famille <- factor(objtable$Famille)
     objtable$Genre <- especes$Genre[match(objtable$code_espece, especes$code_espece)]
@@ -327,9 +345,11 @@ Graphgenerique.f <- function (facteurMenu, facteurmultiGraph, metrique=NULL)
             pdf(nomPDF, encoding="ISOLatin1", family="URWHelvetica")
 
         }
+
         print(paste("graphique sur", metrique, "selon la valeur",
                     selectfacteurMenu[i], "de", facteurMenu, "avec 1 graph par", facteurmultiGraph, "lancé"))
         ## GraphiqueMetriqueXFacteurs.f(metrique, facteurMenu, selectfacteurMenu[i])
+
         if (choixgraph["GraphEnPDF"]==1) # 13
         {
             tkmessageBox(message=paste("vos graphiques par an seront enregistrés dans ", nomPDF))
@@ -356,6 +376,8 @@ Graphbenthos.f <- function (metrique, facteurMenu, espouunit=NULL)
                                      levels=c("AA", "CA", "FMA", "HMA", "TA", "ACB", "ACD", "ACE", "ACS", "ACT", "CB",
                                      "CE", "CF", "CM", "CMR", "CS", "CME", "HC", "CBL", "CHL", "CTU", "OT", "SC", "SP",
                                      "ZO", "RKC", "DC", "DCA", "R", "RC", "S", "SI"))
+
+    ## Simplifiable [!!!] :
     objtable$Famille <- especes$Famille[match(objtable$code_espece, especes$code_espece)]
     objtable$Famille <- factor(objtable$Famille)
     objtable$Genre <- especes$Genre[match(objtable$code_espece, especes$code_espece)]
@@ -368,6 +390,7 @@ Graphbenthos.f <- function (metrique, facteurMenu, espouunit=NULL)
     objtable$station <- factor(objtable$station)
     objtable$site <- unitobs$site[match(objtable$unite_observation, unitobs$unite_observation)]
     objtable$site <- factor(objtable$site)
+
     if(!is.null(espouunit))   #1 pour esp et 2 pour unit
     {
         if(espouunit==1)
@@ -382,6 +405,7 @@ Graphbenthos.f <- function (metrique, facteurMenu, espouunit=NULL)
             objtable[, facteurMenu] <- factor(objtable[, facteurMenu])
         }
     }
+
     ChoixFacteurSelect.f(objtable$biotope, "biotope", "multiple", 1, "selectbiotope")
     objtable <- subset(objtable, objtable$biotope==selectbiotope)
     ChoixFacteurSelect.f(objtable[, facteurMenu], facteurMenu, "multiple", 1, "selectfacteurMenu")
@@ -396,13 +420,17 @@ Graphbenthos.f <- function (metrique, facteurMenu, espouunit=NULL)
 
         print(paste("graphique pour", selectfacteurMenu,
                     " et la métrique", metrique, ": ", length(spunit[, metrique]), "observations"))
+
         spunit <- subset(objtable, objtable$biotope==selectbiotope) # pourquoi deux lignes de définition de spunit ???
                                         # [!!!] [yr: 01/08/2010]
+
         if (choixgraph["maxExclu"]==1)  # 1
         {
-            spunit[, metrique][which(spunit[, metrique]>GraphPartMax*max(spunit[, metrique], na.rm=T))] <- NA
+            spunit[, metrique][which(spunit[, metrique]>GraphPartMax*max(spunit[, metrique], na.rm= TRUE))] <- NA
         }
+
         print(paste("NbObs pour", facteurMenu, " : ", length(spunit[, metrique])))
+
         if (length(unique(listespunit[, metrique]))>1)
         {
             ## on vérifie que la metrique a été calculée pour le facteur sélectionné
@@ -417,6 +445,7 @@ Graphbenthos.f <- function (metrique, facteurMenu, espouunit=NULL)
                     {
                         x11(width=50, height=20, pointsize=10)
                     }
+
                     par(mar=c(10, 3, 5, 1), mgp=c(3, 1, 0))
                     boxplot(spunit[, metrique] ~spunit$an, data=spunit, varwidth = TRUE, ylab=metrique, las=2,
                             main=paste("Valeurs de", metrique, "\n pour le champ '", facteurMenu, "' =",
@@ -430,17 +459,21 @@ Graphbenthos.f <- function (metrique, facteurMenu, espouunit=NULL)
                         legend("topleft", "Nombre d'enregistrement par Boxplot",
                                cex =0.7, col="orange", text.col="orange", merge=FALSE)
                     }
-                    Moyenne <- as.vector(tapply(spunit[, metrique], spunit$an, na.rm = T, mean))
+
+                    Moyenne <- as.vector(tapply(spunit[, metrique], spunit$an, na.rm = TRUE, mean))
                     if (choixgraph["PtMoyenneBleu"]==1)
                     {
                         points(Moyenne, pch=19, col="blue")
                     }
+
                     if (choixgraph["ChiffreMoyenneBleu"]==1)
                     {
                         text(Moyenne+(Moyenne/10), col = "blue", cex = 0.8,
                              labels=as.character(round(Moyenne, digits=Nbdecimales)))
                     }
+
                     abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
+
                     if (choixgraph["maxExclu"]==1)
                     {
                         legend("top", "Enregistrements > 95% du maximum retirés",
@@ -456,12 +489,14 @@ Graphbenthos.f <- function (metrique, facteurMenu, espouunit=NULL)
                     {
                         x11(width=50, height=20, pointsize=10)
                     }
+
                     par(mar=c(14, 3, 5, 1), mgp=c(3, 1, 0))
                     boxplot(spunit[, metrique] ~spunit$station+spunit$an, data=spunit,
                             varwidth = TRUE, ylab=metrique, las=2,
                             col=heat.colors(length(unique(spunit$statut_protection))),
                             main=paste("Valeurs de", metrique, "\n pour le champ '", facteurMenu,
                             "' =", selectfacteurMenu, "\n selon la station et l'année"))
+
                     if (choixgraph["NbObsOrange"]==1)
                     {
                         nbObs <- tapply(spunit[, metrique], list(spunit$station, spunit$an), length)
@@ -470,17 +505,21 @@ Graphbenthos.f <- function (metrique, facteurMenu, espouunit=NULL)
                         legend("topleft", "Nombre d'enregistrement par Boxplot",
                                cex =0.7, col="orange", text.col="orange", merge=FALSE)
                     }
+
                     Moyenne <- as.vector(tapply(spunit[, metrique], list(spunit$station, spunit$an), mean))
                     if (choixgraph["PtMoyenneBleu"]==1)
                     {
                         points(Moyenne, pch=19, col="blue")
                     }
+
                     if (choixgraph["ChiffreMoyenneBleu"]==1)
                     {
                         text(Moyenne+(Moyenne/10), col = "blue", cex = 0.8,
                              labels=as.character(round(Moyenne, digits=Nbdecimales)))
                     }
+
                     abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
+
                     if (choixgraph["maxExclu"]==1)
                     {
                         legend("top", "Enregistrements > 95% du maximum retirés",
@@ -495,17 +534,20 @@ Graphbenthos.f <- function (metrique, facteurMenu, espouunit=NULL)
                     {
                         x11(width=50, height=20, pointsize=10)
                     }
+
                     par(mar=c(10, 3, 5, 1), mgp=c(3, 1, 0))
                     boxplot(spunit[, metrique] ~spunit$statut_protection+spunit$an, data=spunit,
                             varwidth = TRUE, ylab=metrique, las=2,
                             col=heat.colors(length(unique(spunit$statut_protection))),
                             main=paste("Valeurs de", metrique, "\n pour le champ '", facteurMenu,
                             "' =", selectfacteurMenu, "\n selon le statut et l'année\n"))
+
                     if (length(unique(spunit$statut_protection))==3)
                     {
                         legend("topright", textstatut, col=heat.colors(length(unique(spunit$statut_protection))),
                                pch = 15, cex =0.9, title="Statuts")
                     }
+
                     if (choixgraph["NbObsOrange"]==1) # 9
                     {
                         nbObs <- tapply(spunit[, metrique], list(spunit$statut_protection, spunit$an), length)
@@ -515,17 +557,21 @@ Graphbenthos.f <- function (metrique, facteurMenu, espouunit=NULL)
                                cex =0.7, col="orange", text.col="orange", merge=FALSE)
                     }
                     Moyenne <- as.vector(tapply(spunit[, metrique],
-                                                list(spunit$statut_protection, spunit$an), na.rm = T, mean))
+                                                list(spunit$statut_protection, spunit$an),
+                                                mean, na.rm = TRUE))
+
                     if (choixgraph["PtMoyenneBleu"]==1) # 10
                     {
                         points(Moyenne, pch=19, col="blue")
                     }
+
                     if (choixgraph["ChiffreMoyenneBleu"]==1) # 11
                     {
                         text(Moyenne+(Moyenne/10), col = "blue", cex = 0.8,
                              labels=as.character(round(Moyenne, digits=Nbdecimales)))
                     }
                     abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
+
                     if (choixgraph["maxExclu"]==1) # 1
                     {
                         legend("top", "Enregistrements > 95% du maximum retirés",
@@ -539,6 +585,7 @@ Graphbenthos.f <- function (metrique, facteurMenu, espouunit=NULL)
                     {
                         x11(width=50, height=20, pointsize=10)
                     }
+
                     par(mar=c(18, 5, 5, 0), mgp=c(3, 1, 0))
                     spunit$station <- spunit$station[ , drop=TRUE]
 
@@ -547,11 +594,13 @@ Graphbenthos.f <- function (metrique, facteurMenu, espouunit=NULL)
                             col=heat.colors(length(unique(spunit$statut_protection))),
                             main=paste("Valeurs de", metrique, "\n pour le champ '", facteurMenu,
                             "' =", selectfacteurMenu, " selon le statut, l'année et la station\n\n"))
+
                     if (length(unique(spunit$statut_protection))==3)
                     {
                         legend("topright", textstatut, col=heat.colors(length(unique(spunit$statut_protection))),
                                pch = 15, cex =0.9, title="Statuts")
                     }
+
                     if (choixgraph["NbObsOrange"]==1) # 9
                     {
                         nbObs <- tapply(spunit[, metrique],
@@ -561,18 +610,21 @@ Graphbenthos.f <- function (metrique, facteurMenu, espouunit=NULL)
                         legend("topleft", "Nombre d'enregistrement par Boxplot",
                                cex =0.7, col="orange", text.col="orange", merge=FALSE)
                     }
+
                     Moyenne <- as.vector(tapply(spunit[, metrique],
                                                 list(spunit$statut_protection, spunit$an, spunit$station),
-                                                na.rm = T, mean)) # [!!!]
+                                                na.rm = TRUE, mean)) # [!!!]
                     if (choixgraph["PtMoyenneBleu"]==1)           # 10
                     {
                         points(Moyenne, pch=19, col="blue")
                     }
+
                     if (choixgraph["ChiffreMoyenneBleu"] == 1)   # 11
                     {
                         text(Moyenne+(Moyenne/10), col = "blue", cex = 0.8,
                              labels=as.character(round(Moyenne, digits=Nbdecimales)))
                     }
+
                     if (choixgraph["separateurGroupe"]==1)
                     {
                         abline(v = 0.5+(1:(length(as.vector(unique(spunit$station))) *
@@ -580,6 +632,7 @@ Graphbenthos.f <- function (metrique, facteurMenu, espouunit=NULL)
                                length(as.vector(unique(spunit$statut_protection))), col = "red")
                     }
                     abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
+
                     if (choixgraph["maxExclu"] == 1)   # 1
                     {
                         legend("top", "Enregistrements > 95% du maximum retirés",
@@ -593,6 +646,7 @@ Graphbenthos.f <- function (metrique, facteurMenu, espouunit=NULL)
                     {
                         x11(width=50, height=20, pointsize=10)
                     }
+
                     par(mar=c(14, 3, 5, 1), mgp=c(3, 1, 0))
                     boxplot(spunit[, metrique] ~spunit$station, data=spunit, varwidth = TRUE,
                             ylab=metrique, las=2,
@@ -607,11 +661,13 @@ Graphbenthos.f <- function (metrique, facteurMenu, espouunit=NULL)
                         legend("topleft", "Nombre d'enregistrement par Boxplot",
                                cex =0.7, col="orange", text.col="orange", merge=FALSE)
                     }
-                    Moyenne <- as.vector(tapply(spunit[, metrique], spunit$station, na.rm = T, mean))
+
+                    Moyenne <- as.vector(tapply(spunit[, metrique], spunit$station, na.rm = TRUE, mean))
                     if (choixgraph["PtMoyenneBleu"] == 1) # [!!!] inversion ?   # 10
                     {
                         points(Moyenne, pch=19, col="blue")
                     }
+
                     if (choixgraph["ChiffreMoyenneBleu"] == 1) # [!!!] inversion ?   # 11
                     {
                         text(Moyenne+(Moyenne/10), col = "blue", cex = 0.8,
@@ -619,6 +675,7 @@ Graphbenthos.f <- function (metrique, facteurMenu, espouunit=NULL)
                     }
 
                     abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
+
                     if (choixgraph["maxExclu"] == 1)   # 1
                     {
                         legend("top", "Enregistrements > 95% du maximum retirés",
@@ -632,6 +689,7 @@ Graphbenthos.f <- function (metrique, facteurMenu, espouunit=NULL)
                     {
                         x11(width=50, height=20, pointsize=10)
                     }
+
                     par(mar=c(14, 3, 5, 1), mgp=c(3, 1, 0))
                     ## boxplot(spunit[, metrique] ~spunit$Famille, data=spunit, varwidth = TRUE, ylab=metrique, las=2,
                     ## main=paste(metrique, " \n pour la famille : ", spunit$Famille, "\npour toutes les unités d'obs"))
@@ -640,11 +698,13 @@ Graphbenthos.f <- function (metrique, facteurMenu, espouunit=NULL)
                             varwidth = TRUE, ylab=metrique, las=2,
                             main=paste("Valeurs de", metrique, "\n pour le champ '", facteurMenu,
                             "' =", selectfacteurMenu, "\nselon le statut \n"))
+
                     if (length(unique(spunit$statut_protection))==3)
                     {
                         legend("topright", textstatut, col=heat.colors(length(unique(spunit$statut_protection))),
                                pch = 15, cex =0.9, title="Statuts")
                     }
+
                     if (choixgraph["NbObsOrange"] == 1)   # 9
                     {
                         nbObs <- tapply(spunit[, metrique], spunit$statut_protection, length)
@@ -653,11 +713,13 @@ Graphbenthos.f <- function (metrique, facteurMenu, espouunit=NULL)
                         legend("topleft", "Nombre d'enregistrement par Boxplot",
                                cex =0.7, col="orange", text.col="orange", merge=FALSE)
                     }
-                    Moyenne <- as.vector(tapply(spunit[, metrique], spunit$statut_protection, na.rm = T, mean))
+
+                    Moyenne <- as.vector(tapply(spunit[, metrique], spunit$statut_protection, na.rm = TRUE, mean))
                     if (choixgraph["PtMoyenneBleu"] == 1)   # 10
                     {
                         points(Moyenne, pch=19, col="blue")
                     }
+
                     if (choixgraph["ChiffreMoyenneBleu"] == 1)   # 11
                     {
                         text(Moyenne+(Moyenne/10), col = "blue", cex = 0.8,
@@ -665,6 +727,7 @@ Graphbenthos.f <- function (metrique, facteurMenu, espouunit=NULL)
                     }
 
                     abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
+
                     if (choixgraph["maxExclu"] == 1)   # 1
                     {
                         legend("top", "Enregistrements > 95% du maximum retirés",
@@ -678,17 +741,20 @@ Graphbenthos.f <- function (metrique, facteurMenu, espouunit=NULL)
                     {
                         x11(width=50, height=20, pointsize=10)
                     }
+
                     par(mar=c(14, 3, 5, 1), mgp=c(3, 1, 0))
                     boxplot(spunit[, metrique] ~spunit$statut_protection+spunit$station, data=spunit,
                             varwidth = TRUE, ylab=metrique, las=2,
                             col=heat.colors(length(unique(spunit$statut_protection))),
                             main=paste("Valeurs de", metrique, "\n pour le champ '", facteurMenu,
                             "' =", selectfacteurMenu, "\n selon le statut et la station\n"))
+
                     if (length(unique(spunit$statut_protection))==3)
                     {
                         legend("topright", textstatut, col=heat.colors(length(unique(spunit$statut_protection))),
                                pch = 15, cex =0.9, title="Statuts")
                     }
+
                     if (choixgraph["NbObsOrange"] == 1)   # 9
                     {
                         nbObs <- tapply(spunit[, metrique],
@@ -698,17 +764,22 @@ Graphbenthos.f <- function (metrique, facteurMenu, espouunit=NULL)
                         legend("topleft", "Nombre d'enregistrement par Boxplot",
                                cex =0.7, col="orange", text.col="orange", merge=FALSE)
                     }
+
                     Moyenne <- as.vector(tapply(spunit[, metrique],
-                                                list(spunit$statut_protection, spunit$station), na.rm = T, mean))
+                                                list(spunit$statut_protection, spunit$station),
+                                                mean, na.rm = TRUE))
+
                     if (choixgraph["PtMoyenneBleu"] == 1)   # 10
                     {
                         points(Moyenne, pch=19, col="blue")
                     }
+
                     if (choixgraph["ChiffreMoyenneBleu"] == 1)   # 11
                     {
                         text(Moyenne+(Moyenne/10), col = "blue", cex = 0.8,
                              labels=as.character(round(Moyenne, digits=Nbdecimales)))
                     }
+
                     if (choixgraph["separateurGroupe"]==1)
                     {
                         abline(v = 0.5+(1:length(as.vector(unique(spunit$station)))) * # [!!!] préséance de l'opérateur
@@ -716,6 +787,7 @@ Graphbenthos.f <- function (metrique, facteurMenu, espouunit=NULL)
                                         # des bugs sur les lignes verticales)
                     }
                     abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
+
                     if (choixgraph["maxExclu"] == 1)   # 1
                     {
                         legend("top", "Enregistrements > 95% du maximum retirés",
@@ -732,6 +804,7 @@ Graphbenthos.f <- function (metrique, facteurMenu, espouunit=NULL)
                     {
                         x11(width=50, height=20, pointsize=10)
                     }
+
                     par(mar=c(14, 3, 5, 1), mgp=c(3, 1, 0))
                     boxplot(spunit[, metrique] ~ spunit$site, data=spunit,
                             varwidth=TRUE, ylab=metrique, las=2,
@@ -746,17 +819,21 @@ Graphbenthos.f <- function (metrique, facteurMenu, espouunit=NULL)
                         legend("topleft", "Nombre d'enregistrement par Boxplot", cex =0.7,
                                col="orange", text.col="orange", merge=FALSE)
                     }
+
                     Moyenne <- as.vector(tapply(spunit[, metrique], spunit$site, mean))
+
                     if (choixgraph["PtMoyenneBleu"] == 1)   # 10
                     {
                         points(Moyenne, pch=19, col="blue")
                     }
+
                     if (choixgraph["ChiffreMoyenneBleu"] == 1)   # 11
                     {
                         text(Moyenne+(Moyenne/10), col = "blue", cex = 0.8,
                              labels=as.character(round(Moyenne, digits=Nbdecimales)))
                     }
                     abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
+
                     if (choixgraph["maxExclu"] == 1)   # 1
                     {
                         legend("top", "Enregistrements > 95% du maximum retirés", cex =0.7,
@@ -770,11 +847,13 @@ Graphbenthos.f <- function (metrique, facteurMenu, espouunit=NULL)
                     {
                         x11(width=50, height=20, pointsize=10)
                     }
+
                     par(mar=c(14, 3, 5, 1), mgp=c(3, 1, 0))
                     boxplot(spunit[, metrique] ~spunit$site+spunit$an, data=spunit,
                             varwidth = TRUE, ylab=metrique, las=2, col=heat.colors(length(unique(spunit$site))),
                             main=paste("Valeurs de", metrique, "\n pour le champ '", facteurMenu,
                             "' =", selectfacteurMenu, "\n selon le site et l'année"))
+
                     if (choixgraph["NbObsOrange"] == 1)   # 9
                     {
                         nbObs <- tapply(spunit[, metrique], list(spunit$site, spunit$an), length)
@@ -784,21 +863,25 @@ Graphbenthos.f <- function (metrique, facteurMenu, espouunit=NULL)
                                cex =0.7, col="orange", text.col="orange", merge=FALSE)
                     }
                     Moyenne <- as.vector(tapply(spunit[, metrique], list(spunit$site, spunit$an), mean))
+
                     if (choixgraph["PtMoyenneBleu"] == 1)   # 10
                     {
                         points(Moyenne, pch=19, col="blue")
                     }
+
                     if (choixgraph["ChiffreMoyenneBleu"] == 1)   # 11
                     {
                         text(Moyenne+(Moyenne/10), col = "blue", cex = 0.8,
                              labels=as.character(round(Moyenne, digits=Nbdecimales)))
                     }
                     abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
+
                     if (choixgraph["separateurGroupe"]==1)
                     {
                         abline(v = 0.5+(1:length(as.vector(unique(spunit$an))))*length(as.vector(unique(spunit$site))),
                                col = "red") # [!!!]
                     }
+
                     if (choixgraph["maxExclu"] == 1)   # 1
                     {
                         legend("top", "Enregistrements > 95% du maximum retirés",
@@ -812,6 +895,7 @@ Graphbenthos.f <- function (metrique, facteurMenu, espouunit=NULL)
                     {
                         x11(width=50, height=20, pointsize=10)
                     }
+
                     par(mar=c(14, 3, 5, 1), mgp=c(3, 1, 0))
                     boxplot(spunit[, metrique] ~spunit$caracteristique_2, data=spunit,
                             varwidth = TRUE, ylab=metrique, las=2,
@@ -827,16 +911,19 @@ Graphbenthos.f <- function (metrique, facteurMenu, espouunit=NULL)
                                cex =0.7, col="orange", text.col="orange", merge=FALSE)
                     }
                     Moyenne <- as.vector(tapply(spunit[, metrique], spunit$caracteristique_2, mean))
+
                     if (choixgraph["PtMoyenneBleu"] == 1)   # 10
                     {
                         points(Moyenne, pch=19, col="blue")
                     }
+
                     if (choixgraph["ChiffreMoyenneBleu"] == 1)   # 11
                     {
                         text(Moyenne+(Moyenne/10), col = "blue", cex = 0.8,
                              labels=as.character(round(Moyenne, digits=Nbdecimales)))
                     }
                     abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
+
                     if (choixgraph["maxExclu"] == 1)   # 1
                     {
                         legend("top", "Enregistrements > 95% du maximum retirés",
@@ -850,12 +937,14 @@ Graphbenthos.f <- function (metrique, facteurMenu, espouunit=NULL)
                     {
                         x11(width=50, height=20, pointsize=10)
                     }
+
                     par(mar=c(14, 3, 5, 1), mgp=c(3, 1, 0))
                     boxplot(spunit[, metrique] ~spunit$caracteristique_2+spunit$an, data=spunit,
                             varwidth = TRUE, ylab=metrique, las=2,
                             col=heat.colors(length(unique(spunit$caracteristique_2))),
                             main=paste("Valeurs de", metrique, "\n pour le champ '", facteurMenu,
                             "' =", selectfacteurMenu, "\n selon caracteristique_2 et l'année"))
+
                     if (choixgraph["NbObsOrange"] == 1)   # 9
                     {
                         nbObs <- tapply(spunit[, metrique], list(spunit$caracteristique_2, spunit$an), length)
@@ -865,21 +954,25 @@ Graphbenthos.f <- function (metrique, facteurMenu, espouunit=NULL)
                                cex =0.7, col="orange", text.col="orange", merge=FALSE)
                     }
                     Moyenne <- as.vector(tapply(spunit[, metrique], list(spunit$caracteristique_2, spunit$an), mean))
+
                     if (choixgraph["PtMoyenneBleu"] == 1)   # 10
                     {
                         points(Moyenne, pch=19, col="blue")
                     }
+
                     if (choixgraph["ChiffreMoyenneBleu"] == 1)   # 11
                     {
                         text(Moyenne+(Moyenne/10), col = "blue", cex = 0.8,
                              labels=as.character(round(Moyenne, digits=Nbdecimales)))
                     }
                     abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
+
                     if (choixgraph["separateurGroupe"]==1)
                     {
                         abline(v = 0.5+(1:length(as.vector(unique(spunit$an)))) *
                                length(as.vector(unique(spunit$caracteristique_2))), col = "red")
                     }
+
                     if (choixgraph["maxExclu"] == 1)   # 1
                     {
                         legend("top", "Enregistrements > 95% du maximum retirés",
@@ -893,6 +986,7 @@ Graphbenthos.f <- function (metrique, facteurMenu, espouunit=NULL)
                     {
                         x11(width=50, height=20, pointsize=10)
                     }
+
                     par(mar=c(14, 3, 5, 1), mgp=c(3, 1, 0))
                     boxplot(spunit[, metrique] ~ spunit$Cath_benthique, data=spunit,
                             varwidth = TRUE, ylab=metrique, las=2,
@@ -939,6 +1033,7 @@ Graphbenthos.f <- function (metrique, facteurMenu, espouunit=NULL)
                             col=heat.colors(length(unique(spunit$Cath_benthique))),
                             main=paste("Valeurs de", metrique, "\n pour le champ '", facteurMenu,
                             "' =", selectfacteurMenu, "\n selon 'Cath_benthique' et l'année"))
+
                     if (choixgraph["NbObsOrange"] == 1)   # 9
                     {
                         nbObs <- tapply(spunit[, metrique], list(spunit$Cath_benthique, spunit$an), length)
@@ -947,22 +1042,26 @@ Graphbenthos.f <- function (metrique, facteurMenu, espouunit=NULL)
                         legend("topleft", "Nombre d'enregistrement par Boxplot",
                                cex =0.7, col="orange", text.col="orange", merge=FALSE)
                     }
+
                     Moyenne <- as.vector(tapply(spunit[, metrique], list(spunit$Cath_benthique, spunit$an), mean))
                     if (choixgraph["PtMoyenneBleu"] == 1)   # 10
                     {
                         points(Moyenne, pch=19, col="blue")
                     }
+
                     if (choixgraph["ChiffreMoyenneBleu"] == 1)   # 11
                     {
                         text(Moyenne+(Moyenne/10), col = "blue", cex = 0.8,
                              labels=as.character(round(Moyenne, digits=Nbdecimales)))
                     }
                     abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
+
                     if (choixgraph["separateurGroupe"]==1)
                     {
                         abline(v = 0.5+(1:length(as.vector(unique(spunit$an)))) *
                                length(as.vector(unique(spunit$Cath_benthique))), col = "red")
                     }
+
                     if (choixgraph["maxExclu"] == 1)   # 1
                     {
                         legend("top", "Enregistrements > 95% du maximum retirés",
@@ -978,12 +1077,13 @@ Graphbenthos.f <- function (metrique, facteurMenu, espouunit=NULL)
                     }
                     par(mar=c(14, 3, 5, 1), mgp=c(3, 1, 0))
                     spunit$Cath_benthique <- spunit$Cath_benthique[ , drop=TRUE]
-                    ## browser()
+
                     boxplot(spunit[ , metrique] ~ spunit$an + spunit$Cath_benthique, data=spunit,
                             varwidth = TRUE, ylab=metrique, las=2,
                             col=heat.colors(length(unique(spunit$an))),
                             main=paste("Valeurs de", metrique, "\n pour le champ '", facteurMenu,
                             "' =", selectfacteurMenu, "\n selon l'année et la 'Cath_benthique'"))
+
                     if (choixgraph["NbObsOrange"] == 1)   # 9
                     {
                         nbObs <- tapply(spunit[, metrique], list(spunit$an, spunit$Cath_benthique), length)
@@ -993,21 +1093,25 @@ Graphbenthos.f <- function (metrique, facteurMenu, espouunit=NULL)
                                cex =0.7, col="orange", text.col="orange", merge=FALSE)
                     }
                     Moyenne <- as.vector(tapply(spunit[, metrique], list(spunit$an, spunit$Cath_benthique), mean))
+
                     if (choixgraph["PtMoyenneBleu"] == 1)   # 10
                     {
                         points(Moyenne, pch=19, col="blue")
                     }
+
                     if (choixgraph["ChiffreMoyenneBleu"] == 1)   # 11
                     {
                         text(Moyenne+(Moyenne/10), col = "blue", cex = 0.8,
                              labels=as.character(round(Moyenne, digits=Nbdecimales)))
                     }
                     abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
+
                     if (choixgraph["separateurGroupe"]==1)
                     {
                         abline(v = 0.5+(1:length(as.vector(unique(spunit$Cath_benthique)))) *
                                length(as.vector(unique(spunit$an))), col = "red")
                     }
+
                     if (choixgraph["maxExclu"] == 1)   # 1
                     {
                         legend("top", "Enregistrements > 95% du maximum retirés",
@@ -1023,6 +1127,7 @@ Graphbenthos.f <- function (metrique, facteurMenu, espouunit=NULL)
     }#fin de fonction  MetriqueUnfacteurMenuDansGraphique
 
     print(paste("Graphique en PDF :", choixgraph[13]))
+
     for (i in 1:length(selectfacteurMenu))
     {
         if (choixgraph["GraphEnPDF"] == 1)   # 13
@@ -1038,12 +1143,14 @@ Graphbenthos.f <- function (metrique, facteurMenu, espouunit=NULL)
             }else{
                 ## if (choixgraph["plusieursGraphs"] == 0)
                 ## {
-                ## nomPDF=paste(nameWorkspace, "/FichiersSortie/", selectfacteurMenu[i], "_", unique(unitobs$type), ".pdf", sep="")
+                ## nomPDF=paste(nameWorkspace, "/FichiersSortie/", selectfacteurMenu[i], "_",
+                ##              unique(unitobs$type), ".pdf", sep="")
                 ## pdf(nomPDF, encoding="ISOLatin1", family="URWHelvetica")
                 ## }
             }
 
         }
+
         MetriqueUnfacteurMenuDansGraphique.f(metrique, facteurMenu, selectfacteurMenu[i])
         if (choixgraph["GraphEnPDF"] == 1)   # 13
         {

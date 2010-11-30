@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: barplots_occurrence.R
-### Time-stamp: <2010-10-19 17:36:40 yreecht>
+### Time-stamp: <2010-11-19 15:56:55 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -94,7 +94,8 @@ barplotOccurrence.f <- function(factGraph, factGraphSel, listFact, listFactSel)
         ## Titre (d'après les métriques, modalité du facteur de séparation et facteurs de regroupement) :
         mainTitle <- graphTitle.f(metrique=metrique,
                                   modGraphSel=modGraphSel, factGraph=factGraph,
-                                  listFact=listFact)
+                                  listFact=listFact,
+                                  type="unitobs")
 
         ## Paramètres graphiques :
         par(mar=c(5, 5, 8, 7) + 0.1,  mgp=c(3.5, 1, 0))

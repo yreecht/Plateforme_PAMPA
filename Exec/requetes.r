@@ -12,7 +12,9 @@ critereespref.f <- function ()
     aa <- tktoplevel()
     tkwm.title(aa, "Selection du facteur du référentiel des espèces")
     scr <- tkscrollbar(aa, repeatinterval=5, command=function(...)tkyview(tl, ...))
-    tl <- tklistbox(aa, height=20, width=50, selectmode="single", yscrollcommand=function(...)tkset(scr, ...), background="white")
+    tl <- tklistbox(aa, height=20, width=50, selectmode="single",
+                    yscrollcommand=function(...)tkset(scr, ...), background="white")
+
     tkgrid(tklabel(aa, text="Liste des facteurs du référentiel des espèces"))
     tkgrid(tl, scr)
     tkgrid.configure(scr, rowspan=4, sticky="nsw")
@@ -76,7 +78,9 @@ critere2espref.f <- function ()
     aa <- tktoplevel()
     tkwm.title(aa, "Selection du facteur du référentiel des espèces")
     scr <- tkscrollbar(aa, repeatinterval=5, command=function(...)tkyview(tl, ...))
-    tl <- tklistbox(aa, height=20, width=50, selectmode="single", yscrollcommand=function(...)tkset(scr, ...), background="white")
+    tl <- tklistbox(aa, height=20, width=50, selectmode="single",
+                    yscrollcommand=function(...)tkset(scr, ...), background="white")
+
     tkgrid(tklabel(aa, text="Liste des facteurs du référentiel des espèces"))
     tkgrid(tl, scr)
     tkgrid.configure(scr, rowspan=4, sticky="nsw")
@@ -193,7 +197,9 @@ choixchamptable.f <- function (matable)
     aa <- tktoplevel()
     tkwm.title(aa, paste("Métrique de", matable, "à représenter"))
     scr <- tkscrollbar(aa, repeatinterval=5, command=function(...)tkyview(tl, ...))
-    tl <- tklistbox(aa, height=20, width=15, selectmode="single", yscrollcommand=function(...)tkset(scr, ...), background="white")
+    tl <- tklistbox(aa, height=20, width=15, selectmode="single",
+                    yscrollcommand=function(...)tkset(scr, ...), background="white")
+
     tkgrid(tklabel(aa, text=paste("Métrique à représenter de ", matable)))
     tkgrid(tklabel(aa, text="ATTENTION, selectionnez\n uniquement des champs numériques (***)"))
     tkgrid(tl, scr)
@@ -241,7 +247,9 @@ choixunfacteurUnitobs.f <- function ()
     aa <- tktoplevel()
     tkwm.title(aa, "Selection du facteur de groupement des unites d'observation")
     scr <- tkscrollbar(aa, repeatinterval=5, command=function(...)tkyview(tl, ...))
-    tl <- tklistbox(aa, height=20, selectmode="single", yscrollcommand=function(...)tkset(scr, ...), background="white")
+    tl <- tklistbox(aa, height=20, selectmode="single",
+                    yscrollcommand=function(...)tkset(scr, ...), background="white")
+
     tkgrid(tklabel(aa, text="Liste des facteurs de groupement"))
     tkgrid(tl, scr)
     tkgrid.configure(scr, rowspan=4, sticky="nsw")
@@ -292,7 +300,9 @@ ChoixUneEspece.f <- function ()
     ee <- tktoplevel(width = 80)
     tkwm.title(ee, "Selection d'une espece")
     scr <- tkscrollbar(ee, repeatinterval=5, command=function(...)tkyview(tl, ...))
-    tl <- tklistbox(ee, height=20, width=30, selectmode="single", yscrollcommand=function(...)tkset(scr, ...), background="white")
+    tl <- tklistbox(ee, height=20, width=30, selectmode="single",
+                    yscrollcommand=function(...)tkset(scr, ...), background="white")
+
     tkgrid(tklabel(ee, text="Liste des especes presentes"))
     tkgrid(tl, scr)
     tkgrid.configure(scr, rowspan=4, sticky="nsw")
@@ -338,7 +348,9 @@ ChoixDesEspeces.f <- function ()
     ee <- tktoplevel(width = 80)
     tkwm.title(ee, "Selection des espèces")
     scr <- tkscrollbar(ee, repeatinterval=5, command=function(...)tkyview(tl, ...))
-    tl <- tklistbox(ee, height=20, width=30, selectmode="multiple", yscrollcommand=function(...)tkset(scr, ...), background="white")
+    tl <- tklistbox(ee, height=20, width=30, selectmode="multiple",
+                    yscrollcommand=function(...)tkset(scr, ...), background="white")
+
     tkgrid(tklabel(ee, text="Liste des espèces presentes"))
     tkgrid(tl, scr)
     tkgrid.configure(scr, rowspan=4, sticky="nsw")
@@ -383,7 +395,9 @@ ChoixUneFamille.f <- function ()
     ef <- tktoplevel(width = 80)
     tkwm.title(ef, "Selection d'une Famille")
     scr <- tkscrollbar(ef, repeatinterval=5, command=function(...)tkyview(tl, ...))
-    tl <- tklistbox(ef, height=20, width=30, selectmode="single", yscrollcommand=function(...)tkset(scr, ...), background="white")
+    tl <- tklistbox(ef, height=20, width=30, selectmode="single",
+                    yscrollcommand=function(...)tkset(scr, ...), background="white")
+
     tkgrid(tklabel(ef, text="Liste des familles presentes"))
     tkgrid(tl, scr)
     tkgrid.configure(scr, rowspan=4, sticky="nsw")
@@ -427,7 +441,9 @@ ChoixUnPhylum.f <- function ()
     ef <- tktoplevel(width = 80)
     tkwm.title(ef, "Selection d'un Phylum")
     scr <- tkscrollbar(ef, repeatinterval=5, command=function(...)tkyview(tl, ...))
-    tl <- tklistbox(ef, height=20, width=30, selectmode="single", yscrollcommand=function(...)tkset(scr, ...), background="white")
+    tl <- tklistbox(ef, height=20, width=30, selectmode="single",
+                    yscrollcommand=function(...)tkset(scr, ...), background="white")
+
     tkgrid(tklabel(ef, text="Liste des phylums presents"))
     tkgrid(tl, scr)
     tkgrid.configure(scr, rowspan=4, sticky="nsw")
@@ -470,7 +486,9 @@ ChoixUnOrdre.f <- function ()
     ef <- tktoplevel(width = 80)
     tkwm.title(ef, "Selection d'un Ordre")
     scr <- tkscrollbar(ef, repeatinterval=5, command=function(...)tkyview(tl, ...))
-    tl <- tklistbox(ef, height=20, width=30, selectmode="single", yscrollcommand=function(...)tkset(scr, ...), background="white")
+    tl <- tklistbox(ef, height=20, width=30, selectmode="single",
+                    yscrollcommand=function(...)tkset(scr, ...), background="white")
+
     tkgrid(tklabel(ef, text="Liste des ordres presents"))
     tkgrid(tl, scr)
     tkgrid.configure(scr, rowspan=4, sticky="nsw")
@@ -506,7 +524,9 @@ ChoixUneClasse.f <- function ()
     ef <- tktoplevel(width = 80)
     tkwm.title(ef, "Selection d'une Classe")
     scr <- tkscrollbar(ef, repeatinterval=5, command=function(...)tkyview(tl, ...))
-    tl <- tklistbox(ef, height=20, width=30, selectmode="single", yscrollcommand=function(...)tkset(scr, ...), background="white")
+    tl <- tklistbox(ef, height=20, width=30, selectmode="single",
+                    yscrollcommand=function(...)tkset(scr, ...), background="white")
+
     tkgrid(tklabel(ef, text="Liste des classes presents"))
     tkgrid(tl, scr)
     tkgrid.configure(scr, rowspan=4, sticky="nsw")
@@ -542,7 +562,9 @@ ChoixUneUnitobs.f <- function ()
     eu <- tktoplevel(width = 80)
     tkwm.title(eu, "Selection d'une Unité d'observation")
     scr <- tkscrollbar(eu, repeatinterval=5, command=function(...)tkyview(tl, ...))
-    tl <- tklistbox(eu, height=20, width=30, selectmode="single", yscrollcommand=function(...)tkset(scr, ...), background="white")
+    tl <- tklistbox(eu, height=20, width=30, selectmode="single",
+                    yscrollcommand=function(...)tkset(scr, ...), background="white")
+
     tkgrid(tklabel(eu, text="Liste des Unités d'observations presentes"))
     tkgrid(tl, scr)
     tkgrid.configure(scr, rowspan=4, sticky="nsw")
@@ -578,7 +600,9 @@ ChoixUnSite.f <- function ()
     eu <- tktoplevel(width = 80)
     tkwm.title(eu, "Selection d'un site d'observation")
     scr <- tkscrollbar(eu, repeatinterval=5, command=function(...)tkyview(tl, ...))
-    tl <- tklistbox(eu, height=20, width=30, selectmode="single", yscrollcommand=function(...)tkset(scr, ...), background="white")
+    tl <- tklistbox(eu, height=20, width=30, selectmode="single",
+                    yscrollcommand=function(...)tkset(scr, ...), background="white")
+
     tkgrid(tklabel(eu, text="Liste des Sites presents"))
     tkgrid(tl, scr)
     tkgrid.configure(scr, rowspan=4, sticky="nsw")
@@ -611,12 +635,14 @@ ChoixUneAnnee.f <- function ()
     eu <- tktoplevel(width = 80)
     tkwm.title(eu, "Selection d'une année")
     scr <- tkscrollbar(eu, repeatinterval=5, command=function(...)tkyview(tl, ...))
-    tl <- tklistbox(eu, height=20, width=30, selectmode="single", yscrollcommand=function(...)tkset(scr, ...), background="white")
+    tl <- tklistbox(eu, height=20, width=30, selectmode="single",
+                    yscrollcommand=function(...)tkset(scr, ...), background="white")
+
     tkgrid(tklabel(eu, text="Liste des années"))
     tkgrid(tl, scr)
     tkgrid.configure(scr, rowspan=4, sticky="nsw")
     ## affichage de la liste des années
-    maliste<- unique(unitobs$an[order(unitobs$an, decreasing=F)])
+    maliste<- unique(unitobs$an[order(unitobs$an, decreasing=FALSE)])
     a <- length(maliste)
     for (i in (1:a))
     {
@@ -645,7 +671,9 @@ ChoixUnhabitat1.f <- function ()
     eu <- tktoplevel(width = 80)
     tkwm.title(eu, "Selection d'un habitat")
     scr <- tkscrollbar(eu, repeatinterval=5, command=function(...)tkyview(tl, ...))
-    tl <- tklistbox(eu, height=20, width=30, selectmode="single", yscrollcommand=function(...)tkset(scr, ...), background="white")
+    tl <- tklistbox(eu, height=20, width=30, selectmode="single",
+                    yscrollcommand=function(...)tkset(scr, ...), background="white")
+
     tkgrid(tklabel(eu, text="Liste des habitats presents"))
     tkgrid(tl, scr)
     tkgrid.configure(scr, rowspan=4, sticky="nsw")
@@ -678,7 +706,9 @@ ChoixUnbiotope.f <- function ()
     eu <- tktoplevel(width = 80)
     tkwm.title(eu, "Selection d'un habitat")
     scr <- tkscrollbar(eu, repeatinterval=5, command=function(...)tkyview(tl, ...))
-    tl <- tklistbox(eu, height=20, width=30, selectmode="single", yscrollcommand=function(...)tkset(scr, ...), background="white")
+    tl <- tklistbox(eu, height=20, width=30, selectmode="single",
+                    yscrollcommand=function(...)tkset(scr, ...), background="white")
+
     tkgrid(tklabel(eu, text="Liste des habitats presents"))
     tkgrid(tl, scr)
     tkgrid.configure(scr, rowspan=4, sticky="nsw")
@@ -708,7 +738,7 @@ selectionEspeceStatut.f <- function ()
 {
     print("fonction selectionEspeceStatut activée")
     ## teste si les tailles sont renseignees dans la table observation
-    ## if (length(unique(obs$taille))>1) {}
+    ## if (length(unique(obs$taille))>1) {} [inc][???]
 }
 
 ################################################################################
@@ -745,11 +775,14 @@ choixespeces.f <- function()
     assign("unitobs", unitobs, envir=.GlobalEnv)
 
     ## on refait la table de contingence
-    contingence <- tapply(obs$nombre, list(obs$unite_observation, obs$code_espece), sum, na.rm=TRUE)
+    contingence <- tapply(obs$nombre,
+                          list(obs$unite_observation, obs$code_espece),
+                          sum, na.rm=TRUE)
+
     contingence[is.na(contingence)] <- 0
     ## Suppression des especes qui ne sont jamais vues
     ## Sinon problemes pour les calculs d'indices de diversite.
-    a <- which(apply(contingence, 2, sum, na.rm=T)==0)
+    a <- which(apply(contingence, 2, sum, na.rm=TRUE) == 0)
     if (length(a) != 0)
     {
         contingence <- contingence[, -a, drop=FALSE]
@@ -757,7 +790,7 @@ choixespeces.f <- function()
     rm(a)
 
     ## idem
-    b <- which(apply(contingence, 1, sum, na.rm=T)==0)
+    b <- which(apply(contingence, 1, sum, na.rm=TRUE) == 0)
     if (length(b) != 0)
     {
         contingence <- contingence[-b, , drop=FALSE]
@@ -773,7 +806,9 @@ choixespeces.f <- function()
     creationTablesBase.f()
     Jeuxdonnescoupe <- 1
 
-    tkmessageBox(message="ATTENTION, les tables 'Observations' et 'Unites observations' ont ete reduites aux especes selectionnees .", icon="warning", type="ok")
+    tkmessageBox(message=paste("ATTENTION, les tables 'Observations' et 'Unites observations'",
+                               " ont ete reduites aux especes selectionnees .", sep=""),
+                 icon="warning", type="ok")
 } # fin choixespeces.f()
 
 ################################################################################
@@ -790,7 +825,9 @@ grpesp.f <- function ()
     aa <- tktoplevel()
     tkwm.title(aa, "Selection du facteur de groupement des especes")
     scr <- tkscrollbar(aa, repeatinterval=5, command=function(...)tkyview(tl, ...))
-    tl <- tklistbox(aa, height=20, selectmode="single", yscrollcommand=function(...)tkset(scr, ...), background="white")
+    tl <- tklistbox(aa, height=20, selectmode="single",
+                    yscrollcommand=function(...)tkset(scr, ...), background="white")
+
     tkgrid(tklabel(aa, text="Liste des facteurs de groupement"))
     tkgrid(tl, scr)
     tkgrid.configure(scr, rowspan=4, sticky="nsw")
@@ -831,7 +868,9 @@ affichageMetriques.f <- function ()
     bb <- tktoplevel(width = 80)
     tkwm.title(bb, "Selection de la metrique à analyser")
     scr <- tkscrollbar(bb, repeatinterval=5, command=function(...)tkyview(tl, ...))
-    tl <- tklistbox(bb, height=20, width=30, selectmode="single", yscrollcommand=function(...)tkset(scr, ...), background="white")
+    tl <- tklistbox(bb, height=20, width=30, selectmode="single",
+                    yscrollcommand=function(...)tkset(scr, ...), background="white")
+
     tkgrid(tklabel(bb, text="Liste des metriques"))
     tkgrid(tl, scr)
     tkgrid.configure(scr, rowspan=4, sticky="nsw")
@@ -839,20 +878,23 @@ affichageMetriques.f <- function ()
     a <- length(met)
     ## création de la liste des métriques différentes de 0 ou NA
     listeMetriquesOK <-"pas de metrique"
+
     j <- 1
     for (i in (1:a))
     {
-        if ((sum(unit[, met[i]], na.rm=T)==0)==FALSE)
+        if (sum(unit[, met[i]], na.rm=TRUE) != 0) # ((sum(unit[, met[i]], na.rm=TRUE)==0)==FALSE) [!!!]
         {
             listeMetriquesOK[j] <- met[i]
             j <- j+1
         }
     }
+
     b <- length(listeMetriquesOK)
     for (i in (1:b))
     {
         tkinsert(tl, "end", listeMetriquesOK[i])
     }
+
     tkselection.set(tl, 0)
 
     OnOK <- function ()
@@ -881,7 +923,8 @@ UnStatutDansObs.f <- function ()
     ## AMPEtudie=unique(unitobs$AMP)
     if (length(unique(unitobs$AMP))> 1)   gestionMSGinfo.f("plusieursAMP")
     suffixeAMP <- unique(unitobs$AMP)
-    ## match(obs$code_espece, subset(especes, especes$emblematiqueRUN=="oui")) -> il n'y a pas d'espèces emblématiques pour le benthos
+    ## match(obs$code_espece, subset(especes, especes$emblematiqueRUN=="oui")) -> il n'y a pas d'espèces emblématiques
+    ## pour le benthos
 
     if (tclvalue(SelectIUCN)!="0")
     {
@@ -889,11 +932,15 @@ UnStatutDansObs.f <- function ()
         ChampStatutSelect <- paste("especes$", statutchoisi, sep="")
         obs$statut <- especes$stat.IUCN[match(obs$code_espece, especes$code_espece)]
     }else{
-        if (tclvalue(SelectEmble)!="0") statutchoisi="emblematique" #puis griser le widget et le remettre à 0 pour permettre les analyses successives
+        ## [!!!]
+        if (tclvalue(SelectEmble)!="0") statutchoisi="emblematique" #puis griser le widget et le remettre à 0 pour
+                                        #permettre les analyses successives
         if (tclvalue(SelectEndem)!="0") statutchoisi="endemique"
         if (tclvalue(SelectMenace)!="0") statutchoisi="etat.pop.local"
         if (tclvalue(SelectAutreStatut)!="0") statutchoisi="autre.statut"
-        ChampStatutSelect <- paste("obs$statut=especes$", statutchoisi, suffixeAMP, "[match(obs$code_espece, especes$code_espece)]", sep="")
+
+        ChampStatutSelect <- paste("obs$statut=especes$", statutchoisi,
+                                   suffixeAMP, "[match(obs$code_espece, especes$code_espece)]", sep="")
         print(ChampStatutSelect)
         eval(parse(text=ChampStatutSelect)) #permet d'executer le contenu de la chaîne de caractères
 
@@ -1080,11 +1127,14 @@ UnCritereUnitobsDansObs.f <- function ()
     obs[, factunitobs] <- unitobs[, factunitobs][match(obs$unite_observation, unitobs$unite_observation)]
     ## print(head(obs))
     ## ChoixFacteurSelect.f(obs[, factunitobs], factunitobs, "multiple", 1, "selectfactunitobs")
+
     selectfactunitobs <- selectModWindow.f(factunitobs, obs, selectmode="extended")
     assign("selectfactunitobs", selectfactunitobs, envir=.GlobalEnv)
     print(selectfactunitobs)
+
     obs <- dropLevels.f(subset(obs, is.element(obs[, factunitobs], selectfactunitobs)),
                         which="unite_observation") # Vérifier si c'est correct [!!!]
+
     gestionMSGaide.f("etapeselected")
     assign("Jeuxdonnescoupe", 1, envir=.GlobalEnv)
     return(obs)

@@ -58,27 +58,27 @@ nameWorkspace <- basePath
 
                                                            # Mise en forme du code :
                                                            # -----------------------
-source("./Exec/load_packages.R", encoding="latin1")
-source("./Exec/fonctions_base.R", encoding="latin1")
+source("./Exec/load_packages.R", encoding="latin1")        # OK
+source("./Exec/fonctions_base.R", encoding="latin1")       # OK
 source("./Exec/config.r", encoding="latin1")               # faite
 source("./Exec/gestionmessages.r", encoding="latin1")      # faite
 source("./Exec/mkfilegroupe.r", encoding="latin1")         # faite
 
 source("./Exec/graphique.r", encoding="latin1")            # faite [sll]
-source("./Exec/graphique_benthos.r", encoding="latin1")
+source("./Exec/graphique_benthos.r", encoding="latin1")    # faite
 source("./Exec/calcul_simple.r", encoding="latin1")        # faite [sll]
 source("./Exec/arbre_regression.r", encoding="latin1")     # fai.. [sll]
 source("./Exec/anova.r", encoding="latin1")
 
 
-source("./Exec/requetes.r", encoding="latin1")
-source("./Exec/modifinterface.r", encoding="latin1")
+source("./Exec/requetes.r", encoding="latin1")             # faite
+source("./Exec/modifinterface.r", encoding="latin1")       #
 source("./Exec/command.r", encoding="latin1")              # faite
 
 
 source("./Exec/testfichier.r", encoding="latin1")
 source("./Exec/view.r", encoding="latin1")                 # faite
-source("./Exec/import.r", encoding="latin1")
+source("./Exec/import.r", encoding="latin1")               # faite
 source("./Exec/importdefaut.r", encoding="latin1")         # faite [sll]
 
 source("./Exec/interface_fonctions.R", encoding="latin1")
@@ -86,23 +86,23 @@ source("./Exec/interface.r", encoding="latin1")
 
 ##################################################
 ## Nouvelle interface de sélection des variables :
-source("./Exec/selection_variables_fonctions.R", encoding="latin1")
-source("./Exec/selection_variables_interface.R", encoding="latin1")
+source("./Exec/selection_variables_fonctions.R", encoding="latin1")        # OK
+source("./Exec/selection_variables_interface.R", encoding="latin1")        # OK
 
 ##################################################
 ## Nouveaux boxplots :
-source("./Exec/boxplots_esp_generiques.R", encoding="latin1")
-source("./Exec/boxplots_unitobs_generiques.R", encoding="latin1")
+source("./Exec/boxplots_esp_generiques.R", encoding="latin1")              # OK
+source("./Exec/boxplots_unitobs_generiques.R", encoding="latin1")          # OK
 
 ##################################################
 ## Analyses statistiques :
-source("./Exec/modeles_lineaires_interface.R", encoding="latin1")
-source("./Exec/modeles_lineaires_esp_generiques.R", encoding="latin1")
-source("./Exec/modeles_lineaires_unitobs_generiques.R", encoding="latin1")
+source("./Exec/modeles_lineaires_interface.R", encoding="latin1")          # OK
+source("./Exec/modeles_lineaires_esp_generiques.R", encoding="latin1")     # OK
+source("./Exec/modeles_lineaires_unitobs_generiques.R", encoding="latin1") # OK
 
 ##################################################
 ## Barplots sur les fréquences d'occurrence :
-source("./Exec/barplots_occurrence.R", encoding="latin1")
+source("./Exec/barplots_occurrence.R", encoding="latin1")                  # OK
 
 tkfocus(tm)
 

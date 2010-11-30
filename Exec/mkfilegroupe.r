@@ -5,6 +5,164 @@
 ## - grpesp.f()
 ################################################################################
 
+interpSecteurs.f <- function(sectUnitobs)
+{
+    ## Purpose: Interpolation des valeurs pour les secteurs non valides
+    ##          (rotations valides seulement) en trois étapes :
+    ##            1) interpolation sur le même secteur d'après les autres
+    ##               rotations.
+    ##            2) interpolation sur les secteurs adjacents de la même
+    ##               rotation.
+    ##            3) moyenne sur la roatation pour les secteurs qui ne
+    ##               peuvent être interpolés avec les deux premières étapes.
+    ## ----------------------------------------------------------------------
+    ## Arguments: sectUnitobs : matrice des secteurs de l'unité
+    ##                          d'observation, avec les secteurs en colonnes
+    ##                          et les rotations en lignes.
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date:  9 nov. 2010, 14:52
+
+
+    ## On ne travaille que sur les rotations valides (i.e. ayant au moins un secteur valide) :
+    idx <- apply(sectUnitobs, 1, function(x)!all(is.na(x)))
+
+    tmp <- sectUnitobs[idx, , drop=FALSE]
+
+    ## Étape 1 : interpolation sur le même secteur dans les autres rotations :
+    tmp <- matrix(apply(tmp, 2, function(x)
+                    {
+                        x[which(is.na(x))] <- mean(x, na.rm=TRUE)
+                        return(x)
+                    }), ncol=ncol(tmp))
+
+    ## Étape 2 : interpolation sur les secteurs adjacents de la même rotation :
+    if (any(is.na(tmp)))
+    {
+        tmp <- t(apply(tmp,
+                       1,
+                       function(x)
+                   {
+                       xi <- which(is.na(x))
+                       x[xi] <- sapply(xi,
+                                       function(i, x){mean(x[i + c(0, 2)], na.rm=TRUE)},
+                                       x=c(tail(x, 1), x, head(x, 1)))
+                       return(x)
+                   }))
+
+        if (any(is.na(tmp)))
+        {
+            ## Étape 3 : moyenne de la rotation sinon :
+            tmp <- t(apply(tmp, 1,
+                           function(x)
+                       {
+                           x[which(is.na(x))] <- mean(x, na.rm=TRUE)
+                           return(x)
+                       }))
+        }else{}
+    }else{}
+
+
+
+    ## Récupération dans le tableau d'origine :
+    sectUnitobs[idx, ] <- tmp
+    ## sectUnitobs <- as.array(sectUnitobs)
+
+    if (any(dim(sectUnitobs) != c(3, 6))) print(sectUnitobs)
+
+
+    return(sectUnitobs)
+}
+
+statRotation.f <- function(facteurs)
+{
+    ## Purpose: Calcul des statistiques des abondances (max, sd) par rotation
+    ## ----------------------------------------------------------------------
+    ## Arguments: facteurs : vecteur des noms de facteurs d'agrégation
+    ##                       (résolution à laquelle on travaille).
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date:  9 nov. 2010, 09:25
+
+    ## Identification des secteurs et rotations valides :
+    if (is.element("unite_observation", facteurs))
+    {
+        ## Secteurs valides (les vides doivent tout de même être renseignés) :
+        secteurs <- tapply(obs$secteur,
+                           as.list(obs[ , c("unite_observation", "rotation", "secteur"), drop=FALSE]),
+                           function(x)length(x) > 0)
+
+        ## Les secteurs non renseignés apparaissent en NA et on veut FALSE :
+        secteurs[is.na(secteurs)] <- FALSE
+
+        ## Rotations valides :
+        rotations <- apply(secteurs, c(1, 2), any) # Au moins un secteur renseigné.
+
+    }else{
+        stop("\n\tL'unité d'observation doit faire partie des facteurs d'agrégation !!\n")
+    }
+
+    ## ###########################################################
+    ## Nombres par rotation avec le niveau d'agrégation souhaité :
+    ## Ajouter les interpolations [!!!][SVR]
+    nombresRS <- tapply(obs$nombre,
+                        as.list(obs[ , c(facteurs, "rotation", "secteur"), drop=FALSE]),
+                        sum, na.rm = TRUE)
+
+    tmp <- apply(nombresRS,
+                 which(is.element(names(dimnames(nombresRS)), facteurs)),
+                 interpSecteurs.f)
+
+    ## On récupère les dimensions d'origine (résultats de la fonction dans 1 vecteur ; attention, plus le même ordre) :
+    dim(tmp) <- c(tail(dim(nombresRS), 2), head(dim(nombresRS), -2))
+
+    ## On renomme les dimensions avec leur nom d'origine en tenant compte du nouvel ordre :
+    dimnames(tmp) <- dimnames(nombresRS)[c(tail(seq_along(dimnames(nombresRS)), 2),
+                                           head(seq_along(dimnames(nombresRS)), -2))]
+
+    ## On restocke le tout dans nombresRS (attentions, toujours travailler sur les noms de dimensions)
+    nombresRS <- tmp
+
+
+    ## Les NAs sont considérés comme des vrais zéros lorsque la rotation est valide :
+    nombresRS <- sweep(nombresRS,
+                       match(names(dimnames(secteurs)), names(dimnames(nombresRS)), nomatch=NULL),
+                       secteurs,        # Tableau des secteurs valides (booléens).
+                       function(x, y)
+                   {
+                       x[is.na(x) & y] <- 0 # Lorsque NA et secteur valide => 0.
+                       return(x)
+                   })
+
+
+    nombresR <- apply(nombresRS,
+                      which(is.element(names(dimnames(nombresRS)), c(facteurs, "rotation"))),
+                      function(x){ifelse(all(is.na(x)), NA, sum(x))})
+
+
+
+    ## ##################################################
+    ## Statistiques :
+
+    ## Moyennes :
+    nombresMean <- apply(nombresR, which(is.element(names(dimnames(nombresR)), facteurs)),
+                         function(x,...){ifelse(all(is.na(x)), NA, mean(x,...))}, na.rm=TRUE)
+
+    ## Maxima :
+    nombresMax <- apply(nombresR, which(is.element(names(dimnames(nombresR)), facteurs)),
+                        function(x,...){ifelse(all(is.na(x)), NA, max(x,...))}, na.rm=TRUE)
+
+    ## Déviation standard :
+    nombresSD <- apply(nombresR, which(is.element(names(dimnames(nombresR)), facteurs)),
+                       function(x,...){ifelse(all(is.na(x)), NA, sd(x,...))}, na.rm=TRUE)
+
+    ## Nombre de rotations valides :
+    nombresRotations <- apply(rotations, 1, sum, na.rm=TRUE)
+
+    ## Retour des résultats sous forme de liste :
+    return(list(nombresMean=nombresMean, nombresMax=nombresMax, nombresSD=nombresSD,
+                nombresRotations=nombresRotations))
+}
+
+
 ################################################################################
 ## Nom    : grpespcalc.f
 ## Objet  : calcul des métriques par groupe d'espèce (biomasse, abondance, etc.)
@@ -970,7 +1128,8 @@ unitespta.f <- function(){
         classeTaille.f()
     }else{
         ## si le champ taille contient uniquement des valeurs a NA
-        if (length(unique(obs$taille))==1 & NA %in% unique(obs$taille)==TRUE) # [!!!] remplacer par all(is.na()) ??
+        if (all(is.na(obs$taille))) # (length(unique(obs$taille))==1 & NA %in% unique(obs$taille)==TRUE)
+                                   # # [!!!] remplacer par all(is.na()) ??
                                         # !!Non!! + inconsistence avec la première clause (il ne devrait pas y avoir de
                                         # NAs ici) !!Non!!
                                         # [yr: 13/08/2010]
@@ -982,87 +1141,107 @@ unitespta.f <- function(){
     }
     assign("ct", ct, envir=.GlobalEnv)  # à quoi ça sert au final [???]
 
-    ## Calcul de la biomasse dans la table obs
-
-    biomasse.f()
-
-    ## Creation de la table par unite d'observation, par espece et par classe de taille et par rotation si SVR
-
-    ## Somme des individus
-    unitesptaT <- tapply(obs$nombre, list(obs$unite_observation, obs$code_espece, obs$classe_taille),
-                         sum, na.rm = TRUE) # [!!!] nombres à zéro [???] [yr: 17/08/2010]
-    ## Si video rotative, on divise par le nombre de rotation
-    if (unique(unitobs$type) == "SVR")
+    if (ct == 1 || !all(is.na(obs$classe_taille)))
     {
-        unitesptaT <- unitesptaT / 3
-    }
-    unitesptaT[is.na(unitesptaT)] <- 0
-    unitespta <- as.data.frame(matrix(as.numeric(NA), # [!!!] drôle de façon de créer une data.frame [!!!]
-                                        # [yr: 17/08/2010]
-                                      dim(unitesptaT)[1]*dim(unitesptaT)[2]*dim(unitesptaT)[3], 4))
-    colnames(unitespta) = c("unitobs", "code_espece", "classe_taille", "nombre")
-    unitespta$nombre <- as.vector(unitesptaT, "integer") # 'numeric' changé pour avoir des entiers.
-    unitespta$unitobs <- rep(dimnames(unitesptaT)[[1]], times = dim(unitesptaT)[2] * dim(unitesptaT)[3])
-    unitespta$code_espece <- rep(dimnames(unitesptaT)[[2]], each = dim(unitesptaT)[1], times = dim(unitesptaT)[3])
-    unitespta$classe_taille <- rep(dimnames(unitesptaT)[[3]], each = dim(unitesptaT)[1]*dim(unitesptaT)[2])
-    unitespta$classe_taille[unitespta$classe_taille == ""] <- NA
+        ## ##################################################
+        ## Calcul de la biomasse dans la table obs
 
-    ## tailles moyennes ponderees si champ taille renseigne
-    if (length(unique(obs$taille))>1)
-    {
-        obs$taillecum <- obs$taille*obs$nombre #L*nb par ligne (=1obs exp X tr)  [???] [yr: 13/08/2010]
-        y <- tapply(obs$nombre, list(obs$unite_observation, obs$code_espece, obs$classe_taille), sum, na.rm=TRUE) # nb espXtr
-        z <- tapply(obs$taillecum, list(obs$unite_observation, obs$code_espece, obs$classe_taille),
-                        function(x){if (all(is.na(x))) {return(NA)}else{return(sum(x, na.rm=TRUE))}}) # Pour éviter
-                                        # des sommes à zéro là où seulement des NAs.
+        biomasse.f()
 
-        ## reaffectation dans un data.frame
-        unitespta.t <- as.data.frame(matrix(NA, dim(z)[1]*dim(z)[2]*dim(z)[3], 4))
-        colnames(unitespta.t) = c("unitobs", "code_espece", "classe_taille", "taille_moy")
-        unitespta.t$taille_moy <- as.vector(z/y)
-        ## unitespta.t$taille_moy[is.na(unitespta.t$taille_moy)] <- 0
-                                        # [!!!] Rhaa, mais c'est pas vrai cette manie de
-                                        # mettre les valeurs manquantes à zéro !!  [yr: 13/08/2010]
-        unitespta.t$unitobs <- rep(dimnames(z)[[1]], times = dim(z)[2] * dim(z)[3])
-        unitespta.t$code_espece <- rep(dimnames(z)[[2]], each = dim(z)[1], times = dim(z)[3])
-        unitespta.t$classe_taille <- rep(dimnames(z)[[3]], each = dim(z)[1]*dim(z)[2])
-        unitespta.t$an <- unitobs$an[match(unitespta.t$unitobs, unitobs$unite_observation)]
-        obs$taillecum <- NULL
+        ## #########################################################################################################
+        ## Creation de la table par unite d'observation, par espece et par classe de taille et par rotation si SVR :
 
-        ## transfert des tailles moyennes dans la table unitespta
-        unitespta$taille_moyenne <- unitespta.t$taille_moy
-        unitespta$taille_moyenne <- as.numeric(unitespta$taille_moyenne)
-    }
-
-    ## sommes des biomasses par espece par unitobs et par classes de taille
-    if (length(unique(obs$biomasse))>1)
-    {
-        unitesptaT.b <- tapply(obs$biomasse, list(obs$unite_observation, obs$code_espece, obs$classe_taille),
-                               function(x){if (all(is.na(x))) {return(NA)}else{return(sum(x, na.rm=TRUE))}}) # Pour éviter
-                                        # des sommes à zéro là où seulement des NAs. ## sum) ## [bio]
-        ## reaffecter dans un data.frame
-        unitespta.b <- as.data.frame(matrix(as.numeric(NA),
-                                            dim(unitesptaT.b)[1]*dim(unitesptaT.b)[2]*dim(unitesptaT.b)[3], 4))
-        colnames(unitespta.b) = c("unitobs", "code_espece", "classe_taille", "biomasse")
-        unitespta.b$biomasse <- as.vector(unitesptaT.b, "numeric")
-        unitespta.b$unitobs <- rep(dimnames(unitesptaT.b)[[1]], times = dim(unitesptaT.b)[2] * dim(unitesptaT.b)[3])
-        unitespta.b$code_espece <- rep(dimnames(unitesptaT.b)[[2]], each = dim(unitesptaT.b)[1],
-                                       times = dim(unitesptaT.b)[3])
-        unitespta.b$classe_taille <- rep(dimnames(unitesptaT.b)[[3]], each = dim(unitesptaT.b)[1]*dim(unitesptaT.b)[2])
-        unitespta.b$an <- unitobs$an[match(unitespta.b$unitobs, unitobs$unite_observation)]
-        unitespta$biomasse <- unitespta.b$biomasse
-
-        if (unique(unitobs$type) != "SVR")
+        ## Nombre d'individus :
+        if (unique(unitobs$type) == "SVR")
         {
-            ## on divise la biomasse par dimObs1*dimObs2
-            unitespta$biomasse <- as.numeric(unitespta$biomasse) /
-                (unitobs$DimObs1[match(unitespta$unitobs, unitobs$unite_observation)] *
-                 unitobs$DimObs2[match(unitespta$unitobs, unitobs$unite_observation)])
+            statRotations <- statRotation.f(facteurs=c("unite_observation", "code_espece", "classe_taille"))
+
+            ## Moyenne pour les vidéos rotatives (habituellement 3 rotation) :
+            unitesptaT <- statRotations[["nombresMean"]]
+        }else{
+            ## Somme des nombres d'individus :
+            unitesptaT <- tapply(obs$nombre,
+                                 as.list(obs[ , c("unite_observation", "code_espece", "classe_taille")]),
+                                 sum, na.rm = TRUE) # [!!!] nombres à zéro [???] [yr: 17/08/2010]
+
+            ## Absences considérée comme "vrais zéros" :
+            unitesptaT[is.na(unitesptaT)] <- 0
         }
 
-        ## Certains NAs correspondent à des vrai zéros :
-        if (!all(is.na(obs$biomasse)))
+
+        unitespta <- as.data.frame(as.table(unitesptaT), responseName="nombre")
+        unitespta$unitobs <- unitespta$unite_observation # Pour compatibilité uniquement !!!
+
+        unitespta$classe_taille[unitespta$classe_taille == ""] <- NA
+
+        ## Si les nombres sont des entiers, leur redonner la bonne classe :
+        if (isTRUE(all.equal(unitespta$nombre, as.integer(unitespta$nombre))))
         {
+            unitespta$nombre <- as.integer(unitespta$nombre)
+        }else{}
+
+        ## Stats sur les nombres pour les (généralement 3) rotations :
+        if (unique(unitobs$type) == "SVR")
+        {
+            unitespta$nombreMax <- as.vector(statRotations[["nombresMax"]])
+            unitespta$nombreSD <- as.vector(statRotations[["nombresSD"]])
+        }else{}
+
+        ## ######################################################
+        ## tailles moyennes ponderees si champ taille renseigne :
+        if (!all(is.na(obs$taille)))        # (length(unique(obs$taille))>1)
+        {
+            unitespta$taille_moy <- as.vector(tapply(seq(length.out=nrow(obs)),
+                                                     as.list(obs[ , c("unite_observation",
+                                                                      "code_espece", "classe_taille")]),
+                                                     function(ii)
+                                                 {
+                                                     weighted.mean(obs$taille[ii], obs$nombre[ii])
+                                                 }))
+        }
+
+        ## ######################################################################
+        ## sommes des biomasses par espece par unitobs et par classes de taille :
+        if (!all(is.na(obs$biomasse)))      # (length(unique(obs$biomasse))>1)
+        {
+            ## ##################################################
+            ## biomasse :
+            unitespta$biomasse <- as.vector(tapply(obs$biomasse,
+                                                   as.list(obs[ , c("unite_observation",
+                                                                    "code_espece", "classe_taille")]),
+                                                   function(x)
+                                               {
+                                                   if (all(is.na(x))) {return(NA)}else{return(sum(x, na.rm=TRUE))}
+                                               }))
+
+            ## C'est bête que la biomasse soit calculée comme ça... il faut faire des corrections
+            ## pour les vidéos rotatives :
+            if (unique(unitobs$type) == "SVR")
+            {
+                unitespta$biomasse <- unitespta$biomasse * unitespta$nombre /
+                    as.vector(tapply(obs$nombre,
+                                     as.list(obs[ , c("unite_observation",
+                                                      "code_espece", "classe_taille")]),
+                                     function(x)
+                                 {
+                                     if (all(is.na(x))) {return(NA)}else{return(sum(x, na.rm=TRUE))}
+                                 }))
+
+                ## Biomasse max
+                unitespta$biomasseMax <- unitespta$biomasse * unitespta$nombreMax /
+                    as.vector(tapply(obs$nombre,
+                                     as.list(obs[ , c("unite_observation",
+                                                      "code_espece", "classe_taille")]),
+                                     function(x)
+                                 {
+                                     if (all(is.na(x))) {return(NA)}else{return(sum(x, na.rm=TRUE))}
+                                 }))
+
+            }else{}
+
+
+            ## Certains NAs correspondent à des vrai zéros :
+
             ## Especes pour lesquelles aucune biomasse n'est calculée.
             espSansBiom <- tapply(unitespta$biomasse, unitespta$code_espece,
                                   function(x)all(is.na(x) | x == 0))
@@ -1072,138 +1251,159 @@ unitespta.f <- function(){
             unitespta$biomasse[is.na(unitespta$biomasse) &
                                unitespta$nombre == 0 &
                                !is.element(unitespta$code_espece, espSansBiom)] <- 0
+
+
+            if (unique(unitobs$type) == "SVR")
+            {
+                ## On divise par la surface du cercle contenant l'observation la plus lointaine :
+                unitespta$biomasse <- unitespta$biomasse /
+                    (pi * (as.vector(tapply(obs$dmin,
+                                            as.list(obs[ , c("unite_observation", "code_espece")]),
+                                            max, na.rm=TRUE)))^2) # Recyclé 3X.
+            }else{
+                ## on divise la biomasse par dimObs1*dimObs2
+                unitespta$biomasse <- as.numeric(unitespta$biomasse) /
+                    (unitobs$DimObs1[match(unitespta$unite_observation, unitobs$unite_observation)] *
+                     unitobs$DimObs2[match(unitespta$unite_observation, unitobs$unite_observation)])
+            }
+
+
+        }else{
+            ## alerte que les calculs de biomasse sont impossibles
+            tkmessageBox(message=paste("Calcul de biomasse impossible - ",
+                         "Les tailles ne sont pas renseignées dans les observations", sep=""))
         }
 
-    }else{
-        ## alerte que les calculs de biomasse sont impossibles
-        tkmessageBox(message="Calcul de biomasse impossible - Les tailles ne sont pas renseignées dans les observations")
-    }
-    ## poids
+        ## poids
 
-    ## sommes des poids par espece par unitobs et par classes de taille
-    unitesptaT.p <- tapply(obs$poids, list(obs$unite_observation, obs$code_espece, obs$classe_taille), sum)
-    unitespta.p <- as.data.frame(matrix(as.numeric(NA),
-                                        dim(unitesptaT.p)[1]*dim(unitesptaT.p)[2]*dim(unitesptaT.p)[3], 4))
-    colnames(unitespta.p) = c("unitobs", "code_espece", "classe_taille", "poids")
-    unitespta.p$poids <- as.vector(unitesptaT.p, "numeric")
-    unitespta.p$unitobs <- rep(dimnames(unitesptaT.p)[[1]], times = dim(unitesptaT.p)[2] * dim(unitesptaT.p)[3])
-    unitespta.p$code_espece <- rep(dimnames(unitesptaT.p)[[2]], each = dim(unitesptaT.p)[1], times = dim(unitesptaT.p)[3])
-    unitespta.p$classe_taille <- rep(dimnames(unitesptaT.p)[[3]], each = dim(unitesptaT.p)[1]*dim(unitesptaT.p)[2])
-    unitespta.p$an <- unitobs$an[match(unitespta.p$unitobs, unitobs$unite_observation)]
-    unitespta$poids <- unitespta.p$poids
+        ## ##################################################
+        ## poids
+        unitespta$poids <- as.vector(tapply(obs$poids,
+                                            as.list(obs[ , c("unite_observation",
+                                                             "code_espece", "classe_taille")]),
+                                            function(x)
+                                        {
+                                            ifelse(all(is.na(x)),
+                                                   as.numeric(NA),
+                                                   sum(x, na.rm=TRUE))
+                                        }))
 
-    ## Certains NAs correspondent à des vrai zéros :
-    if (!all(is.na(obs$poids)))
-    {
-        unitespta$poids[is.na(unitespta$poids) & unitespta$nombre == 0] <- 0
-    }
+        ## Certains NAs correspondent à des vrai zéros :
+        if (!all(is.na(obs$poids)))
+        {
+            unitespta$poids[is.na(unitespta$poids) & unitespta$nombre == 0] <- 0
+        }
 
-    ## ##################################################
-    ## poids moyen
-    unitespta$poids_moyen <- apply(unitespta[ , c("nombre", "poids")], 1,
-                                   function(x)
-                               {
-                                   return(as.vector(ifelse(is.na(x[2]) || x[1] == 0,
-                                                           as.numeric(NA),
-                                                           x[2]/x[1])))
-                               })
+        ## ##################################################
+        ## poids moyen
+        unitespta$poids_moyen <- apply(unitespta[ , c("nombre", "poids")], 1,
+                                       function(x)
+                                   {
+                                       return(as.vector(ifelse(is.na(x[2]) || x[1] == 0,
+                                                               as.numeric(NA),
+                                                               x[2]/x[1])))
+                                   })
 
-    ## Presence - absence
-    unitespta$pres_abs[unitespta$nombre != 0] <- as.integer(1) # pour avoir la richesse spécifique en 'integer'.1
-    unitespta$pres_abs[unitespta$nombre == 0] <- as.integer(0) # pour avoir la richesse spécifique en 'integer'.0
+        ## Presence - absence
+        unitespta$pres_abs[unitespta$nombre > 0] <- as.integer(1) # pour avoir la richesse spécifique en 'integer'.1
+        unitespta$pres_abs[unitespta$nombre == 0] <- as.integer(0) # pour avoir la richesse spécifique en 'integer'.0
 
-    ## calcul densites (pour les pêches, ce calcul correspond au CPUE en nombre par espece)
-    ## [densité]
-    if (unique(unitobs$type) != "SVR")
-    {
-        unitespta$densite <- unitespta$nombre /
-            (unitobs$DimObs1[match(unitespta$unitobs, unitobs$unite_observation)] *
-             unitobs$DimObs2[match(unitespta$unitobs, unitobs$unite_observation)])
-    }else{
-        rayons.t <- tapply(obs$dmin, list(obs$unite_observation, obs$code_espece), max)
-        rayons <- as.data.frame(matrix(as.numeric(NA), dim(rayons.t)[1]*dim(rayons.t)[2], 3))
-        colnames(rayons) = c("unitobs", "codesp", "rayonMax")
-        rayons$rayonMax <- as.vector(rayons.t, "numeric")
-        rayons$unitobs <- rep(dimnames(rayons.t)[[1]])
-        rayons$codesp <- rep(dimnames(rayons.t)[[2]], each = dim(rayons.t)[1], 1)
-        assign("rayons", rayons, envir=.GlobalEnv)
-        unitespta$rayonMax <- rayons$rayonMax
-        unitespta$densite <- unitespta$nombre / (pi * (unitespta$rayonMax)^2 )
+        ## calcul densites (pour les pêches, ce calcul correspond au CPUE en nombre par espece)
+        ## [densité]
+        if (unique(unitobs$type) != "SVR")
+        {
+            unitespta$densite <- unitespta$nombre /
+                (unitobs$DimObs1[match(unitespta$unite_observation, unitobs$unite_observation)] *
+                 unitobs$DimObs2[match(unitespta$unite_observation, unitobs$unite_observation)])
+        }else{
+            ## Densité :
+            unitespta$densite <- unitespta$nombre /
+                (pi * (as.vector(tapply(obs$dmin,
+                                        as.list(obs[ , c("unite_observation", "code_espece")]),
+                                        max, na.rm=TRUE)))^2)
 
-        ## unitesp$densite <- unitesp$nombre /
-        ##     (pi * (as.vector(tapply(obs$dmin,
-        ##                             list(obs$unite_observation, obs$code_espece),
-        ##                             max, na.rm=TRUE)))^2)
+            ## Vrais zéros :
+            unitespta$densite[unitespta$nombre == 0 & !is.na(unitespta$nombre)] <- 0
 
-        unitespta$densite[unitespta$nombre == 0 & !is.na(unitespta$nombre)] <- 0
-    }
+            ## Densité max :
+            unitespta$densiteMax <- unitespta$nombreMax /
+                (pi * (as.vector(tapply(obs$dmin,
+                                        as.list(obs[ , c("unite_observation", "code_espece")]),
+                                        max, na.rm=TRUE)))^2)
 
-    ## ajout des champs "an", "site", "biotope", "latitude", "longitude"
-    unitespta$an <- unitobs$an[match(unitespta$unitobs, unitobs$unite_observation)] # [!!!] on peut simplifier tout ça
-                                        # [yr: 27/08/2010]
-    unitespta$site <- unitobs$site[match(unitespta$unitobs, unitobs$unite_observation)]
-    unitespta$statut_protection <- unitobs$statut_protection[match(unitespta$unitobs, unitobs$unite_observation)]
-    unitespta$biotope <- unitobs$biotope[match(unitespta$unitobs, unitobs$unite_observation)]
-    unitespta$latitude <- unitobs$latitude[match(unitespta$unitobs, unitobs$unite_observation)]
-    unitespta$longitude <- unitobs$longitude[match(unitespta$unitobs, unitobs$unite_observation)]
+            ## Vrais zéros :
+            unitespta$densiteMax[unitespta$nombreMax == 0 & !is.na(unitespta$nombreMax)] <- 0
+        }
 
-    ## ##################################################
-    ## Proportion d'abondance par classe de taille :
-    abondance <- with(unitespta, tapply(densite, list(unitobs, code_espece, classe_taille),
-                                        function(x){x})) # -> tableau à 3D.
+        ## ajout des champs "an", "site", "statut_protection", "biotope", "latitude", "longitude" :
+        unitespta <- cbind(unitespta,
+                           unitobs[match(unitespta$unite_observation, unitobs$unite_observation),
+                                   c("an", "site", "statut_protection", "biotope", "latitude", "longitude")])
 
-    ## Sommes d'abondances pour chaque unitobs pour chaque espèce :
-    sommesCT <- apply(abondance, c(1, 2), sum, na.rm=TRUE)
-
-    ## Calcul des proportions d'abondance -> tableau 3D :
-    propAbondance <- sweep(abondance, c(1, 2), sommesCT, FUN="/")
-    names(dimnames(propAbondance)) <- c("unite_observation", "code_espece", "classe_taille")
-
-    ## Mise au format colonne + % :
-    unitespta$prop.abondance.CL <- 100 * as.data.frame(as.table(propAbondance),
-                                                       responseName="prop.abondance.CL",
-                                                       stringsAsFactors=FALSE)$prop.abondance.CL
-
-    ## ##################################################
-    ## Proportion de biomasse par classe de taille :
-    if (!is.null(unitespta$biomasse))
-    {
-        biomasses <- with(unitespta, tapply(biomasse, list(unitobs, code_espece, classe_taille),
+        ## ##################################################
+        ## Proportion d'abondance par classe de taille :
+        abondance <- with(unitespta, tapply(densite, list(unite_observation, code_espece, classe_taille),
                                             function(x){x})) # -> tableau à 3D.
 
-        ## Sommes de biomasses pour chaque unitobs pour chaque espèce :
-        sommesCT <- apply(biomasses, c(1, 2), sum, na.rm=TRUE)
+        ## Sommes d'abondances pour chaque unitobs pour chaque espèce :
+        sommesCT <- apply(abondance, c(1, 2), sum, na.rm=TRUE)
 
-        ## Calcul des proportions de biomasse -> tableau 3D :
-        propBiomasse <- sweep(biomasses, c(1, 2), sommesCT, FUN="/")
-        names(dimnames(propBiomasse)) <- c("unite_observation", "code_espece", "classe_taille")
+        ## Calcul des proportions d'abondance -> tableau 3D :
+        propAbondance <- sweep(abondance, c(1, 2), sommesCT, FUN="/")
+        names(dimnames(propAbondance)) <- c("unite_observation", "code_espece", "classe_taille")
 
         ## Mise au format colonne + % :
-        unitespta$prop.biomasse.CL <- 100 * as.data.frame(as.table(propBiomasse),
-                                                          responseName="prop.biomasse.CL",
-                                                          stringsAsFactors=FALSE)$prop.biomasse.CL
-    }else{}
+        unitespta$prop.abondance.CL <- 100 * as.data.frame(as.table(propAbondance),
+                                                           responseName="prop.abondance.CL",
+                                                           stringsAsFactors=FALSE)$prop.abondance.CL
 
-    ## #################################################
-    ## on renomme densite et biomasse en CPUE
-    ## pour les jeux de données pêche
-    if (is.peche.f())                   # length(typePeche)>1
-    {
-        unitespta$CPUE <- unitespta$densite
-        unitespta$densite <- NULL
-        unitespta$CPUEbiomasse <- unitespta$biomasse # Fonctionne même si biomasse n'existe pas.
-        unitespta$biomasse <- NULL
+        ## ##################################################
+        ## Proportion de biomasse par classe de taille :
+        if (!is.null(unitespta$biomasse))
+        {
+            biomasses <- with(unitespta, tapply(biomasse,
+                                                list(unite_observation, code_espece, classe_taille),
+                                                function(x){x})) # -> tableau à 3D.
+
+            ## Sommes de biomasses pour chaque unitobs pour chaque espèce :
+            sommesCT <- apply(biomasses, c(1, 2), sum, na.rm=TRUE)
+
+            ## Calcul des proportions de biomasse -> tableau 3D :
+            propBiomasse <- sweep(biomasses, c(1, 2), sommesCT, FUN="/")
+            names(dimnames(propBiomasse)) <- c("unite_observation", "code_espece", "classe_taille")
+
+            ## Mise au format colonne + % :
+            unitespta$prop.biomasse.CL <- 100 * as.data.frame(as.table(propBiomasse),
+                                                              responseName="prop.biomasse.CL",
+                                                              stringsAsFactors=FALSE)$prop.biomasse.CL
+        }else{}
+
+        ## #################################################
+        ## on renomme densite et biomasse en CPUE
+        ## pour les jeux de données pêche
+        if (is.peche.f())                   # length(typePeche)>1
+        {
+            unitespta$CPUE <- unitespta$densite
+            unitespta$densite <- NULL
+            unitespta$CPUEbiomasse <- unitespta$biomasse # Fonctionne même si biomasse n'existe pas.
+            unitespta$biomasse <- NULL
+        }
+
+        assign("unitespta", unitespta, envir=.GlobalEnv)
+        write.csv(unitespta[ , colnames(unitespta) != "unite_observation"],
+                  file=paste(nameWorkspace, "/FichiersSortie/UnitobsEspeceClassetailleMetriques.csv", sep=""),
+                  row.names = FALSE)
+        print(paste("La table par unite d'observation / espece / classe de taille",
+                    " a ete creee: UnitobsEspeceClassetailleMetriques.csv", sep=""))
+    }else{
+        message("Métriques par classe de taille incalculables")
+        assign("unitespta",
+               data.frame("unite_observation"=NULL, "code_espece"=NULL, "nombre"=NULL,
+                          "poids"=NULL, "poids_moyen"=NULL, "densite"=NULL,
+                          "pres_abs"=NULL, "site"=NULL, "biotope"=NULL,
+                          "an"=NULL, "statut_protection"=NULL),
+               envir=.GlobalEnv)
     }
-
-    unitespta$unite_observation <- unitespta$unitobs # Pour compatibilité avec le nouveau système de graphiques.
-                                        # Faire des modifs plus globales par la suite [!!!] [yr: 17/08/2010]
-
-    assign("unitespta", unitespta, envir=.GlobalEnv)
-    write.csv(unitespta[ , colnames(unitespta) != "unite_observation"],
-              file=paste(nameWorkspace, "/FichiersSortie/UnitobsEspeceClassetailleMetriques.csv", sep=""),
-              row.names = FALSE)
-    print(paste("La table par unite d'observation / espece / classe de taille",
-                " a ete creee: UnitobsEspeceClassetailleMetriques.csv", sep=""))
 } #fin unitespta.f()
 
 ################################################################################
@@ -1310,18 +1510,37 @@ unitesp.f <- function(){
 
     ## ##################################################
     ## somme des abondances
-    unitespT <- tapply(obs$nombre, list(obs$unite_observation, obs$code_espece), sum, na.rm = TRUE)
-    unitespT[is.na(unitespT)] <- 0      # Les NAs correspondent à des vrais zéros.
+
 
     ## Si video rotative, on divise par le nombre de rotation
     if (unique(unitobs$type) == "SVR")
     {
-        unitespT <- unitespT / 3
+        statRotations <- statRotation.f(facteurs=c("unite_observation", "code_espece"))
+
+        ## Moyenne pour les vidéos rotatives (habituellement 3 rotation) :
+        unitespT <- statRotations[["nombresMean"]]
+    }else{
+        unitespT <- tapply(obs$nombre,
+                           as.list(obs[ , c("unite_observation", "code_espece")]),
+                           sum, na.rm = TRUE)
+
+        unitespT[is.na(unitespT)] <- 0      # Les NAs correspondent à des vrais zéros.
     }
-    names(dimnames(unitespT)) <- c("unite_observation", "code_espece")
+
 
     unitesp <- as.data.frame(as.table(unitespT), responseName="nombre")
 
+    if (isTRUE(all.equal(unitesp$nombre, as.integer(unitesp$nombre))))
+    {
+        unitesp$nombre <- as.integer(unitesp$nombre)
+    }else{}
+
+    ## Si video rotative, stat sur les rotations :
+    if (unique(unitobs$type) == "SVR")
+    {
+        unitesp$nombreMax <- as.vector(statRotations[["nombresMax"]])
+        unitesp$nombreSD <- as.vector(statRotations[["nombresSD"]])
+    }else{}
 
     ## Euh... ce serait pas hyper dangeureux ce qui suit [!!!] [???] [yr: 01/10/2010]
     ## unitespT[is.na(unitespT)] <- as.integer(0) # Pour conserver des entiers
@@ -1330,12 +1549,8 @@ unitesp.f <- function(){
     {
 
         ## ##################################################
-        ## biomasses
-        biomasse.f()
-
-        ## ##################################################
         ## tailles moyennes ponderees
-        if (ct==1)
+        if (!all(is.na(obs$taille)))
         {
             unitesp$taille_moy <- as.vector(tapply(seq(length.out=nrow(obs)),
                                                    list(obs$unite_observation, obs$code_espece),
@@ -1346,21 +1561,49 @@ unitesp.f <- function(){
         }else{}
 
         ## ##################################################
-        ## biomasse
+        ## biomasses
+        biomasse.f()
 
-        unitesp$biomasse <- as.vector(tapply(obs$biomasse,
-                                             list(obs$unite_observation, obs$code_espece),
-                                             function(x)
-                                         {
-                                             if (all(is.na(x))) {return(NA)}else{return(sum(x, na.rm=TRUE))}
-                                         })) /
-                             (unitobs$DimObs1[match(unitesp$unite_observation, unitobs$unite_observation)] *
-                              unitobs$DimObs2[match(unitesp$unite_observation, unitobs$unite_observation)])
-
-
-        ## Certains NAs correspondent à des vrai zéros :
         if (!all(is.na(obs$biomasse)))
         {
+            unitesp$biomasse <- as.vector(tapply(obs$biomasse,
+                                                 list(obs$unite_observation, obs$code_espece),
+                                                 function(x)
+                                             {
+                                                 if (all(is.na(x))) {return(NA)}else{return(sum(x, na.rm=TRUE))}
+                                             }))##  /
+            ## (unitobs$DimObs1[match(unitesp$unite_observation, unitobs$unite_observation)] *
+            ##  unitobs$DimObs2[match(unitesp$unite_observation, unitobs$unite_observation)])
+
+
+
+            ## C'est bête que la biomasse soit calculée comme ça... il faut faire des corrections pour les vidéos rotatives :
+            if (unique(unitobs$type) == "SVR")
+            {
+                unitesp$biomasse <- unitesp$biomasse * unitesp$nombre /
+                    as.vector(tapply(obs$nombre,
+                                     as.list(obs[ , c("unite_observation",
+                                                      "code_espece")]),
+                                     function(x)
+                                 {
+                                     if (all(is.na(x))) {return(NA)}else{return(sum(x, na.rm=TRUE))}
+                                 }))
+
+                ## Biomasse max
+                unitesp$biomasseMax <- unitesp$biomasse * unitesp$nombreMax /
+                    as.vector(tapply(obs$nombre,
+                                     as.list(obs[ , c("unite_observation",
+                                                      "code_espece")]),
+                                     function(x)
+                                 {
+                                     if (all(is.na(x))) {return(NA)}else{return(sum(x, na.rm=TRUE))}
+                                 }))
+
+            }else{}
+
+
+            ## Certains NAs correspondent à des vrai zéros :
+
             ## Especes pour lesquelles aucune biomasse n'est calculée.
             espSansBiom <- tapply(unitesp$biomasse, unitesp$code_espece,
                                   function(x)all(is.na(x) | x == 0))
@@ -1370,15 +1613,27 @@ unitesp.f <- function(){
             unitesp$biomasse[is.na(unitesp$biomasse) &
                              unitesp$nombre == 0 &
                              !is.element(unitesp$code_espece, espSansBiom)] <- 0
-        }
+
+            if (unique(unitobs$type) == "SVR")
+            {
+                ## On divise par la surface du cercle contenant l'observation la plus lointaine :
+                unitesp$biomasse <- unitesp$biomasse /
+                    (pi * (as.vector(tapply(obs$dmin,
+                                            as.list(obs[ , c("unite_observation", "code_espece")]),
+                                            max, na.rm=TRUE)))^2)
+            }else{
+                ## on divise la biomasse par dimObs1*dimObs2
+                unitesp$biomasse <- as.numeric(unitesp$biomasse) /
+                    (unitobs$DimObs1[match(unitesp$unite_observation, unitobs$unite_observation)] *
+                     unitobs$DimObs2[match(unitesp$unite_observation, unitobs$unite_observation)])
+            }
+        }else{}
 
         ## ##################################################
         ## poids
         unitesp$poids <- as.vector(tapply(obs$poids,
                                           list(obs$unite_observation, obs$code_espece),
                                           function(x) {if (all(is.na(x))) {return(NA)}else{return(sum(x, na.rm=TRUE))}}))
-
-        # Les NAs correspondent à des vrai zéros.
 
         ## Certains NAs correspondent à des vrai zéros :
         if (!all(is.na(obs$poids)))
@@ -1404,23 +1659,19 @@ unitesp.f <- function(){
                 (unitobs$DimObs1[match(unitesp$unite_observation, unitobs$unite_observation)] *
                  unitobs$DimObs2[match(unitesp$unite_observation, unitobs$unite_observation)])
         }else{
-            ## Simplifier [yr: 19/10/2010]
-            ## on recherche la distance d'observation max de l'espece sur l'ensemble des rotations de la station
-            ## rayons.t <- tapply(obs$dmin, list(obs$unite_observation, obs$code_espece), max, na.rm=TRUE)
-            ## rayons <- as.data.frame(matrix(as.numeric(NA), dim(rayons.t)[1]*dim(rayons.t)[2], 3))
-            ## colnames(rayons) = c("unitobs", "codesp", "rayonMax")
-            ## rayons$rayonMax <- as.vector(rayons.t, "numeric")
-            ## rayons$unitobs <- rep(dimnames(rayons.t)[[1]])
-            ## rayons$codesp <- rep(dimnames(rayons.t)[[2]], each = dim(rayons.t)[1], 1)
-            ## assign("rayons", rayons, envir=.GlobalEnv)
-            ## unitesp$rayonMax <- rayons$rayonMax
-
-            ## unitesp$densite <- unitesp$nombre / ((pi * unitesp$rayonMax)^2 )
-
             unitesp$densite <- unitesp$nombre /
                 (pi * (as.vector(tapply(obs$dmin,
                                         list(obs$unite_observation, obs$code_espece),
                                         max, na.rm=TRUE)))^2)
+
+            ## Densité max :
+            unitesp$densiteMax <- unitesp$nombreMax /
+                (pi * (as.vector(tapply(obs$dmin,
+                                        as.list(obs[ , c("unite_observation", "code_espece")]),
+                                        max, na.rm=TRUE)))^2)
+
+            ## Vrais zéros :
+            unitesp$densiteMax[unitesp$nombreMax == 0 & !is.na(unitesp$nombreMax)] <- 0
 
         }
 
@@ -1452,15 +1703,9 @@ unitesp.f <- function(){
         rm(e)
     }
 
-    ## Creation de l'info Presence/Absence
-    unitesp$pres_abs[unitesp$nombre != 0] <- as.integer(1) # pour avoir la richesse spécifique en 'integer'.1
+    ## Creation de l'info Presence/Absence :
+    unitesp$pres_abs[unitesp$nombre > 0] <- as.integer(1) # pour avoir la richesse spécifique en 'integer'.1
     unitesp$pres_abs[unitesp$nombre == 0] <- as.integer(0) # pour avoir la richesse spécifique en 'integer'.0
-
-    ## Ajout des champs site, biotope, an, statut
-    ## unitesp$site <- unitobs$site[match(unitesp$unite_observation, unitobs$unite_observation)]
-    ## unitesp$biotope <- unitobs$biotope[match(unitesp$unite_observation, unitobs$unite_observation)]
-    ## unitesp$an <- unitobs$an[match(unitesp$unite_observation, unitobs$unite_observation)]
-    ## unitesp$statut_protection <- unitobs$statut_protection[match(unitesp$unite_observation, unitobs$unite_observation)]
 
     unitesp <- cbind(unitesp,
                      unitobs[match(unitesp$unite_observation, unitobs$unite_observation),
@@ -1488,6 +1733,7 @@ unitesp.f <- function(){
 
     write.csv(listespunit, file=paste(NomDossierTravail, "ListeEspecesUnitobs.csv", sep=""), row.names = FALSE)
 } # fin unitesp.f()
+
 
 ################################################################################
 ## Nom     : unitespr.f
@@ -1804,6 +2050,7 @@ unitr.f <- function(){
     unitrT.b <- tapply(obs$biomasse, list(obs$unite_observation, obs$rotation),
                        function(x){if (all(is.na(x))) {return(NA)}else{return(sum(x, na.rm=TRUE))}}) # Pour éviter
                                         # des sommes à zéro là où seulement des NAs. ## sum)
+
     unitr.b <- as.data.frame(matrix(NA, dim(unitrT.b)[1]*dim(unitrT.b)[2], 3))
     colnames(unitr.b) = c("unitobs", "rotation", "biomasse")
     unitr.b$biomasse <- as.vector(unitrT.b, "numeric")

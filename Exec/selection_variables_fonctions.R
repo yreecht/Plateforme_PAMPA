@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: Selection_variables_fonctions.R
-### Time-stamp: <2010-11-03 09:48:00 yreecht>
+### Time-stamp: <2010-11-29 18:20:52 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -148,7 +148,7 @@ champsUnitobs.f <- function(ordered=FALSE, tableMetrique="")
 
 
 ########################################################################################################################
-champsRefEspeces.f <- function(site, ordered=FALSE, tableMetrique="")
+champsRefEspeces.f <- function(site, ordered=FALSE, tableMetrique="", nextStep=NA)
 {
     ## Purpose: Retourne la liste des champs du référentiel espèces après
     ##          avoir supprimé ceux ne correspondant pas au site étudié ainsi
@@ -160,14 +160,21 @@ champsRefEspeces.f <- function(site, ordered=FALSE, tableMetrique="")
     ##            tableMetrique : nom de la table de métriques (pour pouvoir
     ##                            ajouter le champs classe de taille, même
     ##                            si ne fait pas partie de cette table).
+    ##            nextStep : étape suivante.
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date:  3 août 2010, 11:16
 
     ## Champs principaux (externaliser par la suite) :
-    cPrincip <- c(
-                  ## table "especes" :
-                  "code_espece", "Cath_benthique", "Famille", "Genre", "Identifiant", "CategB_general", "CategB_groupe"
-                  )
+    if (tableMetrique == "listespunit" && is.element(nextStep, c("boxplot.esp", "modele_lineaire")))
+    {
+        cPrincip <- c("code_espece", "espece")
+    }else{
+        cPrincip <- c(
+                      ## table "especes" :
+                      "code_espece", "Cath_benthique", "Famille", "Genre", "Identifiant",
+                      "CategB_general", "CategB_groupe"
+                      )
+    }
 
     ## Externaliser la définition des sites par la suite...
     listeSite <- c("RUN" , "MAY" , "BA" , "BO" , "CB" , "CR" , "STM" , "NC")
@@ -202,13 +209,14 @@ champsRefEspeces.f <- function(site, ordered=FALSE, tableMetrique="")
 
 
 ########################################################################################################################
-champsReferentiels.f <- function(nomTable)
+champsReferentiels.f <- function(nomTable, nextStep=NA)
 {
     ## Purpose: Retourne la liste des facteurs pertinents en fonction de la
     ##          table de métriques retenue.
     ## ----------------------------------------------------------------------
     ## Arguments: nomTable : nom de la table de métriques (chaîne de
     ##                       charactère)
+    ##            nextStep : étape suivante, pas obligatoire.
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 12 août 2010, 10:18
 
@@ -221,14 +229,21 @@ champsReferentiels.f <- function(nomTable)
                       ## table "unitobs" :
                       "site", "an", "biotope", "statut_protection", "caracteristique_1", "caracteristique_2",
                       ## table "especes" :
-                      "code_espece", "Cath_benthique", "Famille", "Genre", "Identifiant", "CategB_general", "CategB_groupe"
+                      "code_espece", "Cath_benthique", "Famille", "Genre", "Identifiant",
+                      "CategB_general", "CategB_groupe"
                       )
 
         ## Champs des unités d'observation :
         cUnitobs <- champsUnitobs.f()
 
         ## Champs du référentiel espèces :
-        cEspeces <- champsRefEspeces.f(siteEtudie)
+        if (length(grep("\\.unitobs$", nextStep)) > 0)
+        {
+            cEspeces <- NA              # les champs du ref espèce n'ont pas de raison d'apparaitre dans les cas de
+                                        # tables agrégées par unitobs.
+        }else{
+            cEspeces <- champsRefEspeces.f(siteEtudie)
+        }
 
         casTables <- c("listespunit"="listespunit",
                        "TablePresAbs"="listespunit",
@@ -286,7 +301,7 @@ subsetToutesTables.f <- function(metrique, facteurs, selections, tableMetrique="
 
     ## Si pas de table de métrique disponible ou déjà calculée
     ## ("TableOcurrences" est calculée à partir de la sélection) :
-    if (is.element(tableMetrique, c("", "TableOccurrences")))
+    if (is.element(tableMetrique, c("", "TableOccurrences", "TablePresAbs")))
     {
         tableMetrique <- "listespunit"
     }else{}
@@ -295,7 +310,8 @@ subsetToutesTables.f <- function(metrique, facteurs, selections, tableMetrique="
     if (is.element(metrique, c("", "freq.occurrence")))
     {
         metrique <- "tmp"
-        eval(parse(text=paste(tableMetrique, "$tmp <- 1", sep="")))
+        eval(parse(text=paste(tableMetrique, "$tmp <- 0", sep="")))
+        eval(parse(text=paste(tableMetrique, "$tmp[", tableMetrique, "$nombre > 0] <- 1", sep="")))
     }else{}
 
     casTables <- c("listespunit"="listespunit",
@@ -325,7 +341,8 @@ subsetToutesTables.f <- function(metrique, facteurs, selections, tableMetrique="
             },
            ## Cas de la table d'observations par classes de taille :
            unitespta={
-               restmp <- cbind(dataMetrique[!is.na(dataMetrique[ , metrique]) , c(metriques, "classe_taille"), drop=FALSE],
+               restmp <- cbind(dataMetrique[!is.na(dataMetrique[ , metrique]) ,
+                                            c(metriques, "classe_taille"), drop=FALSE],
                                unitobs[match(dataMetrique$unite_observation[!is.na(dataMetrique[ , metrique])],
                                              unitobs$unite_observation), # ajout des colonnes sélectionnées d'unitobs
                                        facteurs[is.element(facteurs, colnames(unitobs))], drop=FALSE],
@@ -370,11 +387,14 @@ subsetToutesTables.f <- function(metrique, facteurs, selections, tableMetrique="
     }else{}
 
     ## Conversion des biomasses et densités -> /100m² :
-    if (any(is.element(colnames(restmp), c("biomasse", "densite"))) && !is.peche.f())
+    if (any(is.element(colnames(restmp), c("biomasse", "densite", "biomasseMax", "densiteMax"))) && !is.peche.f())
     {
         restmp[ , is.element(colnames(restmp),
-                             c("biomasse", "densite"))] <- 100 * restmp[, is.element(colnames(restmp),
-                                                                                     c("biomasse", "densite"))]
+                             c("biomasse", "densite",
+                               "biomasseMax", "densiteMax"))] <- 100 *
+                                   restmp[, is.element(colnames(restmp),
+                                                       c("biomasse", "densite",
+                                                         "biomasseMax", "densiteMax"))]
     }else{}
 
     return(restmp)
@@ -414,7 +434,11 @@ agregationTableParCritere.f <- function(Data, metrique, facteurs, listFact=NULL)
                      ## Benthos :
                      "colonie"="sum",
                      "recouvrement"="sum",
-                     "taille.moy.colonies"="w.mean.colonies")
+                     "taille.moy.colonies"="w.mean.colonies",
+                     "nombreMax"="sum",
+                     "nombreSD"="",
+                     "densiteMax"="sum",
+                     "biomasseMax"="sum")
 
     ## Ajout du champs nombre pour le calcul des moyennes pondérées s'il est absent :
     if ((casMetrique[metrique] == "w.mean" || casMetrique[metrique] == "w.mean.prop"))
@@ -555,6 +579,7 @@ agregationTableParCritere.f <- function(Data, metrique, facteurs, listFact=NULL)
                                            0))
                          })
            },
+           stop("Pas implémenté !")
            )
 
     ## Nom des dimensions
@@ -594,7 +619,8 @@ agregationTableParCritere.f <- function(Data, metrique, facteurs, listFact=NULL)
     ## d'agrégation des observations) :
     if (any(sapply(reslong[ , listFact], function(x){any(is.null(unlist(x)))})))
     {
-        warning("Un des facteurs annexes est surement un sous-ensemble du(des) facteur(s) de regroupement des observations.")
+        warning(paste("Un des facteurs annexes est surement un sous-ensemble",
+                      " du(des) facteur(s) de regroupement des observations.", sep=""))
         return(NULL)
     }else{
         return(reslong)
@@ -883,10 +909,6 @@ close.info.f <- function(WinInfo)
 
     tkdestroy(WinInfo)
 }
-
-
-
-
 
 
 

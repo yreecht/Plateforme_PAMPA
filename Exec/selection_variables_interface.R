@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: Selection_variables_interface.R
-### Time-stamp: <2010-10-28 15:01:56 yreecht>
+### Time-stamp: <2010-11-23 12:22:08 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -455,6 +455,13 @@ verifVariables.f <- function(metrique, factGraph, factGraphSel, listFact, listFa
         return(1)
     }else{}
 
+    ## Fréquences d'occurrence :
+    if (nextStep == "freq_occurrence" && length(listFact[unlist(listFact) != ""]) > 2)
+    {
+        tkmessageBox(message="Utilisez 2 facteurs de regroupement au plus", icon="warning")
+        return(0)
+    }else{}
+
     ## Agrégé toutes espèces :
     if (is.element(nextStep, c("boxplot.unitobs", "modele_lineaire.unitobs")))
     {
@@ -594,14 +601,16 @@ updateMetrique.f <- function(nomTable, env)
     ## Mise à jour des facteurs de regroupements pertinents :
     eval(parse(text=
                eval(substitute(paste("tkconfigure(CB.fact", level,
-                                     ", value=champsReferentiels.f(nomTable=tclvalue(TableMetrique)))", sep=""),
+                                     ", value=champsReferentiels.f(nomTable=tclvalue(TableMetrique),",
+                                     " nextStep=nextStep))", sep=""),
                                list(level=1:length(listFacteurs))))), envir=env)
 
     eval(parse(text=
                eval(substitute(paste("if (!is.element(tclvalue(listFacteurs[[", level,
-                                     "]]), champsReferentiels.f(nomTable=tclvalue(TableMetrique))))",
+                                     "]]), champsReferentiels.f(nomTable=tclvalue(TableMetrique),",
+                                     " nextStep=nextStep)))",
                                      "{ tclvalue(listFacteurs[[", level, "]]) <- '' ; ",
-                                     "updateFact(level=", level,", env=env)}", sep=""),
+                                     "updateFact.f(level=", level,", env=env)}", sep=""),
                                list(level=1:length(listFacteurs))))), envir=env)
 }
 
@@ -625,11 +634,14 @@ updateFactGraph.f <- function(nomTable, env)
            refesp={
                evalq(tkconfigure(CB.factGraph,
                                  value=champsRefEspeces.f(siteEtudie, ordered=TRUE,
-                                                          tableMetrique=tclvalue(TableMetrique))), envir=env)
+                                                          tableMetrique=tclvalue(TableMetrique),
+                                                          nextStep=nextStep)),
+                     envir=env)
                evalq(if (!is.element(tclvalue(FacteurGraph),
-                                     champsRefEspeces.f(siteEtudie, tableMetrique=tclvalue(TableMetrique))))
+                                     champsRefEspeces.f(siteEtudie, tableMetrique=tclvalue(TableMetrique),
+                                                        nextStep=nextStep)))
                  {
-                     tclvalue(FacteurGraph) <- "" # réinitialisation
+                     tclvalue(FacteurGraph) <- "" # réinitialisation de la sélection.
                  }, envir=env)
            },
            ## Si table des "unités d'observation" :
@@ -639,7 +651,7 @@ updateFactGraph.f <- function(nomTable, env)
                      envir=env)
                evalq(if (!is.element(tclvalue(FacteurGraph), champsUnitobs.f(tableMetrique=tclvalue(TableMetrique))))
                  {
-                     tclvalue(FacteurGraph) <- "" # réinitialisation
+                     tclvalue(FacteurGraph) <- "" # réinitialisation de la sélection.
                  }, envir=env)
            },
            ## Comportement par défaut (pas de table sélectionnée) :
@@ -708,7 +720,8 @@ nouvChoixFact.f <- function(level, env)
         ## Création d'une combobox supplémentaire :
 
         exprCB <- paste("CB.fact", level + 1, " <- ttkcombobox(FrameFact,",
-                        " value=champsReferentiels.f(nomTable=tclvalue(TableMetrique)),",
+                        " value=champsReferentiels.f(nomTable=tclvalue(TableMetrique),",
+                        " nextStep=nextStep),",
                         " textvariable=listFacteurs[[", level + 1, "]], state='readonly')", sep="")
         ## Création d'un bouton de sélection des modalités supplémentaire :
         exprSel <- paste("B.factSel", level + 1,
@@ -882,9 +895,9 @@ selectionVariables.f <- function(nextStep)
         CB.metrique <- ttkcombobox(FrameMetrique, value=metriques, textvariable=MetriqueChoisie,
                                    state="readonly")
         RB.unitespta <- tkradiobutton(FrameMetrique, variable=TableMetrique,
-                                      value="unitespta", text=".../ unité d'observation / espèce / classes de taille")
+                                      value="unitespta", text=titreSelVar.f(type="tabListespCT", nextStep))
         RB.listespunit <- tkradiobutton(FrameMetrique, variable=TableMetrique,
-                                        value="listespunit", text=".../ unité d'observation / espèce")
+                                        value="listespunit", text=titreSelVar.f(type="tabListesp", nextStep))
         RB.TableBiodiv <- tkradiobutton(FrameMetrique, variable=TableMetrique,
                                         value="TableBiodiv", text="...de biodiversité ( / unité d'observation)")
     }
@@ -906,7 +919,7 @@ selectionVariables.f <- function(nextStep)
 
     ## Choix des facteurs de regroupement + modalités :
     FrameFact <- tkframe(WinSelection, borderwidth=2, relief="groove")
-    CB.fact1 <- ttkcombobox(FrameFact, value=champsReferentiels.f(nomTable=tclvalue(TableMetrique)),
+    CB.fact1 <- ttkcombobox(FrameFact, value=champsReferentiels.f(nomTable=tclvalue(TableMetrique), nextStep=nextStep),
                             textvariable=listFacteurs[[1]], state="readonly")
     B.factSel1 <- tkbutton(FrameFact, text=" Sélection... ", command=function()
                        {
@@ -992,7 +1005,8 @@ selectionVariables.f <- function(nextStep)
     tkgrid(tklabel(WinSelection), column=4)
 
     tkconfigure(CB.factGraph,
-                value=champsRefEspeces.f(siteEtudie, ordered=TRUE, tableMetrique=tclvalue(TableMetrique)))
+                value=champsRefEspeces.f(siteEtudie, ordered=TRUE, tableMetrique=tclvalue(TableMetrique),
+                                         nextStep=nextStep))
     ## tkconfigure(CB.metrique, value=champsMetriques.f(tclvalue(TableMetrique), nextStep)) # inutile
 
     if (is.element(nextStep, nextStepUnitobs)) # Pas pertinent pour de l'agrégation /unitobs.

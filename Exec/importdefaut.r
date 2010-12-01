@@ -381,7 +381,13 @@ opendefault.f <- function ()
     {
         ## cas ou obs contient des unites d'obs absentes dans unitobs
         print("erreur, la Table obs contient des unites d'obs absentes dans la table unitobs ")
-        tkmessageBox(message="erreur, la Table obs contient des unites d'obs absentes dans la table unitobs ")
+
+        tkmessageBox(message=paste("Attention, la Table obs contient ",
+                     sum(!is.element(obs$unite_observation, unitobs$unite_observation)),
+                     " (sur ",
+                     nrow(obs),
+                     ") unités d'observation absentes dans la table unitobs ", sep=""),
+                     icon="warning")
     }
 
 

@@ -1434,7 +1434,7 @@ unitesptar.f <- function ()
     assign("ct", ct, envir=.GlobalEnv)
 
     ## Calcul de la biomasse dans la table obs
-    biomasse.f()
+    ## biomasse.f()                    # inutile, déjà fait.
 
     ## Creation de la table par unite d'observation, par espece et par classe de taille (et par rotation si SVR)
 
@@ -1561,8 +1561,11 @@ unitesp.f <- function(){
         }else{}
 
         ## ##################################################
-        ## biomasses
-        biomasse.f()
+        ## biomasses :
+        if (is.benthos.f())             # Déjà fait sinon.
+        {
+            biomasse.f()
+        }
 
         if (!all(is.na(obs$biomasse)))
         {
@@ -1746,7 +1749,7 @@ unitespr.f <- function(){
 
     print("fonction unitespr.f activée")
     ## biomasses
-    biomasse.f()
+    ## biomasse.f()                    # inutile, déjà fait.
 
     ## somme des abondances
     unitespTR <- tapply(obs$nombre, list(obs$unite_observation, obs$rotation, obs$code_espece), sum, na.rm = TRUE)
@@ -1829,7 +1832,7 @@ unit.f <- function(){
     if (!is.benthos.f())                # unique(unitobs$type) != "LIT"
     {
         ## somme des biomasses
-        biomasse.f()
+        ## biomasse.f()                    # inutile, déjà fait.
 
         ## biomasse par unite d'observation
         unit.b <- tapply(obs$biomasse, obs$unite_observation,
@@ -2044,7 +2047,7 @@ unitr.f <- function(){
     unitr$rotation <- rep(dimnames(unitir)[[2]], each = dim(unitir)[1], 1)
 
     ## somme des biomasses
-    biomasse.f()
+    ## biomasse.f()                    # inutile, déjà fait.
 
     ## biomasse par unite d'observation
     unitrT.b <- tapply(obs$biomasse, list(obs$unite_observation, obs$rotation),

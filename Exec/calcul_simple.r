@@ -64,6 +64,7 @@ classeTaille.f <- function()
     assign("obs", obs, envir=.GlobalEnv)
 }
 
+########################################################################################################################
 AjoutTaillesMoyennes.f <- function(data)
 {
     ## Purpose: Calcul des tailles comme les moyennes de classes de taille,
@@ -186,9 +187,25 @@ biomasse.f <- function()
         }
     }
 
-    if (siteEtudie == "BO")
+    ## Poids d'après les classes de taille lorsque la taille n'est pas renseignée :
+    tmpBiom <- poids.moyen.CT.f() * obs$nombre
+    if (any(is.na(obs$biomasse[!is.na(tmpBiom)])))
     {
-        obs$biomasse <- poids.moyen.CT.f() * obs$nombre
+        tmpNbTaille <- sum(!is.na(obs$biomasse))
+        tmpNbCT <- sum(!is.na(tmpBiom[is.na(obs$biomasse)]))
+
+        obs$biomasse[is.na(obs$biomasse)] <- tmpBiom[is.na(obs$biomasse)]
+
+        ## Avertissement :
+        tkmessageBox(message=paste("Attention, certaines biomasses sont des estimations",
+                                   " d'après les poids moyens par classes de taille (G, M, P) par espèce !\n\n",
+                                   "Nombres d'enregistrements basés sur :",
+                                   "\n\t*  la taille : ", tmpNbTaille,
+                                   "\n\t*  les poids par classe de taille : ", tmpNbCT,
+                                   "\n(sur ", nrow(obs), ")",
+                                   sep=""),
+                     icon="warning")
+
     }else{}                             # Rien
     ## }
     assign("obs", obs, envir=.GlobalEnv)

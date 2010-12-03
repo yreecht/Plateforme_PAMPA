@@ -298,15 +298,26 @@ supprimeObs.f <- function(residus)
         ## Sélection des observations par l'utilisateur :
         select <-
             selectModWindow.f("residus",
-                              data=data.frame(residus=paste("Obs. ",
-                                              format(as.integer(names(sort(abs(residus), decreasing=TRUE))),
-                                                     width=ceiling(log(max(as.integer(names(residus))), 10)),
-                                                     justify="right"),
-                                              "  (",
-                                              format(residus[order(abs(residus), decreasing=TRUE)],
-                                                     digits=3),
-                                              ")",
-                                              sep="")),
+                              data= if (any(is.na(tryCatch(as.integer(names(residus)), warning=function(w){NA}))))
+                                    {   # Si les noms de lignes correspondent à des noms d'unitobs...
+                                        data.frame(residus=paste("Unitobs. ",
+                                                  names(sort(abs(residus), decreasing=TRUE)),
+                                                   "  (",
+                                                   format(residus[order(abs(residus), decreasing=TRUE)],
+                                                          digits=3),
+                                                   ")",
+                                                   sep=""))
+                                    }else{ # ...si ce sont des numéros :
+                                        data.frame(residus=paste("Obs. ",
+                                                   format(as.integer(names(sort(abs(residus), decreasing=TRUE))),
+                                                          width=ceiling(log(max(as.integer(names(residus))), 10)),
+                                                          justify="right"),
+                                                   "  (",
+                                                   format(residus[order(abs(residus), decreasing=TRUE)],
+                                                          digits=3),
+                                                   ")",
+                                                   sep=""))
+                                    },
                               sort=FALSE, selectmode="extended",
                               title="Sélection des observations à supprimer",
                               label=paste("\n'Observations (résidu)' triés par ordre décroissant",
@@ -314,8 +325,13 @@ supprimeObs.f <- function(residus)
 
         if (length(select))
         {
-            ## numéro des observations à supprimer :
-            res <- as.integer(sub("^Obs.[[:blank:]]+([[:digit:]]+)[[:blank:]]+.*", "\\1", select, perl=TRUE))
+            if (any(is.na(tryCatch(as.integer(names(residus)), warning=function(w){NA}))))
+            {   # Si les noms de lignes correspondent à des noms d'unitobs...
+                res <- sub("^Unitobs.[[:blank:]]+([^[:blank:]]+)[[:blank:]]+.*", "\\1", select, perl=TRUE)
+            }else{
+                ## ...sinon, numéro des observations à supprimer : [!!!] on pourrait s'en passer (à régler plus tard).
+                res <- as.integer(sub("^Obs.[[:blank:]]+([[:digit:]]+)[[:blank:]]+.*", "\\1", select, perl=TRUE))
+            }
         }else{}
     }else{
          tkdestroy(WinSuppr)

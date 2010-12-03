@@ -772,7 +772,9 @@ plotDist.f <- function(y, family, metrique, env=NULL,...)
     ## browser(condition=(family == "NBI"))  ## [!!!] attention, il arrive que les calculs bloquent ici lors du premier
     ## lancement. (origine inconnue)
     ## On ajuste la distribution :
-    try(coefLoi <- fitdistr(y, densfun=loi$densfunName))
+    ## browser()
+
+    try(coefLoi <- fitdistr(na.omit(y), densfun=loi$densfunName))
 
     ## Calcul des points théoriques à représenter :
     expr <- parse(text=paste(loi$densfun, "(xi, ",       # points à représenter.
@@ -1746,6 +1748,11 @@ modeleLineaireWP2.esp.f <- function(metrique, factAna, factAnaSel, listFact, lis
 
                 if(!is.null(suppr))
                 {
+                    if (!is.numeric(suppr)) # conversion en numéros de lignes lorsque ce sont des noms :
+                    {
+                        suppr <- which(is.element(row.names(tmpDataMod), suppr))
+                    }else{}
+
                     tmpDataMod <- tmpDataMod[ - suppr, ]
                     res.red <- calcLM.f(loiChoisie=loiChoisie, formule=formule, metrique=metrique, Data=tmpDataMod)
 

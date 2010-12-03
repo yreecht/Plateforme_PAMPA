@@ -30,12 +30,26 @@ if not defined R_HOME for /f "tokens=2*" %%a in (
 rem Erreur si R n'est pas trouvé :  
 if not defined R_HOME echo "Error: R not found" & goto:eof
 
+:::::::::::::::::::::::::
+:: 2.12 ou supérieure ? :
+:::::::::::::::::::::::::
+
+rem Registre XP (ou équivalent) :
+:: if not defined R32_HOME for /f "tokens=2*" %%a in (
+::  'reg query hklm\software\R-core\R32 /v InstallPath 2^>NUL ^| findstr InstallPath'
+::  ) do set R32_HOME=%%~b
+
+
 ::::::::::::::::::::::::::::::::
 :: On lance R et la plateforme :
 ::::::::::::::::::::::::::::::::
 
 rem set R_PROFILE=Rprofile.site
-start "PAMPA WP2" "%R_HOME%"\bin\Rgui.exe R_PROFILE=Exec/Rprofile.site --no-restore --sdi
+if not defined R32_HOME (
+    start "PAMPA WP2" "%R_HOME%"\bin\Rgui.exe R_PROFILE=Exec/Rprofile.site --no-restore --sdi
+) else ( 
+    start "PAMPA WP2" "%R32_HOME%"\bin\i386\Rgui.exe R_PROFILE=Exec/Rprofile.site --no-restore --sdi
+)
 
 rem Qitter l'invite de commande :
 exit

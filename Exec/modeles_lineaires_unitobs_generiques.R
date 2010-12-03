@@ -121,6 +121,11 @@ modeleLineaireWP2.unitobs.f <- function(metrique, factAna, factAnaSel, listFact,
 
             if(!is.null(suppr))
             {
+                if (!is.numeric(suppr)) # conversion en numéros de lignes lorsque ce sont des noms :
+                {
+                    suppr <- which(is.element(row.names(tmpData), suppr))
+                }else{}
+
                 tmpData <- tmpData[ - suppr, ]
                 res.red <- calcLM.f(loiChoisie=loiChoisie, formule=formule, metrique=metrique, Data=tmpData)
 

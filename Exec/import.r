@@ -496,7 +496,7 @@ import.donnees.f <- function()
     }else{
         ## Creation des tables de base
         creationTablesBase.f()
-        biomasse.f()
+        ## biomasse.f()
         tkmessageBox(message="\nLes fichiers .csv:
      - Contingence
      - PlanEchantillonnage

@@ -62,6 +62,7 @@ source("./Exec/load_packages.R", encoding="latin1")        # OK
 source("./Exec/fonctions_base.R", encoding="latin1")       # OK
 source("./Exec/config.r", encoding="latin1")               # faite
 source("./Exec/gestionmessages.r", encoding="latin1")      # faite
+source("./Exec/nombres_SVR.R", encoding="latin1")          # OK
 source("./Exec/mkfilegroupe.r", encoding="latin1")         # faite
 
 source("./Exec/graphique.r", encoding="latin1")            # faite [sll]

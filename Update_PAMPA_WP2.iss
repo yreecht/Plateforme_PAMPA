@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "PAMPA WP2"
-#define MyAppVersion "0.99-8"
+#define MyAppVersion "0.99-9"
 #define MyAppPublisher "Ifremer"
 #define MyAppURL "https://www.ifremer.fr/ezprod/index.php/pampa/"
 #define MyAppExeName "PAMPA WP2.bat"
@@ -76,6 +76,8 @@ Source: "Exec\selection_variables_fonctions.R"; DestDir: "{app}"
 Source: "Exec\selection_variables_interface.R"; DestDir: "{app}"
 Source: "Exec\testfichier.r"; DestDir: "{app}"
 Source: "Exec\view.r"; DestDir: "{app}"
+Source: "Exec\nombres_SVR.R"; DestDir: "{app}"
+
 
 [Icons]
 ;; IconFilename: "{app}\img\Pampa.ico" pour définir l'icone d'un raccourci.

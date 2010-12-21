@@ -111,11 +111,12 @@ statutPresAbs.f <- function()
 
     if (is.null(TablePresAbs))
     {
-        tkentryconfigure(modelesInferentiels, 1, state="disabled")
-        tkentryconfigure(traitement, 11, state="disabled")
+        ## Plus utile : à vérifier (non utilisation de la table ??) [!!!]
+        ## tkentryconfigure(modelesInferentiels, 2, state="disabled")
+        ## tkentryconfigure(traitement, 11, state="disabled")
         ## Ajouter le benthos [yr: 18/10/2010] [!!!]
     }else{
-        tkentryconfigure(modelesInferentiels, 1, state="normal")
+        tkentryconfigure(modelesInferentiels, 2, state="normal")
         tkentryconfigure(traitement, 11, state="normal") # La position débute à 0 et tient compte des séparateurs.
         ## Ajouter le benthos [yr: 18/10/2010] [!!!]
     }

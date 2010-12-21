@@ -5,162 +5,6 @@
 ## - grpesp.f()
 ################################################################################
 
-interpSecteurs.f <- function(sectUnitobs)
-{
-    ## Purpose: Interpolation des valeurs pour les secteurs non valides
-    ##          (rotations valides seulement) en trois étapes :
-    ##            1) interpolation sur le même secteur d'après les autres
-    ##               rotations.
-    ##            2) interpolation sur les secteurs adjacents de la même
-    ##               rotation.
-    ##            3) moyenne sur la roatation pour les secteurs qui ne
-    ##               peuvent être interpolés avec les deux premières étapes.
-    ## ----------------------------------------------------------------------
-    ## Arguments: sectUnitobs : matrice des secteurs de l'unité
-    ##                          d'observation, avec les secteurs en colonnes
-    ##                          et les rotations en lignes.
-    ## ----------------------------------------------------------------------
-    ## Author: Yves Reecht, Date:  9 nov. 2010, 14:52
-
-
-    ## On ne travaille que sur les rotations valides (i.e. ayant au moins un secteur valide) :
-    idx <- apply(sectUnitobs, 1, function(x)!all(is.na(x)))
-
-    tmp <- sectUnitobs[idx, , drop=FALSE]
-
-    ## Étape 1 : interpolation sur le même secteur dans les autres rotations :
-    tmp <- matrix(apply(tmp, 2, function(x)
-                    {
-                        x[which(is.na(x))] <- mean(x, na.rm=TRUE)
-                        return(x)
-                    }), ncol=ncol(tmp))
-
-    ## Étape 2 : interpolation sur les secteurs adjacents de la même rotation :
-    if (any(is.na(tmp)))
-    {
-        tmp <- t(apply(tmp,
-                       1,
-                       function(x)
-                   {
-                       xi <- which(is.na(x))
-                       x[xi] <- sapply(xi,
-                                       function(i, x){mean(x[i + c(0, 2)], na.rm=TRUE)},
-                                       x=c(tail(x, 1), x, head(x, 1)))
-                       return(x)
-                   }))
-
-        if (any(is.na(tmp)))
-        {
-            ## Étape 3 : moyenne de la rotation sinon :
-            tmp <- t(apply(tmp, 1,
-                           function(x)
-                       {
-                           x[which(is.na(x))] <- mean(x, na.rm=TRUE)
-                           return(x)
-                       }))
-        }else{}
-    }else{}
-
-
-
-    ## Récupération dans le tableau d'origine :
-    sectUnitobs[idx, ] <- tmp
-    ## sectUnitobs <- as.array(sectUnitobs)
-
-    if (any(dim(sectUnitobs) != c(3, 6))) print(sectUnitobs)
-
-
-    return(sectUnitobs)
-}
-
-statRotation.f <- function(facteurs)
-{
-    ## Purpose: Calcul des statistiques des abondances (max, sd) par rotation
-    ## ----------------------------------------------------------------------
-    ## Arguments: facteurs : vecteur des noms de facteurs d'agrégation
-    ##                       (résolution à laquelle on travaille).
-    ## ----------------------------------------------------------------------
-    ## Author: Yves Reecht, Date:  9 nov. 2010, 09:25
-
-    ## Identification des secteurs et rotations valides :
-    if (is.element("unite_observation", facteurs))
-    {
-        ## Secteurs valides (les vides doivent tout de même être renseignés) :
-        secteurs <- tapply(obs$secteur,
-                           as.list(obs[ , c("unite_observation", "rotation", "secteur"), drop=FALSE]),
-                           function(x)length(x) > 0)
-
-        ## Les secteurs non renseignés apparaissent en NA et on veut FALSE :
-        secteurs[is.na(secteurs)] <- FALSE
-
-        ## Rotations valides :
-        rotations <- apply(secteurs, c(1, 2), any) # Au moins un secteur renseigné.
-
-    }else{
-        stop("\n\tL'unité d'observation doit faire partie des facteurs d'agrégation !!\n")
-    }
-
-    ## ###########################################################
-    ## Nombres par rotation avec le niveau d'agrégation souhaité :
-    ## Ajouter les interpolations [!!!][SVR]
-    nombresRS <- tapply(obs$nombre,
-                        as.list(obs[ , c(facteurs, "rotation", "secteur"), drop=FALSE]),
-                        sum, na.rm = TRUE)
-
-    tmp <- apply(nombresRS,
-                 which(is.element(names(dimnames(nombresRS)), facteurs)),
-                 interpSecteurs.f)
-
-    ## On récupère les dimensions d'origine (résultats de la fonction dans 1 vecteur ; attention, plus le même ordre) :
-    dim(tmp) <- c(tail(dim(nombresRS), 2), head(dim(nombresRS), -2))
-
-    ## On renomme les dimensions avec leur nom d'origine en tenant compte du nouvel ordre :
-    dimnames(tmp) <- dimnames(nombresRS)[c(tail(seq_along(dimnames(nombresRS)), 2),
-                                           head(seq_along(dimnames(nombresRS)), -2))]
-
-    ## On restocke le tout dans nombresRS (attentions, toujours travailler sur les noms de dimensions)
-    nombresRS <- tmp
-
-
-    ## Les NAs sont considérés comme des vrais zéros lorsque la rotation est valide :
-    nombresRS <- sweep(nombresRS,
-                       match(names(dimnames(secteurs)), names(dimnames(nombresRS)), nomatch=NULL),
-                       secteurs,        # Tableau des secteurs valides (booléens).
-                       function(x, y)
-                   {
-                       x[is.na(x) & y] <- 0 # Lorsque NA et secteur valide => 0.
-                       return(x)
-                   })
-
-
-    nombresR <- apply(nombresRS,
-                      which(is.element(names(dimnames(nombresRS)), c(facteurs, "rotation"))),
-                      function(x){ifelse(all(is.na(x)), NA, sum(x))})
-
-
-
-    ## ##################################################
-    ## Statistiques :
-
-    ## Moyennes :
-    nombresMean <- apply(nombresR, which(is.element(names(dimnames(nombresR)), facteurs)),
-                         function(x,...){ifelse(all(is.na(x)), NA, mean(x,...))}, na.rm=TRUE)
-
-    ## Maxima :
-    nombresMax <- apply(nombresR, which(is.element(names(dimnames(nombresR)), facteurs)),
-                        function(x,...){ifelse(all(is.na(x)), NA, max(x,...))}, na.rm=TRUE)
-
-    ## Déviation standard :
-    nombresSD <- apply(nombresR, which(is.element(names(dimnames(nombresR)), facteurs)),
-                       function(x,...){ifelse(all(is.na(x)), NA, sd(x,...))}, na.rm=TRUE)
-
-    ## Nombre de rotations valides :
-    nombresRotations <- apply(rotations, 1, sum, na.rm=TRUE)
-
-    ## Retour des résultats sous forme de liste :
-    return(list(nombresMean=nombresMean, nombresMax=nombresMax, nombresSD=nombresSD,
-                nombresRotations=nombresRotations))
-}
 
 
 ################################################################################
@@ -1149,7 +993,18 @@ unitespta.f <- function(){
         ## Nombre d'individus :
         if (unique(unitobs$type) == "SVR")
         {
-            statRotations <- statRotation.f(facteurs=c("unite_observation", "code_espece", "classe_taille"))
+            switch(getOption("PAMPA.SVR.interp"),
+                   "extended"={
+                       statRotations <- statRotation.extended.f(facteurs=c("unite_observation", "code_espece",
+                                                                           "classe_taille"))
+                   },
+                   "basic"={
+                       statRotations <- statRotation.basic.f(facteurs=c("unite_observation", "code_espece",
+                                                             "classe_taille"))
+                   },
+                   stop(paste("Y'a un truc qui cloche dans les options d'interpolations : ",
+                              "\n\tcontactez le support technique !", sep=""))
+                   )
 
             ## Moyenne pour les vidéos rotatives (habituellement 3 rotation) :
             unitesptaT <- statRotations[["nombresMean"]]
@@ -1197,11 +1052,11 @@ unitespta.f <- function(){
 
         ## ######################################################################
         ## sommes des biomasses par espece par unitobs et par classes de taille :
-        if (!all(is.na(obs$biomasse)))      # (length(unique(obs$biomasse))>1)
+        if (!all(is.na(obs$poids)))      # (length(unique(obs$biomasse))>1)
         {
             ## ##################################################
             ## biomasse :
-            unitespta$biomasse <- as.vector(tapply(obs$biomasse,
+            unitespta$biomasse <- as.vector(tapply(obs$poids,
                                                    as.list(obs[ , c("unite_observation",
                                                                     "code_espece", "classe_taille")]),
                                                    function(x)
@@ -1448,7 +1303,7 @@ unitesptar.f <- function ()
     unitesptaR$classe_taille[unitespta$classe_taille == ""] <- NA
 
     ## sommes des biomasses par espece par unitobs et par classes de taille
-    unitesptaTR.b <- tapply(obs$biomasse,
+    unitesptaTR.b <- tapply(obs$poids,
                             list(obs$unite_observation, obs$rotation, obs$code_espece, obs$classe_taille),
                             function(x){if (all(is.na(x))) {return(NA)}else{return(sum(x, na.rm=TRUE))}}) # Pour éviter
                                         # des sommes à zéro là où seulement des NAs. ##sum) # [bio]
@@ -1507,7 +1362,16 @@ unitesp.f <- function(){
     ## Si video rotative, on divise par le nombre de rotation
     if (unique(unitobs$type) == "SVR")
     {
-        statRotations <- statRotation.f(facteurs=c("unite_observation", "code_espece"))
+        switch(getOption("PAMPA.SVR.interp"),
+                   "extended"={
+                       statRotations <- statRotation.extended.f(facteurs=c("unite_observation", "code_espece"))
+                   },
+                   "basic"={
+                       statRotations <- statRotation.basic.f(facteurs=c("unite_observation", "code_espece"))
+                   },
+                   stop(paste("Y'a un truc qui cloche dans les options d'interpolations : ",
+                              "\n\tcontactez le support technique !", sep=""))
+                   )
 
         ## Moyenne pour les vidéos rotatives (habituellement 3 rotation) :
         unitespT <- statRotations[["nombresMean"]]
@@ -1552,9 +1416,9 @@ unitesp.f <- function(){
                                                }))
         }else{}
 
-        if (!all(is.na(obs$biomasse)))
+        if (!all(is.na(obs$poids)))
         {
-            unitesp$biomasse <- as.vector(tapply(obs$biomasse,
+            unitesp$biomasse <- as.vector(tapply(obs$poids,
                                                  list(obs$unite_observation, obs$code_espece),
                                                  function(x)
                                              {
@@ -1749,7 +1613,7 @@ unitespr.f <- function(){
     ## biomasse
 
     ## somme des biomasses par espece par unitobs
-    unitespTR.b <- tapply(obs$biomasse, list(obs$unite_observation, obs$rotation, obs$code_espece),
+    unitespTR.b <- tapply(obs$poids, list(obs$unite_observation, obs$rotation, obs$code_espece),
                           function(x){if (all(is.na(x))) {return(NA)}else{return(sum(x, na.rm=TRUE))}}) # Pour éviter
                                         # des sommes à zéro là où seulement des NAs. ## na.rm = TRUE, sum)
     unitespR.b <- as.data.frame(matrix(NA, dim(unitespTR.b)[1]*dim(unitespTR.b)[2]*dim(unitespTR.b)[3], 4))
@@ -1816,7 +1680,7 @@ unit.f <- function(){
     {
 
         ## biomasse par unite d'observation
-        unit.b <- tapply(obs$biomasse, obs$unite_observation,
+        unit.b <- tapply(obs$poids, obs$unite_observation,
                          function(x){if (all(is.na(x))) {return(NA)}else{return(sum(x, na.rm=TRUE))}}) # Pour éviter
                                         # des sommes à zéro là où seulement des NAs. ## sum)
         unit$biomasse <- unit.b[match(unit$unitobs, rownames(unit.b))]
@@ -1849,7 +1713,7 @@ unit.f <- function(){
         }
 
         ## Certains NAs correspondent à des vrai zéros :
-        if (!all(is.na(obs$biomasse)))  # Si les biomasses ne sont pas calculables, inutile de mettre les zéros !
+        if (!all(is.na(obs$poids)))  # Si les biomasses ne sont pas calculables, inutile de mettre les zéros !
         {
             ## Ajout des vrais zéros :
             unit$biomasse[is.na(unit$biomasse) & unit$nombre == 0] <- 0
@@ -1985,7 +1849,7 @@ unit.f <- function(){
     print("La table metriques par unite d'observation a ete creee : UnitobsMetriques.csv")
     write.csv(unit, file=paste(NomDossierTravail, "UnitobsMetriques.csv", sep=""), row.names = FALSE)
     ## carte de la CPUE pour les données de pêche NC
-    if (is.peche.f() & (siteEtudie == "NC")) # (length(typePeche)>1)
+    if (FALSE) # (is.peche.f() & (siteEtudie == "NC")) # (length(typePeche)>1)
     {
         x11(width=50, height=30, pointsize=10)
         MapNC <- read.shape("./shapefiles/NewCaledonia_v7.shp", dbf.data = TRUE, verbose=TRUE, repair=FALSE)
@@ -2028,7 +1892,7 @@ unitr.f <- function(){
     unitr$rotation <- rep(dimnames(unitir)[[2]], each = dim(unitir)[1], 1)
 
     ## biomasse par unite d'observation
-    unitrT.b <- tapply(obs$biomasse, list(obs$unite_observation, obs$rotation),
+    unitrT.b <- tapply(obs$poids, list(obs$unite_observation, obs$rotation),
                        function(x){if (all(is.na(x))) {return(NA)}else{return(sum(x, na.rm=TRUE))}}) # Pour éviter
                                         # des sommes à zéro là où seulement des NAs. ## sum)
 
@@ -2110,11 +1974,16 @@ creationTablesBase.f <- function(){
     print("fonction creationTablesBase.f activée")
 
     ## Ajout des biomasses aux observations :
-    biomasse.f()
+    ## biomasse.f()
 
     ## ATTENTION A L'ORDRE D'APPEL DES FONCTIONS!!
     if (!is.benthos.f())                 # unique(unitobs$type) != "LIT"
     {  #car pas de classes de tailles avec les recouvrements
+
+        ## Calculs des poids non observés :
+        obs <- calcPoids.f(obs)
+        assign("obs", obs, envir=.GlobalEnv)
+
         unitespta.f()
         if (Jeuxdonnescoupe==0)
         {

@@ -41,6 +41,9 @@ selectionObs.SVR.f <- function()
     Level <- tclVar(dminDefault)        # tclVar pour le seuil (initialisée au défaut).
 
     WinSVR <- tktoplevel()
+    tkwm.title(WinSVR, "Sélection des observations")
+
+    FrameInfo <- tkframe(WinSVR, borderwidth=2, relief="groove")
 
     CB.supprObs <- tkcheckbutton(WinSVR, variable=Suppr)
     E.supprLevel <- tkentry(WinSVR, width=3, textvariable=Level)
@@ -53,6 +56,15 @@ selectionObs.SVR.f <- function()
     tkbind(E.supprLevel, "<Return>", onOK.selectionObs.SVR.f)
 
     ## Placement des éléments graphiques :
+    tkgrid(tklabel(WinSVR, text=""))
+
+    tkgrid(FrameInfo, column=2, columnspan=2, sticky="we")
+    tkgrid(tklabel(FrameInfo,
+                   text=paste("Information\n\n Types d'interpolations : ",
+                   ifelse(getOption("PAMPA.SVR.interp") == "extended",
+                          "étendues !",
+                          "simples !"), "\n", sep=""), justify="left"), sticky="w")
+
     tkgrid(tklabel(WinSVR, text=""))
 
     tkgrid(tklabel(WinSVR, text="\t"),
@@ -346,9 +358,26 @@ opendefault.f <- function ()
 
     if (unique(unitobs$type) != "SVR")
     {
-        colnames(obs) <- c("unite_observation", "secteur", "code_espece", "sexe", "taille", "classe_taille", "poids", "nombre", "dmin", "dmax")
+        colnames(obs) <- c("unite_observation", "secteur", "code_espece", "sexe", "taille", "classe_taille", "poids",
+                           "nombre", "dmin", "dmax")
     }else{
-        colnames(obs) <- c("unite_observation", "rotation", "secteur", "code_espece", "sexe", "taille", "classe_taille", "poids", "nombre", "dmin", "dmax")
+        ## On renomme les colonnes + identification du type d'interpolation :
+        switch(as.character(ncol(obs)),
+               "11"={
+                   colnames(obs) <- c("unite_observation", "rotation", "secteur", "code_espece", "sexe", "taille",
+                                      "classe_taille", "poids", "nombre", "dmin", "dmax")
+
+                   options(PAMPA.SVR.interp="extended")
+               },
+               "14"={
+                   colnames(obs) <- c("unite_observation", "rotation", "sec.valides", "sec.ciel", "sec.sol",
+                                      "sec.obstrue", "code_espece", "sexe", "taille",
+                                      "classe_taille", "poids", "nombre", "dmin", "dmax")
+
+                   options(PAMPA.SVR.interp="basic")
+               },
+               stop("Le fichier d'observations ne contient pas le bon nombre de colonnes"))
+
         obs$rotation <- as.numeric(obs$rotation)
 
         dminMax <- NULL
@@ -371,7 +400,7 @@ opendefault.f <- function ()
     obs$nombre <- as.integer(obs$nombre)
 
     ## Ajout d'estimations de tailles si seules les classes de taille sont renseignées:
-    obs <- AjoutTaillesMoyennes.f(data=obs)
+    ## obs <- AjoutTaillesMoyennes.f(data=obs)
 
 
     ## if (is.na(unique(obs$unite_observation[-unique(unitobs$unite_observation)]))==FALSE) # [!!!]
@@ -446,10 +475,10 @@ opendefault.f <- function ()
         obsSansCathBenth$Genre <- especes$Genre[match(obsSansCathBenth$code_espece, especes$code_espece)]
         if(length(obsSansCathBenth$Genre[obsSansCathBenth$Genre=="ge."])>0)
         {
-            tkmessageBox(message=paste("Pour les calculs d'indices de diversité, ",
+            tkmessageBox(message=paste("Pour les calculs des indices de diversité, ",
                          length(obsSansCathBenth$Genre[obsSansCathBenth$Genre=="ge."]),
                          "observations de la table de contingence pour lesquels le genre \n
-        n'est pas renseigné ('ge.') dans le référentiel espèce sont été supprimées"), icon="info")
+        n'est pas renseigné ('ge.') dans le référentiel espèce ont été supprimées"), icon="info")
             obsSansCathBenth <- subset(obsSansCathBenth, obsSansCathBenth$Genre!="ge.")
 
         }
@@ -530,7 +559,6 @@ opendefault.f <- function ()
     ## print(paste("\t\t", paste(dim(obs), collapse="x")))
     ## Creation des tables de base
     creationTablesBase.f()
-    ## biomasse.f()
 
     ## print(paste("\t\t", paste(dim(obs), collapse="x")))
     ## ! ici, donner des noms avec une base variable, pour rendre les fichiers indépendants et plus facilement reconnaissables

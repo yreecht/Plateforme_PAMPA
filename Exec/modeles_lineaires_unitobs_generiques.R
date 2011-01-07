@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: modeles_lineaires_unitobs_generiques.R
-### Time-stamp: <2010-11-02 15:21:00 yreecht>
+### Time-stamp: <2010-12-22 17:07:31 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -65,15 +65,15 @@ modeleLineaireWP2.unitobs.f <- function(metrique, factAna, factAnaSel, listFact,
     ## Agrégation des observations / unité d'observation :
     if (tableMetrique == "unitespta" && factAna != "classe_taille")
     {
-        tmpData <- agregationTableParCritere.f(Data=tmpData,
-                                               metrique=metrique,
-                                               facteurs=c("unite_observation", "classe_taille"),
-                                               listFact=listFact)
+        tmpData <- na.omit(agregationTableParCritere.f(Data=tmpData,
+                                                       metrique=metrique,
+                                                       facteurs=c("unite_observation", "classe_taille"),
+                                                       listFact=listFact))
     }else{
-        tmpData <- agregationTableParCritere.f(Data=tmpData,
-                                               metrique=metrique,
-                                               facteurs=c("unite_observation"),
-                                               listFact=listFact)
+        tmpData <- na.omit(agregationTableParCritere.f(Data=tmpData,
+                                                       metrique=metrique,
+                                                       facteurs=c("unite_observation"),
+                                                       listFact=listFact))
     }
 
     ## Sauvegarde temporaire des données utilisées pour les analyses (attention : écrasée à chaque nouvelle série de
@@ -109,9 +109,10 @@ modeleLineaireWP2.unitobs.f <- function(metrique, factAna, factAnaSel, listFact,
 
         resLM <<- res
 
-        sortiesLM.f(objLM=res, formule=formule, metrique=metrique,
-                    factAna=factAna, modSel=iFactGraphSel, listFact=listFact,
-                    Data=tmpData, Log=Log, type="unitobs")
+        tryCatch(sortiesLM.f(objLM=res, formule=formule, metrique=metrique,
+                             factAna=factAna, modSel=iFactGraphSel, listFact=listFact,
+                             Data=tmpData, Log=Log, type="unitobs"),
+                 error=errorLog.f)
 
         resid.out <- boxplot(residuals(res), plot=FALSE)$out
 
@@ -129,11 +130,12 @@ modeleLineaireWP2.unitobs.f <- function(metrique, factAna, factAnaSel, listFact,
                 tmpData <- tmpData[ - suppr, ]
                 res.red <- calcLM.f(loiChoisie=loiChoisie, formule=formule, metrique=metrique, Data=tmpData)
 
-                res.red <<- res.red
+                resLM.red <<- res.red
 
-                sortiesLM.f(objLM=res.red, formule=formule, metrique=metrique,
-                            factAna=factAna, modSel=iFactGraphSel, listFact=listFact,
-                            Data=tmpData, Log=Log, sufixe="(red)", type="unitobs")
+                tryCatch(sortiesLM.f(objLM=res.red, formule=formule, metrique=metrique,
+                                     factAna=factAna, modSel=iFactGraphSel, listFact=listFact,
+                                     Data=tmpData, Log=Log, sufixe="(red)", type="unitobs"),
+                         error=errorLog.f)
             }else{}
 
         }else{}

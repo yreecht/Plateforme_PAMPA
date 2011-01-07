@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: barplots_occurrence.R
-### Time-stamp: <2010-12-08 15:08:23 yreecht>
+### Time-stamp: <2010-12-16 15:48:27 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -145,7 +145,7 @@ barplotOccurrence.f <- function(factGraph, factGraphSel, listFact, listFactSel)
     }                                   # Fin de boucle graphique
 
     ## On ferme les périphériques PDF :
-    if (getOption("P.graphPDF"))
+    if (getOption("P.graphPDF") || isTRUE(getOption("P.graphPNG")))
     {
         dev.off()
     }else{}

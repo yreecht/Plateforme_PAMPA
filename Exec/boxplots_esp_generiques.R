@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: Boxplot_generique_calc.R
-### Time-stamp: <2010-10-28 17:13:07 yreecht>
+### Time-stamp: <2010-12-16 15:49:17 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -143,17 +143,35 @@ openDevice.f <- function(noGraph, metrique, factGraph, listFact)
 
     if (!getOption("P.graphPDF")) # sorties graphiques à l'écran.
     {
-        if (getOption("P.plusieursGraphPage"))     # Plusieurs graphs par page...
+        if (isTRUE(getOption("P.graphPNG")))
         {
-            if ((noGraph %% # ...et page remplie.
-                 (getOption("P.nrowGraph") * getOption("P.ncolGraph"))) == 1)
+            if (noGraph == 1)
             {
-                print(paste("Fenêtre", noGraph))
-                X11(width=60, height=35, pointsize=10)
-                par(mfrow=c(getOption("P.nrowGraph"), getOption("P.ncolGraph")))
+                pngFileName <- paste(nameWorkspace, "/FichiersSortie/",
+                                     metrique, "_", factGraph, "_", paste(listFact, collapse="-"), "-%03d.png", sep="")
+
+                png(pngFileName, width=70*15, height=38*15, pointsize=14)
+
+                 ## Si plusieurs graphiques par page :
+                if (getOption("P.plusieursGraphPage"))
+                {
+                    par(mfrow=c(getOption("P.nrowGraph"), getOption("P.ncolGraph")))
+                }else{}
             }else{}
-        }else{                      # Pas plusieurs graphs par page.
-            X11(width=50, height=20, pointsize=10)
+
+        }else{
+            if (getOption("P.plusieursGraphPage"))     # Plusieurs graphs par page...
+            {
+                if ((noGraph %% # ...et page remplie.
+                     (getOption("P.nrowGraph") * getOption("P.ncolGraph"))) == 1)
+                {
+                    print(paste("Fenêtre", noGraph))
+                    X11(width=60, height=35, pointsize=10)
+                    par(mfrow=c(getOption("P.nrowGraph"), getOption("P.ncolGraph")))
+                }else{}
+            }else{                      # Pas plusieurs graphs par page.
+                X11(width=50, height=20, pointsize=10)
+            }
         }
     }else{ ## Sorties graphiques en pdf :
         if (noGraph == 1)
@@ -573,7 +591,7 @@ WP2boxplot.f <- function(metrique, factGraph, factGraphSel, listFact, listFactSe
     }  ## Fin de boucle graphique.
 
     ## On ferme les périphériques PDF :
-    if (getOption("P.graphPDF"))
+    if (getOption("P.graphPDF") || isTRUE(getOption("P.graphPNG")))
     {
         dev.off()
     }else{}

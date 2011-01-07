@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: comparaison_distri_generique.R
-### Time-stamp: <2010-10-26 10:48:58 yreecht>
+### Time-stamp: <2010-12-22 17:08:06 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -473,7 +473,7 @@ plot.lm.fr <- function (x, which = c(1L:3L, 5L),
     invisible()
 }
 
-
+########################################################################################################################
 selRowCoefmat <- function(coefsMat, anovaLM, objLM)
 {
     ## Purpose: Retourne un vecteur de booléen donnant les indices de ligne
@@ -568,7 +568,7 @@ selRowCoefmat <- function(coefsMat, anovaLM, objLM)
     }
 }
 
-
+########################################################################################################################
 printCoefmat.red <- function(x, digits = max(3, getOption("digits") - 2),
                              signif.stars = getOption("show.signif.stars"),
                              signif.legend = signif.stars, dig.tst = max(1, min(5, digits - 1)),
@@ -753,10 +753,11 @@ plotDist.f <- function(y, family, metrique, env=NULL,...)
                   NO=list(name="Normale", densfunName="normal", densfun="dnorm"),
                   LOGNO=list(name="log-Normale", densfunName="log-normal", densfun="dlnorm"),
                   PO=list(name="de Poisson", densfunName="poisson", densfun="dpois"),
-                  NBI=list(name="Binomiale négative", densfunName="negative binomial", densfun="dnbinom"))
+                  NBI=list(name="Binomiale négative", densfunName="negative binomial", densfun="dnbinom"),
+                  GA=list(name="Gamma", densfunName="gamma", densfun="dgamma"))
 
     ## Traitement des zéros pour la loi Log-Normale :
-    if (family == "LOGNO" & sum(y == 0, na.rm=TRUE))
+    if (is.element(family, c("LOGNO", "GA")) & sum(y == 0, na.rm=TRUE))
     {
         y <- y + ((min(y, na.rm=TRUE) + 1) / 1000)
     }else{}
@@ -1095,7 +1096,9 @@ modelType.f <- function(objLM, Log)
                                 "GLM-P",
                                 ifelse(length(grep("^glm.*\"binomial\"", deparse(objLM$call), perl=TRUE)) > 0,
                                        "GLM-B",
-                                       "Unknown-model")))))
+                                       ifelse(length(grep("family[[:blank:]]*=[[:blank:]]*\"Gamma\"", deparse(objLM$call), perl=TRUE)) > 0,
+                                              "GLM-Ga",
+                                              "Unknown-model"))))))
 }
 
 
@@ -1488,6 +1491,7 @@ sortiesLM.f <- function(objLM, formule, metrique, factAna, modSel, listFact, Dat
     ## Formule de modèle lisible:
     objLM$call$formula <- formule
     formule <<- formule
+    resLM <<- objLM
 
     ## Chemin et nom de fichier :
     resFile <- resFileLM.f(objLM=objLM, metrique=metrique, factAna=factAna, modSel=modSel, listFact=listFact,
@@ -1589,7 +1593,7 @@ sortiesLM.f <- function(objLM, formule, metrique, factAna, modSel, listFact, Dat
     plot.lm.fr(objLM, which=2, cex.caption=0.8)
     plot.lm.fr(objLM, which=c(1, 4), cex.caption=0.8)
 
-
+    close(resFile)
 
     ## flush.console()
 }
@@ -1623,6 +1627,17 @@ calcLM.f <- function(loiChoisie, formule, metrique, Data)
                 res <- lm(formule, data=Data)
                 ## Mise en forme :
                 ## sortiesLM.f(lm=res, formule=formule, metrique, factAna, modSel, listFact, Log=TRUE)
+            },
+            ## GLM, distribution Gamma :
+            GA={
+                ## Ajout d'une constante à la métrique si contient des zéros :
+                if (sum(Data[ , metrique] == 0, na.rm=TRUE))
+                {
+                    Data[ , metrique] <- Data[ , metrique] +
+                        ((min(Data[ , metrique], na.rm=TRUE) + 1) / 1000)
+                }else{}
+
+                res <- glm(formule, data=Data, family="Gamma")
             },
             ## GLM, distribution de Poisson :
             PO={
@@ -1670,8 +1685,8 @@ modeleLineaireWP2.esp.f <- function(metrique, factAna, factAnaSel, listFact, lis
     selections <- c(list(factAnaSel), listFactSel) # Concaténation des leurs listes de modalités sélectionnées
 
     ## Données pour la série d'analyses :
-    tmpData <- subsetToutesTables.f(metrique=metrique, facteurs=facteurs, selections=selections,
-                                    tableMetrique=tableMetrique, exclude = NULL, add=NULL)
+    tmpData <- na.omit(subsetToutesTables.f(metrique=metrique, facteurs=facteurs, selections=selections,
+                                            tableMetrique=tableMetrique, exclude = NULL, add=NULL))
 
     ## Identification des différents lots d'analyses à faire:
     if (factAna == "")                # Pas de facteur de séparation des graphiques.
@@ -1734,11 +1749,10 @@ modeleLineaireWP2.esp.f <- function(metrique, factAna, factAnaSel, listFact, lis
 
             res <- calcLM.f(loiChoisie=loiChoisie, formule=formule, metrique=metrique, Data=tmpDataMod)
 
-            resLM <<- res
-
-            sortiesLM.f(objLM=res, formule=formule, metrique=metrique,
-                        factAna=factAna, modSel=modSel, listFact=listFact,
-                        Data=tmpDataMod, Log=Log)
+            tryCatch(sortiesLM.f(objLM=res, formule=formule, metrique=metrique,
+                                 factAna=factAna, modSel=modSel, listFact=listFact,
+                                 Data=tmpDataMod, Log=Log),
+                     error=errorLog.f)
 
             resid.out <- boxplot(residuals(res), plot=FALSE)$out
 
@@ -1756,11 +1770,12 @@ modeleLineaireWP2.esp.f <- function(metrique, factAna, factAnaSel, listFact, lis
                     tmpDataMod <- tmpDataMod[ - suppr, ]
                     res.red <- calcLM.f(loiChoisie=loiChoisie, formule=formule, metrique=metrique, Data=tmpDataMod)
 
-                    res.red <<- res.red
+                    resLM.red <<- res.red
 
-                    sortiesLM.f(objLM=res.red, formule=formule, metrique=metrique,
-                                factAna=factAna, modSel=modSel, listFact=listFact,
-                                Data=tmpDataMod, Log=Log, sufixe="(red)")
+                    tryCatch(sortiesLM.f(objLM=res.red, formule=formule, metrique=metrique,
+                                         factAna=factAna, modSel=modSel, listFact=listFact,
+                                         Data=tmpDataMod, Log=Log, sufixe="(red)"),
+                             error=errorLog.f)
                 }else{}
 
             }else{}

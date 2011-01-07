@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: boxplots_ttesp_generic.R
-### Time-stamp: <2010-10-28 15:34:35 yreecht>
+### Time-stamp: <2010-12-21 17:18:07 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -97,15 +97,15 @@ WP2boxplot.unitobs.f <- function(metrique, factGraph, factGraphSel, listFact, li
     ## Agrégation des observations / unité d'observation :
     if (tableMetrique == "unitespta" && factGraph != "classe_taille")
     {
-        tmpData <- agregationTableParCritere.f(Data=tmpData,
-                                               metrique=metrique,
-                                               facteurs=c("unite_observation", "classe_taille"),
-                                               listFact=listFact)
+        tmpData <- na.omit(agregationTableParCritere.f(Data=tmpData,
+                                                       metrique=metrique,
+                                                       facteurs=c("unite_observation", "classe_taille"),
+                                                       listFact=listFact))
     }else{
-        tmpData <- agregationTableParCritere.f(Data=tmpData,
-                                               metrique=metrique,
-                                               facteurs=c("unite_observation"),
-                                               listFact=listFact)
+        tmpData <- na.omit(agregationTableParCritere.f(Data=tmpData,
+                                                       metrique=metrique,
+                                                       facteurs=c("unite_observation"),
+                                                       listFact=listFact))
     }
 
     ## Sauvegarde temporaire des données utilisées pour les graphiques (attention : écrasée à chaque nouvelle série de
@@ -221,7 +221,7 @@ WP2boxplot.unitobs.f <- function(metrique, factGraph, factGraphSel, listFact, li
     }  ## Fin de graphique.
 
     ## On ferme les périphériques PDF :
-    if (getOption("P.graphPDF"))
+    if (getOption("P.graphPDF") || isTRUE(getOption("P.graphPNG")))
     {
         dev.off()
     }else{}

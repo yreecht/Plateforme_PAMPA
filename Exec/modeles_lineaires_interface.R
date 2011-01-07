@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: modeles_lineaires_interface.R
-### Time-stamp: <2010-10-19 17:26:03 yreecht>
+### Time-stamp: <2010-12-16 11:32:33 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -146,19 +146,30 @@ choixDistri.f <- function(metrique, Data)
     RB.LogN <- tkradiobutton(FrameLogN, variable=LoiChoisie, value="LOGNO", # bouton de sélection.
                              text=paste("loi log-Normale (AIC=", round(distList[["LOGNO"]]$aic, 0), "). ", sep=""))
 
+    ## Frame pour la loi Gamma :
+    FrameGa <- tkframe(WinDistri, borderwidth=2, relief="groove")
+    Img.Ga <- tkrplot(FrameGa, fun=function() # Création de l'image.
+                    {
+                        plotDist.f(y=Data[ , metrique], family="GA", metrique=metrique, env=env)
+                    },
+                        vscale=vscale, hscale=hscale, pointsize=pointsize)
+
+    RB.Ga <- tkradiobutton(FrameGa, variable=LoiChoisie, value="GA", # bouton de sélection.
+                             text=paste("loi Gamma (AIC=", round(distList[["GA"]]$aic, 0), "). ", sep=""))
+
     if (is.integer(Data[ , metrique]))
     {
-        ## Frame pour la loi de Poisson :
-        FramePois <- tkframe(WinDistri, borderwidth=2, relief="groove")
-        Img.Pois <- tkrplot(FramePois,  # Création de l'image.
-                            fun=function()
-                        {
-                            plotDist.f(y=Data[ , metrique], family="PO", metrique=metrique, env=env)
-                        },
-                            vscale=vscale, hscale=hscale, pointsize=pointsize)
+        ## ## Frame pour la loi de Poisson :
+        ## FramePois <- tkframe(WinDistri, borderwidth=2, relief="groove")
+        ## Img.Pois <- tkrplot(FramePois,  # Création de l'image.
+        ##                     fun=function()
+        ##                 {
+        ##                     plotDist.f(y=Data[ , metrique], family="PO", metrique=metrique, env=env)
+        ##                 },
+        ##                     vscale=vscale, hscale=hscale, pointsize=pointsize)
 
-        RB.Pois <- tkradiobutton(FramePois, variable=LoiChoisie, value="PO", # bouton de sélection.
-                                 text=paste("loi de Poisson (AIC=", round(distList[["PO"]]$aic, 0), "). ", sep=""))
+        ## RB.Pois <- tkradiobutton(FramePois, variable=LoiChoisie, value="PO", # bouton de sélection.
+        ##                          text=paste("loi de Poisson (AIC=", round(distList[["PO"]]$aic, 0), "). ", sep=""))
 
         ## Frame pour la loi bionomiale négative :
         FrameNBinom <- tkframe(WinDistri, borderwidth=2, relief="groove")
@@ -196,35 +207,52 @@ choixDistri.f <- function(metrique, Data)
     tkgrid(Img.N, columnspan=2)
     tkgrid(RB.N, row=1, sticky="e")
     tkgrid(tklabel(FrameN, text=" Modèle : ANOVA", fg="red"), row=1, column=1, sticky="w")
+
     tkgrid(Img.LogN, columnspan=2)
     tkgrid(RB.LogN, sticky="e")
     tkgrid(tklabel(FrameLogN, text=" Modèle : ANOVA, données log-transformées", fg="red"), row=1, column=1, sticky="w")
+    tkgrid(tklabel(WinDistri, text=" "), FrameN, tklabel(WinDistri, text=" "), FrameLogN, tklabel(WinDistri, text="
+    "),
+    sticky="ew")
+
+    tkgrid(tklabel(WinDistri, text=" "))
+
     tkgrid(tklabel(WinDistri, text=" "), FrameN, tklabel(WinDistri, text=" "), FrameLogN, tklabel(WinDistri, text=" "),
            sticky="ew")
-    tkgrid(tklabel(WinDistri, text=" "))
+
+    tkgrid(Img.Ga, columnspan=2)
+    tkgrid(RB.Ga, sticky="e")
+    tkgrid(tklabel(FrameGa, text=" Modèle : GLM, famille 'Gamma'", fg="red"), row=1, column=1, sticky="w")
+
 
     ## Évènements : sélections en cliquant sur les graphiques :
     tkbind(Img.N, "<Button-1>", function(){tclvalue(LoiChoisie) <- "NO"})
     tkbind(Img.LogN, "<Button-1>", function(){tclvalue(LoiChoisie) <- "LOGNO"})
-
+    tkbind(Img.Ga, "<Button-1>", function(){tclvalue(LoiChoisie) <- "GA"})
 
     ## Pour les données entières seulement :
     if (is.integer(Data[ , metrique]))
     {
-        tkgrid(Img.Pois, columnspan=2)
-        tkgrid(RB.Pois, sticky="e")
-        tkgrid(tklabel(FramePois, text=" Modèle : GLM, famille 'Poisson'", fg="red"), row=1, column=1, sticky="w")
+        ## tkgrid(Img.Pois, columnspan=2)
+        ## tkgrid(RB.Pois, sticky="e")
+        ## tkgrid(tklabel(FramePois, text=" Modèle : GLM, famille 'Poisson'", fg="red"), row=1, column=1, sticky="w")
         tkgrid(Img.NBinom, columnspan=2)
         tkgrid(RB.NBinom, sticky="e")
         tkgrid(tklabel(FrameNBinom, text=" Modèle : GLM, famille 'Binomiale négative'", fg="red"), row=1, column=1, sticky="w")
-        tkgrid(tklabel(WinDistri, text=" "), FramePois, tklabel(WinDistri, text=" "), FrameNBinom,
+        tkgrid(tklabel(WinDistri, text=" "), FrameGa, ## FramePois,
+               tklabel(WinDistri, text=" "), FrameNBinom,
                tklabel(WinDistri, text=" "), sticky="ew")
         tkgrid(tklabel(WinDistri, text=" "))
 
         ## Évènements : sélections en cliquant sur les graphiques :
-        tkbind(Img.Pois, "<Button-1>", function(){tclvalue(LoiChoisie) <- "PO"})
+        ## tkbind(Img.Pois, "<Button-1>", function(){tclvalue(LoiChoisie) <- "PO"})
         tkbind(Img.NBinom, "<Button-1>", function(){tclvalue(LoiChoisie) <- "NBI"})
-    }else{}
+    }else{
+        tkgrid(tklabel(WinDistri, text=" "), FrameGa, ## FramePois,
+               tklabel(WinDistri, text=" "), tklabel(WinDistri, text=" "),
+               tklabel(WinDistri, text=" "), sticky="ew")
+        tkgrid(tklabel(WinDistri, text=" "))
+    }
 
     ## Boutons :
     tkgrid(FrameB, column=1, columnspan=3)

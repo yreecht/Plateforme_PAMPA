@@ -24,7 +24,6 @@ ModifierMenuApresImport.f = function()
     tkentryconfigure(pampainfos,4,state="normal")
     if (unique(unitobs$type) == "LIT")
     {
-        ## tkadd(selection,"checkbutton",label="Par Catégories Benthiques",variable=SelectBenth,onvalue=1,offvalue=0,command = SelectionUneCatBenth.f)
         tkentryconfigure(topMenu,4,state="normal")   # traitement benthos actif si c'est du LIT
         tkentryconfigure(selection,3,state="normal") # traitement benthos actif si c'est du LIT
     }else{

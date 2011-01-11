@@ -25,12 +25,12 @@ DefaultDirName={reg:HKLM\Software\PAMPA WP2,Path|{#InstallDir}}\{#ExecDir}
 DefaultGroupName={#MyAppName}
 AllowNoIcons=yes
 OutputDir=.
-OutputBaseFilename=setup-update_PAMPA_WP2-{#MyAppVersion}
+OutputBaseFilename=setup-update_PAMPA_WP2-cleaningVersion-{#MyAppVersion}
 ; SetupIconFile=Y:\tmp\1284538187_bluefish-icon.ico
 Compression=lzma
 SolidCompression=yes
-WizardImageFile=.\Img\pampa2L.bmp
-WizardSmallImageFile=.\Img\pampa2.bmp
+WizardImageFile=..\Img\pampa2L.bmp
+WizardSmallImageFile=..\Img\pampa2.bmp
 
 [Languages]
 Name: "french"; MessagesFile: "compiler:Languages\French.isl"
@@ -40,43 +40,43 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked; OnlyBelowVersion: 0,6.1
 
 [Files]
-Source: ".\Exec\PAMPA WP2.bat"; DestDir: "{app}"; Flags: ignoreversion
-Source: ".\Exec\img\*"; DestDir: "{app}\img"; Flags: ignoreversion
-Source: ".\Exec\Doc\*"; DestDir: "{app}\Doc"; Flags: ignoreversion
+Source: ".\cleaningVersion\PAMPA WP2.bat"; DestDir: "{app}"; Flags: ignoreversion
+Source: ".\cleaningVersion\img\*"; DestDir: "{app}\img"; Flags: ignoreversion
+Source: ".\cleaningVersion\Doc\*"; DestDir: "{app}\Doc"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
-Source: ".\Exec\config.r"; DestDir: "{app}"; Flags: uninsneveruninstall onlyifdoesntexist
-Source: "Exec\anova.r"; DestDir: "{app}"
-Source: "Exec\arbre_regression.r"; DestDir: "{app}"
-Source: "Exec\barplots_occurrence.R"; DestDir: "{app}"
-Source: "Exec\boxplots_esp_generiques.R"; DestDir: "{app}"
-Source: "Exec\boxplots_unitobs_generiques.R"; DestDir: "{app}"
-Source: "Exec\calcul_simple.r"; DestDir: "{app}"
-Source: "Exec\command.r"; DestDir: "{app}"
-Source: "Exec\corresp-cat-benth.csv"; DestDir: "{app}"
-Source: "Exec\fonctions_base.R"; DestDir: "{app}"
-Source: "Exec\gestionmessages.r"; DestDir: "{app}"
-Source: "Exec\Global.r"; DestDir: "{app}"
-Source: "Exec\graphique.r"; DestDir: "{app}"
-Source: "Exec\graphique_benthos.r"; DestDir: "{app}"
-Source: "Exec\import.r"; DestDir: "{app}"
-Source: "Exec\importdefaut.r"; DestDir: "{app}"
-Source: "Exec\interface.r"; DestDir: "{app}"
-Source: "Exec\interface_fonctions.R"; DestDir: "{app}"
-Source: "Exec\load_packages.R"; DestDir: "{app}"
-Source: "Exec\mkfilegroupe.r"; DestDir: "{app}"
-Source: "Exec\modeles_lineaires_esp_generiques.R"; DestDir: "{app}"
-Source: "Exec\modeles_lineaires_unitobs_generiques.R"; DestDir: "{app}"
-Source: "Exec\modeles_lineaires_interface.R"; DestDir: "{app}"
-Source: "Exec\modifinterface.r"; DestDir: "{app}"
-Source: "Exec\NomsVariables.csv"; DestDir: "{app}"
-Source: "Exec\PAMPA WP2.bat"; DestDir: "{app}"
-Source: "Exec\requetes.r"; DestDir: "{app}"
-Source: "Exec\Rprofile.site"; DestDir: "{app}"
-Source: "Exec\selection_variables_fonctions.R"; DestDir: "{app}"
-Source: "Exec\selection_variables_interface.R"; DestDir: "{app}"
-Source: "Exec\testfichier.r"; DestDir: "{app}"
-Source: "Exec\view.r"; DestDir: "{app}"
-Source: "Exec\nombres_SVR.R"; DestDir: "{app}"
+Source: ".\cleaningVersion\config.r"; DestDir: "{app}"; Flags: uninsneveruninstall onlyifdoesntexist
+Source: "cleaningVersion\anova.r"; DestDir: "{app}"
+Source: "cleaningVersion\arbre_regression.r"; DestDir: "{app}"
+Source: "cleaningVersion\barplots_occurrence.R"; DestDir: "{app}"
+Source: "cleaningVersion\boxplots_esp_generiques.R"; DestDir: "{app}"
+Source: "cleaningVersion\boxplots_unitobs_generiques.R"; DestDir: "{app}"
+Source: "cleaningVersion\calcul_simple.r"; DestDir: "{app}"
+Source: "cleaningVersion\command.r"; DestDir: "{app}"
+Source: "cleaningVersion\corresp-cat-benth.csv"; DestDir: "{app}"
+Source: "cleaningVersion\fonctions_base.R"; DestDir: "{app}"
+Source: "cleaningVersion\gestionmessages.r"; DestDir: "{app}"
+Source: "cleaningVersion\Global.r"; DestDir: "{app}"
+Source: "cleaningVersion\graphique.r"; DestDir: "{app}"
+Source: "cleaningVersion\graphique_benthos.r"; DestDir: "{app}"
+Source: "cleaningVersion\import.r"; DestDir: "{app}"
+Source: "cleaningVersion\importdefaut.r"; DestDir: "{app}"
+Source: "cleaningVersion\interface.r"; DestDir: "{app}"
+Source: "cleaningVersion\interface_fonctions.R"; DestDir: "{app}"
+Source: "cleaningVersion\load_packages.R"; DestDir: "{app}"
+Source: "cleaningVersion\mkfilegroupe.r"; DestDir: "{app}"
+Source: "cleaningVersion\modeles_lineaires_esp_generiques.R"; DestDir: "{app}"
+Source: "cleaningVersion\modeles_lineaires_unitobs_generiques.R"; DestDir: "{app}"
+Source: "cleaningVersion\modeles_lineaires_interface.R"; DestDir: "{app}"
+Source: "cleaningVersion\modifinterface.r"; DestDir: "{app}"
+Source: "cleaningVersion\NomsVariables.csv"; DestDir: "{app}"
+Source: "cleaningVersion\PAMPA WP2.bat"; DestDir: "{app}"
+Source: "cleaningVersion\requetes.r"; DestDir: "{app}"
+Source: "cleaningVersion\Rprofile.site"; DestDir: "{app}"
+Source: "cleaningVersion\selection_variables_fonctions.R"; DestDir: "{app}"
+Source: "cleaningVersion\selection_variables_interface.R"; DestDir: "{app}"
+Source: "cleaningVersion\testfichier.r"; DestDir: "{app}"
+Source: "cleaningVersion\view.r"; DestDir: "{app}"
+Source: "cleaningVersion\nombres_SVR.R"; DestDir: "{app}"
 
 
 [Icons]

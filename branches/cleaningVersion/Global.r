@@ -114,3 +114,5 @@ tkfocus(tm)
 ## [inc] : expression/fonction incomplète.
 ## [OK]  : problème corrigé.
 ## [???] : comprend pas !
+## [sup] : supprimé.
+## [dep] : déplacé (menu).

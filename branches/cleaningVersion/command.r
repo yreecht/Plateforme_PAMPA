@@ -76,17 +76,19 @@ RegroupementUnFactUnitobs.f <- function ()
 ## Objet  : exécution de la sélection par fam et écrasement des données dans "obs"
 ## ################################################################################
 
-SelectionUnBiotope.f <- function ()
-{
+## [sup] [yr: 11/01/2011]
 
-    print("fonction SelectionUnBiotope.f activée")
-    obs <- UnBiotopeDansObs.f()
-    assign("obs", obs, envir=.GlobalEnv)
-    creationTablesBase.f()
-    creationTablesCalcul.f()
-    ModifierInterfaceApresSelection.f(bio, dim(obs)[1])
-    gestionMSGinfo.f("Biotopeselectionne", dim(obs)[1])
-}
+## SelectionUnBiotope.f <- function ()
+## {
+
+##     print("fonction SelectionUnBiotope.f activée")
+##     obs <- UnBiotopeDansObs.f()
+##     assign("obs", obs, envir=.GlobalEnv)
+##     creationTablesBase.f()
+##     creationTablesCalcul.f()
+##     ModifierInterfaceApresSelection.f(bio, dim(obs)[1])
+##     gestionMSGinfo.f("Biotopeselectionne", dim(obs)[1])
+## }
 
 
 
@@ -132,17 +134,19 @@ SelectionUnCritereUnitobs.f <- function ()
 ## Objet  : exécution de la sélection par fam et écrasement des données dans "obs"
 ## ################################################################################
 
-SelectionUneFamille.f <- function ()
-{
+## [sup] [yr: 11/01/2011]
 
-    print("fonction SelectionUneFamille.f activée")
-    obs <- UneFamilleDansObs.f()
-    assign("obs", obs, envir=.GlobalEnv)
-    creationTablesBase.f()
-    creationTablesCalcul.f()
-    ModifierInterfaceApresSelection.f(fa, dim(obs)[1])
-    gestionMSGinfo.f("Familleselectionne", dim(obs)[1])
-}
+## SelectionUneFamille.f <- function ()
+## {
+
+##     print("fonction SelectionUneFamille.f activée")
+##     obs <- UneFamilleDansObs.f()
+##     assign("obs", obs, envir=.GlobalEnv)
+##     creationTablesBase.f()
+##     creationTablesCalcul.f()
+##     ModifierInterfaceApresSelection.f(fa, dim(obs)[1])
+##     gestionMSGinfo.f("Familleselectionne", dim(obs)[1])
+## }
 
 ## ################################################################################
 ## Nom    : SelectionUnPhylum.f()
@@ -150,17 +154,19 @@ SelectionUneFamille.f <- function ()
 ##          dans "obs"
 ## ################################################################################
 
-SelectionUnPhylum.f <- function ()
-{
+## [sup] [yr: 11/01/2011]
 
-    print("fonction SelectionUnPhylum.f activée")
-    obs <- UnPhylumDansObs.f()
-    assign("obs", obs, envir=.GlobalEnv)
-    creationTablesBase.f()
-    creationTablesCalcul.f()
-    ModifierInterfaceApresSelection.f(phy, dim(obs)[1])
-    gestionMSGinfo.f("Phylumselectionne", dim(obs)[1])
-}
+## SelectionUnPhylum.f <- function ()
+## {
+
+##     print("fonction SelectionUnPhylum.f activée")
+##     obs <- UnPhylumDansObs.f()
+##     assign("obs", obs, envir=.GlobalEnv)
+##     creationTablesBase.f()
+##     creationTablesCalcul.f()
+##     ModifierInterfaceApresSelection.f(phy, dim(obs)[1])
+##     gestionMSGinfo.f("Phylumselectionne", dim(obs)[1])
+## }
 
 ## ################################################################################
 ## Nom    : SelectionUneClasse.f()
@@ -168,50 +174,57 @@ SelectionUnPhylum.f <- function ()
 ##          dans "obs"
 ## ################################################################################
 
-SelectionUneClasse.f <- function ()
-{
+## [sup] [yr: 11/01/2011]
 
-    print("fonction SelectionUneClasse.f activée")
-    obs <- UneClasseDansObs.f()
-    assign("obs", obs, envir=.GlobalEnv)
-    creationTablesBase.f()
-    creationTablesCalcul.f()
-    ModifierInterfaceApresSelection.f(cla, dim(obs)[1])
-    gestionMSGinfo.f("Classeselectionne", dim(obs)[1])
-}
+## SelectionUneClasse.f <- function ()
+## {
+
+##     print("fonction SelectionUneClasse.f activée")
+##     obs <- UneClasseDansObs.f()
+##     assign("obs", obs, envir=.GlobalEnv)
+##     creationTablesBase.f()
+##     creationTablesCalcul.f()
+##     ModifierInterfaceApresSelection.f(cla, dim(obs)[1])
+##     gestionMSGinfo.f("Classeselectionne", dim(obs)[1])
+## }
 ## ################################################################################
 ## Nom    : SelectionUnOrdre.f()
 ## Objet  : exécution de la sélection par ordre et écrasement des données dans "obs"
 ## ################################################################################
 
-SelectionUnOrdre.f <- function ()
-{
+## [sup] [yr: 11/01/2011]
 
-    print("fonction SelectionUnOrdre.f activée")
-    obs <- UnOrdreDansObs.f()
-    assign("obs", obs, envir=.GlobalEnv)
-    creationTablesBase.f()
-    creationTablesCalcul.f()
-    ModifierInterfaceApresSelection.f(ord, dim(obs)[1])
-    gestionMSGinfo.f("Ordreselectionne", dim(obs)[1])
-}
+## SelectionUnOrdre.f <- function ()
+## {
+
+##     print("fonction SelectionUnOrdre.f activée")
+##     obs <- UnOrdreDansObs.f()
+##     assign("obs", obs, envir=.GlobalEnv)
+##     creationTablesBase.f()
+##     creationTablesCalcul.f()
+##     ModifierInterfaceApresSelection.f(ord, dim(obs)[1])
+##     gestionMSGinfo.f("Ordreselectionne", dim(obs)[1])
+## }
 
 ## ################################################################################
 ## Nom    : SelectionUneCatBenth.f()
 ## Objet  : exécution de la sélection par cathégorie benthique et écrasement des
 ##          données dans "obs"
 ## ################################################################################
-SelectionUneCatBenth.f <- function ()
-{
 
-    print("fonction SelectionUneCatBenth.f activée")
-    obs <- UneCatBenthDansObs.f()
-    assign("obs", obs, envir=.GlobalEnv)
-    creationTablesBase.f()
-    creationTablesCalcul.f()
-    ModifierInterfaceApresSelection.f(selectcb, dim(obs)[1])
-    gestionMSGinfo.f("CatBenthselectionne", dim(obs)[1])
-}
+## [sup] [yr: 11/01/2011]
+
+## SelectionUneCatBenth.f <- function ()
+## {
+
+##     print("fonction SelectionUneCatBenth.f activée")
+##     obs <- UneCatBenthDansObs.f()
+##     assign("obs", obs, envir=.GlobalEnv)
+##     creationTablesBase.f()
+##     creationTablesCalcul.f()
+##     ModifierInterfaceApresSelection.f(selectcb, dim(obs)[1])
+##     gestionMSGinfo.f("CatBenthselectionne", dim(obs)[1])
+## }
 
 ## ################################################################################
 ## Nom    : selectionEspeceStatut.f()

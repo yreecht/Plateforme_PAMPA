@@ -3060,127 +3060,129 @@ graphNbreParEsp.f <- function ()
 ## Output : Graphiques générés
 ################################################################################
 
+## [sup] [yr: 11/01/2011]
+
 ##################Graphiques concernant les nombres d'observation OU le recouvrement################################
-GraphNbObsParEspece.f <- function ()
-{
-    ## A finir et mettre aux couleurs
+## GraphNbObsParEspece.f <- function ()
+## {
+##     ## A finir et mettre aux couleurs
 
-    print("fonction GraphNbObsParEspece activée")
-    extremes.f()      #ici on coisit si l'on veut garder les x % des valeurs extremes
-    NbObsParEsp <- tapply(unitesp$nombre, list(unitesp$unite_observation, unitesp$code_espece), sum, na.rm=TRUE)
-    NbObsParEsp <- EnleverMaxExtremes.f(NbObsParEsp)    #  selon choix retourné par extremes.f()
-    col1 <- rgb(1, 0, 0, 0.5)
+##     print("fonction GraphNbObsParEspece activée")
+##     extremes.f()      #ici on coisit si l'on veut garder les x % des valeurs extremes
+##     NbObsParEsp <- tapply(unitesp$nombre, list(unitesp$unite_observation, unitesp$code_espece), sum, na.rm=TRUE)
+##     NbObsParEsp <- EnleverMaxExtremes.f(NbObsParEsp)    #  selon choix retourné par extremes.f()
+##     col1 <- rgb(1, 0, 0, 0.5)
 
-    x11(width=120, height=50, pointsize=10)
-    boxplot(as.data.frame(NbObsParEsp), col = row(as.matrix(NbObsParEsp)), las=2, main="Nombre d'observations par espèce pour toutes les unités d'obs confondues\n")
-    nbObs <- NbObsParEsp
-    nbObs[nbObs!=0] <- 1
-    nbObs <- apply(nbObs, 2, sum, na.rm=T)
-    axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5)
-    legend("topleft", "Nombre d'enregistrement par Boxplot", cex =0.7, col="orange", text.col="orange", merge=FALSE)
-    Moyenne <- apply(NbObsParEsp, 2, mean, na.rm=T)
-    points(Moyenne, pch=19, col="blue")
-    abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
-    if (choix=="1")
-    {
-        legend("top", "Enregistrements > 95% du maximum retirés", cex =0.7, col="red", text.col="red", merge=FALSE)
-    }
+##     x11(width=120, height=50, pointsize=10)
+##     boxplot(as.data.frame(NbObsParEsp), col = row(as.matrix(NbObsParEsp)), las=2, main="Nombre d'observations par espèce pour toutes les unités d'obs confondues\n")
+##     nbObs <- NbObsParEsp
+##     nbObs[nbObs!=0] <- 1
+##     nbObs <- apply(nbObs, 2, sum, na.rm=T)
+##     axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5)
+##     legend("topleft", "Nombre d'enregistrement par Boxplot", cex =0.7, col="orange", text.col="orange", merge=FALSE)
+##     Moyenne <- apply(NbObsParEsp, 2, mean, na.rm=T)
+##     points(Moyenne, pch=19, col="blue")
+##     abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
+##     if (choix=="1")
+##     {
+##         legend("top", "Enregistrements > 95% du maximum retirés", cex =0.7, col="red", text.col="red", merge=FALSE)
+##     }
 
-    SumObsParEsp <- apply(NbObsParEsp, 2, sum, na.rm=T)
-    ordreSumObsParEsp <- order(SumObsParEsp, decreasing=T)
+##     SumObsParEsp <- apply(NbObsParEsp, 2, sum, na.rm=T)
+##     ordreSumObsParEsp <- order(SumObsParEsp, decreasing=T)
 
-    ## x11(width=100, height=50, pointsize=10)
-    ## emplacement <- barplot(Moyenne)[, 1]
-    ## Sd = as.vector(tapply(obs$nombre, list(obs$statut, obs$an), na.rm = T, sd))
-    ## Rbarplot <- barplot(Moyenne, cex.lab=1.2, col=heat.colors(length(unique(obs$statut))), main=paste("Moyenne du nombre d'observations par enregistrement\n selon le statut et l'année\n\n"))
-    ## legend("topleft", "Nombre d'enregistrement par Barre", cex =0.7, col="orange", text.col="orange", merge=FALSE)
-    ## legend("topright", textstatut, col=heat.colors(length(unique(obs$statut))), pch = 15, cex =0.9, title="Statuts")
-    ## axis(3, as.vector(nbObs), at=emplacement, col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5, cex =0.7)
-    ## malegende <- unique(paste(obs$an, obs$statut))
-    ## axis(1, malegende[order(malegende)], at=emplacement, col.ticks="black", cex =0.7, las=2)
-    ## abline(v = emplacement+0.7 , col = "lightgray", lty = "dotted")
-    ## arrows(Rbarplot, Moyenne - Sd, Rbarplot, Moyenne + Sd, code = 3, col = "purple", angle = 90, length = .1)
-
-
-    x11(width=120, height=50, pointsize=10)
-    ## Moyenne = apply(NbObsParEsp, 2, mean, na.rm=T)
-    ## Sd = apply(NbObsParEsp, 2, sd, na.rm=T)
-    ## emplacement <- barplot(Moyenne)[, 1]
-    ## Rbarplot <-
-    barplot(SumObsParEsp[ordreSumObsParEsp], col = row(as.matrix(SumObsParEsp[ordreSumObsParEsp])), las=2, main="Nombre d'observations par espèce pour toutes les unités d'obs confondues")
-
-    if (choix=="1")
-    {
-        legend("top", "Enregistrements > 95% du maximum retirés", cex =0.7, col="red", text.col="red", merge=FALSE)
-    }
-    x11(width=120, height=50, pointsize=10)
-    barplot(SumObsParEsp[ordreSumObsParEsp][0:20], col = row(as.matrix(SumObsParEsp[ordreSumObsParEsp])), las=2, main="Nombre d'observations par espèce pour les 20 espèces les + répendues \n pour toutes les unités d'obs confondues")
-    if (choix=="1")
-    {
-        legend("top", "Enregistrements > 95% du maximum retirés", cex =0.7, col="red", text.col="red", merge=FALSE)
-    }
+##     ## x11(width=100, height=50, pointsize=10)
+##     ## emplacement <- barplot(Moyenne)[, 1]
+##     ## Sd = as.vector(tapply(obs$nombre, list(obs$statut, obs$an), na.rm = T, sd))
+##     ## Rbarplot <- barplot(Moyenne, cex.lab=1.2, col=heat.colors(length(unique(obs$statut))), main=paste("Moyenne du nombre d'observations par enregistrement\n selon le statut et l'année\n\n"))
+##     ## legend("topleft", "Nombre d'enregistrement par Barre", cex =0.7, col="orange", text.col="orange", merge=FALSE)
+##     ## legend("topright", textstatut, col=heat.colors(length(unique(obs$statut))), pch = 15, cex =0.9, title="Statuts")
+##     ## axis(3, as.vector(nbObs), at=emplacement, col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5, cex =0.7)
+##     ## malegende <- unique(paste(obs$an, obs$statut))
+##     ## axis(1, malegende[order(malegende)], at=emplacement, col.ticks="black", cex =0.7, las=2)
+##     ## abline(v = emplacement+0.7 , col = "lightgray", lty = "dotted")
+##     ## arrows(Rbarplot, Moyenne - Sd, Rbarplot, Moyenne + Sd, code = 3, col = "purple", angle = 90, length = .1)
 
 
-    x11(width=120, height=50, pointsize=10)
-    boxplot(as.data.frame(NbObsParEsp[, ordreSumObsParEsp][, 0:20]), col = row(as.matrix(NbObsParEsp[, ordreSumObsParEsp][, 0:20])), las=2, main="Nombre d'observations par espèce \n pour les 20 espèces les plus présentes \n\n  ")
-    nbObs <- NbObsParEsp[, ordreSumObsParEsp][, 0:20]
-    nbObs[nbObs!=0] <- 1
-    nbObs <- apply(nbObs, 2, sum, na.rm=T)
-    axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5)
-    legend("topleft", "Nombre d'enregistrement par Boxplot", cex =0.7, col="orange", text.col="orange", merge=FALSE)
-    Moyenne <- apply(NbObsParEsp[, ordreSumObsParEsp][, 0:20], 2, mean, na.rm=T)
-    points(Moyenne, pch=19, col="blue")
-    abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
-    if (choix=="1")
-    {
-        legend("top", "Enregistrements > 95% du maximum retirés", cex =0.7, col="red", text.col="red", merge=FALSE)
-    }
+##     x11(width=120, height=50, pointsize=10)
+##     ## Moyenne = apply(NbObsParEsp, 2, mean, na.rm=T)
+##     ## Sd = apply(NbObsParEsp, 2, sd, na.rm=T)
+##     ## emplacement <- barplot(Moyenne)[, 1]
+##     ## Rbarplot <-
+##     barplot(SumObsParEsp[ordreSumObsParEsp], col = row(as.matrix(SumObsParEsp[ordreSumObsParEsp])), las=2, main="Nombre d'observations par espèce pour toutes les unités d'obs confondues")
 
-    ## Mean, sd et ordre à intégrer aux graphiques
-    MeanObsParEsp <- apply(NbObsParEsp, 2, mean, na.rm=T)
-    SdMeanObsParEsp <- apply(NbObsParEsp, 2, mean, na.rm=T)
-    ordreMeanObsParEsp <- order(MeanObsParEsp, decreasing=T)
+##     if (choix=="1")
+##     {
+##         legend("top", "Enregistrements > 95% du maximum retirés", cex =0.7, col="red", text.col="red", merge=FALSE)
+##     }
+##     x11(width=120, height=50, pointsize=10)
+##     barplot(SumObsParEsp[ordreSumObsParEsp][0:20], col = row(as.matrix(SumObsParEsp[ordreSumObsParEsp])), las=2, main="Nombre d'observations par espèce pour les 20 espèces les + répendues \n pour toutes les unités d'obs confondues")
+##     if (choix=="1")
+##     {
+##         legend("top", "Enregistrements > 95% du maximum retirés", cex =0.7, col="red", text.col="red", merge=FALSE)
+##     }
 
-    x11(width=120, height=50, pointsize=10)
-    if (unique(unitobs$type) != "LIT")
-    {
-        barplot(SumObsParEsp[ordreSumObsParEsp], col = row(as.matrix(SumObsParEsp)), cex.lab=1.2, las=2, main="Nombre d'observations totales par espèce pour toutes les unités d'obs confondues")
-        if (choix=="1")
-        {
-            legend("top", "Enregistrements > 95% du maximum retirés", cex =0.7, col="red", text.col="red", merge=FALSE)
-        }
-    }else{
-        barplot(SumObsParEsp[ordreSumObsParEsp], col = row(as.matrix(SumObsParEsp)), cex.lab=1.2, las=2, main="Recouvrement par espèce pour toutes les unités d'obs confondues")
-    }
-    if (choix=="1")
-    {
-        legend("top", "Enregistrements > 95% du maximum retirés", cex =0.7, col="red", text.col="red", merge=FALSE)
-    }
-    x11(width=70, height=50, pointsize=10)
-    par(mfrow=c(2, (1+length(unique(unitesp$statut_protection)))/2))
-    ordreSumObsParEsp <- order(SumObsParEsp, decreasing=T)
-    pie(SumObsParEsp[ordreSumObsParEsp][0:20], col = row(as.matrix(SumObsParEsp)), main="part des observations pour les 20 espèces les + répendues \npour toutes les unités d'obs confondues")
-    if (choix=="1")
-    {
-        legend("top", "Enregistrements > 95% du maximum retirés", cex =0.7, col="red", text.col="red", merge=FALSE)
-    }
-    for (i in 1:length(unique(unitesp$statut_protection)))
-    {
-        SelectSelonStatut <- subset(unitesp, unitesp$statut_protection==unique(unitesp$statut_protection)[i])
-        if (nrow(SelectSelonStatut)!=0)
-        {
-            NbObsParEsp <- tapply(SelectSelonStatut$nombre, list(SelectSelonStatut$unite_observation, SelectSelonStatut$code_espece), sum, na.rm=TRUE)
-            SumObsParEsp <- apply(NbObsParEsp, 2, sum, na.rm=T)
-            ordreSumObsParEsp <- order(SumObsParEsp, decreasing=T)
-            pie(SumObsParEsp[ordreSumObsParEsp][0:20], col = row(as.matrix(order(SumObsParEsp, decreasing=T))), main=paste("Part des observations pour les 20 espèces \npour toutes les unités d'obs du statut", unique(unitesp$statut_protection)[i]))
-            if (choix=="1")
-            {
-                legend("top", "Enregistrements > 95% du maximum retirés", cex =0.7, col="red", text.col="red", merge=FALSE)
-            }
-        }
-    }
-    choix <- "0"
-}
+
+##     x11(width=120, height=50, pointsize=10)
+##     boxplot(as.data.frame(NbObsParEsp[, ordreSumObsParEsp][, 0:20]), col = row(as.matrix(NbObsParEsp[, ordreSumObsParEsp][, 0:20])), las=2, main="Nombre d'observations par espèce \n pour les 20 espèces les plus présentes \n\n  ")
+##     nbObs <- NbObsParEsp[, ordreSumObsParEsp][, 0:20]
+##     nbObs[nbObs!=0] <- 1
+##     nbObs <- apply(nbObs, 2, sum, na.rm=T)
+##     axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5)
+##     legend("topleft", "Nombre d'enregistrement par Boxplot", cex =0.7, col="orange", text.col="orange", merge=FALSE)
+##     Moyenne <- apply(NbObsParEsp[, ordreSumObsParEsp][, 0:20], 2, mean, na.rm=T)
+##     points(Moyenne, pch=19, col="blue")
+##     abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
+##     if (choix=="1")
+##     {
+##         legend("top", "Enregistrements > 95% du maximum retirés", cex =0.7, col="red", text.col="red", merge=FALSE)
+##     }
+
+##     ## Mean, sd et ordre à intégrer aux graphiques
+##     MeanObsParEsp <- apply(NbObsParEsp, 2, mean, na.rm=T)
+##     SdMeanObsParEsp <- apply(NbObsParEsp, 2, mean, na.rm=T)
+##     ordreMeanObsParEsp <- order(MeanObsParEsp, decreasing=T)
+
+##     x11(width=120, height=50, pointsize=10)
+##     if (unique(unitobs$type) != "LIT")
+##     {
+##         barplot(SumObsParEsp[ordreSumObsParEsp], col = row(as.matrix(SumObsParEsp)), cex.lab=1.2, las=2, main="Nombre d'observations totales par espèce pour toutes les unités d'obs confondues")
+##         if (choix=="1")
+##         {
+##             legend("top", "Enregistrements > 95% du maximum retirés", cex =0.7, col="red", text.col="red", merge=FALSE)
+##         }
+##     }else{
+##         barplot(SumObsParEsp[ordreSumObsParEsp], col = row(as.matrix(SumObsParEsp)), cex.lab=1.2, las=2, main="Recouvrement par espèce pour toutes les unités d'obs confondues")
+##     }
+##     if (choix=="1")
+##     {
+##         legend("top", "Enregistrements > 95% du maximum retirés", cex =0.7, col="red", text.col="red", merge=FALSE)
+##     }
+##     x11(width=70, height=50, pointsize=10)
+##     par(mfrow=c(2, (1+length(unique(unitesp$statut_protection)))/2))
+##     ordreSumObsParEsp <- order(SumObsParEsp, decreasing=T)
+##     pie(SumObsParEsp[ordreSumObsParEsp][0:20], col = row(as.matrix(SumObsParEsp)), main="part des observations pour les 20 espèces les + répendues \npour toutes les unités d'obs confondues")
+##     if (choix=="1")
+##     {
+##         legend("top", "Enregistrements > 95% du maximum retirés", cex =0.7, col="red", text.col="red", merge=FALSE)
+##     }
+##     for (i in 1:length(unique(unitesp$statut_protection)))
+##     {
+##         SelectSelonStatut <- subset(unitesp, unitesp$statut_protection==unique(unitesp$statut_protection)[i])
+##         if (nrow(SelectSelonStatut)!=0)
+##         {
+##             NbObsParEsp <- tapply(SelectSelonStatut$nombre, list(SelectSelonStatut$unite_observation, SelectSelonStatut$code_espece), sum, na.rm=TRUE)
+##             SumObsParEsp <- apply(NbObsParEsp, 2, sum, na.rm=T)
+##             ordreSumObsParEsp <- order(SumObsParEsp, decreasing=T)
+##             pie(SumObsParEsp[ordreSumObsParEsp][0:20], col = row(as.matrix(order(SumObsParEsp, decreasing=T))), main=paste("Part des observations pour les 20 espèces \npour toutes les unités d'obs du statut", unique(unitesp$statut_protection)[i]))
+##             if (choix=="1")
+##             {
+##                 legend("top", "Enregistrements > 95% du maximum retirés", cex =0.7, col="red", text.col="red", merge=FALSE)
+##             }
+##         }
+##     }
+##     choix <- "0"
+## }
 
 GraphRecouvrementPourUneEspece.f <- function ()
 {
@@ -3204,43 +3206,45 @@ GraphRecouvrementPourUneEspece.f <- function ()
     choix <- "0"
 }
 
-GraphNbObsPourUneEspece.f <- function ()
-{
-    print("fonction GraphNbObsPourUneEspece activée")
-    ## il faudrait mettre des couleurs #FONCTION OK mais peu générique
-    ChoixUneEspece.f()
-    extremes.f()
-    ## on restreint la table "listespunit" à l'espèce sélectionnée
-    spunit <- subset(listespunit, listespunit$code_espece==sp)
-    spunit$nombre <- EnleverMaxExtremes.f(spunit$nombre)
-    if (length(unique(spunit$nombre))>0)
-    {
-        par(mfrow=c(2, 2))
-        x11(width=120, height=50, pointsize=10)
-        boxplot(spunit$nombre, main=paste("Nombre d'observations\n pour l'espèce", sp, "\npour toutes les unités d'obs la concernant"))
-        nbObs <- length(spunit$nombre)
-        axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5)
+## [sup] [yr: 11/01/2011]
 
-        x11(width=120, height=50, pointsize=10)
-        boxplot(spunit$nombre ~spunit$statut_protection, main=paste("Nombre d'observations\n pour l'espèce", sp, "\n selon le statut des unités d'obs la concernant"))
-        nbObs <- tapply(spunit$nombre, spunit$statut_protection, length)
-        axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)))
+## GraphNbObsPourUneEspece.f <- function ()
+## {
+##     print("fonction GraphNbObsPourUneEspece activée")
+##     ## il faudrait mettre des couleurs #FONCTION OK mais peu générique
+##     ChoixUneEspece.f()
+##     extremes.f()
+##     ## on restreint la table "listespunit" à l'espèce sélectionnée
+##     spunit <- subset(listespunit, listespunit$code_espece==sp)
+##     spunit$nombre <- EnleverMaxExtremes.f(spunit$nombre)
+##     if (length(unique(spunit$nombre))>0)
+##     {
+##         par(mfrow=c(2, 2))
+##         x11(width=120, height=50, pointsize=10)
+##         boxplot(spunit$nombre, main=paste("Nombre d'observations\n pour l'espèce", sp, "\npour toutes les unités d'obs la concernant"))
+##         nbObs <- length(spunit$nombre)
+##         axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5)
 
-        x11(width=120, height=50, pointsize=10)
-        boxplot(spunit$nombre ~spunit$an, main=paste("Nombre d'observations\n pour l'espèce", sp, "\n selon le statut des unités d'obs la concernant"))
-        nbObs <- tapply(spunit$nombre, spunit$an, length)
-        axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)))
+##         x11(width=120, height=50, pointsize=10)
+##         boxplot(spunit$nombre ~spunit$statut_protection, main=paste("Nombre d'observations\n pour l'espèce", sp, "\n selon le statut des unités d'obs la concernant"))
+##         nbObs <- tapply(spunit$nombre, spunit$statut_protection, length)
+##         axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)))
 
-        x11(width=120, height=50, pointsize=10)
-        boxplot(spunit$nombre ~spunit$statut_protection+spunit$an, col=heat.colors(spunit$an), main=paste("Nombre d'observations\n par an pour l'espèce", sp, "\n selon le statut des unités d'obs la concernant"))
-        nbObs <- tapply(spunit$nombre, list(spunit$statut_protection, spunit$an), length)
-        axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)))
-    }else{
-        tkmessageBox(message="Graphique impossible - pas d'enregistrements dans votre sélection")
-        gestionMSGerreur.f("ZeroEnregistrement")
-    }
-    choix <- "0"
-}
+##         x11(width=120, height=50, pointsize=10)
+##         boxplot(spunit$nombre ~spunit$an, main=paste("Nombre d'observations\n pour l'espèce", sp, "\n selon le statut des unités d'obs la concernant"))
+##         nbObs <- tapply(spunit$nombre, spunit$an, length)
+##         axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)))
+
+##         x11(width=120, height=50, pointsize=10)
+##         boxplot(spunit$nombre ~spunit$statut_protection+spunit$an, col=heat.colors(spunit$an), main=paste("Nombre d'observations\n par an pour l'espèce", sp, "\n selon le statut des unités d'obs la concernant"))
+##         nbObs <- tapply(spunit$nombre, list(spunit$statut_protection, spunit$an), length)
+##         axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)))
+##     }else{
+##         tkmessageBox(message="Graphique impossible - pas d'enregistrements dans votre sélection")
+##         gestionMSGerreur.f("ZeroEnregistrement")
+##     }
+##     choix <- "0"
+## }
 
 GraphNbEspeceParUnitobs.f <- function ()
 {
@@ -3554,237 +3558,251 @@ GraphchoixNbEspeceParAn.f <- function ()
     choix <- "0"
 }
 
-GraphNbObsParSite.f <- function ()
-{
+## [sup] [yr: 11/01/2011]
 
-    ## A FINIR
+## GraphNbObsParSite.f <- function ()
+## {
 
-    print("fonction GraphNbObsParSite activée")
-    ChoixUnSite.f()
-    extremes.f()
-    obssite <- subset(unitesp, unitesp$site==si)
-    obssite$AnBiotope <- paste(obssite$an, obssite$biotope, sep="\n")
-    NbObsParsite <- tapply(obssite$nombre, list(obssite$code_espece, obssite$unite_observation), sum, na.rm=TRUE)
-    if (length(unique(obssite$nombre))>0)
-    {
-        x11(width=120, height=50, pointsize=10)
-        emplacement <- barplot(NbObsParsite, axisnames=FALSE, cex.names=0.8, las=2, main=paste("Nombre d'observation de chaque espèce par unitobs pour le site ", si))
-        axis(1, at=emplacement, las=2, labels=obssite$AnBiotope[match(colnames(NbObsParsite), obssite$unite_observation)], cex.axis=0.7, lwd=0)
+##     ## A FINIR
 
-        x11(width=70, height=50, pointsize=10)
-        boxplot(obssite$nombre[obssite$nombre!=0] ~obssite$an[obssite$nombre!=0], main=paste("Nombre d'observations\n pour le site", si, " selon l'année\n\n"))
-        nbObs <- tapply(obssite$nombre[obssite$nombre!=0], obssite$an[obssite$nombre!=0], length)
-        axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5)
-        legend("topleft", "Nombre d'enregistrement par Boxplot", cex =0.7, col="orange", text.col="orange", merge=FALSE)
+##     print("fonction GraphNbObsParSite activée")
+##     ChoixUnSite.f()
+##     extremes.f()
+##     obssite <- subset(unitesp, unitesp$site==si)
+##     obssite$AnBiotope <- paste(obssite$an, obssite$biotope, sep="\n")
+##     NbObsParsite <- tapply(obssite$nombre, list(obssite$code_espece, obssite$unite_observation), sum, na.rm=TRUE)
+##     if (length(unique(obssite$nombre))>0)
+##     {
+##         x11(width=120, height=50, pointsize=10)
+##         emplacement <- barplot(NbObsParsite, axisnames=FALSE, cex.names=0.8, las=2, main=paste("Nombre d'observation de chaque espèce par unitobs pour le site ", si))
+##         axis(1, at=emplacement, las=2, labels=obssite$AnBiotope[match(colnames(NbObsParsite), obssite$unite_observation)], cex.axis=0.7, lwd=0)
 
-        tkmessageBox(message="D'autres graphiques sont en cours de développement")
-    }else{
-        tkmessageBox(message="Graphique impossible - pas d'enregistrements dans votre sélection")
-        gestionMSGerreur.f("ZeroEnregistrement")
-    }
-    choix <- "0"
-}
+##         x11(width=70, height=50, pointsize=10)
+##         boxplot(obssite$nombre[obssite$nombre!=0] ~obssite$an[obssite$nombre!=0], main=paste("Nombre d'observations\n pour le site", si, " selon l'année\n\n"))
+##         nbObs <- tapply(obssite$nombre[obssite$nombre!=0], obssite$an[obssite$nombre!=0], length)
+##         axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5)
+##         legend("topleft", "Nombre d'enregistrement par Boxplot", cex =0.7, col="orange", text.col="orange", merge=FALSE)
 
-GraphNbObsParbiotope.f <- function ()
-{
+##         tkmessageBox(message="D'autres graphiques sont en cours de développement")
+##     }else{
+##         tkmessageBox(message="Graphique impossible - pas d'enregistrements dans votre sélection")
+##         gestionMSGerreur.f("ZeroEnregistrement")
+##     }
+##     choix <- "0"
+## }
 
-    ## A FINIR
+## [sup] [yr: 11/01/2011]
 
-    print("fonction GraphNbObsParbiotope activée")
-    ChoixUnbiotope.f()
-    extremes.f()
-    obsbiotope <- subset(unitesp, unitesp$biotope==bio)
-    obsbiotope$AnBiotope <- paste(obsbiotope$an, obsbiotope$unite_observation, sep="\n")
-    NbObsParbiotope <- tapply(obsbiotope$nombre, list(obsbiotope$code_espece, obsbiotope$unite_observation), sum, na.rm=TRUE)
-    if (length(unique(obsbiotope$nombre))>0)
-    {
-        x11(width=120, height=50, pointsize=10)
-        emplacement <- barplot(NbObsParbiotope, axisnames=FALSE, cex.names=0.8, las=2, main=paste("Nombre d'observation de chaque espèce pour une unitobs pour le biotope ", bio))
-        axis(1, at=emplacement, las=2, labels=obsbiotope$AnBiotope[match(colnames(NbObsParbiotope), obsbiotope$unite_observation)], cex.axis=0.7, lwd=0)
+## GraphNbObsParbiotope.f <- function ()
+## {
 
-        x11(width=70, height=50, pointsize=10)
-        boxplot(obsbiotope$nombre[obsbiotope$nombre!=0] ~obsbiotope$an[obsbiotope$nombre!=0], main=paste("Nombre d'observations\n pour le biotope", bio, " selon l'année\n\n"))
-        nbObs <- tapply(obsbiotope$nombre[obsbiotope$nombre!=0], obsbiotope$an[obsbiotope$nombre!=0], length)
-        axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5)
-        legend("topleft", "Nombre d'enregistrement par Boxplot", cex =0.7, col="orange", text.col="orange", merge=FALSE)
+##     ## A FINIR
 
-        tkmessageBox(message="D'autres graphiques sont en cours de développement")
-    }else{
-        tkmessageBox(message="Graphique impossible - pas d'enregistrements dans votre sélection")
-        gestionMSGerreur.f("ZeroEnregistrement")
-    }
-    choix <- "0"
-}
+##     print("fonction GraphNbObsParbiotope activée")
+##     ChoixUnbiotope.f()
+##     extremes.f()
+##     obsbiotope <- subset(unitesp, unitesp$biotope==bio)
+##     obsbiotope$AnBiotope <- paste(obsbiotope$an, obsbiotope$unite_observation, sep="\n")
+##     NbObsParbiotope <- tapply(obsbiotope$nombre, list(obsbiotope$code_espece, obsbiotope$unite_observation), sum, na.rm=TRUE)
+##     if (length(unique(obsbiotope$nombre))>0)
+##     {
+##         x11(width=120, height=50, pointsize=10)
+##         emplacement <- barplot(NbObsParbiotope, axisnames=FALSE, cex.names=0.8, las=2, main=paste("Nombre d'observation de chaque espèce pour une unitobs pour le biotope ", bio))
+##         axis(1, at=emplacement, las=2, labels=obsbiotope$AnBiotope[match(colnames(NbObsParbiotope), obsbiotope$unite_observation)], cex.axis=0.7, lwd=0)
 
-GraphNbObsParhabitat1.f <- function ()
-{
+##         x11(width=70, height=50, pointsize=10)
+##         boxplot(obsbiotope$nombre[obsbiotope$nombre!=0] ~obsbiotope$an[obsbiotope$nombre!=0], main=paste("Nombre d'observations\n pour le biotope", bio, " selon l'année\n\n"))
+##         nbObs <- tapply(obsbiotope$nombre[obsbiotope$nombre!=0], obsbiotope$an[obsbiotope$nombre!=0], length)
+##         axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5)
+##         legend("topleft", "Nombre d'enregistrement par Boxplot", cex =0.7, col="orange", text.col="orange", merge=FALSE)
 
-    ## A FINIR
+##         tkmessageBox(message="D'autres graphiques sont en cours de développement")
+##     }else{
+##         tkmessageBox(message="Graphique impossible - pas d'enregistrements dans votre sélection")
+##         gestionMSGerreur.f("ZeroEnregistrement")
+##     }
+##     choix <- "0"
+## }
 
-    print("fonction GraphNbObsParhabitat1 activée")
-    ChoixUnhabitat1.f()
-    extremes.f()
-    obshabitat1 <- subset(unitesp, unitesp$habitat1==ha)
-    obshabitat1$AnBiotope <- paste(obshabitat1$an, obshabitat1$biotope, sep="\n")
-    NbObsParhabitat1 <- tapply(obshabitat1$nombre, list(obshabitat1$code_espece, obshabitat1$unite_observation), sum, na.rm=TRUE)
-    if (length(unique(obshabitat1$nombre))>0)
-    {
-        x11(width=120, height=50, pointsize=10)
-        boxplot(obshabitat1$nombre[obshabitat1$nombre!=0] ~obshabitat1$an[obshabitat1$nombre!=0], main=paste("Nombre d'observations\n pour l'habitat", ha, "\n selon l'année"))
-        x11(width=120, height=50, pointsize=10)
-        axis(1, at=barplot(NbObsParhabitat1, axisnames=FALSE, cex.names=0.8, las=2, main=paste("Nombre d'observation de chaque espèce pour une unitobs pour l'habitat ", ha)), las=2, labels=obshabitat1$AnBiotope[match(colnames(NbObsParhabitat1), obshabitat1$unite_observation)], cex.axis=0.7, lwd=0)
-    }else{
-        tkmessageBox(message="Graphique impossible - pas d'enregistrements dans votre sélection")
-        gestionMSGerreur.f("ZeroEnregistrement")
-    }
-    choix <- "0"
-}
+## [sup] [yr: 11/01/2011]
 
-GraphNbObsParfamille.f <- function ()
-{
+## GraphNbObsParhabitat1.f <- function ()
+## {
 
-    print("fonction GraphNbObsParfamille activée")
-    extremes.f()
-    obs$famille <- especes$Famille[match(obs$code_espece, especes$code_espece)]
-    obs$an <- unitobs$an[match(obs$unite_observation, unitobs$unite_observation)]
-    if (length(unique(obs$nombre))>0)
-    {
-        textstatut <- c("HR : Hors Réserve", "PP : Protection Partielle", "RE : En réserve")
+##     ## A FINIR
 
-        x11(width=50, height=50, pointsize=10)
-        boxplot(obs$nombre[obs$famille!= "fa."] ~obs$an[obs$famille!= "fa."], main=paste("Nombre d'observations\n par famille \n selon l'année"))
-        nbObs <- tapply(obs$nombre[obs$famille!= "fa."], obs$an[obs$famille!= "fa."], length)
-        axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5)
-        legend("topleft", "Nombre d'enregistrement par Boxplot", cex =0.7, col="orange", text.col="orange", merge=FALSE)
-        Moyenne <- as.vector(tapply(obs$nombre[obs$famille!= "fa."], obs$an[obs$famille!= "fa."], na.rm = T, mean))
-        points(Moyenne, pch=19, col="blue")
-        abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
+##     print("fonction GraphNbObsParhabitat1 activée")
+##     ChoixUnhabitat1.f()
+##     extremes.f()
+##     obshabitat1 <- subset(unitesp, unitesp$habitat1==ha)
+##     obshabitat1$AnBiotope <- paste(obshabitat1$an, obshabitat1$biotope, sep="\n")
+##     NbObsParhabitat1 <- tapply(obshabitat1$nombre, list(obshabitat1$code_espece, obshabitat1$unite_observation), sum, na.rm=TRUE)
+##     if (length(unique(obshabitat1$nombre))>0)
+##     {
+##         x11(width=120, height=50, pointsize=10)
+##         boxplot(obshabitat1$nombre[obshabitat1$nombre!=0] ~obshabitat1$an[obshabitat1$nombre!=0], main=paste("Nombre d'observations\n pour l'habitat", ha, "\n selon l'année"))
+##         x11(width=120, height=50, pointsize=10)
+##         axis(1, at=barplot(NbObsParhabitat1, axisnames=FALSE, cex.names=0.8, las=2, main=paste("Nombre d'observation de chaque espèce pour une unitobs pour l'habitat ", ha)), las=2, labels=obshabitat1$AnBiotope[match(colnames(NbObsParhabitat1), obshabitat1$unite_observation)], cex.axis=0.7, lwd=0)
+##     }else{
+##         tkmessageBox(message="Graphique impossible - pas d'enregistrements dans votre sélection")
+##         gestionMSGerreur.f("ZeroEnregistrement")
+##     }
+##     choix <- "0"
+## }
 
-        ChoixUneFamille.f()
-        x11(width=50, height=50, pointsize=10)
-        boxplot(obs$nombre[obs$famille==fa] ~obs$an[obs$famille==fa], main=paste("Nombre d'observations pour la famille", fa, "\n selon l'année\n\n"))
-        nbObs <- tapply(obs$nombre[obs$famille==fa], obs$an[obs$famille==fa], length)
-        axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5)
-        legend("topleft", "Nombre d'enregistrement par Boxplot", cex =0.7, col="orange", text.col="orange", merge=FALSE)
-        Moyenne <- as.vector(tapply(obs$nombre[obs$famille==fa], obs$an[obs$famille==fa], na.rm = T, mean))
-        points(Moyenne, pch=19, col="blue")
-        text(Moyenne+(Moyenne/10), col = "blue", cex = 1, labels=as.character(round(Moyenne, digits=1)))
-        abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
+## [sup] [yr: 11/01/2011]
 
-        x11(width=120, height=50, pointsize=10)
-        boxplot(obs$nombre[obs$famille==fa] ~obs$statut[obs$famille==fa]+obs$an[obs$famille==fa], col=heat.colors(length(unique(obs$statut))), las=2, main=paste("Nombre d'observations pour la famille ", fa, "\n selon le statut et l'année \n\n"))
-        nbObs <- tapply(obs$nombre[obs$famille==fa], list(obs$statut[obs$famille==fa], obs$an[obs$famille==fa]), length)
-        axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5)
-        legend("topleft", "Nombre d'enregistrement par Boxplot", cex =0.7, col="orange", text.col="orange", merge=FALSE)
-        legend("topright", textstatut, col=heat.colors(length(unique(obs$statut))), pch = 15, cex =0.9, title="Statuts")
-        Moyenne <- as.vector(tapply(obs$nombre[obs$famille==fa], list(obs$statut[obs$famille==fa], obs$an[obs$famille==fa]), na.rm = T, mean))
-        points(Moyenne, pch=19, col="blue")
-        text(Moyenne+(Moyenne/10), col = "blue", cex = 1, labels=as.character(round(Moyenne, digits=1)))
-        abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
-        abline(v = 0.5+(1:length(as.vector(unique(obs$an))))*length(as.vector(unique(obs$statut))), col = "red")
-    }else{
-        tkmessageBox(message="Graphique impossible - pas d'enregistrements dans votre sélection")
-        gestionMSGerreur.f("ZeroEnregistrement")
-    }
-    choix <- "0"
-}
+## GraphNbObsParfamille.f <- function ()
+## {
 
-GraphNbObsParAn.f <- function ()
-{
-    print("fonction GraphNbObsParAn activée")
-    extremes.f()
-    obs$an <- unitobs$an[match(obs$unite_observation, unitobs$unite_observation)]
-    if (length(unique(obs$nombre))>0)
-    {
-        x11(width=100, height=50, pointsize=10)
-        boxplot(obs$nombre[obs$nombre!= 0] ~obs$an[obs$nombre!= 0], main=paste("Nombre d'observations par enregistrement\n selon l'année\n\n"))
-        nbObs <- tapply(obs$nombre[obs$nombre!= 0], obs$an[obs$nombre!= 0], length)
-        legend("topleft", "Nombre d'enregistrement par Boxplot", cex =0.7, col="orange", text.col="orange", merge=FALSE)
-        axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5)
-        Moyenne <- as.vector(tapply(obs$nombre[obs$nombre!= 0], obs$an[obs$nombre!= 0], na.rm = T, mean))
-        points(Moyenne, pch=19, col="blue")
-        abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
-    }else{
-        tkmessageBox(message="Graphique impossible - pas d'enregistrements dans votre sélection")
-        gestionMSGerreur.f("ZeroEnregistrement")
-    }
-    choix <- "0"
-}
+##     print("fonction GraphNbObsParfamille activée")
+##     extremes.f()
+##     obs$famille <- especes$Famille[match(obs$code_espece, especes$code_espece)]
+##     obs$an <- unitobs$an[match(obs$unite_observation, unitobs$unite_observation)]
+##     if (length(unique(obs$nombre))>0)
+##     {
+##         textstatut <- c("HR : Hors Réserve", "PP : Protection Partielle", "RE : En réserve")
 
-GraphNbObsParStatut.f <- function ()
-{
-    print("fonction GraphNbObsParStatut activée")
-    extremes.f()
-    obs$statut <- unitobs$statut[match(obs$unite_observation, unitobs$unite_observation)]
-    if (length(unique(obs$nombre))>0)
-    {
-        textstatut <- c("HR : Hors Réserve", "PP : Protection Partielle", "RE : En réserve")
-        x11(width=50, height=50, pointsize=10)
-        boxplot(obs$nombre[obs$nombre!= 0] ~obs$statut[obs$nombre!= 0], col=heat.colors(length(unique(obs$statut))), main=paste("Nombre d'observations par enregistrement\n selon le statut\n\n"))
-        nbObs <- tapply(obs$nombre[obs$nombre!= 0], obs$statut[obs$nombre!= 0], length)
-        legend("topleft", "Nombre d'enregistrement par Boxplot", cex =0.7, col="orange", text.col="orange", merge=FALSE)
-        legend("bottomright", textstatut, col=heat.colors(length(unique(obs$statut))), pch = 15, cex =0.9, title="Statuts")
-        axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5)
-        Moyenne <- as.vector(tapply(obs$nombre[obs$nombre!= 0], obs$statut[obs$nombre!= 0], na.rm = T, mean))
-        points(Moyenne, pch=19, col="blue")
-        abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
-    }else{
-        tkmessageBox(message="Graphique impossible - pas d'enregistrements dans votre sélection")
-        gestionMSGerreur.f("ZeroEnregistrement")
-    }
-    choix <- "0"
-}
+##         x11(width=50, height=50, pointsize=10)
+##         boxplot(obs$nombre[obs$famille!= "fa."] ~obs$an[obs$famille!= "fa."], main=paste("Nombre d'observations\n par famille \n selon l'année"))
+##         nbObs <- tapply(obs$nombre[obs$famille!= "fa."], obs$an[obs$famille!= "fa."], length)
+##         axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5)
+##         legend("topleft", "Nombre d'enregistrement par Boxplot", cex =0.7, col="orange", text.col="orange", merge=FALSE)
+##         Moyenne <- as.vector(tapply(obs$nombre[obs$famille!= "fa."], obs$an[obs$famille!= "fa."], na.rm = T, mean))
+##         points(Moyenne, pch=19, col="blue")
+##         abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
 
-GraphNbObsParAnStatut.f <- function ()
-{
-    print("fonction GraphNbObsParAnStatut activée")
-    obs$an <- unitobs$an[match(obs$unite_observation, unitobs$unite_observation)]
-    obs$statut <- unitobs$statut[match(obs$unite_observation, unitobs$unite_observation)]
-    extremes.f()      #ici on coisit si l'on veut garder les x % des valeurs extremes
-    obs$nombre <- EnleverMaxExtremes.f(obs$nombre)    #  selon choix retourné par extremes.f()
+##         ChoixUneFamille.f()
+##         x11(width=50, height=50, pointsize=10)
+##         boxplot(obs$nombre[obs$famille==fa] ~obs$an[obs$famille==fa], main=paste("Nombre d'observations pour la famille", fa, "\n selon l'année\n\n"))
+##         nbObs <- tapply(obs$nombre[obs$famille==fa], obs$an[obs$famille==fa], length)
+##         axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5)
+##         legend("topleft", "Nombre d'enregistrement par Boxplot", cex =0.7, col="orange", text.col="orange", merge=FALSE)
+##         Moyenne <- as.vector(tapply(obs$nombre[obs$famille==fa], obs$an[obs$famille==fa], na.rm = T, mean))
+##         points(Moyenne, pch=19, col="blue")
+##         text(Moyenne+(Moyenne/10), col = "blue", cex = 1, labels=as.character(round(Moyenne, digits=1)))
+##         abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
 
-    if (length(unique(obs$nombre))>0)
-    {
-        textstatut <- c("HR : Hors Réserve", "PP : Protection Partielle", "RE : En réserve")
+##         x11(width=120, height=50, pointsize=10)
+##         boxplot(obs$nombre[obs$famille==fa] ~obs$statut[obs$famille==fa]+obs$an[obs$famille==fa], col=heat.colors(length(unique(obs$statut))), las=2, main=paste("Nombre d'observations pour la famille ", fa, "\n selon le statut et l'année \n\n"))
+##         nbObs <- tapply(obs$nombre[obs$famille==fa], list(obs$statut[obs$famille==fa], obs$an[obs$famille==fa]), length)
+##         axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5)
+##         legend("topleft", "Nombre d'enregistrement par Boxplot", cex =0.7, col="orange", text.col="orange", merge=FALSE)
+##         legend("topright", textstatut, col=heat.colors(length(unique(obs$statut))), pch = 15, cex =0.9, title="Statuts")
+##         Moyenne <- as.vector(tapply(obs$nombre[obs$famille==fa], list(obs$statut[obs$famille==fa], obs$an[obs$famille==fa]), na.rm = T, mean))
+##         points(Moyenne, pch=19, col="blue")
+##         text(Moyenne+(Moyenne/10), col = "blue", cex = 1, labels=as.character(round(Moyenne, digits=1)))
+##         abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
+##         abline(v = 0.5+(1:length(as.vector(unique(obs$an))))*length(as.vector(unique(obs$statut))), col = "red")
+##     }else{
+##         tkmessageBox(message="Graphique impossible - pas d'enregistrements dans votre sélection")
+##         gestionMSGerreur.f("ZeroEnregistrement")
+##     }
+##     choix <- "0"
+## }
 
-        x11(width=120, height=50, pointsize=10)
-        boxplot(obs$nombre[obs$nombre!= 0] ~obs$statut[obs$nombre!= 0]+obs$an[obs$nombre!= 0], col=heat.colors(length(unique(obs$statut))), las=2, main=paste("Nombre d'observations par enregistrement\n selon le statut et l'année\n\n"))
-        nbObs <- tapply(obs$nombre[obs$nombre!= 0], list(obs$statut[obs$nombre!= 0], obs$an[obs$nombre!= 0]), length)
-        legend("topleft", "Nombre d'enregistrement par Boxplot", cex =0.7, col="orange", text.col="orange", merge=FALSE)
-        legend("bottomright", textstatut, col=heat.colors(length(unique(obs$statut))), pch = 15, cex =0.9, title="Statuts")
-        axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5, cex =0.7)
-        ## Moyenne = as.vector(tapply(obs$nombre[obs$nombre!= 0], list(obs$statut[obs$nombre!= 0], obs$an[obs$nombre!= 0]), na.rm = T, mean))
-        Moyenne <- as.vector(tapply(obs$nombre, list(obs$statut, obs$an), na.rm = T, mean))
-        points(Moyenne, pch=19, col="blue")
-        abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
-        abline(v = 0.5+(1:length(as.vector(unique(obs$an))))*length(as.vector(unique(obs$statut))), col = "red")
-        if (choix=="1")
-        {
-            legend("top", "Enregistrements > 95% du maximum retirés", cex =0.7, col="red", text.col="red", merge=FALSE)
-        }
+## [sup] [yr: 11/01/2011]
 
-        x11(width=100, height=50, pointsize=10)
-        emplacement <- barplot(Moyenne)[, 1]
-        Sd <- as.vector(tapply(obs$nombre, list(obs$statut, obs$an), na.rm = T, sd))
-        Rbarplot <- barplot(Moyenne, cex.lab=1.2, col=heat.colors(length(unique(obs$statut))), main=paste("Moyenne du nombre d'observations par enregistrement\n selon le statut et l'année\n\n"))
-        legend("topleft", "Nombre d'enregistrement par Barre", cex =0.7, col="orange", text.col="orange", merge=FALSE)
-        legend("topright", textstatut, col=heat.colors(length(unique(obs$statut))), pch = 15, cex =0.9, title="Statuts")
-        axis(3, as.vector(nbObs), at=emplacement, col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5, cex =0.7)
-        malegende <- unique(paste(obs$an, obs$statut))
-        axis(1, malegende[order(malegende)], at=emplacement, col.ticks="black", cex =0.7, las=2)
-        abline(v = emplacement+0.7 , col = "lightgray", lty = "dotted")
-        arrows(Rbarplot, Moyenne - Sd, Rbarplot, Moyenne + Sd, code = 3, col = "purple", angle = 90, length = .1)
-        if (choix=="1")
-        {
-            legend("top", "Enregistrements > 95% du maximum retirés", cex =0.7, col="red", text.col="red", merge=FALSE)
-        }
-        ## abline(v = (0.5+(1:length(as.vector(unique(obs$an))))*length(as.vector(unique(obs$statut))))*emplacement, col = "red") #plus tard
-    }else{
-        tkmessageBox(message="Graphique impossible - pas d'enregistrements dans votre sélection")
-        gestionMSGerreur.f("ZeroEnregistrement")
-    }
-    choix <- "0"
-}
+## GraphNbObsParAn.f <- function ()
+## {
+##     print("fonction GraphNbObsParAn activée")
+##     extremes.f()
+##     obs$an <- unitobs$an[match(obs$unite_observation, unitobs$unite_observation)]
+##     if (length(unique(obs$nombre))>0)
+##     {
+##         x11(width=100, height=50, pointsize=10)
+##         boxplot(obs$nombre[obs$nombre!= 0] ~obs$an[obs$nombre!= 0], main=paste("Nombre d'observations par enregistrement\n selon l'année\n\n"))
+##         nbObs <- tapply(obs$nombre[obs$nombre!= 0], obs$an[obs$nombre!= 0], length)
+##         legend("topleft", "Nombre d'enregistrement par Boxplot", cex =0.7, col="orange", text.col="orange", merge=FALSE)
+##         axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5)
+##         Moyenne <- as.vector(tapply(obs$nombre[obs$nombre!= 0], obs$an[obs$nombre!= 0], na.rm = T, mean))
+##         points(Moyenne, pch=19, col="blue")
+##         abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
+##     }else{
+##         tkmessageBox(message="Graphique impossible - pas d'enregistrements dans votre sélection")
+##         gestionMSGerreur.f("ZeroEnregistrement")
+##     }
+##     choix <- "0"
+## }
+
+## [sup] [yr: 11/01/2011]
+
+## GraphNbObsParStatut.f <- function ()
+## {
+##     print("fonction GraphNbObsParStatut activée")
+##     extremes.f()
+##     obs$statut <- unitobs$statut[match(obs$unite_observation, unitobs$unite_observation)]
+##     if (length(unique(obs$nombre))>0)
+##     {
+##         textstatut <- c("HR : Hors Réserve", "PP : Protection Partielle", "RE : En réserve")
+##         x11(width=50, height=50, pointsize=10)
+##         boxplot(obs$nombre[obs$nombre!= 0] ~obs$statut[obs$nombre!= 0], col=heat.colors(length(unique(obs$statut))), main=paste("Nombre d'observations par enregistrement\n selon le statut\n\n"))
+##         nbObs <- tapply(obs$nombre[obs$nombre!= 0], obs$statut[obs$nombre!= 0], length)
+##         legend("topleft", "Nombre d'enregistrement par Boxplot", cex =0.7, col="orange", text.col="orange", merge=FALSE)
+##         legend("bottomright", textstatut, col=heat.colors(length(unique(obs$statut))), pch = 15, cex =0.9, title="Statuts")
+##         axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5)
+##         Moyenne <- as.vector(tapply(obs$nombre[obs$nombre!= 0], obs$statut[obs$nombre!= 0], na.rm = T, mean))
+##         points(Moyenne, pch=19, col="blue")
+##         abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
+##     }else{
+##         tkmessageBox(message="Graphique impossible - pas d'enregistrements dans votre sélection")
+##         gestionMSGerreur.f("ZeroEnregistrement")
+##     }
+##     choix <- "0"
+## }
+
+## [sup] [yr: 11/01/2011]
+
+## GraphNbObsParAnStatut.f <- function ()
+## {
+##     print("fonction GraphNbObsParAnStatut activée")
+##     obs$an <- unitobs$an[match(obs$unite_observation, unitobs$unite_observation)]
+##     obs$statut <- unitobs$statut[match(obs$unite_observation, unitobs$unite_observation)]
+##     extremes.f()      #ici on coisit si l'on veut garder les x % des valeurs extremes
+##     obs$nombre <- EnleverMaxExtremes.f(obs$nombre)    #  selon choix retourné par extremes.f()
+
+##     if (length(unique(obs$nombre))>0)
+##     {
+##         textstatut <- c("HR : Hors Réserve", "PP : Protection Partielle", "RE : En réserve")
+
+##         x11(width=120, height=50, pointsize=10)
+##         boxplot(obs$nombre[obs$nombre!= 0] ~obs$statut[obs$nombre!= 0]+obs$an[obs$nombre!= 0], col=heat.colors(length(unique(obs$statut))), las=2, main=paste("Nombre d'observations par enregistrement\n selon le statut et l'année\n\n"))
+##         nbObs <- tapply(obs$nombre[obs$nombre!= 0], list(obs$statut[obs$nombre!= 0], obs$an[obs$nombre!= 0]), length)
+##         legend("topleft", "Nombre d'enregistrement par Boxplot", cex =0.7, col="orange", text.col="orange", merge=FALSE)
+##         legend("bottomright", textstatut, col=heat.colors(length(unique(obs$statut))), pch = 15, cex =0.9, title="Statuts")
+##         axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5, cex =0.7)
+##         ## Moyenne = as.vector(tapply(obs$nombre[obs$nombre!= 0], list(obs$statut[obs$nombre!= 0], obs$an[obs$nombre!= 0]), na.rm = T, mean))
+##         Moyenne <- as.vector(tapply(obs$nombre, list(obs$statut, obs$an), na.rm = T, mean))
+##         points(Moyenne, pch=19, col="blue")
+##         abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
+##         abline(v = 0.5+(1:length(as.vector(unique(obs$an))))*length(as.vector(unique(obs$statut))), col = "red")
+##         if (choix=="1")
+##         {
+##             legend("top", "Enregistrements > 95% du maximum retirés", cex =0.7, col="red", text.col="red", merge=FALSE)
+##         }
+
+##         x11(width=100, height=50, pointsize=10)
+##         emplacement <- barplot(Moyenne)[, 1]
+##         Sd <- as.vector(tapply(obs$nombre, list(obs$statut, obs$an), na.rm = T, sd))
+##         Rbarplot <- barplot(Moyenne, cex.lab=1.2, col=heat.colors(length(unique(obs$statut))), main=paste("Moyenne du nombre d'observations par enregistrement\n selon le statut et l'année\n\n"))
+##         legend("topleft", "Nombre d'enregistrement par Barre", cex =0.7, col="orange", text.col="orange", merge=FALSE)
+##         legend("topright", textstatut, col=heat.colors(length(unique(obs$statut))), pch = 15, cex =0.9, title="Statuts")
+##         axis(3, as.vector(nbObs), at=emplacement, col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5, cex =0.7)
+##         malegende <- unique(paste(obs$an, obs$statut))
+##         axis(1, malegende[order(malegende)], at=emplacement, col.ticks="black", cex =0.7, las=2)
+##         abline(v = emplacement+0.7 , col = "lightgray", lty = "dotted")
+##         arrows(Rbarplot, Moyenne - Sd, Rbarplot, Moyenne + Sd, code = 3, col = "purple", angle = 90, length = .1)
+##         if (choix=="1")
+##         {
+##             legend("top", "Enregistrements > 95% du maximum retirés", cex =0.7, col="red", text.col="red", merge=FALSE)
+##         }
+##         ## abline(v = (0.5+(1:length(as.vector(unique(obs$an))))*length(as.vector(unique(obs$statut))))*emplacement, col = "red") #plus tard
+##     }else{
+##         tkmessageBox(message="Graphique impossible - pas d'enregistrements dans votre sélection")
+##         gestionMSGerreur.f("ZeroEnregistrement")
+##     }
+##     choix <- "0"
+## }
 
 GraphDelta.f <- function ()
 {

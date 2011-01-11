@@ -963,18 +963,20 @@ UnStatutDansObs.f <- function ()
 ## Output : table obs pour une seule famille
 ################################################################################
 
-UnBiotopeDansObs.f <- function ()
-{
+## [sup] [yr: 11/01/2011]
 
-    print("fonction UnBiotopeDansObs activée")
-    ChoixUnbiotope.f()
-    obs$biotope <- unit$biotope[match(obs$unite_observation, unit$unitobs)]
-    obs <- subset(obs, obs$biotope==bio)
-    gestionMSGaide.f("biotopeselected")
-    Jeuxdonnescoupe <- 1
-    assign("Jeuxdonnescoupe", Jeuxdonnescoupe, envir=.GlobalEnv)
-    return(obs)
-}
+## UnBiotopeDansObs.f <- function ()
+## {
+
+##     print("fonction UnBiotopeDansObs activée")
+##     ChoixUnbiotope.f()
+##     obs$biotope <- unit$biotope[match(obs$unite_observation, unit$unitobs)]
+##     obs <- subset(obs, obs$biotope==bio)
+##     gestionMSGaide.f("biotopeselected")
+##     Jeuxdonnescoupe <- 1
+##     assign("Jeuxdonnescoupe", Jeuxdonnescoupe, envir=.GlobalEnv)
+##     return(obs)
+## }
 
 ################################################################################
 ## Nom    : UneFamilleDansObs.f
@@ -983,18 +985,20 @@ UnBiotopeDansObs.f <- function ()
 ## Output : table obs pour une seule famille
 ################################################################################
 
-UneFamilleDansObs.f <- function ()
-{
+## [sup] [yr: 11/01/2011]
 
-    print("fonction UneFamilleDansObs activée")
-    ChoixUneFamille.f()
-    obs$famille <- especes$Famille[match(obs$code_espece, especes$code_espece)]
-    obs <- subset(obs, obs$famille==fa)
-    gestionMSGaide.f("etapeselected")
-    Jeuxdonnescoupe <- 1
-    assign("Jeuxdonnescoupe", Jeuxdonnescoupe, envir=.GlobalEnv)
-    return(obs)
-}
+## UneFamilleDansObs.f <- function ()
+## {
+
+##     print("fonction UneFamilleDansObs activée")
+##     ChoixUneFamille.f()
+##     obs$famille <- especes$Famille[match(obs$code_espece, especes$code_espece)]
+##     obs <- subset(obs, obs$famille==fa)
+##     gestionMSGaide.f("etapeselected")
+##     Jeuxdonnescoupe <- 1
+##     assign("Jeuxdonnescoupe", Jeuxdonnescoupe, envir=.GlobalEnv)
+##     return(obs)
+## }
 
 ################################################################################
 ## Nom    : UnPhylumDansObs.f
@@ -1003,19 +1007,21 @@ UneFamilleDansObs.f <- function ()
 ## Output : table obs pour un seul phylum
 ################################################################################
 
-UnPhylumDansObs.f <- function ()
-{
+## [sup] [yr: 11/01/2011]
 
-    print("fonction UnPhylumDansObs.f activée")
-    ChoixUnPhylum.f()
-    obs$phylum <- especes$Phylum[match(obs$code_espece, especes$code_espece)]
-    obs <- subset(obs, obs$phylum==phy)
-    gestionMSGaide.f("etapeselected")
-    Jeuxdonnescoupe <- 1
-    assign("Jeuxdonnescoupe", Jeuxdonnescoupe, envir=.GlobalEnv)
-    return(obs)
+## UnPhylumDansObs.f <- function ()
+## {
 
-}
+##     print("fonction UnPhylumDansObs.f activée")
+##     ChoixUnPhylum.f()
+##     obs$phylum <- especes$Phylum[match(obs$code_espece, especes$code_espece)]
+##     obs <- subset(obs, obs$phylum==phy)
+##     gestionMSGaide.f("etapeselected")
+##     Jeuxdonnescoupe <- 1
+##     assign("Jeuxdonnescoupe", Jeuxdonnescoupe, envir=.GlobalEnv)
+##     return(obs)
+
+## }
 
 ################################################################################
 ## Nom    : UneClasseDansObs.f
@@ -1024,19 +1030,21 @@ UnPhylumDansObs.f <- function ()
 ## Output : table obs pour une seule classe
 ################################################################################
 
-UneClasseDansObs.f <- function ()
-{
+## [sup] [yr: 11/01/2011]
 
-    print("fonction UneClasseDansObs.f activée")
-    ChoixUneClasse.f()
-    obs$classe <- especes$Classe[match(obs$code_espece, especes$code_espece)]
-    obs <- subset(obs, obs$classe==cla)
-    gestionMSGaide.f("etapeselected")
-    Jeuxdonnescoupe <- 1
-    assign("Jeuxdonnescoupe", Jeuxdonnescoupe, envir=.GlobalEnv)
-    return(obs)
+## UneClasseDansObs.f <- function ()
+## {
 
-}
+##     print("fonction UneClasseDansObs.f activée")
+##     ChoixUneClasse.f()
+##     obs$classe <- especes$Classe[match(obs$code_espece, especes$code_espece)]
+##     obs <- subset(obs, obs$classe==cla)
+##     gestionMSGaide.f("etapeselected")
+##     Jeuxdonnescoupe <- 1
+##     assign("Jeuxdonnescoupe", Jeuxdonnescoupe, envir=.GlobalEnv)
+##     return(obs)
+
+## }
 
 ################################################################################
 ## Nom    : UnOrdreDansObs.f
@@ -1045,18 +1053,20 @@ UneClasseDansObs.f <- function ()
 ## Output : table obs pour un seul ordre
 ################################################################################
 
-UnOrdreDansObs.f <- function ()
-{
+## [sup] [yr: 11/01/2011]
 
-    print("fonction UnOrdreDansObs.f activée")
-    ChoixUnOrdre.f()
-    obs$ordre <- especes$Ordre[match(obs$code_espece, especes$code_espece)]
-    obs <- subset(obs, obs$ordre==ord)
-    gestionMSGaide.f("etapeselected")
-    Jeuxdonnescoupe <- 1
-    return(obs)
-    assign("Jeuxdonnescoupe", Jeuxdonnescoupe, envir=.GlobalEnv)
-}
+## UnOrdreDansObs.f <- function ()
+## {
+
+##     print("fonction UnOrdreDansObs.f activée")
+##     ChoixUnOrdre.f()
+##     obs$ordre <- especes$Ordre[match(obs$code_espece, especes$code_espece)]
+##     obs <- subset(obs, obs$ordre==ord)
+##     gestionMSGaide.f("etapeselected")
+##     Jeuxdonnescoupe <- 1
+##     return(obs)
+##     assign("Jeuxdonnescoupe", Jeuxdonnescoupe, envir=.GlobalEnv)
+## }
 
 ################################################################################
 ## Nom    : UneCatBenthDansObs.f
@@ -1065,19 +1075,21 @@ UnOrdreDansObs.f <- function ()
 ## Output : table obs pour une seule famille
 ################################################################################
 
-UneCatBenthDansObs.f <- function ()
-{
+## [sup] [yr: 11/01/2011]
 
-    print("fonction UneCatBenthDansObs activée")
-    obs$Catbent <- especes$Cath_benthique[match(obs$code_espece, especes$code_espece)]
-    ChoixFacteurSelect.f(obs$Catbent, "Cath_benthique", "single", 1, "selectcb")
-    obs <- subset(obs, obs$Catbent==selectcb) #pour l'instant, variables en "assign"
-    gestionMSGaide.f("etapeselected")
-    Jeuxdonnescoupe <- 1
-    assign("Jeuxdonnescoupe", Jeuxdonnescoupe, envir=.GlobalEnv)
-    return(obs)
+## UneCatBenthDansObs.f <- function ()
+## {
 
-}
+##     print("fonction UneCatBenthDansObs activée")
+##     obs$Catbent <- especes$Cath_benthique[match(obs$code_espece, especes$code_espece)]
+##     ChoixFacteurSelect.f(obs$Catbent, "Cath_benthique", "single", 1, "selectcb")
+##     obs <- subset(obs, obs$Catbent==selectcb) #pour l'instant, variables en "assign"
+##     gestionMSGaide.f("etapeselected")
+##     Jeuxdonnescoupe <- 1
+##     assign("Jeuxdonnescoupe", Jeuxdonnescoupe, envir=.GlobalEnv)
+##     return(obs)
+
+## }
 ## , "Phylum", "Cath_benthique", "Classe", "Ordre", "Famille", à rendre générique
 
 ################################################################################

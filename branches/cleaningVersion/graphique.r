@@ -2486,69 +2486,71 @@ GraphGroup2factEspUnitobs.f <- function ()
 ## Output : boxplot
 ################################################################################
 
-GraphBiomasseParEspece.f <- function ()
-{
-    print("fonction GraphBiomasseParEspece activée")
-    extremes.f()      #ici on coisit si l'on veut garder les x % des valeurs extremes
-    especesPresentes <- subset(unitesp$code_espece, unitesp$pres_abs==1)
-    ChoixFacteurSelect.f(especesPresentes, "code_espece", "multiple", 1, "selectbiomasse")
+## [sup] [yr: 11/01/2011]
 
-    spunit <- subset(listespunit, listespunit$code_espece==selectbiomasse)
-    spunit <- EnleverMaxExtremes.f(spunit)
-    textstatut <- c("HR : Hors Réserve", "PP : Protection Partielle", "RE : En réserve")
+## GraphBiomasseParEspece.f <- function ()
+## {
+##     print("fonction GraphBiomasseParEspece activée")
+##     extremes.f()      #ici on coisit si l'on veut garder les x % des valeurs extremes
+##     especesPresentes <- subset(unitesp$code_espece, unitesp$pres_abs==1)
+##     ChoixFacteurSelect.f(especesPresentes, "code_espece", "multiple", 1, "selectbiomasse")
 
-    ## la biomasse n'est pas calculée sur tous les jeux de données  (avec données benthos? vérifier la création de listespunit)
-    if (length(unique(listespunit$biomasse))>1)
-    {
-        ## on vérifie que la biomasse a été calculée pour l'espèce sélectionnée
-        if (length(unique(spunit$biomasse))>1)
-        {
-            x11(width=50, height=20, pointsize=10)
-            par(mar=c(12, 4, 5, 1), mgp=c(3, 1, 9))
-            if (tclvalue(GraphBiomasse)=="1")
-            {
-                boxplot(spunit$biomasse ~spunit$code_espece, data=spunit, varwidth = TRUE, ylab=expression("Biomasse "(g/m^2)), las=3,
-                        main <- paste("Biomasse\n pour un choix d'espèces\npour toutes les unités d'obs"))
-            }
-            if (tclvalue(GraphBiomasse)=="2")
-            {
-                boxplot(spunit$biomasse ~spunit$statut_protection+spunit$code_espece, data=spunit, varwidth = TRUE, ylab=expression("Biomasse "(g/m^2)), las=3, main=paste("Biomasse\n pour un choix d'espèces\n selon le statut des unités d'obs la concernant"))
-                legend("topright", textstatut, col=heat.colors(length(unique(spunit$statut_protection))), pch = 15, cex =0.9, title="Statuts")
-            }
-            if (tclvalue(GraphBiomasse)=="3")
-            {
-                boxplot(spunit$biomasse ~spunit$an+spunit$code_espece, data=spunit, varwidth = TRUE,
-                        ylab=expression("Biomasse "(g/m^2)), las=3,
-                        main=paste("Biomasse\n pour un choix d'espèces\n selon l'année des unités d'obs la concernant"))
-            }
-            if (tclvalue(GraphBiomasse)=="4")
-            {
-                boxplot(spunit$biomasse ~spunit$statut_protection+spunit$an+spunit$code_espece, data=spunit,
-                        varwidth = TRUE, ylab=expression("Biomasse "(g/m^2)), las=3, col=heat.colors(length(unique(spunit$statut_protection))),
-                        main=paste("Biomasse\n pour un choix d'espèces\n selon le statut et l'année des unités d'obs la concernant"))
-                legend("topright", textstatut, col=heat.colors(length(unique(spunit$statut_protection))), pch = 15, cex =0.9, title="Statuts")
-            }
-            if (tclvalue(GraphBiomasse)=="5")
-            {
-                par(mar=c(15, 4, 5, 1), mgp=c(3, 1, 9))
-                boxplot(spunit$biomasse ~spunit$biotope+spunit$an+spunit$code_espece, data=spunit,
-                        varwidth = TRUE, ylab=expression("Biomasse "(g/m^2)), las=3, col=heat.colors(length(unique(spunit$statut_protection))),
-                        main=paste("Biomasse\n pour un choix d'espèces\n selon le biotope, l'année et le statut des unités d'obs la concernant"))
-                legend("topright", textstatut, col=heat.colors(length(unique(spunit$statut_protection))), pch = 15, cex =0.9, title="Statuts")
-            }
-            tclvalue(GraphBiomasse)="0"
-        }else{
-            ## à mettre en MSGERROR
-            tkmessageBox(message="Calcul de biomasse impossible - Coefficients a et b manquants dans le referentiel especes")
-            gestionMSGerreur.f("ZeroEnregistrement")
-        }
-    }
-    if (choix=="1")
-    {
-        legend("top", "Enregistrements > 95% du maximum retirés", cex =0.7, col="red", text.col="red", merge=FALSE)
-    }
-    choix <- "0"
-}
+##     spunit <- subset(listespunit, listespunit$code_espece==selectbiomasse)
+##     spunit <- EnleverMaxExtremes.f(spunit)
+##     textstatut <- c("HR : Hors Réserve", "PP : Protection Partielle", "RE : En réserve")
+
+##     ## la biomasse n'est pas calculée sur tous les jeux de données  (avec données benthos? vérifier la création de listespunit)
+##     if (length(unique(listespunit$biomasse))>1)
+##     {
+##         ## on vérifie que la biomasse a été calculée pour l'espèce sélectionnée
+##         if (length(unique(spunit$biomasse))>1)
+##         {
+##             x11(width=50, height=20, pointsize=10)
+##             par(mar=c(12, 4, 5, 1), mgp=c(3, 1, 9))
+##             if (tclvalue(GraphBiomasse)=="1")
+##             {
+##                 boxplot(spunit$biomasse ~spunit$code_espece, data=spunit, varwidth = TRUE, ylab=expression("Biomasse "(g/m^2)), las=3,
+##                         main <- paste("Biomasse\n pour un choix d'espèces\npour toutes les unités d'obs"))
+##             }
+##             if (tclvalue(GraphBiomasse)=="2")
+##             {
+##                 boxplot(spunit$biomasse ~spunit$statut_protection+spunit$code_espece, data=spunit, varwidth = TRUE, ylab=expression("Biomasse "(g/m^2)), las=3, main=paste("Biomasse\n pour un choix d'espèces\n selon le statut des unités d'obs la concernant"))
+##                 legend("topright", textstatut, col=heat.colors(length(unique(spunit$statut_protection))), pch = 15, cex =0.9, title="Statuts")
+##             }
+##             if (tclvalue(GraphBiomasse)=="3")
+##             {
+##                 boxplot(spunit$biomasse ~spunit$an+spunit$code_espece, data=spunit, varwidth = TRUE,
+##                         ylab=expression("Biomasse "(g/m^2)), las=3,
+##                         main=paste("Biomasse\n pour un choix d'espèces\n selon l'année des unités d'obs la concernant"))
+##             }
+##             if (tclvalue(GraphBiomasse)=="4")
+##             {
+##                 boxplot(spunit$biomasse ~spunit$statut_protection+spunit$an+spunit$code_espece, data=spunit,
+##                         varwidth = TRUE, ylab=expression("Biomasse "(g/m^2)), las=3, col=heat.colors(length(unique(spunit$statut_protection))),
+##                         main=paste("Biomasse\n pour un choix d'espèces\n selon le statut et l'année des unités d'obs la concernant"))
+##                 legend("topright", textstatut, col=heat.colors(length(unique(spunit$statut_protection))), pch = 15, cex =0.9, title="Statuts")
+##             }
+##             if (tclvalue(GraphBiomasse)=="5")
+##             {
+##                 par(mar=c(15, 4, 5, 1), mgp=c(3, 1, 9))
+##                 boxplot(spunit$biomasse ~spunit$biotope+spunit$an+spunit$code_espece, data=spunit,
+##                         varwidth = TRUE, ylab=expression("Biomasse "(g/m^2)), las=3, col=heat.colors(length(unique(spunit$statut_protection))),
+##                         main=paste("Biomasse\n pour un choix d'espèces\n selon le biotope, l'année et le statut des unités d'obs la concernant"))
+##                 legend("topright", textstatut, col=heat.colors(length(unique(spunit$statut_protection))), pch = 15, cex =0.9, title="Statuts")
+##             }
+##             tclvalue(GraphBiomasse)="0"
+##         }else{
+##             ## à mettre en MSGERROR
+##             tkmessageBox(message="Calcul de biomasse impossible - Coefficients a et b manquants dans le referentiel especes")
+##             gestionMSGerreur.f("ZeroEnregistrement")
+##         }
+##     }
+##     if (choix=="1")
+##     {
+##         legend("top", "Enregistrements > 95% du maximum retirés", cex =0.7, col="red", text.col="red", merge=FALSE)
+##     }
+##     choix <- "0"
+## }
 
 ################################################################################
 ## Nom    : GraphDensiteParUnitObs.f()
@@ -2557,49 +2559,51 @@ GraphBiomasseParEspece.f <- function ()
 ## Output : boxplot densite
 ################################################################################
 
-GraphDensiteParUnitObs.f <- function ()
-{
-    print("fonction GraphDensiteParUnitObs activée")
-    extremes.f()
-    unit$densite <- EnleverMaxExtremes.f(unit$densite)
-    if (length(unique(unit$densite))>0)
-    {
-        x11(width=120, height=50, pointsize=10)
-        if (tclvalue(GraphDensite)=="1")
-        {
-            boxplot(unit$densite, data=unit, varwidth = TRUE, ylab="Densité (ind/m2)", las=3,
-                    main=paste("Densité globale"))
-        }
-        if (tclvalue(GraphDensite)=="2")
-        {
-            boxplot(unit$densite ~unit$an, data=unit, col=heat.colors(length(unique(unit$an))), varwidth = TRUE,
-                    ylab="Densité (ind/m2)", las=3, main=paste("Densité selon l'année"))
-        }
-        if (tclvalue(GraphDensite)=="3")
-        {
-            boxplot(unit$densite ~unit$statut_protection, data=unit,
-                    col=heat.colors(length(unique(unit$statut_protection))), varwidth = TRUE, ylab="Densité (ind/m2)", las=3,
-                    main=paste("Densité  selon le statut"))
-        }
-        if (tclvalue(GraphDensite)=="4")
-        {
-            boxplot(unit$densite ~unit$statut_protection+unit$an, data=unit,
-                    varwidth = TRUE, ylab="Densité (ind/m2)", las=3, col=heat.colors(length(unique(unit$statut_protection))),
-                    main=paste("Densité par an \n selon le statut et l'année"))
-        }
-        if (tclvalue(GraphDensite)=="5")
-        {
-            boxplot(unit$densite ~unit$statut_protection+unit$an+unit$biotope, data=unit,
-                    varwidth = TRUE, ylab="Densité (ind/m2)", las=3, col=heat.colors(length(unique(unit$statut_protection))),
-                    main=paste("Densité  par an \n selon le statut l'année et le biotope"))
-        }
-    }else{
-        tkmessageBox(message="Graphique impossible - pas d'enregistrements dans votre sélection")
-        gestionMSGerreur.f("ZeroEnregistrement")
-    }
-    tclvalue(GraphDensite)="0"
-    choix <- "0"
-}
+## [sup] [yr: 11/01/2011]
+
+## GraphDensiteParUnitObs.f <- function ()
+## {
+##     print("fonction GraphDensiteParUnitObs activée")
+##     extremes.f()
+##     unit$densite <- EnleverMaxExtremes.f(unit$densite)
+##     if (length(unique(unit$densite))>0)
+##     {
+##         x11(width=120, height=50, pointsize=10)
+##         if (tclvalue(GraphDensite)=="1")
+##         {
+##             boxplot(unit$densite, data=unit, varwidth = TRUE, ylab="Densité (ind/m2)", las=3,
+##                     main=paste("Densité globale"))
+##         }
+##         if (tclvalue(GraphDensite)=="2")
+##         {
+##             boxplot(unit$densite ~unit$an, data=unit, col=heat.colors(length(unique(unit$an))), varwidth = TRUE,
+##                     ylab="Densité (ind/m2)", las=3, main=paste("Densité selon l'année"))
+##         }
+##         if (tclvalue(GraphDensite)=="3")
+##         {
+##             boxplot(unit$densite ~unit$statut_protection, data=unit,
+##                     col=heat.colors(length(unique(unit$statut_protection))), varwidth = TRUE, ylab="Densité (ind/m2)", las=3,
+##                     main=paste("Densité  selon le statut"))
+##         }
+##         if (tclvalue(GraphDensite)=="4")
+##         {
+##             boxplot(unit$densite ~unit$statut_protection+unit$an, data=unit,
+##                     varwidth = TRUE, ylab="Densité (ind/m2)", las=3, col=heat.colors(length(unique(unit$statut_protection))),
+##                     main=paste("Densité par an \n selon le statut et l'année"))
+##         }
+##         if (tclvalue(GraphDensite)=="5")
+##         {
+##             boxplot(unit$densite ~unit$statut_protection+unit$an+unit$biotope, data=unit,
+##                     varwidth = TRUE, ylab="Densité (ind/m2)", las=3, col=heat.colors(length(unique(unit$statut_protection))),
+##                     main=paste("Densité  par an \n selon le statut l'année et le biotope"))
+##         }
+##     }else{
+##         tkmessageBox(message="Graphique impossible - pas d'enregistrements dans votre sélection")
+##         gestionMSGerreur.f("ZeroEnregistrement")
+##     }
+##     tclvalue(GraphDensite)="0"
+##     choix <- "0"
+## }
 ################################################################################
 ## Nom    : GraphBiomasseParUnitObs.f()
 ## Objet  : graphiques des Biomasse par unité d'observation sur une espèce sélectionnée
@@ -2607,49 +2611,51 @@ GraphDensiteParUnitObs.f <- function ()
 ## Output : boxplot biomasse
 ################################################################################
 
-GraphBiomasseParUnitObs.f <- function ()
-{
-    print("fonction GraphBiomasseParUnitObs activée")
-    extremes.f()
-    unit$biomasse <- EnleverMaxExtremes.f(unit$biomasse)
-    if (length(unique(unit$biomasse))>0)
-    {
-        x11(width=120, height=50, pointsize=10)
-        if (tclvalue(GraphBiomasse)=="1")
-        {
-            boxplot(unit$biomasse, data=unit, varwidth = TRUE, ylab=expression("Biomasse "(g/m^2)), las=3,
-                    main=paste("Biomasse (g/m²) globale"))
-        }
-        if (tclvalue(GraphBiomasse)=="2")
-        {
-            boxplot(unit$biomasse ~unit$an, data=unit, col=heat.colors(length(unique(unit$an))), varwidth = TRUE,
-                    ylab=expression("Biomasse "(g/m^2)), las=3, main=paste("Biomasse (g/m²) selon l'année"))
-        }
-        if (tclvalue(GraphBiomasse)=="3")
-        {
-            boxplot(unit$biomasse ~unit$statut_protection, data=unit,
-                    col=heat.colors(length(unique(unit$statut_protection))), varwidth = TRUE, ylab=expression("Biomasse "(g/m^2)), las=3,
-                    main=paste("Biomasse (g/m²)  selon le statut"))
-        }
-        if (tclvalue(GraphBiomasse)=="4")
-        {
-            boxplot(unit$biomasse ~unit$statut_protection+unit$an, data=unit,
-                    varwidth = TRUE, ylab="biomasse", las=3, col=heat.colors(length(unique(unit$statut_protection))),
-                    main=paste("Biomasse (g/m²) par an \n selon le statut et l'année"))
-        }
-        if (tclvalue(GraphBiomasse)=="5")
-        {
-            boxplot(unit$biomasse ~unit$statut_protection+unit$an+unit$biotope, data=unit,
-                    varwidth = TRUE, ylab=expression("Biomasse "(g/m^2)), las=3, col=heat.colors(length(unique(unit$statut_protection))),
-                    main=paste("Biomasse (g/m²) par an \n selon le statut l'année et le biotope"))
-        }
-    }else{
-        tkmessageBox(message="Graphique impossible - pas d'enregistrements dans votre sélection")
-        gestionMSGerreur.f("ZeroEnregistrement")
-    }
-    tclvalue(GraphBiomasse)="0"
-    choix <- "0"
-}
+## [sup] [yr: 11/01/2011]
+
+## GraphBiomasseParUnitObs.f <- function ()
+## {
+##     print("fonction GraphBiomasseParUnitObs activée")
+##     extremes.f()
+##     unit$biomasse <- EnleverMaxExtremes.f(unit$biomasse)
+##     if (length(unique(unit$biomasse))>0)
+##     {
+##         x11(width=120, height=50, pointsize=10)
+##         if (tclvalue(GraphBiomasse)=="1")
+##         {
+##             boxplot(unit$biomasse, data=unit, varwidth = TRUE, ylab=expression("Biomasse "(g/m^2)), las=3,
+##                     main=paste("Biomasse (g/m²) globale"))
+##         }
+##         if (tclvalue(GraphBiomasse)=="2")
+##         {
+##             boxplot(unit$biomasse ~unit$an, data=unit, col=heat.colors(length(unique(unit$an))), varwidth = TRUE,
+##                     ylab=expression("Biomasse "(g/m^2)), las=3, main=paste("Biomasse (g/m²) selon l'année"))
+##         }
+##         if (tclvalue(GraphBiomasse)=="3")
+##         {
+##             boxplot(unit$biomasse ~unit$statut_protection, data=unit,
+##                     col=heat.colors(length(unique(unit$statut_protection))), varwidth = TRUE, ylab=expression("Biomasse "(g/m^2)), las=3,
+##                     main=paste("Biomasse (g/m²)  selon le statut"))
+##         }
+##         if (tclvalue(GraphBiomasse)=="4")
+##         {
+##             boxplot(unit$biomasse ~unit$statut_protection+unit$an, data=unit,
+##                     varwidth = TRUE, ylab="biomasse", las=3, col=heat.colors(length(unique(unit$statut_protection))),
+##                     main=paste("Biomasse (g/m²) par an \n selon le statut et l'année"))
+##         }
+##         if (tclvalue(GraphBiomasse)=="5")
+##         {
+##             boxplot(unit$biomasse ~unit$statut_protection+unit$an+unit$biotope, data=unit,
+##                     varwidth = TRUE, ylab=expression("Biomasse "(g/m^2)), las=3, col=heat.colors(length(unique(unit$statut_protection))),
+##                     main=paste("Biomasse (g/m²) par an \n selon le statut l'année et le biotope"))
+##         }
+##     }else{
+##         tkmessageBox(message="Graphique impossible - pas d'enregistrements dans votre sélection")
+##         gestionMSGerreur.f("ZeroEnregistrement")
+##     }
+##     tclvalue(GraphBiomasse)="0"
+##     choix <- "0"
+## }
 
 
 ################################################################################
@@ -2659,198 +2665,207 @@ GraphBiomasseParUnitObs.f <- function ()
 ## Output : boxplot densite
 ################################################################################
 
-GraphHillParUnitObs.f <- function ()
-{
-    print("fonction GraphHillParUnitObs activée")
-    extremes.f()
-    unit$hill <- EnleverMaxExtremes.f(unit$hill)
-    if (length(unique(unit$hill))>0)
-    {
-        x11(width=120, height=50, pointsize=10)
-        if (tclvalue(GraphHill)=="1")
-        {
-            boxplot(unit$hill, data=unit, varwidth = TRUE, ylab="indice de Hill", las=3,
-                    main=paste("Indice de Hill tout confondu"))
-        }
-        if (tclvalue(GraphHill)=="2")
-        {
-            boxplot(unit$hill ~unit$an, data=unit, col=heat.colors(length(unique(unit$an))), varwidth = TRUE,
-                    ylab="Indice de Hill ", las=3, main=paste("Indice de Hill selon l'année"))
-        }
-        if (tclvalue(GraphHill)=="3")
-        {
-            boxplot(unit$hill ~unit$statut_protection, data=unit, col=heat.colors(length(unique(unit$statut_protection))),
-                    varwidth = TRUE, ylab="Indice de Hill ", las=3, main=paste("Indice de Hill selon le statut"))
-        }
-        if (tclvalue(GraphHill)=="4")
-        {
-            boxplot(unit$hill ~unit$statut_protection+unit$an, data=unit,
-                    varwidth = TRUE, ylab="Indice de Hill ", las=3, col=heat.colors(length(unique(unit$statut_protection))),
-                    main=paste("Indice de Hill par an \n selon le statut et l'année"))
-        }
-    }else{
-        tkmessageBox(message="Graphique impossible - pas d'enregistrements dans votre sélection")
-        gestionMSGerreur.f("ZeroEnregistrement")
-    }
-    tclvalue(GraphHill)="0"
-    choix <- "0"
-}
+## [sup] [yr: 11/01/2011]
 
-GraphPielouParUnitObs.f <- function ()
-{
-    extremes.f()
-    print("fonction GraphPielouParUnitObs activée")
-    unit$pielou <- EnleverMaxExtremes.f(unit$pielou)
-    if (length(unique(unit$hill))>0)
-    {
-        x11(width=120, height=50, pointsize=10)
-        if (tclvalue(GraphPielou)=="1")
-        {
-            boxplot(unit$pielou, data=unit, varwidth = TRUE, ylab="indice de Pielou", las=3,
-                    main=paste("Indice de Pielou tout confondu"))
-        }
-        if (tclvalue(GraphPielou)=="2")
-        {
-            boxplot(unit$pielou ~unit$an, data=unit, col=heat.colors(length(unique(unit$an))), varwidth = TRUE,
-                    ylab="Indice de Pielou ", las=3, main=paste("Indice de Pielou selon l'année"))
-        }
-        if (tclvalue(GraphPielou)=="3")
-        {
-            boxplot(unit$pielou ~unit$statut_protection, data=unit,
-                    col=heat.colors(length(unique(unit$statut_protection))), varwidth = TRUE, ylab="Indice de Pielou ", las=3,
-                    main=paste("Indice de Pielou selon le statut"))
-        }
-        if (tclvalue(GraphPielou)=="4")
-        {
-            boxplot(unit$pielou ~unit$statut_protection+unit$an, data=unit,
-                    varwidth = TRUE, ylab="Indice de Pielou ", las=3, col=heat.colors(length(unique(unit$statut_protection))),
-                    main=paste("Indice de Pielou par an \n selon le statut et l'année"))
-        }
-    }else{
-        tkmessageBox(message="Graphique impossible - pas d'enregistrements dans votre sélection")
-        gestionMSGerreur.f("ZeroEnregistrement")
-    }
-    tclvalue(GraphPielou)="0"
-    choix <- "0"
-}
+## GraphHillParUnitObs.f <- function ()
+## {
+##     print("fonction GraphHillParUnitObs activée")
+##     extremes.f()
+##     unit$hill <- EnleverMaxExtremes.f(unit$hill)
+##     if (length(unique(unit$hill))>0)
+##     {
+##         x11(width=120, height=50, pointsize=10)
+##         if (tclvalue(GraphHill)=="1")
+##         {
+##             boxplot(unit$hill, data=unit, varwidth = TRUE, ylab="indice de Hill", las=3,
+##                     main=paste("Indice de Hill tout confondu"))
+##         }
+##         if (tclvalue(GraphHill)=="2")
+##         {
+##             boxplot(unit$hill ~unit$an, data=unit, col=heat.colors(length(unique(unit$an))), varwidth = TRUE,
+##                     ylab="Indice de Hill ", las=3, main=paste("Indice de Hill selon l'année"))
+##         }
+##         if (tclvalue(GraphHill)=="3")
+##         {
+##             boxplot(unit$hill ~unit$statut_protection, data=unit, col=heat.colors(length(unique(unit$statut_protection))),
+##                     varwidth = TRUE, ylab="Indice de Hill ", las=3, main=paste("Indice de Hill selon le statut"))
+##         }
+##         if (tclvalue(GraphHill)=="4")
+##         {
+##             boxplot(unit$hill ~unit$statut_protection+unit$an, data=unit,
+##                     varwidth = TRUE, ylab="Indice de Hill ", las=3, col=heat.colors(length(unique(unit$statut_protection))),
+##                     main=paste("Indice de Hill par an \n selon le statut et l'année"))
+##         }
+##     }else{
+##         tkmessageBox(message="Graphique impossible - pas d'enregistrements dans votre sélection")
+##         gestionMSGerreur.f("ZeroEnregistrement")
+##     }
+##     tclvalue(GraphHill)="0"
+##     choix <- "0"
+## }
 
-GraphL.simpsonParUnitObs.f <- function ()
-{
+## [sup] [yr: 11/01/2011]
 
-    print("fonction GraphL.simpsonParUnitObs activée")
-    extremes.f()
-    unit$l.simpson <- EnleverMaxExtremes.f(unit$l.simpson)
-    if (length(unique(unit$hill))>0)
-    {
-        x11(width=120, height=50, pointsize=10)
-        if (tclvalue(GraphL.simpson)=="1")
-        {
-            boxplot(unit$l.simpson , data=unit, varwidth = TRUE, ylab="indice de L.simpson", las=3,
-                    main=paste("Indice de L.simpson tout confondu"))
-        }
-        if (tclvalue(GraphL.simpson)=="2")
-        {
-            boxplot(unit$l.simpson  ~unit$an, data=unit, col=heat.colors(length(unique(unit$an))), varwidth = TRUE,
-                    ylab="Indice de L.simpson ", las=3, main=paste("Indice de L.simpson selon l'année"))
-        }
-        if (tclvalue(GraphL.simpson)=="3")
-        {
-            boxplot(unit$l.simpson  ~unit$statut_protection, data=unit,
-                    col=heat.colors(length(unique(unit$statut_protection))), varwidth = TRUE, ylab="Indice de L.simpson ", las=3,
-                    main=paste("Indice de L.simpson selon le statut"))
-        }
-        if (tclvalue(GraphL.simpson)=="4")
-        {
-            boxplot(unit$l.simpson  ~unit$statut_protection+unit$an, data=unit,
-                    varwidth = TRUE, ylab="Indice de L.simpson ", las=3, col=heat.colors(length(unique(unit$statut_protection))),
-                    main=paste("Indice de L.simpson par an \n selon le statut et l'année"))
-        }
-    }else{
-        tkmessageBox(message="Graphique impossible - pas d'enregistrements dans votre sélection")
-        gestionMSGerreur.f("ZeroEnregistrement")
-    }
-    tclvalue(GraphL.simpson)="0"
-    choix <- "0"
-}
+## GraphPielouParUnitObs.f <- function ()
+## {
+##     extremes.f()
+##     print("fonction GraphPielouParUnitObs activée")
+##     unit$pielou <- EnleverMaxExtremes.f(unit$pielou)
+##     if (length(unique(unit$hill))>0)
+##     {
+##         x11(width=120, height=50, pointsize=10)
+##         if (tclvalue(GraphPielou)=="1")
+##         {
+##             boxplot(unit$pielou, data=unit, varwidth = TRUE, ylab="indice de Pielou", las=3,
+##                     main=paste("Indice de Pielou tout confondu"))
+##         }
+##         if (tclvalue(GraphPielou)=="2")
+##         {
+##             boxplot(unit$pielou ~unit$an, data=unit, col=heat.colors(length(unique(unit$an))), varwidth = TRUE,
+##                     ylab="Indice de Pielou ", las=3, main=paste("Indice de Pielou selon l'année"))
+##         }
+##         if (tclvalue(GraphPielou)=="3")
+##         {
+##             boxplot(unit$pielou ~unit$statut_protection, data=unit,
+##                     col=heat.colors(length(unique(unit$statut_protection))), varwidth = TRUE, ylab="Indice de Pielou ", las=3,
+##                     main=paste("Indice de Pielou selon le statut"))
+##         }
+##         if (tclvalue(GraphPielou)=="4")
+##         {
+##             boxplot(unit$pielou ~unit$statut_protection+unit$an, data=unit,
+##                     varwidth = TRUE, ylab="Indice de Pielou ", las=3, col=heat.colors(length(unique(unit$statut_protection))),
+##                     main=paste("Indice de Pielou par an \n selon le statut et l'année"))
+##         }
+##     }else{
+##         tkmessageBox(message="Graphique impossible - pas d'enregistrements dans votre sélection")
+##         gestionMSGerreur.f("ZeroEnregistrement")
+##     }
+##     tclvalue(GraphPielou)="0"
+##     choix <- "0"
+## }
 
-GraphSimpsonParUnitObs.f <- function ()
-{
-    extremes.f()
-    unit$simpson <- EnleverMaxExtremes.f(unit$simpson)
-    print("fonction GraphSimpsonParUnitObs activée")
-    if (length(unique(unit$hill))>0)
-    {
-        x11(width=120, height=50, pointsize=10)
-        if (tclvalue(GraphSimpson)=="1")
-        {
-            boxplot(unit$simpson , data=unit, varwidth = TRUE, ylab="indice de Simpson", las=3,
-                    main=paste("Indice de Simpson tout confondu"))
-        }
-        if (tclvalue(GraphSimpson)=="2")
-        {
-            boxplot(unit$simpson  ~unit$an, data=unit, col=heat.colors(length(unique(unit$an))), varwidth = TRUE,
-                    ylab="Indice de Simpson ", las=3, main=paste("Indice de Simpson selon l'année"))
-        }
-        if (tclvalue(GraphSimpson)=="3")
-        {
-            boxplot(unit$simpson  ~unit$statut_protection, data=unit,
-                    col=heat.colors(length(unique(unit$statut_protection))), varwidth = TRUE, ylab="Indice de Simpson ", las=3,
-                    main=paste("Indice de Simpson selon le statut"))
-        }
-        if (tclvalue(GraphSimpson)=="4")
-        {
-            boxplot(unit$simpson  ~unit$statut_protection+unit$an, data=unit,
-                    varwidth = TRUE, ylab="Indice de Simpson ", las=3, col=heat.colors(length(unique(unit$statut_protection))),
-                    main=paste("Indice de Simpson par an \n selon le statut et l'année"))
-        }
-    }else{
-        tkmessageBox(message="Graphique impossible - pas d'enregistrements dans votre sélection")
-        gestionMSGerreur.f("ZeroEnregistrement")
-    }
-    tclvalue(GraphSimpson)="0"
-    choix <- "0"
-}
+## [sup] [yr: 11/01/2011]
 
+## GraphL.simpsonParUnitObs.f <- function ()
+## {
 
-GraphRichesse_specifiqueParUnitObs.f <- function ()
-{
-    print("fonction GraphRichesse_specifiqueParUnitObs activée")
-    extremes.f()
-    spunit <- unit
-    spunit$richesse_specifique <- EnleverMaxExtremes.f(spunit$richesse_specifique)
-    if (length(unique(spunit$richesse_specifique))>0)
-    {
-        x11(width=120, height=50, pointsize=10)
-        if (tclvalue(GraphRichesse_specifique)=="1")
-        {
-            boxplot(spunit$richesse_specifique , data=spunit, varwidth = TRUE, ylab="indice de Richesse_specifique", las=3,
-                    main=paste("Indice de Richesse_specifique tout confondu"))
-        }
-        if (tclvalue(GraphRichesse_specifique)=="2")
-        {
-            boxplot(spunit$richesse_specifique  ~spunit$an, data=spunit, col=heat.colors(length(unique(unit$an))),
-                    varwidth = TRUE, ylab="Indice de Richesse_specifique ", las=3,
-                    main=paste("Indice de Richesse_specifique selon l'année"))
-        }
-        if (tclvalue(GraphRichesse_specifique)=="3")
-        {
-            boxplot(spunit$richesse_specifique  ~spunit$statut_protection, data=spunit,
-                    col=heat.colors(length(unique(spunit$statut_protection))), varwidth = TRUE,
-                    ylab="Indice de Richesse_specifique ", las=3, main=paste("Indice de Richesse_specifique selon le statut"))
-        }
-        if (tclvalue(GraphRichesse_specifique)=="4")
-        {
-            boxplot(spunit$richesse_specifique  ~spunit$statut_protection+spunit$an, data=spunit,
-                    varwidth = TRUE, ylab="Indice de Richesse_specifique ", las=3, col=heat.colors(length(unique(unit$statut_protection))),
-                    main=paste("Indice de Richesse_specifique par an \n selon le statut et l'année"))
-        }
-    }else{
-        tkmessageBox(message="Graphique impossible - pas d'enregistrements dans votre sélection")
-        gestionMSGerreur.f("ZeroEnregistrement")
-    }
-    tclvalue(GraphRichesse_specifique)="0"
-    choix <- "0"
-}
+##     print("fonction GraphL.simpsonParUnitObs activée")
+##     extremes.f()
+##     unit$l.simpson <- EnleverMaxExtremes.f(unit$l.simpson)
+##     if (length(unique(unit$hill))>0)
+##     {
+##         x11(width=120, height=50, pointsize=10)
+##         if (tclvalue(GraphL.simpson)=="1")
+##         {
+##             boxplot(unit$l.simpson , data=unit, varwidth = TRUE, ylab="indice de L.simpson", las=3,
+##                     main=paste("Indice de L.simpson tout confondu"))
+##         }
+##         if (tclvalue(GraphL.simpson)=="2")
+##         {
+##             boxplot(unit$l.simpson  ~unit$an, data=unit, col=heat.colors(length(unique(unit$an))), varwidth = TRUE,
+##                     ylab="Indice de L.simpson ", las=3, main=paste("Indice de L.simpson selon l'année"))
+##         }
+##         if (tclvalue(GraphL.simpson)=="3")
+##         {
+##             boxplot(unit$l.simpson  ~unit$statut_protection, data=unit,
+##                     col=heat.colors(length(unique(unit$statut_protection))), varwidth = TRUE, ylab="Indice de L.simpson ", las=3,
+##                     main=paste("Indice de L.simpson selon le statut"))
+##         }
+##         if (tclvalue(GraphL.simpson)=="4")
+##         {
+##             boxplot(unit$l.simpson  ~unit$statut_protection+unit$an, data=unit,
+##                     varwidth = TRUE, ylab="Indice de L.simpson ", las=3, col=heat.colors(length(unique(unit$statut_protection))),
+##                     main=paste("Indice de L.simpson par an \n selon le statut et l'année"))
+##         }
+##     }else{
+##         tkmessageBox(message="Graphique impossible - pas d'enregistrements dans votre sélection")
+##         gestionMSGerreur.f("ZeroEnregistrement")
+##     }
+##     tclvalue(GraphL.simpson)="0"
+##     choix <- "0"
+## }
+
+## [sup] [yr: 11/01/2011]
+
+## GraphSimpsonParUnitObs.f <- function ()
+## {
+##     extremes.f()
+##     unit$simpson <- EnleverMaxExtremes.f(unit$simpson)
+##     print("fonction GraphSimpsonParUnitObs activée")
+##     if (length(unique(unit$hill))>0)
+##     {
+##         x11(width=120, height=50, pointsize=10)
+##         if (tclvalue(GraphSimpson)=="1")
+##         {
+##             boxplot(unit$simpson , data=unit, varwidth = TRUE, ylab="indice de Simpson", las=3,
+##                     main=paste("Indice de Simpson tout confondu"))
+##         }
+##         if (tclvalue(GraphSimpson)=="2")
+##         {
+##             boxplot(unit$simpson  ~unit$an, data=unit, col=heat.colors(length(unique(unit$an))), varwidth = TRUE,
+##                     ylab="Indice de Simpson ", las=3, main=paste("Indice de Simpson selon l'année"))
+##         }
+##         if (tclvalue(GraphSimpson)=="3")
+##         {
+##             boxplot(unit$simpson  ~unit$statut_protection, data=unit,
+##                     col=heat.colors(length(unique(unit$statut_protection))), varwidth = TRUE, ylab="Indice de Simpson ", las=3,
+##                     main=paste("Indice de Simpson selon le statut"))
+##         }
+##         if (tclvalue(GraphSimpson)=="4")
+##         {
+##             boxplot(unit$simpson  ~unit$statut_protection+unit$an, data=unit,
+##                     varwidth = TRUE, ylab="Indice de Simpson ", las=3, col=heat.colors(length(unique(unit$statut_protection))),
+##                     main=paste("Indice de Simpson par an \n selon le statut et l'année"))
+##         }
+##     }else{
+##         tkmessageBox(message="Graphique impossible - pas d'enregistrements dans votre sélection")
+##         gestionMSGerreur.f("ZeroEnregistrement")
+##     }
+##     tclvalue(GraphSimpson)="0"
+##     choix <- "0"
+## }
+
+## [sup] [yr: 11/01/2011]
+
+## GraphRichesse_specifiqueParUnitObs.f <- function ()
+## {
+##     print("fonction GraphRichesse_specifiqueParUnitObs activée")
+##     extremes.f()
+##     spunit <- unit
+##     spunit$richesse_specifique <- EnleverMaxExtremes.f(spunit$richesse_specifique)
+##     if (length(unique(spunit$richesse_specifique))>0)
+##     {
+##         x11(width=120, height=50, pointsize=10)
+##         if (tclvalue(GraphRichesse_specifique)=="1")
+##         {
+##             boxplot(spunit$richesse_specifique , data=spunit, varwidth = TRUE, ylab="indice de Richesse_specifique", las=3,
+##                     main=paste("Indice de Richesse_specifique tout confondu"))
+##         }
+##         if (tclvalue(GraphRichesse_specifique)=="2")
+##         {
+##             boxplot(spunit$richesse_specifique  ~spunit$an, data=spunit, col=heat.colors(length(unique(unit$an))),
+##                     varwidth = TRUE, ylab="Indice de Richesse_specifique ", las=3,
+##                     main=paste("Indice de Richesse_specifique selon l'année"))
+##         }
+##         if (tclvalue(GraphRichesse_specifique)=="3")
+##         {
+##             boxplot(spunit$richesse_specifique  ~spunit$statut_protection, data=spunit,
+##                     col=heat.colors(length(unique(spunit$statut_protection))), varwidth = TRUE,
+##                     ylab="Indice de Richesse_specifique ", las=3, main=paste("Indice de Richesse_specifique selon le statut"))
+##         }
+##         if (tclvalue(GraphRichesse_specifique)=="4")
+##         {
+##             boxplot(spunit$richesse_specifique  ~spunit$statut_protection+spunit$an, data=spunit,
+##                     varwidth = TRUE, ylab="Indice de Richesse_specifique ", las=3, col=heat.colors(length(unique(unit$statut_protection))),
+##                     main=paste("Indice de Richesse_specifique par an \n selon le statut et l'année"))
+##         }
+##     }else{
+##         tkmessageBox(message="Graphique impossible - pas d'enregistrements dans votre sélection")
+##         gestionMSGerreur.f("ZeroEnregistrement")
+##     }
+##     tclvalue(GraphRichesse_specifique)="0"
+##     choix <- "0"
+## }
 
 ################################################################################
 ## Nom    : GraphDensiteParEspece.f()
@@ -2859,168 +2874,172 @@ GraphRichesse_specifiqueParUnitObs.f <- function ()
 ## Output : boxplot Densités
 ################################################################################
 
-GraphDensiteParEspece.f <- function ()
-{
+## [sup] [yr: 11/01/2011]
 
-    extremes.f()
-    print("fonction GraphDensiteParEspece activée")
+## GraphDensiteParEspece.f <- function ()
+## {
 
-    especesPresentes <- subset(unitesp$code_espece, unitesp$pres_abs==1)
-    ChoixFacteurSelect.f(especesPresentes, "code_espece", "multiple", 1, "selectdensite")
-    spunit <- subset(listespunit, listespunit$code_espece==selectdensite)
-    spunit$densite <- EnleverMaxExtremes.f(spunit$densite)
-    textstatut <- c("HR : Hors Réserve", "PP : Protection Partielle", "RE : En réserve")
-    ## la densite n'est pas calculée sur tous les jeux de données  (avec données benthos? vérifier la création de listespunit)
-    if (length(unique(listespunit$densite))>1)
-    {
-        ## on vérifie que la densite a été calculée pour l'espèce sélectionnée
-        if (length(unique(spunit$densite))>0)
-        {
-            x11(width=50, height=20, pointsize=10)
-            par(mar=c(12, 4, 5, 1), mgp=c(3, 1, 9))
-            if (tclvalue(GraphDensiteEsp)=="1")
-            {
-                boxplot(spunit$densite ~spunit$code_espece, data=spunit, varwidth = TRUE, ylab="Densité (%)", las=3,
-                        main=paste("Densité\n pour un choix d'espèces\npour toutes les unités d'obs"))
-            }
-            if (tclvalue(GraphDensiteEsp)=="2")
-            {
-                boxplot(spunit$densite ~spunit$statut_protection+spunit$code_espece, data=spunit, varwidth = TRUE, ylab="Densité (%)", las=3, main=paste("Densité\n pour un choix d'espèces\n selon le statut des unités d'obs la concernant"))
-                legend("topright", textstatut, col=heat.colors(length(unique(spunit$statut_protection))), pch = 15, cex =0.9, title="Statuts")
-            }
-            if (tclvalue(GraphDensiteEsp)=="3")
-            {
-                boxplot(spunit$densite ~spunit$an+spunit$code_espece, data=spunit, varwidth = TRUE, ylab="Densité (%)", las=3,
-                        main=paste("Densité\n pour un choix d'espèces\n selon l'année des unités d'obs la concernant"))
-            }
-            if (tclvalue(GraphDensiteEsp)=="4")
-            {
-                boxplot(spunit$densite ~spunit$statut_protection+spunit$an+spunit$code_espece, data=spunit,
-                        varwidth = TRUE, ylab="Densité (%)", las=3, col=heat.colors(length(unique(spunit$statut_protection))),
-                        main=paste("Densité\n pour un choix d'espèces\n selon le statut et l'année des unités d'obs la concernant"))
-                legend("topright", textstatut, col=heat.colors(length(unique(spunit$statut_protection))), pch = 15, cex =0.9, title="Statuts")
-            }
-            if (tclvalue(GraphDensiteEsp)=="5")
-            {
-                par(mar=c(15, 4, 5, 1), mgp=c(3, 1, 9))
-                boxplot(spunit$densite ~spunit$biotope+spunit$an+spunit$code_espece, data=spunit,
-                        varwidth = TRUE, ylab="Densité (%)", las=3, col=heat.colors(length(unique(spunit$statut_protection))),
-                        main=paste("Densité\n pour un choix d'espèces\n selon le biotope, l'année et le statut des unités d'obs la concernant"))
-                legend("topright", textstatut, col=heat.colors(length(unique(spunit$statut_protection))), pch = 15, cex =0.9, title="Statuts")
-            }
-            tclvalue(GraphDensiteEsp)="0"
-        }else{
-            ## à mettre en MSGERROR
-            tkmessageBox(message="Graphique impossible - pas d'enregistrements dans votre sélection")
-            gestionMSGerreur.f("ZeroEnregistrement")
-        }
-    }
-    if (choix=="1")
-    {
-        legend("top", "Enregistrements > 95% du maximum retirés", cex =0.7, col="red", text.col="red", merge=FALSE)
-    }
-    choix <- "0"
-}
+##     extremes.f()
+##     print("fonction GraphDensiteParEspece activée")
+
+##     especesPresentes <- subset(unitesp$code_espece, unitesp$pres_abs==1)
+##     ChoixFacteurSelect.f(especesPresentes, "code_espece", "multiple", 1, "selectdensite")
+##     spunit <- subset(listespunit, listespunit$code_espece==selectdensite)
+##     spunit$densite <- EnleverMaxExtremes.f(spunit$densite)
+##     textstatut <- c("HR : Hors Réserve", "PP : Protection Partielle", "RE : En réserve")
+##     ## la densite n'est pas calculée sur tous les jeux de données  (avec données benthos? vérifier la création de listespunit)
+##     if (length(unique(listespunit$densite))>1)
+##     {
+##         ## on vérifie que la densite a été calculée pour l'espèce sélectionnée
+##         if (length(unique(spunit$densite))>0)
+##         {
+##             x11(width=50, height=20, pointsize=10)
+##             par(mar=c(12, 4, 5, 1), mgp=c(3, 1, 9))
+##             if (tclvalue(GraphDensiteEsp)=="1")
+##             {
+##                 boxplot(spunit$densite ~spunit$code_espece, data=spunit, varwidth = TRUE, ylab="Densité (%)", las=3,
+##                         main=paste("Densité\n pour un choix d'espèces\npour toutes les unités d'obs"))
+##             }
+##             if (tclvalue(GraphDensiteEsp)=="2")
+##             {
+##                 boxplot(spunit$densite ~spunit$statut_protection+spunit$code_espece, data=spunit, varwidth = TRUE, ylab="Densité (%)", las=3, main=paste("Densité\n pour un choix d'espèces\n selon le statut des unités d'obs la concernant"))
+##                 legend("topright", textstatut, col=heat.colors(length(unique(spunit$statut_protection))), pch = 15, cex =0.9, title="Statuts")
+##             }
+##             if (tclvalue(GraphDensiteEsp)=="3")
+##             {
+##                 boxplot(spunit$densite ~spunit$an+spunit$code_espece, data=spunit, varwidth = TRUE, ylab="Densité (%)", las=3,
+##                         main=paste("Densité\n pour un choix d'espèces\n selon l'année des unités d'obs la concernant"))
+##             }
+##             if (tclvalue(GraphDensiteEsp)=="4")
+##             {
+##                 boxplot(spunit$densite ~spunit$statut_protection+spunit$an+spunit$code_espece, data=spunit,
+##                         varwidth = TRUE, ylab="Densité (%)", las=3, col=heat.colors(length(unique(spunit$statut_protection))),
+##                         main=paste("Densité\n pour un choix d'espèces\n selon le statut et l'année des unités d'obs la concernant"))
+##                 legend("topright", textstatut, col=heat.colors(length(unique(spunit$statut_protection))), pch = 15, cex =0.9, title="Statuts")
+##             }
+##             if (tclvalue(GraphDensiteEsp)=="5")
+##             {
+##                 par(mar=c(15, 4, 5, 1), mgp=c(3, 1, 9))
+##                 boxplot(spunit$densite ~spunit$biotope+spunit$an+spunit$code_espece, data=spunit,
+##                         varwidth = TRUE, ylab="Densité (%)", las=3, col=heat.colors(length(unique(spunit$statut_protection))),
+##                         main=paste("Densité\n pour un choix d'espèces\n selon le biotope, l'année et le statut des unités d'obs la concernant"))
+##                 legend("topright", textstatut, col=heat.colors(length(unique(spunit$statut_protection))), pch = 15, cex =0.9, title="Statuts")
+##             }
+##             tclvalue(GraphDensiteEsp)="0"
+##         }else{
+##             ## à mettre en MSGERROR
+##             tkmessageBox(message="Graphique impossible - pas d'enregistrements dans votre sélection")
+##             gestionMSGerreur.f("ZeroEnregistrement")
+##         }
+##     }
+##     if (choix=="1")
+##     {
+##         legend("top", "Enregistrements > 95% du maximum retirés", cex =0.7, col="red", text.col="red", merge=FALSE)
+##     }
+##     choix <- "0"
+## }
 #################################################
 
+## [sup] [yr: 11/01/2011]
 
-GraphDensiteParFamille.f <- function ()
-{
-    print("fonction GraphDensiteParFamille activée")
-    ChoixUneFamille.f()
-    extremes.f()
-    ## on restreint la table "listespunit" à l'espèce sélectionnée
-    listespunit$Famille <- especes$Famille[match(listespunit$code_espece, especes$code_espece)]
-    spunit <- subset(listespunit, listespunit$Famille==fa)
-    spunit$densite <- EnleverMaxExtremes.f(spunit$densite)
-    if (length(unique(spunit$densite))>0)
-    {
-        x11(width=120, height=50, pointsize=10)
-        if (tclvalue(GraphDensiteFam)=="1")
-        {
-            boxplot(spunit$densite, data=spunit, varwidth = TRUE, ylab="Densité", las=3,
-                    main=paste("Densité\n pour la famille ", fa, "\npour toutes les unités d'obs"))
-        }
-        if (tclvalue(GraphDensiteFam)=="2")
-        {
-            boxplot(spunit$densite ~spunit$statut_protection, data=spunit, varwidth = TRUE, ylab="Densité", las=3,
-                    main=paste("Densité\n pour la famille ", fa, "\n selon le statut des unités d'obs"))
-        }
-        if (tclvalue(GraphDensiteFam)=="3")
-        {
-            boxplot(spunit$densite ~spunit$an, data=spunit, col=heat.colors(length(unique(spunit$an))), varwidth = TRUE,
-                    ylab="Densité", las=3, main=paste("Densité\n la famille ", fa, "\n selon l'année"))
-        }
-        if (tclvalue(GraphDensiteFam)=="4")
-        {
-            boxplot(spunit$densite ~spunit$statut_protection+spunit$an, data=spunit,
-                    varwidth = TRUE, ylab="Densité", las=3, col=heat.colors(length(unique(spunit$statut_protection))),
-                    main=paste("Densité\n par an pour la famille ", fa, "\n selon le statut des unités d'obs"))}
-    }
-    if (tclvalue(GraphDensiteFam)=="5")
-    {
-        par(mar=c(15, 4, 5, 1), mgp=c(3, 1, 9))
-        boxplot(spunit$densite ~spunit$biotope+spunit$an+spunit$statut_protection, data=spunit,
-                varwidth = TRUE, ylab="Densité (%)", las=3, col=heat.colors(length(unique(spunit$statut_protection))),
-                main=paste("Densité\n pour un choix d'espèces\n selon le biotope, l'année et le statut des unités d'obs la concernant"))
-        legend("topright", textstatut, col=heat.colors(length(unique(spunit$statut_protection))), pch = 15, cex =0.9, title="Statuts")
-    }else{
-        tkmessageBox(message="Graphique impossible - pas d'enregistrements dans votre sélection")
-        gestionMSGerreur.f("ZeroEnregistrement")
-    }
-    tclvalue(GraphDensiteFam)="0"
-    choix <- "0"
-}
+## GraphDensiteParFamille.f <- function ()
+## {
+##     print("fonction GraphDensiteParFamille activée")
+##     ChoixUneFamille.f()
+##     extremes.f()
+##     ## on restreint la table "listespunit" à l'espèce sélectionnée
+##     listespunit$Famille <- especes$Famille[match(listespunit$code_espece, especes$code_espece)]
+##     spunit <- subset(listespunit, listespunit$Famille==fa)
+##     spunit$densite <- EnleverMaxExtremes.f(spunit$densite)
+##     if (length(unique(spunit$densite))>0)
+##     {
+##         x11(width=120, height=50, pointsize=10)
+##         if (tclvalue(GraphDensiteFam)=="1")
+##         {
+##             boxplot(spunit$densite, data=spunit, varwidth = TRUE, ylab="Densité", las=3,
+##                     main=paste("Densité\n pour la famille ", fa, "\npour toutes les unités d'obs"))
+##         }
+##         if (tclvalue(GraphDensiteFam)=="2")
+##         {
+##             boxplot(spunit$densite ~spunit$statut_protection, data=spunit, varwidth = TRUE, ylab="Densité", las=3,
+##                     main=paste("Densité\n pour la famille ", fa, "\n selon le statut des unités d'obs"))
+##         }
+##         if (tclvalue(GraphDensiteFam)=="3")
+##         {
+##             boxplot(spunit$densite ~spunit$an, data=spunit, col=heat.colors(length(unique(spunit$an))), varwidth = TRUE,
+##                     ylab="Densité", las=3, main=paste("Densité\n la famille ", fa, "\n selon l'année"))
+##         }
+##         if (tclvalue(GraphDensiteFam)=="4")
+##         {
+##             boxplot(spunit$densite ~spunit$statut_protection+spunit$an, data=spunit,
+##                     varwidth = TRUE, ylab="Densité", las=3, col=heat.colors(length(unique(spunit$statut_protection))),
+##                     main=paste("Densité\n par an pour la famille ", fa, "\n selon le statut des unités d'obs"))}
+##     }
+##     if (tclvalue(GraphDensiteFam)=="5")
+##     {
+##         par(mar=c(15, 4, 5, 1), mgp=c(3, 1, 9))
+##         boxplot(spunit$densite ~spunit$biotope+spunit$an+spunit$statut_protection, data=spunit,
+##                 varwidth = TRUE, ylab="Densité (%)", las=3, col=heat.colors(length(unique(spunit$statut_protection))),
+##                 main=paste("Densité\n pour un choix d'espèces\n selon le biotope, l'année et le statut des unités d'obs la concernant"))
+##         legend("topright", textstatut, col=heat.colors(length(unique(spunit$statut_protection))), pch = 15, cex =0.9, title="Statuts")
+##     }else{
+##         tkmessageBox(message="Graphique impossible - pas d'enregistrements dans votre sélection")
+##         gestionMSGerreur.f("ZeroEnregistrement")
+##     }
+##     tclvalue(GraphDensiteFam)="0"
+##     choix <- "0"
+## }
 
 #################################################
-GraphBiomasseParFamille.f <- function ()
-{
-    print("fonction GraphBiomasseParFamille activée")
-    ChoixUneFamille.f()
-    extremes.f()
-    ## on restreint la table "listespunit" à l'espèce sélectionnée
-    listespunit$Famille <- especes$Famille[match(listespunit$code_espece, especes$code_espece)]
-    spunit <- subset(listespunit, listespunit$Famille==fa)
-    spunit$biomasse <- EnleverMaxExtremes.f(spunit$biomasse)
-    if (length(unique(spunit$biomasse))>0)
-    {
-        x11(width=120, height=50, pointsize=10)
-        if (tclvalue(GraphBiomasse)=="1")
-        {
-            boxplot(spunit$biomasse, data=spunit, varwidth = TRUE, ylab=expression("Biomasse "(g/m^2)), las=3,
-                    main=paste("Biomasse (g/m²)\n pour la famille ", fa, "\npour toutes les unités d'obs"))
-        }
-        if (tclvalue(GraphBiomasse)=="2")
-        {
-            boxplot(spunit$biomasse ~spunit$statut_protection, data=spunit, varwidth = TRUE, ylab=expression("Biomasse "(g/m^2)), las=3,
-                    main=paste("Biomasse (g/m²)\n pour la famille ", fa, "\n selon le statut des unités d'obs"))
-        }
-        if (tclvalue(GraphBiomasse)=="3")
-        {
-            boxplot(spunit$biomasse ~spunit$an, data=spunit, col=heat.colors(length(unique(spunit$an))), varwidth = TRUE,
-                    ylab=expression("Biomasse "(g/m^2)), las=3, main=paste("Biomasse (g/m²)\n pour la famille ", fa, "\n selon l'année"))
-        }
-        if (tclvalue(GraphBiomasse)=="4")
-        {
-            boxplot(spunit$biomasse ~spunit$statut_protection+spunit$an, data=spunit,
-                    varwidth = TRUE, ylab=expression("Biomasse "(g/m^2)), las=3, col=heat.colors(length(unique(spunit$statut_protection))),
-                    main=paste("Biomasse (g/m²)\n par an pour la famille ", fa, "\n selon le statut des unités d'obs"))
-        }
-    }
-    if (tclvalue(GraphBiomasse)=="5")
-    {
-        par(mar=c(15, 4, 5, 1), mgp=c(3, 1, 9))
-        boxplot(spunit$biomasse ~spunit$biotope+spunit$an+spunit$statut_protection, data=spunit,
-                varwidth = TRUE, ylab=expression("Biomasse "(g/m^2)), las=3, col=heat.colors(length(unique(spunit$statut_protection))),
-                main=paste("Biomasse (g/m²)\n pour un choix d'espèces\n selon le biotope, l'année et le statut des unités d'obs la concernant"))
-        legend("topright", textstatut, col=heat.colors(length(unique(spunit$statut_protection))), pch = 15, cex =0.9, title="Statuts")
-    }else{
-        tkmessageBox(message="Graphique impossible - pas d'enregistrements dans votre sélection")
-        gestionMSGerreur.f("ZeroEnregistrement")
-    }
-    tclvalue(GraphBiomasse)="0"
-    choix <- "0"
-}
+## [sup] [yr: 11/01/2011]
+## GraphBiomasseParFamille.f <- function ()
+## {
+##     print("fonction GraphBiomasseParFamille activée")
+##     ChoixUneFamille.f()
+##     extremes.f()
+##     ## on restreint la table "listespunit" à l'espèce sélectionnée
+##     listespunit$Famille <- especes$Famille[match(listespunit$code_espece, especes$code_espece)]
+##     spunit <- subset(listespunit, listespunit$Famille==fa)
+##     spunit$biomasse <- EnleverMaxExtremes.f(spunit$biomasse)
+##     if (length(unique(spunit$biomasse))>0)
+##     {
+##         x11(width=120, height=50, pointsize=10)
+##         if (tclvalue(GraphBiomasse)=="1")
+##         {
+##             boxplot(spunit$biomasse, data=spunit, varwidth = TRUE, ylab=expression("Biomasse "(g/m^2)), las=3,
+##                     main=paste("Biomasse (g/m²)\n pour la famille ", fa, "\npour toutes les unités d'obs"))
+##         }
+##         if (tclvalue(GraphBiomasse)=="2")
+##         {
+##             boxplot(spunit$biomasse ~spunit$statut_protection, data=spunit, varwidth = TRUE, ylab=expression("Biomasse "(g/m^2)), las=3,
+##                     main=paste("Biomasse (g/m²)\n pour la famille ", fa, "\n selon le statut des unités d'obs"))
+##         }
+##         if (tclvalue(GraphBiomasse)=="3")
+##         {
+##             boxplot(spunit$biomasse ~spunit$an, data=spunit, col=heat.colors(length(unique(spunit$an))), varwidth = TRUE,
+##                     ylab=expression("Biomasse "(g/m^2)), las=3, main=paste("Biomasse (g/m²)\n pour la famille ", fa, "\n selon l'année"))
+##         }
+##         if (tclvalue(GraphBiomasse)=="4")
+##         {
+##             boxplot(spunit$biomasse ~spunit$statut_protection+spunit$an, data=spunit,
+##                     varwidth = TRUE, ylab=expression("Biomasse "(g/m^2)), las=3, col=heat.colors(length(unique(spunit$statut_protection))),
+##                     main=paste("Biomasse (g/m²)\n par an pour la famille ", fa, "\n selon le statut des unités d'obs"))
+##         }
+##     }
+##     if (tclvalue(GraphBiomasse)=="5")
+##     {
+##         par(mar=c(15, 4, 5, 1), mgp=c(3, 1, 9))
+##         boxplot(spunit$biomasse ~spunit$biotope+spunit$an+spunit$statut_protection, data=spunit,
+##                 varwidth = TRUE, ylab=expression("Biomasse "(g/m^2)), las=3, col=heat.colors(length(unique(spunit$statut_protection))),
+##                 main=paste("Biomasse (g/m²)\n pour un choix d'espèces\n selon le biotope, l'année et le statut des unités d'obs la concernant"))
+##         legend("topright", textstatut, col=heat.colors(length(unique(spunit$statut_protection))), pch = 15, cex =0.9, title="Statuts")
+##     }else{
+##         tkmessageBox(message="Graphique impossible - pas d'enregistrements dans votre sélection")
+##         gestionMSGerreur.f("ZeroEnregistrement")
+##     }
+##     tclvalue(GraphBiomasse)="0"
+##     choix <- "0"
+## }
 
 ################################################################################
 ## Nom    : graphNbreParEsp.f()
@@ -3246,317 +3265,329 @@ GraphRecouvrementPourUneEspece.f <- function ()
 ##     choix <- "0"
 ## }
 
-GraphNbEspeceParUnitobs.f <- function ()
-{
-    print("fonction GraphNbEspeceParUnitobs activée")
-    ChoixUneUnitobs.f()
-    extremes.f()
-    print(paste("site considéré :", si))
-    ## on restreint la table "listespunit" à l'unite d'observation sélectionnée
-    spunit <- subset(listespunit, listespunit$site==si)
-    spunit$nombre <- EnleverMaxExtremes.f(spunit$nombre)
-    if (length(unique(spunit$nombre))>0)
-    {
-        x11(width=50, height=20, pointsize=10)
-        par(mar=c(9, 4, 5, 1), mgp=c(3, 1, 9))
-        boxplot(spunit$nombre ~spunit$an+spunit$code_espece, las=2, cex.names=0.6, main=paste("Nombre d'individus par espèce et par an pour le site ", si, "\n"))
-        nbObs <- tapply(spunit$nombre, list(spunit$an, spunit$code_espece), length)
-        axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5)
-        legend("topleft", "Nombre d'enregistrement par Boxplot", cex =0.7, col="orange", text.col="orange", merge=FALSE)
-        Moyenne <- as.vector(tapply(spunit$nombre, list(spunit$an, spunit$code_espece), na.rm = T, mean))
-        points(Moyenne, pch=19, col="blue")
-        text(Moyenne+(Moyenne/10), col = "blue", cex = 0.8, labels=as.character(round(Moyenne, digits=1)))
-        abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
-    }else{
-        tkmessageBox(message="Graphique impossible - pas d'enregistrements dans votre sélection")
-        gestionMSGerreur.f("ZeroEnregistrement")
-    }
-    choix <- "0"
-}
+## [sup] [yr: 11/01/2011]
 
-GraphNbEspeceParHabitat.f <- function ()
-{
-    print("fonction ChoixUnhabitat1 activée")
-    ChoixUnhabitat1.f()
-    print(paste("habitat considéré :", ha))
-    extremes.f()
-    ## Il faut rajouter la colonne habitat1 à listespunit
-    listespunit$habitat1 <- unitobs$habitat1[match(listespunit$unite_observation, unitobs$unite_observation)]
-    ## on restreint la table "listespunit" à l'habitat sélectionnée
-    spunit <- subset(listespunit, listespunit$habitat1==ha)
-    spunit$nombre <- EnleverMaxExtremes.f(spunit$nombre)
-    if (length(unique(spunit$habitat1))>0)
-    {
+## GraphNbEspeceParUnitobs.f <- function ()
+## {
+##     print("fonction GraphNbEspeceParUnitobs activée")
+##     ChoixUneUnitobs.f()
+##     extremes.f()
+##     print(paste("site considéré :", si))
+##     ## on restreint la table "listespunit" à l'unite d'observation sélectionnée
+##     spunit <- subset(listespunit, listespunit$site==si)
+##     spunit$nombre <- EnleverMaxExtremes.f(spunit$nombre)
+##     if (length(unique(spunit$nombre))>0)
+##     {
+##         x11(width=50, height=20, pointsize=10)
+##         par(mar=c(9, 4, 5, 1), mgp=c(3, 1, 9))
+##         boxplot(spunit$nombre ~spunit$an+spunit$code_espece, las=2, cex.names=0.6, main=paste("Nombre d'individus par espèce et par an pour le site ", si, "\n"))
+##         nbObs <- tapply(spunit$nombre, list(spunit$an, spunit$code_espece), length)
+##         axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5)
+##         legend("topleft", "Nombre d'enregistrement par Boxplot", cex =0.7, col="orange", text.col="orange", merge=FALSE)
+##         Moyenne <- as.vector(tapply(spunit$nombre, list(spunit$an, spunit$code_espece), na.rm = T, mean))
+##         points(Moyenne, pch=19, col="blue")
+##         text(Moyenne+(Moyenne/10), col = "blue", cex = 0.8, labels=as.character(round(Moyenne, digits=1)))
+##         abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
+##     }else{
+##         tkmessageBox(message="Graphique impossible - pas d'enregistrements dans votre sélection")
+##         gestionMSGerreur.f("ZeroEnregistrement")
+##     }
+##     choix <- "0"
+## }
 
-        x11(width=50, height=20, pointsize=10)
-        par(mar=c(9, 4, 5, 1), mgp=c(3, 1, 9))
-        boxplot(spunit$nombre ~spunit$an+spunit$code_espece, las=2, cex.names=0.6, main=paste("Nombre d'individus par espèce et par an pour l'habitat ", ha, "\n"))
-        nbObs <- tapply(spunit$nombre, list(spunit$an, spunit$code_espece), length)
-        axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5)
-        legend("topleft", "Nombre d'enregistrement par Boxplot", cex =0.7, col="orange", text.col="orange", merge=FALSE)
-        Moyenne <- as.vector(tapply(spunit$nombre, list(spunit$an, spunit$code_espece), na.rm = T, mean))
-        points(Moyenne, pch=19, col="blue")
-        text(Moyenne+(Moyenne/10), col = "blue", cex = 0.8, labels=as.character(round(Moyenne, digits=1)))
-        abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
+## [sup] [yr: 11/01/2011]
 
-        x11(width=50, height=20, pointsize=10)
-        par(mar=c(9, 4, 5, 1), mgp=c(3, 1, 9))
-        boxplot(spunit$nombre ~spunit$site+spunit$code_espece, las=2, cex.names=0.6, main=paste("Nombre d'individus par espèce et par site pour l'habitat ", ha, "\n"))
-        nbObs <- tapply(spunit$nombre, list(spunit$site, spunit$code_espece), length)
-        axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5)
-        legend("topleft", "Nombre d'enregistrement par Boxplot", cex =0.7, col="orange", text.col="orange", merge=FALSE)
-        Moyenne <- as.vector(tapply(spunit$nombre, list(spunit$site, spunit$code_espece), na.rm = T, mean))
-        points(Moyenne, pch=19, col="blue")
-        text(Moyenne+(Moyenne/10), col = "blue", cex = 0.8, labels=as.character(round(Moyenne, digits=1)))
-        abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
+## GraphNbEspeceParHabitat.f <- function ()
+## {
+##     print("fonction ChoixUnhabitat1 activée")
+##     ChoixUnhabitat1.f()
+##     print(paste("habitat considéré :", ha))
+##     extremes.f()
+##     ## Il faut rajouter la colonne habitat1 à listespunit
+##     listespunit$habitat1 <- unitobs$habitat1[match(listespunit$unite_observation, unitobs$unite_observation)]
+##     ## on restreint la table "listespunit" à l'habitat sélectionnée
+##     spunit <- subset(listespunit, listespunit$habitat1==ha)
+##     spunit$nombre <- EnleverMaxExtremes.f(spunit$nombre)
+##     if (length(unique(spunit$habitat1))>0)
+##     {
 
-        textstatut <- c("HR : Hors Réserve", "PP : Protection Partielle", "RE : En réserve")
+##         x11(width=50, height=20, pointsize=10)
+##         par(mar=c(9, 4, 5, 1), mgp=c(3, 1, 9))
+##         boxplot(spunit$nombre ~spunit$an+spunit$code_espece, las=2, cex.names=0.6, main=paste("Nombre d'individus par espèce et par an pour l'habitat ", ha, "\n"))
+##         nbObs <- tapply(spunit$nombre, list(spunit$an, spunit$code_espece), length)
+##         axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5)
+##         legend("topleft", "Nombre d'enregistrement par Boxplot", cex =0.7, col="orange", text.col="orange", merge=FALSE)
+##         Moyenne <- as.vector(tapply(spunit$nombre, list(spunit$an, spunit$code_espece), na.rm = T, mean))
+##         points(Moyenne, pch=19, col="blue")
+##         text(Moyenne+(Moyenne/10), col = "blue", cex = 0.8, labels=as.character(round(Moyenne, digits=1)))
+##         abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
 
-        x11(width=50, height=20, pointsize=10)
-        par(mar=c(9, 4, 5, 1), mgp=c(3, 1, 9))
-        boxplot(spunit$nombre ~spunit$statut_protection+spunit$code_espece, las=2, cex.names=0.6, col=heat.colors(length(unique(spunit$statut_protection))), main=paste("Nombre d'individus par espèce et par statut de protection de site pour l'habitat ", ha, "\n"))
-        nbObs <- tapply(spunit$nombre, list(spunit$statut_protection, spunit$code_espece), length)
-        axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5)
-        legend("topleft", "Nombre d'enregistrement par Boxplot", cex =0.7, col="orange", text.col="orange", merge=FALSE)
-        Moyenne <- as.vector(tapply(spunit$nombre, list(spunit$statut_protection, spunit$code_espece), na.rm = T, mean))
-        points(Moyenne, pch=19, col="blue")
-        text(Moyenne+(Moyenne/10), col = "blue", cex = 0.8, labels=as.character(round(Moyenne, digits=1)))
-        abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
-        abline(v = 0.5+(1:length(as.vector(unique(spunit$code_espece))))*length(as.vector(unique(spunit$statut_protection))), col = "red")
-        legend("topright", textstatut, col=heat.colors(length(unique(spunit$statut_protection))), pch = 15, cex =0.9, title="Statuts")
+##         x11(width=50, height=20, pointsize=10)
+##         par(mar=c(9, 4, 5, 1), mgp=c(3, 1, 9))
+##         boxplot(spunit$nombre ~spunit$site+spunit$code_espece, las=2, cex.names=0.6, main=paste("Nombre d'individus par espèce et par site pour l'habitat ", ha, "\n"))
+##         nbObs <- tapply(spunit$nombre, list(spunit$site, spunit$code_espece), length)
+##         axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5)
+##         legend("topleft", "Nombre d'enregistrement par Boxplot", cex =0.7, col="orange", text.col="orange", merge=FALSE)
+##         Moyenne <- as.vector(tapply(spunit$nombre, list(spunit$site, spunit$code_espece), na.rm = T, mean))
+##         points(Moyenne, pch=19, col="blue")
+##         text(Moyenne+(Moyenne/10), col = "blue", cex = 0.8, labels=as.character(round(Moyenne, digits=1)))
+##         abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
 
-        ## lorsqu'il y aura beaucoup de données, rajouter habitat/an/statut
+##         textstatut <- c("HR : Hors Réserve", "PP : Protection Partielle", "RE : En réserve")
 
-    }else{
-        tkmessageBox(message="Graphique impossible - pas d'enregistrements dans votre sélection")
-        gestionMSGerreur.f("ZeroEnregistrement")
-    }
-    choix <- "0"
-}
+##         x11(width=50, height=20, pointsize=10)
+##         par(mar=c(9, 4, 5, 1), mgp=c(3, 1, 9))
+##         boxplot(spunit$nombre ~spunit$statut_protection+spunit$code_espece, las=2, cex.names=0.6, col=heat.colors(length(unique(spunit$statut_protection))), main=paste("Nombre d'individus par espèce et par statut de protection de site pour l'habitat ", ha, "\n"))
+##         nbObs <- tapply(spunit$nombre, list(spunit$statut_protection, spunit$code_espece), length)
+##         axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5)
+##         legend("topleft", "Nombre d'enregistrement par Boxplot", cex =0.7, col="orange", text.col="orange", merge=FALSE)
+##         Moyenne <- as.vector(tapply(spunit$nombre, list(spunit$statut_protection, spunit$code_espece), na.rm = T, mean))
+##         points(Moyenne, pch=19, col="blue")
+##         text(Moyenne+(Moyenne/10), col = "blue", cex = 0.8, labels=as.character(round(Moyenne, digits=1)))
+##         abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
+##         abline(v = 0.5+(1:length(as.vector(unique(spunit$code_espece))))*length(as.vector(unique(spunit$statut_protection))), col = "red")
+##         legend("topright", textstatut, col=heat.colors(length(unique(spunit$statut_protection))), pch = 15, cex =0.9, title="Statuts")
 
-GraphNbEspeceParFamille.f <- function ()
-{
-    print("fonction GraphNbEspeceParFamille activée")
-    ChoixUneFamille.f()
-    print(paste("famille considérée :", fa))
-    extremes.f()
-    ## Il faut rajouter la colonne famille à listespunit
-    listespunit$Famille <- especes$Famille[match(listespunit$code_espece, especes$code_espece)]
-    ## on restreint la table "listespunit" à la famille sélectionnée
-    spunit <- subset(listespunit, listespunit$Famille==fa)
-    spunit$nombre <- EnleverMaxExtremes.f(spunit$nombre)
-    ## si aucun enregistrement ne correspond à la famille sélectionnée, message d'erreur, sinon le boxplot est réalisé
-    if (length(unique(spunit$Famille))>0)
-    {
-        x11(width=50, height=20, pointsize=10)
-        par(mar=c(9, 4, 5, 1), mgp=c(3, 1, 9))
-        boxplot(spunit$nombre ~spunit$an+spunit$code_espece, las=2, cex.names=0.6, main=paste("Nombre d'individus par espèce et par an pour la famille ", fa, "\n"))
-        nbObs <- tapply(spunit$nombre, list(spunit$spunit$an+code_espece), length)
-        axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5)
-        legend("topleft", "Nombre d'enregistrement par Boxplot", cex =0.7, col="orange", text.col="orange", merge=FALSE)
-        Moyenne <- as.vector(tapply(spunit$nombre, list(spunit$an, spunit$code_espece), na.rm = T, mean))
-        points(Moyenne, pch=19, col="blue")
-        text(Moyenne+(Moyenne/10), col = "blue", cex = 0.8, labels=as.character(round(Moyenne, digits=1)))
-        abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
+##         ## lorsqu'il y aura beaucoup de données, rajouter habitat/an/statut
 
-        x11(width=50, height=20, pointsize=10)
-        par(mar=c(9, 4, 5, 1), mgp=c(3, 1, 9))
-        boxplot(spunit$nombre ~spunit$site+spunit$code_espece, las=2, cex.names=0.6, main=paste("Nombre d'individus par espèce et par site pour la famille ", fa, "\n"))
-        nbObs <- tapply(spunit$nombre, list(spunit$site, spunit$code_espece), length)
-        axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5)
-        legend("topleft", "Nombre d'enregistrement par Boxplot", cex =0.7, col="orange", text.col="orange", merge=FALSE)
-        Moyenne <- as.vector(tapply(spunit$nombre, list(spunit$site, spunit$code_espece), na.rm = T, mean))
-        points(Moyenne, pch=19, col="blue")
-        text(Moyenne+(Moyenne/10), col = "blue", cex = 0.8, labels=as.character(round(Moyenne, digits=1)))
-        abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
+##     }else{
+##         tkmessageBox(message="Graphique impossible - pas d'enregistrements dans votre sélection")
+##         gestionMSGerreur.f("ZeroEnregistrement")
+##     }
+##     choix <- "0"
+## }
 
-        textstatut <- c("HR : Hors Réserve", "PP : Protection Partielle", "RE : En réserve")
+## [sup] [yr: 11/01/2011]
 
-        x11(width=50, height=20, pointsize=10)
-        par(mar=c(9, 4, 5, 1), mgp=c(3, 1, 9))
-        boxplot(spunit$nombre ~spunit$statut_protection+spunit$code_espece, las=2, cex.names=0.6, col=heat.colors(length(unique(spunit$statut_protection))), main=paste("Nombre d'individus par espèce et par statut de protection de site pour la famille ", fa, "\n"))
-        nbObs <- tapply(spunit$nombre, list(spunit$statut_protection, spunit$code_espece), length)
-        axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5)
-        legend("topleft", "Nombre d'enregistrement par Boxplot", cex =0.7, col="orange", text.col="orange", merge=FALSE)
-        Moyenne <- as.vector(tapply(spunit$nombre, list(spunit$statut_protection, spunit$code_espece), na.rm = T, mean))
-        points(Moyenne, pch=19, col="blue")
-        text(Moyenne+(Moyenne/10), col = "blue", cex = 0.8, labels=as.character(round(Moyenne, digits=1)))
-        abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
-        abline(v = 0.5+(1:length(as.vector(unique(spunit$code_espece))))*length(as.vector(unique(spunit$statut_protection))), col = "red")
-        legend("topright", textstatut, col=heat.colors(length(unique(spunit$statut_protection))), pch = 15, cex =0.9, title="Statuts")
+## GraphNbEspeceParFamille.f <- function ()
+## {
+##     print("fonction GraphNbEspeceParFamille activée")
+##     ChoixUneFamille.f()
+##     print(paste("famille considérée :", fa))
+##     extremes.f()
+##     ## Il faut rajouter la colonne famille à listespunit
+##     listespunit$Famille <- especes$Famille[match(listespunit$code_espece, especes$code_espece)]
+##     ## on restreint la table "listespunit" à la famille sélectionnée
+##     spunit <- subset(listespunit, listespunit$Famille==fa)
+##     spunit$nombre <- EnleverMaxExtremes.f(spunit$nombre)
+##     ## si aucun enregistrement ne correspond à la famille sélectionnée, message d'erreur, sinon le boxplot est réalisé
+##     if (length(unique(spunit$Famille))>0)
+##     {
+##         x11(width=50, height=20, pointsize=10)
+##         par(mar=c(9, 4, 5, 1), mgp=c(3, 1, 9))
+##         boxplot(spunit$nombre ~spunit$an+spunit$code_espece, las=2, cex.names=0.6, main=paste("Nombre d'individus par espèce et par an pour la famille ", fa, "\n"))
+##         nbObs <- tapply(spunit$nombre, list(spunit$spunit$an+code_espece), length)
+##         axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5)
+##         legend("topleft", "Nombre d'enregistrement par Boxplot", cex =0.7, col="orange", text.col="orange", merge=FALSE)
+##         Moyenne <- as.vector(tapply(spunit$nombre, list(spunit$an, spunit$code_espece), na.rm = T, mean))
+##         points(Moyenne, pch=19, col="blue")
+##         text(Moyenne+(Moyenne/10), col = "blue", cex = 0.8, labels=as.character(round(Moyenne, digits=1)))
+##         abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
 
-        ## lorsqu'il y aura beaucoup de données, rajouter famille/an/statut
+##         x11(width=50, height=20, pointsize=10)
+##         par(mar=c(9, 4, 5, 1), mgp=c(3, 1, 9))
+##         boxplot(spunit$nombre ~spunit$site+spunit$code_espece, las=2, cex.names=0.6, main=paste("Nombre d'individus par espèce et par site pour la famille ", fa, "\n"))
+##         nbObs <- tapply(spunit$nombre, list(spunit$site, spunit$code_espece), length)
+##         axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5)
+##         legend("topleft", "Nombre d'enregistrement par Boxplot", cex =0.7, col="orange", text.col="orange", merge=FALSE)
+##         Moyenne <- as.vector(tapply(spunit$nombre, list(spunit$site, spunit$code_espece), na.rm = T, mean))
+##         points(Moyenne, pch=19, col="blue")
+##         text(Moyenne+(Moyenne/10), col = "blue", cex = 0.8, labels=as.character(round(Moyenne, digits=1)))
+##         abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
 
-    }else{
-        tkmessageBox(message="Graphique impossible - pas d'enregistrements dans votre sélection")
-        gestionMSGerreur.f("ZeroEnregistrement")
-    }
-    choix <- "0"
-}
+##         textstatut <- c("HR : Hors Réserve", "PP : Protection Partielle", "RE : En réserve")
 
-GraphchoixNbEspeceParUnitobs.f <- function ()
-{
-    print("fonction GraphchoixNbEspeceParUnitobs activée")
-    ChoixUneUnitobs.f()
-    ChoixDesEspeces.f()
-    extremes.f()
-    spunit <- subset(listespunit, listespunit$site==si)
-    spunitSelection <- subset(spunit, spunit$code_espece==sp)
-    spunitSelection$nombre <- EnleverMaxExtremes.f(spunitSelection$nombre)
-    if (length(unique(spunitSelection$nombre))>0)
-    {
-        x11(width=50, height=20, pointsize=10)
-        par(mar=c(9, 4, 5, 1), mgp=c(3, 1, 9))
-        boxplot(spunitSelection$nombre ~spunitSelection$an+spunitSelection$code_espece, las=2, cex.names=0.6, main=paste("Nombre d'individus par an pour les espèces sélectionnées pour le site ", si))
-        nbObs <- tapply(spunitSelection$unite_observation, list(spunitSelection$an, spunitSelection$code_espece), length)
-        axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5)
-        legend("topleft", "Nombre d'enregistrement par Boxplot", cex =0.7, col="orange", text.col="orange", merge=FALSE)
-        Moyenne <- as.vector(tapply(spunitSelection$nombre, list(spunitSelection$an, spunitSelection$code_espece), na.rm = T, mean))
-        points(Moyenne, pch=19, col="blue")
-        text(Moyenne+(Moyenne/10), col = "blue", cex = 1, labels=as.character(round(Moyenne, digits=1)))
-        abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
+##         x11(width=50, height=20, pointsize=10)
+##         par(mar=c(9, 4, 5, 1), mgp=c(3, 1, 9))
+##         boxplot(spunit$nombre ~spunit$statut_protection+spunit$code_espece, las=2, cex.names=0.6, col=heat.colors(length(unique(spunit$statut_protection))), main=paste("Nombre d'individus par espèce et par statut de protection de site pour la famille ", fa, "\n"))
+##         nbObs <- tapply(spunit$nombre, list(spunit$statut_protection, spunit$code_espece), length)
+##         axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5)
+##         legend("topleft", "Nombre d'enregistrement par Boxplot", cex =0.7, col="orange", text.col="orange", merge=FALSE)
+##         Moyenne <- as.vector(tapply(spunit$nombre, list(spunit$statut_protection, spunit$code_espece), na.rm = T, mean))
+##         points(Moyenne, pch=19, col="blue")
+##         text(Moyenne+(Moyenne/10), col = "blue", cex = 0.8, labels=as.character(round(Moyenne, digits=1)))
+##         abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
+##         abline(v = 0.5+(1:length(as.vector(unique(spunit$code_espece))))*length(as.vector(unique(spunit$statut_protection))), col = "red")
+##         legend("topright", textstatut, col=heat.colors(length(unique(spunit$statut_protection))), pch = 15, cex =0.9, title="Statuts")
 
-        x11(width=50, height=20, pointsize=10)
-        par(mar=c(9, 4, 5, 1), mgp=c(3, 1, 9))
-        boxplot(spunitSelection$nombre ~spunitSelection$statut_protection+spunitSelection$an+spunitSelection$code_espece, col=heat.colors(length(unique(spunitSelection$statut_protection))), fg=heat.colors(length(unique(spunitSelection$statut_protection))), las=2, cex.names=0.6, main=paste("Nombre d'individus par an pour les espèces sélectionnées pour le site ", si))
-        nbObsStatut <- tapply(spunitSelection$unite_observation, list(spunitSelection$statut_protection, spunitSelection$an, spunitSelection$code_espece), length)
-        axis(3, as.vector(nbObsStatut), at=1:length(as.vector(nbObsStatut)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5)
-        legend("topleft", "Nombre d'enregistrement par Boxplot", cex =0.7, col="orange", text.col="orange", merge=FALSE)
-        textstatut <- c("HR : Hors Réserve", "PP : Protection Partielle", "RE : En réserve")
-        legend("topright", textstatut, col=heat.colors(length(unique(obs$statut))), pch = 15, cex =0.9, title="Statuts")
-        Moyenne <- as.vector(tapply(spunitSelection$nombre, list(spunitSelection$statut_protection, spunitSelection$an, spunitSelection$code_espece), na.rm = T, mean))
-        points(Moyenne, pch=19, col="blue")
-        text(Moyenne+(Moyenne/10), col = "blue", cex = 1, labels=as.character(round(Moyenne, digits=1)))
-        abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
-        abline(v = 0.5+(1:(length(as.vector(unique(spunitSelection$an)))*length(as.vector(unique(spunitSelection$code_espece))))*length(as.vector(unique(unit$statut_protection)))), col = "red")
-    }else{
-        tkmessageBox(message="Graphique impossible - pas d'enregistrements dans votre sélection")
-        gestionMSGerreur.f("ZeroEnregistrement")
-    }
-    choix <- "0"
-}
+##         ## lorsqu'il y aura beaucoup de données, rajouter famille/an/statut
 
-GraphNbEspeceParAn.f <- function ()
-{
-    print("fonction GraphNbEspeceParAn activée")
-    ChoixUneAnnee.f()
-    print(paste("année considérée :", varAn))
-    extremes.f()
-    ## on restreint la table "listespunit" à l'année sélectionnée
-    spunit <- subset(listespunit, listespunit$an==varAn)
-    if (length(unique(spunit$nombre))>0)
-    {
-        x11(width=50, height=20, pointsize=10)
-        par(mar=c(9, 4, 5, 1), mgp=c(3, 1, 9))
-        boxplot(spunit$nombre ~spunit$biotope+spunit$code_espece, las=2, cex.names=0.6, main=paste("Nombre d'individus par espèce et par biotope pour l'année ", varAn, "\n"))
-        nbObs <- tapply(spunit$nombre, list(spunit$biotope, spunit$code_espece), length)
-        axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5, cex = 0.6)
-        Moyenne <- as.vector(tapply(spunit$nombre, list(spunit$biotope, spunit$code_espece), na.rm = T, mean))
-        points(Moyenne, pch=19, col="blue")
-        text(Moyenne+(Moyenne/5), col = "blue", cex = 0.6, labels=as.character(round(Moyenne, digits=1)))
-        abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
+##     }else{
+##         tkmessageBox(message="Graphique impossible - pas d'enregistrements dans votre sélection")
+##         gestionMSGerreur.f("ZeroEnregistrement")
+##     }
+##     choix <- "0"
+## }
 
-        x11(width=50, height=20, pointsize=10)
-        par(mar=c(9, 4, 5, 1), mgp=c(3, 1, 9))
-        boxplot(spunit$nombre ~spunit$code_espece+spunit$site, las=2, cex.names=0.6, main=paste("Nombre d'individus par espèce et par site pour l'année ", varAn))
-        nbObs <- tapply(spunit$nombre, list(spunit$code_espece, spunit$site), length)
-        axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5)
-        legend("topleft", "Nombre d'enregistrement par Boxplot", cex =0.7, col="orange", text.col="orange", merge=FALSE)
-        Moyenne <- as.vector(tapply(spunitSelection$nombre, list(spunitSelection$code_espece, spunitSelection$site), na.rm = T, mean))
-        points(Moyenne, pch=19, col="blue")
-        text(Moyenne+(Moyenne/10), col = "blue", cex = 0.6, labels=as.character(round(Moyenne, digits=1)))
-        abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
+## [sup] [yr: 11/01/2011]
 
-        x11(width=50, height=20, pointsize=10)
-        par(mar=c(9, 4, 5, 1), mgp=c(3, 1, 9))
-        boxplot(spunit$nombre ~spunit$statut_protection+spunit$code_espece, las=2, cex.names=0.6, col=heat.colors(length(unique(spunit$statut_protection))), main=paste("Nombre d'individus par espèce et par statut de protection pour l'année ", varAn))
-        nbObsStatut <- tapply(spunit$nombre, list(spunit$statut_protection, spunit$code_espece), length)
-        axis(3, as.vector(nbObsStatut), at=1:length(as.vector(nbObsStatut)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5)
-        legend("topleft", "Nombre d'enregistrement par Boxplot", cex =0.7, col="orange", text.col="orange", merge=FALSE)
-        textstatut <- c("HR : Hors Réserve", "PP : Protection Partielle", "RE : En réserve")
-        legend("topright", textstatut, col=heat.colors(length(unique(spunit$statut_protection))), pch = 15, cex =0.9, title="Statuts")
-        Moyenne <- as.vector(tapply(spunit$nombre, list(spunit$statut_protection, spunit$code_espece), na.rm = T, mean))
-        points(Moyenne, pch=19, col="blue")
-        text(Moyenne+(Moyenne/10), col = "blue", cex = 1, labels=as.character(round(Moyenne, digits=1)))
-        abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
-        abline(v = 0.5+(1:length(as.vector(unique(spunit$code_espece))))*length(as.vector(unique(spunit$statut_protection))), col = "red")
-    }else{
-        tkmessageBox(message="Graphique impossible - pas d'enregistrements dans votre sélection")
-        gestionMSGerreur.f("ZeroEnregistrement")
-    }
-    choix <- "0"
-}
+## GraphchoixNbEspeceParUnitobs.f <- function ()
+## {
+##     print("fonction GraphchoixNbEspeceParUnitobs activée")
+##     ChoixUneUnitobs.f()
+##     ChoixDesEspeces.f()
+##     extremes.f()
+##     spunit <- subset(listespunit, listespunit$site==si)
+##     spunitSelection <- subset(spunit, spunit$code_espece==sp)
+##     spunitSelection$nombre <- EnleverMaxExtremes.f(spunitSelection$nombre)
+##     if (length(unique(spunitSelection$nombre))>0)
+##     {
+##         x11(width=50, height=20, pointsize=10)
+##         par(mar=c(9, 4, 5, 1), mgp=c(3, 1, 9))
+##         boxplot(spunitSelection$nombre ~spunitSelection$an+spunitSelection$code_espece, las=2, cex.names=0.6, main=paste("Nombre d'individus par an pour les espèces sélectionnées pour le site ", si))
+##         nbObs <- tapply(spunitSelection$unite_observation, list(spunitSelection$an, spunitSelection$code_espece), length)
+##         axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5)
+##         legend("topleft", "Nombre d'enregistrement par Boxplot", cex =0.7, col="orange", text.col="orange", merge=FALSE)
+##         Moyenne <- as.vector(tapply(spunitSelection$nombre, list(spunitSelection$an, spunitSelection$code_espece), na.rm = T, mean))
+##         points(Moyenne, pch=19, col="blue")
+##         text(Moyenne+(Moyenne/10), col = "blue", cex = 1, labels=as.character(round(Moyenne, digits=1)))
+##         abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
 
-GraphchoixNbEspeceParAn.f <- function ()
-{
-    print("fonction GraphchoixNbEspeceParAn activée")
-    ChoixUneAnnee.f()
-    ChoixDesEspeces.f()
-    extremes.f()
-    spunit <- subset(listespunit, listespunit$an==varAn)
-    spunitSelection <- subset(spunit, spunit$code_espece==sp)
+##         x11(width=50, height=20, pointsize=10)
+##         par(mar=c(9, 4, 5, 1), mgp=c(3, 1, 9))
+##         boxplot(spunitSelection$nombre ~spunitSelection$statut_protection+spunitSelection$an+spunitSelection$code_espece, col=heat.colors(length(unique(spunitSelection$statut_protection))), fg=heat.colors(length(unique(spunitSelection$statut_protection))), las=2, cex.names=0.6, main=paste("Nombre d'individus par an pour les espèces sélectionnées pour le site ", si))
+##         nbObsStatut <- tapply(spunitSelection$unite_observation, list(spunitSelection$statut_protection, spunitSelection$an, spunitSelection$code_espece), length)
+##         axis(3, as.vector(nbObsStatut), at=1:length(as.vector(nbObsStatut)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5)
+##         legend("topleft", "Nombre d'enregistrement par Boxplot", cex =0.7, col="orange", text.col="orange", merge=FALSE)
+##         textstatut <- c("HR : Hors Réserve", "PP : Protection Partielle", "RE : En réserve")
+##         legend("topright", textstatut, col=heat.colors(length(unique(obs$statut))), pch = 15, cex =0.9, title="Statuts")
+##         Moyenne <- as.vector(tapply(spunitSelection$nombre, list(spunitSelection$statut_protection, spunitSelection$an, spunitSelection$code_espece), na.rm = T, mean))
+##         points(Moyenne, pch=19, col="blue")
+##         text(Moyenne+(Moyenne/10), col = "blue", cex = 1, labels=as.character(round(Moyenne, digits=1)))
+##         abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
+##         abline(v = 0.5+(1:(length(as.vector(unique(spunitSelection$an)))*length(as.vector(unique(spunitSelection$code_espece))))*length(as.vector(unique(unit$statut_protection)))), col = "red")
+##     }else{
+##         tkmessageBox(message="Graphique impossible - pas d'enregistrements dans votre sélection")
+##         gestionMSGerreur.f("ZeroEnregistrement")
+##     }
+##     choix <- "0"
+## }
 
-    if (length(unique(spunit$nombre))>0)
-    {
+## [sup] [yr: 11/01/2011]
 
-        textstatut <- c("HR : Hors Réserve", "PP : Protection Partielle", "RE : En réserve")
-        ## Espèces par biotope pour l'année
-        x11(width=50, height=20, pointsize=10)
-        par(mar=c(13, 4, 5, 1), mgp=c(3, 1, 15))
-        boxplot(spunitSelection$nombre ~spunitSelection$code_espece+spunitSelection$biotope, las=2, cex.names=0.6, main=paste("Nombre d'individus par biotope pour les espèces sélectionnées pour l'année ", varAn))
-        nbObs <- tapply(spunitSelection$unite_observation, list(spunitSelection$code_espece, spunitSelection$biotope), length)
-        axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5)
-        Moyenne <- as.vector(tapply(spunitSelection$nombre, list(spunitSelection$code_espece, spunitSelection$biotope), na.rm = T, mean))
-        points(Moyenne, pch=19, col="blue")
-        text(Moyenne+(Moyenne/10), col = "blue", cex = 1, labels=as.character(round(Moyenne, digits=1)))
-        abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
+## GraphNbEspeceParAn.f <- function ()
+## {
+##     print("fonction GraphNbEspeceParAn activée")
+##     ChoixUneAnnee.f()
+##     print(paste("année considérée :", varAn))
+##     extremes.f()
+##     ## on restreint la table "listespunit" à l'année sélectionnée
+##     spunit <- subset(listespunit, listespunit$an==varAn)
+##     if (length(unique(spunit$nombre))>0)
+##     {
+##         x11(width=50, height=20, pointsize=10)
+##         par(mar=c(9, 4, 5, 1), mgp=c(3, 1, 9))
+##         boxplot(spunit$nombre ~spunit$biotope+spunit$code_espece, las=2, cex.names=0.6, main=paste("Nombre d'individus par espèce et par biotope pour l'année ", varAn, "\n"))
+##         nbObs <- tapply(spunit$nombre, list(spunit$biotope, spunit$code_espece), length)
+##         axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5, cex = 0.6)
+##         Moyenne <- as.vector(tapply(spunit$nombre, list(spunit$biotope, spunit$code_espece), na.rm = T, mean))
+##         points(Moyenne, pch=19, col="blue")
+##         text(Moyenne+(Moyenne/5), col = "blue", cex = 0.6, labels=as.character(round(Moyenne, digits=1)))
+##         abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
 
-        ## Espèces par statut de protection et par biotope pour l'année
-        x11(width=50, height=20, pointsize=10)
-        par(mar=c(13, 4, 5, 1), mgp=c(3, 1, 15))
-        boxplot(spunitSelection$nombre ~spunitSelection$statut_protection+spunitSelection$biotope+spunitSelection$code_espece, col=heat.colors(length(unique(spunitSelection$statut_protection))), las=2, cex.names=0.6, main=paste("Nombre d'individus par biotope pour les espèces sélectionnées pour l'année ", varAn))
-        nbObsStatut <- tapply(spunitSelection$unite_observation, list(spunitSelection$statut_protection, spunitSelection$biotope, spunitSelection$code_espece), length)
-        axis(3, as.vector(nbObsStatut), at=1:length(as.vector(nbObsStatut)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5)
-        legend("topleft", "Nombre d'enregistrement par Boxplot", cex =0.7, col="orange", text.col="orange", merge=FALSE)
-        legend("topright", textstatut, col=heat.colors(length(unique(spunitSelection$statut_protection))), pch = 15, cex =0.9, title="Statuts")
-        Moyenne <- as.vector(tapply(spunitSelection$nombre, list(spunitSelection$statut_protection, spunitSelection$biotope, spunitSelection$code_espece), na.rm = T, mean))
-        points(Moyenne, pch=19, col="blue")
-        text(Moyenne+(Moyenne/10), col = "blue", cex = 1, labels=as.character(round(Moyenne, digits=1)))
-        abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
-        abline(v = 0.5+(1:length(as.vector(unique(spunitSelection$biotope))))*length(as.vector(unique(spunitSelection$statut_protection))), col = "red")
+##         x11(width=50, height=20, pointsize=10)
+##         par(mar=c(9, 4, 5, 1), mgp=c(3, 1, 9))
+##         boxplot(spunit$nombre ~spunit$code_espece+spunit$site, las=2, cex.names=0.6, main=paste("Nombre d'individus par espèce et par site pour l'année ", varAn))
+##         nbObs <- tapply(spunit$nombre, list(spunit$code_espece, spunit$site), length)
+##         axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5)
+##         legend("topleft", "Nombre d'enregistrement par Boxplot", cex =0.7, col="orange", text.col="orange", merge=FALSE)
+##         Moyenne <- as.vector(tapply(spunitSelection$nombre, list(spunitSelection$code_espece, spunitSelection$site), na.rm = T, mean))
+##         points(Moyenne, pch=19, col="blue")
+##         text(Moyenne+(Moyenne/10), col = "blue", cex = 0.6, labels=as.character(round(Moyenne, digits=1)))
+##         abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
 
-        ## Espèces par site pour l'année
-        x11(width=50, height=20, pointsize=10)
-        par(mar=c(13, 4, 5, 1), mgp=c(3, 1, 15))
-        boxplot(spunitSelection$nombre ~spunitSelection$code_espece+spunitSelection$site, las=2, cex.names=0.6, main=paste("Nombre d'individus par site pour les espèces sélectionnées pour l'année ", varAn))
-        nbObs <- tapply(spunitSelection$unite_observation, list(spunitSelection$code_espece, spunitSelection$site), length)
-        axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5)
-        legend("topleft", "Nombre d'enregistrement par Boxplot", cex =0.7, col="orange", text.col="orange", merge=FALSE)
-        Moyenne <- as.vector(tapply(spunitSelection$nombre, list(spunitSelection$code_espece, spunitSelection$site), na.rm = T, mean))
-        points(Moyenne, pch=19, col="blue")
-        text(Moyenne+(Moyenne/10), col = "blue", cex = 1, labels=as.character(round(Moyenne, digits=1)))
-        abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
+##         x11(width=50, height=20, pointsize=10)
+##         par(mar=c(9, 4, 5, 1), mgp=c(3, 1, 9))
+##         boxplot(spunit$nombre ~spunit$statut_protection+spunit$code_espece, las=2, cex.names=0.6, col=heat.colors(length(unique(spunit$statut_protection))), main=paste("Nombre d'individus par espèce et par statut de protection pour l'année ", varAn))
+##         nbObsStatut <- tapply(spunit$nombre, list(spunit$statut_protection, spunit$code_espece), length)
+##         axis(3, as.vector(nbObsStatut), at=1:length(as.vector(nbObsStatut)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5)
+##         legend("topleft", "Nombre d'enregistrement par Boxplot", cex =0.7, col="orange", text.col="orange", merge=FALSE)
+##         textstatut <- c("HR : Hors Réserve", "PP : Protection Partielle", "RE : En réserve")
+##         legend("topright", textstatut, col=heat.colors(length(unique(spunit$statut_protection))), pch = 15, cex =0.9, title="Statuts")
+##         Moyenne <- as.vector(tapply(spunit$nombre, list(spunit$statut_protection, spunit$code_espece), na.rm = T, mean))
+##         points(Moyenne, pch=19, col="blue")
+##         text(Moyenne+(Moyenne/10), col = "blue", cex = 1, labels=as.character(round(Moyenne, digits=1)))
+##         abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
+##         abline(v = 0.5+(1:length(as.vector(unique(spunit$code_espece))))*length(as.vector(unique(spunit$statut_protection))), col = "red")
+##     }else{
+##         tkmessageBox(message="Graphique impossible - pas d'enregistrements dans votre sélection")
+##         gestionMSGerreur.f("ZeroEnregistrement")
+##     }
+##     choix <- "0"
+## }
 
-        ## Espèces par statut de protection et par site pour l'année
-        x11(width=50, height=20, pointsize=10)
-        par(mar=c(13, 4, 5, 1), mgp=c(3, 1, 15))
-        boxplot(spunitSelection$nombre ~spunitSelection$statut_protection+spunitSelection$site+spunitSelection$code_espece, col=heat.colors(length(unique(spunitSelection$statut_protection))), las=2, cex.names=0.6, main=paste("Nombre d'individus par site pour les espèces sélectionnées pour l'année ", varAn))
-        nbObsStatut <- tapply(spunitSelection$unite_observation, list(spunitSelection$statut_protection, spunitSelection$site, spunitSelection$code_espece), length)
-        axis(3, as.vector(nbObsStatut), at=1:length(as.vector(nbObsStatut)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5)
-        legend("topleft", "Nombre d'enregistrement par Boxplot", cex =0.7, col="orange", text.col="orange", merge=FALSE)
-        legend("topright", textstatut, col=heat.colors(length(unique(obs$statut))), pch = 15, cex =0.9, title="Statuts")
-        Moyenne <- as.vector(tapply(spunitSelection$nombre, list(spunitSelection$statut_protection, spunitSelection$site, spunitSelection$code_espece), na.rm = T, mean))
-        points(Moyenne, pch=19, col="blue")
-        text(Moyenne+(Moyenne/10), col = "blue", cex = 1, labels=as.character(round(Moyenne, digits=1)))
-        abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
-        abline(v = 0.5+(1:length(as.vector(unique(spunitSelection$site))))*length(as.vector(unique(spunitSelection$statut_protection))), col = "red")
+## [sup] [yr: 11/01/2011]
 
-    }else{
-        tkmessageBox(message="Graphique impossible - pas d'enregistrements dans votre sélection")
-        gestionMSGerreur.f("ZeroEnregistrement")
-    }
-    choix <- "0"
-}
+## GraphchoixNbEspeceParAn.f <- function ()
+## {
+##     print("fonction GraphchoixNbEspeceParAn activée")
+##     ChoixUneAnnee.f()
+##     ChoixDesEspeces.f()
+##     extremes.f()
+##     spunit <- subset(listespunit, listespunit$an==varAn)
+##     spunitSelection <- subset(spunit, spunit$code_espece==sp)
+
+##     if (length(unique(spunit$nombre))>0)
+##     {
+
+##         textstatut <- c("HR : Hors Réserve", "PP : Protection Partielle", "RE : En réserve")
+##         ## Espèces par biotope pour l'année
+##         x11(width=50, height=20, pointsize=10)
+##         par(mar=c(13, 4, 5, 1), mgp=c(3, 1, 15))
+##         boxplot(spunitSelection$nombre ~spunitSelection$code_espece+spunitSelection$biotope, las=2, cex.names=0.6, main=paste("Nombre d'individus par biotope pour les espèces sélectionnées pour l'année ", varAn))
+##         nbObs <- tapply(spunitSelection$unite_observation, list(spunitSelection$code_espece, spunitSelection$biotope), length)
+##         axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5)
+##         Moyenne <- as.vector(tapply(spunitSelection$nombre, list(spunitSelection$code_espece, spunitSelection$biotope), na.rm = T, mean))
+##         points(Moyenne, pch=19, col="blue")
+##         text(Moyenne+(Moyenne/10), col = "blue", cex = 1, labels=as.character(round(Moyenne, digits=1)))
+##         abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
+
+##         ## Espèces par statut de protection et par biotope pour l'année
+##         x11(width=50, height=20, pointsize=10)
+##         par(mar=c(13, 4, 5, 1), mgp=c(3, 1, 15))
+##         boxplot(spunitSelection$nombre ~spunitSelection$statut_protection+spunitSelection$biotope+spunitSelection$code_espece, col=heat.colors(length(unique(spunitSelection$statut_protection))), las=2, cex.names=0.6, main=paste("Nombre d'individus par biotope pour les espèces sélectionnées pour l'année ", varAn))
+##         nbObsStatut <- tapply(spunitSelection$unite_observation, list(spunitSelection$statut_protection, spunitSelection$biotope, spunitSelection$code_espece), length)
+##         axis(3, as.vector(nbObsStatut), at=1:length(as.vector(nbObsStatut)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5)
+##         legend("topleft", "Nombre d'enregistrement par Boxplot", cex =0.7, col="orange", text.col="orange", merge=FALSE)
+##         legend("topright", textstatut, col=heat.colors(length(unique(spunitSelection$statut_protection))), pch = 15, cex =0.9, title="Statuts")
+##         Moyenne <- as.vector(tapply(spunitSelection$nombre, list(spunitSelection$statut_protection, spunitSelection$biotope, spunitSelection$code_espece), na.rm = T, mean))
+##         points(Moyenne, pch=19, col="blue")
+##         text(Moyenne+(Moyenne/10), col = "blue", cex = 1, labels=as.character(round(Moyenne, digits=1)))
+##         abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
+##         abline(v = 0.5+(1:length(as.vector(unique(spunitSelection$biotope))))*length(as.vector(unique(spunitSelection$statut_protection))), col = "red")
+
+##         ## Espèces par site pour l'année
+##         x11(width=50, height=20, pointsize=10)
+##         par(mar=c(13, 4, 5, 1), mgp=c(3, 1, 15))
+##         boxplot(spunitSelection$nombre ~spunitSelection$code_espece+spunitSelection$site, las=2, cex.names=0.6, main=paste("Nombre d'individus par site pour les espèces sélectionnées pour l'année ", varAn))
+##         nbObs <- tapply(spunitSelection$unite_observation, list(spunitSelection$code_espece, spunitSelection$site), length)
+##         axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5)
+##         legend("topleft", "Nombre d'enregistrement par Boxplot", cex =0.7, col="orange", text.col="orange", merge=FALSE)
+##         Moyenne <- as.vector(tapply(spunitSelection$nombre, list(spunitSelection$code_espece, spunitSelection$site), na.rm = T, mean))
+##         points(Moyenne, pch=19, col="blue")
+##         text(Moyenne+(Moyenne/10), col = "blue", cex = 1, labels=as.character(round(Moyenne, digits=1)))
+##         abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
+
+##         ## Espèces par statut de protection et par site pour l'année
+##         x11(width=50, height=20, pointsize=10)
+##         par(mar=c(13, 4, 5, 1), mgp=c(3, 1, 15))
+##         boxplot(spunitSelection$nombre ~spunitSelection$statut_protection+spunitSelection$site+spunitSelection$code_espece, col=heat.colors(length(unique(spunitSelection$statut_protection))), las=2, cex.names=0.6, main=paste("Nombre d'individus par site pour les espèces sélectionnées pour l'année ", varAn))
+##         nbObsStatut <- tapply(spunitSelection$unite_observation, list(spunitSelection$statut_protection, spunitSelection$site, spunitSelection$code_espece), length)
+##         axis(3, as.vector(nbObsStatut), at=1:length(as.vector(nbObsStatut)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5)
+##         legend("topleft", "Nombre d'enregistrement par Boxplot", cex =0.7, col="orange", text.col="orange", merge=FALSE)
+##         legend("topright", textstatut, col=heat.colors(length(unique(obs$statut))), pch = 15, cex =0.9, title="Statuts")
+##         Moyenne <- as.vector(tapply(spunitSelection$nombre, list(spunitSelection$statut_protection, spunitSelection$site, spunitSelection$code_espece), na.rm = T, mean))
+##         points(Moyenne, pch=19, col="blue")
+##         text(Moyenne+(Moyenne/10), col = "blue", cex = 1, labels=as.character(round(Moyenne, digits=1)))
+##         abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
+##         abline(v = 0.5+(1:length(as.vector(unique(spunitSelection$site))))*length(as.vector(unique(spunitSelection$statut_protection))), col = "red")
+
+##     }else{
+##         tkmessageBox(message="Graphique impossible - pas d'enregistrements dans votre sélection")
+##         gestionMSGerreur.f("ZeroEnregistrement")
+##     }
+##     choix <- "0"
+## }
 
 ## [sup] [yr: 11/01/2011]
 
@@ -3804,308 +3835,318 @@ GraphchoixNbEspeceParAn.f <- function ()
 ##     choix <- "0"
 ## }
 
-GraphDelta.f <- function ()
-{
-    print("fonction GraphDelta activée")
-    extremes.f()
+## [sup] [yr: 11/01/2011]
 
-    if (unique(unitobs$type)=="LIT")
-    {
-        tkmessageBox(message="ATTENTION, veillez à ce que le référentiel espèce ne contienne que des espèces \n (pas de catégories benthiques) pour calculer un indice corect")
-    }
+## GraphDelta.f <- function ()
+## {
+##     print("fonction GraphDelta activée")
+##     extremes.f()
 
-    if (length(unit$Delta)>0)
-    {
-        textstatut <- c("HR : Hors Réserve", "PP : Protection Partielle", "RE : En réserve")
+##     if (unique(unitobs$type)=="LIT")
+##     {
+##         tkmessageBox(message="ATTENTION, veillez à ce que le référentiel espèce ne contienne que des espèces \n (pas de catégories benthiques) pour calculer un indice corect")
+##     }
 
-        x11(width=120, height=50, pointsize=10)
-        boxplot(unit$Delta, main=paste("Delta pour les ", dim(unit)[1], " unités d'observation"))
-        Moyenne <- as.vector(mean(unit$Delta, na.rm = T))
-        points(Moyenne, pch=19, col="blue")
+##     if (length(unit$Delta)>0)
+##     {
+##         textstatut <- c("HR : Hors Réserve", "PP : Protection Partielle", "RE : En réserve")
 
-        x11(width=120, height=50, pointsize=10)
-        boxplot(unit$Delta ~unit$an,  las=2, col=heat.colors(length(unique(unit$an))), main=paste("Delta pour les ", dim(unit)[1], " unités d'observation selon l'année\n\n"))
-        nbObs <- tapply(unit$Delta, unit$an, length)
-        axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5)
-        Moyenne <- as.vector(tapply(unit$Delta, unit$an, na.rm = T, mean))
-        points(Moyenne, pch=19, col="blue")
-        text(Moyenne+(Moyenne/10), col = "blue", cex = 1, labels=as.character(round(Moyenne, digits=1)))
-        abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
-        legend("topleft", "Nombre d'enregistrement par Boxplot", cex =0.7, col="orange", text.col="orange", merge=FALSE)
+##         x11(width=120, height=50, pointsize=10)
+##         boxplot(unit$Delta, main=paste("Delta pour les ", dim(unit)[1], " unités d'observation"))
+##         Moyenne <- as.vector(mean(unit$Delta, na.rm = T))
+##         points(Moyenne, pch=19, col="blue")
 
-        x11(width=120, height=50, pointsize=10)
-        boxplot(unit$Delta ~unit$statut,  las=2, col=heat.colors(length(unique(unit$statut))), main=paste("Delta pour les ", dim(unit)[1], " unités d'observation selon le statut\n\n"))
-        nbObs <- tapply(unit$Delta, unit$statut, length)
-        axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5)
-        Moyenne <- as.vector(tapply(unit$Delta, unit$statut, na.rm = T, mean))
-        points(Moyenne, pch=19, col="blue")
-        text(Moyenne+(Moyenne/10), col = "blue", cex = 1, labels=as.character(round(Moyenne, digits=1)))
-        abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
-        textstatut <- c("HR : Hors Réserve", "PP : Protection Partielle", "RE : En réserve")
-        legend("bottomright", textstatut, col=heat.colors(length(unique(unit$statut))), pch = 15, cex =0.9, title="Statuts")
-        legend("topleft", "Nombre d'enregistrement par Boxplot", cex =0.7, col="orange", text.col="orange", merge=FALSE)
+##         x11(width=120, height=50, pointsize=10)
+##         boxplot(unit$Delta ~unit$an,  las=2, col=heat.colors(length(unique(unit$an))), main=paste("Delta pour les ", dim(unit)[1], " unités d'observation selon l'année\n\n"))
+##         nbObs <- tapply(unit$Delta, unit$an, length)
+##         axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5)
+##         Moyenne <- as.vector(tapply(unit$Delta, unit$an, na.rm = T, mean))
+##         points(Moyenne, pch=19, col="blue")
+##         text(Moyenne+(Moyenne/10), col = "blue", cex = 1, labels=as.character(round(Moyenne, digits=1)))
+##         abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
+##         legend("topleft", "Nombre d'enregistrement par Boxplot", cex =0.7, col="orange", text.col="orange", merge=FALSE)
 
-        x11(width=120, height=50, pointsize=10)
-        boxplot(unit$Delta ~unit$statut+unit$an, las=2, col=heat.colors(length(unique(unit$statut))), main=paste("Delta pour les ", dim(unit)[1], " unités d'observation selon l'année et le statut\n\n"))
-        nbObs <- tapply(unit$Delta, list(unit$statut, unit$an), length)
-        axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5)
-        Moyenne <- as.vector(tapply(unit$Delta, list(unit$statut, unit$an), na.rm = T, mean))
-        points(Moyenne, pch=19, col="blue")
-        text(Moyenne+(Moyenne/10), col = "blue", cex = 1, labels=as.character(round(Moyenne, digits=1)))
-        abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
-        abline(v = 0.5+(1:length(as.vector(unique(unit$an))))*length(as.vector(unique(unit$statut))), col = "red")
-        textstatut <- c("HR : Hors Réserve", "PP : Protection Partielle", "RE : En réserve")
-        legend("bottomright", textstatut, col=heat.colors(length(unique(unit$statut))), pch = 15, cex =0.9, title="Statuts")
-        legend("topleft", "Nombre d'enregistrement par Boxplot", cex =0.7, col="orange", text.col="orange", merge=FALSE)
-    }else{
-        tkmessageBox(message="Graphique impossible - pas d'enregistrements dans votre sélection")
-        gestionMSGerreur.f("ZeroEnregistrement")
-    }
-    choix <- "0"
-}
+##         x11(width=120, height=50, pointsize=10)
+##         boxplot(unit$Delta ~unit$statut,  las=2, col=heat.colors(length(unique(unit$statut))), main=paste("Delta pour les ", dim(unit)[1], " unités d'observation selon le statut\n\n"))
+##         nbObs <- tapply(unit$Delta, unit$statut, length)
+##         axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5)
+##         Moyenne <- as.vector(tapply(unit$Delta, unit$statut, na.rm = T, mean))
+##         points(Moyenne, pch=19, col="blue")
+##         text(Moyenne+(Moyenne/10), col = "blue", cex = 1, labels=as.character(round(Moyenne, digits=1)))
+##         abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
+##         textstatut <- c("HR : Hors Réserve", "PP : Protection Partielle", "RE : En réserve")
+##         legend("bottomright", textstatut, col=heat.colors(length(unique(unit$statut))), pch = 15, cex =0.9, title="Statuts")
+##         legend("topleft", "Nombre d'enregistrement par Boxplot", cex =0.7, col="orange", text.col="orange", merge=FALSE)
 
-GraphDeltaEtoile.f <- function ()
-{
-    print("fonction GraphDeltaEtoile activée")
-    extremes.f()
-    if (unique(unitobs$type)=="LIT")
-    {
-        tkmessageBox(message="ATTENTION, veillez à ce que le référentiel espèce ne contienne que des espèces \n (pas de catégories benthiques) pour calculer un indice corect")
-    }
-    if (length(unit$DeltaEtoile)>0)
-    {
-        textstatut <- c("HR : Hors Réserve", "PP : Protection Partielle", "RE : En réserve")
+##         x11(width=120, height=50, pointsize=10)
+##         boxplot(unit$Delta ~unit$statut+unit$an, las=2, col=heat.colors(length(unique(unit$statut))), main=paste("Delta pour les ", dim(unit)[1], " unités d'observation selon l'année et le statut\n\n"))
+##         nbObs <- tapply(unit$Delta, list(unit$statut, unit$an), length)
+##         axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5)
+##         Moyenne <- as.vector(tapply(unit$Delta, list(unit$statut, unit$an), na.rm = T, mean))
+##         points(Moyenne, pch=19, col="blue")
+##         text(Moyenne+(Moyenne/10), col = "blue", cex = 1, labels=as.character(round(Moyenne, digits=1)))
+##         abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
+##         abline(v = 0.5+(1:length(as.vector(unique(unit$an))))*length(as.vector(unique(unit$statut))), col = "red")
+##         textstatut <- c("HR : Hors Réserve", "PP : Protection Partielle", "RE : En réserve")
+##         legend("bottomright", textstatut, col=heat.colors(length(unique(unit$statut))), pch = 15, cex =0.9, title="Statuts")
+##         legend("topleft", "Nombre d'enregistrement par Boxplot", cex =0.7, col="orange", text.col="orange", merge=FALSE)
+##     }else{
+##         tkmessageBox(message="Graphique impossible - pas d'enregistrements dans votre sélection")
+##         gestionMSGerreur.f("ZeroEnregistrement")
+##     }
+##     choix <- "0"
+## }
 
-        x11(width=120, height=50, pointsize=10)
-        boxplot(unit$DeltaEtoile, main=paste("Delta * pour les ", dim(unit)[1], " unités d'observation"))
-        Moyenne <- as.vector(mean(unit$DeltaEtoile, na.rm = T))
-        points(Moyenne, pch=19, col="blue")
-        text(Moyenne+(Moyenne/10), col = "blue", cex = 1, labels=as.character(round(Moyenne, digits=1)))
-        abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
-        legend("topleft", "Nombre d'enregistrement par Boxplot", cex =0.7, col="orange", text.col="orange", merge=FALSE)
+## [sup] [yr: 11/01/2011]
 
-        x11(width=120, height=50, pointsize=10)
-        boxplot(unit$DeltaEtoile ~unit$an,  las=2, col=heat.colors(length(unique(unit$an))), main=paste("Delta * pour les ", dim(unit)[1], " unités d'observation selon l'année\n\n"))
-        nbObs <- tapply(unit$DeltaEtoile, unit$an, length)
-        axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5)
-        Moyenne <- as.vector(tapply(unit$DeltaEtoile, unit$an, na.rm = T, mean))
-        points(Moyenne, pch=19, col="blue")
-        text(Moyenne+(Moyenne/10), col = "blue", cex = 1, labels=as.character(round(Moyenne, digits=1)))
-        abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
+## GraphDeltaEtoile.f <- function ()
+## {
+##     print("fonction GraphDeltaEtoile activée")
+##     extremes.f()
+##     if (unique(unitobs$type)=="LIT")
+##     {
+##         tkmessageBox(message="ATTENTION, veillez à ce que le référentiel espèce ne contienne que des espèces \n (pas de catégories benthiques) pour calculer un indice corect")
+##     }
+##     if (length(unit$DeltaEtoile)>0)
+##     {
+##         textstatut <- c("HR : Hors Réserve", "PP : Protection Partielle", "RE : En réserve")
 
-        x11(width=120, height=50, pointsize=10)
-        boxplot(unit$DeltaEtoile ~unit$statut,  las=2, col=heat.colors(length(unique(unit$statut))), main=paste("Delta * pour les ", dim(unit)[1], " unités d'observation selon le statut\n\n"))
-        nbObs <- tapply(unit$DeltaEtoile, unit$statut, length)
-        axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5)
-        Moyenne <- as.vector(tapply(unit$DeltaEtoile, unit$statut, na.rm = T, mean))
-        points(Moyenne, pch=19, col="blue")
-        text(Moyenne+(Moyenne/10), col = "blue", cex = 1, labels=as.character(round(Moyenne, digits=1)))
-        abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
-        textstatut <- c("HR : Hors Réserve", "PP : Protection Partielle", "RE : En réserve")
-        legend("bottomright", textstatut, col=heat.colors(length(unique(unit$statut))), pch = 15, cex =0.9, title="Statuts")
-        legend("topleft", "Nombre d'enregistrement par Boxplot", cex =0.7, col="orange", text.col="orange", merge=FALSE)
+##         x11(width=120, height=50, pointsize=10)
+##         boxplot(unit$DeltaEtoile, main=paste("Delta * pour les ", dim(unit)[1], " unités d'observation"))
+##         Moyenne <- as.vector(mean(unit$DeltaEtoile, na.rm = T))
+##         points(Moyenne, pch=19, col="blue")
+##         text(Moyenne+(Moyenne/10), col = "blue", cex = 1, labels=as.character(round(Moyenne, digits=1)))
+##         abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
+##         legend("topleft", "Nombre d'enregistrement par Boxplot", cex =0.7, col="orange", text.col="orange", merge=FALSE)
 
+##         x11(width=120, height=50, pointsize=10)
+##         boxplot(unit$DeltaEtoile ~unit$an,  las=2, col=heat.colors(length(unique(unit$an))), main=paste("Delta * pour les ", dim(unit)[1], " unités d'observation selon l'année\n\n"))
+##         nbObs <- tapply(unit$DeltaEtoile, unit$an, length)
+##         axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5)
+##         Moyenne <- as.vector(tapply(unit$DeltaEtoile, unit$an, na.rm = T, mean))
+##         points(Moyenne, pch=19, col="blue")
+##         text(Moyenne+(Moyenne/10), col = "blue", cex = 1, labels=as.character(round(Moyenne, digits=1)))
+##         abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
 
-        x11(width=120, height=50, pointsize=10)
-        boxplot(unit$DeltaEtoile ~unit$statut+unit$an, las=2, legend.text=TRUE, args.legend = list(x = "topright", title = "Statut"), col=heat.colors(length(unique(unit$statut))), main=paste("Delta * pour les ", dim(unit)[1], " unités d'observation selon l'année et le statut\n\n"))
-        nbObs <- tapply(unit$DeltaEtoile, list(unit$statut, unit$an), length)
-        axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5)
-        Moyenne <- as.vector(tapply(unit$DeltaEtoile, list(unit$statut, unit$an), na.rm = T, mean))
-        points(Moyenne, pch=19, col="blue")
-        text(Moyenne+(Moyenne/10), col = "blue", cex = 1, labels=as.character(round(Moyenne, digits=1)))
-        abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
-        abline(v = 0.5+(1:length(as.vector(unique(unit$an))))*length(as.vector(unique(unit$statut))), col = "red")
-        textstatut <- c("HR : Hors Réserve", "PP : Protection Partielle", "RE : En réserve")
-        legend("bottomright", textstatut, col=heat.colors(length(unique(unit$statut))), pch = 15, cex =0.9, title="Statuts")
-        legend("topleft", "Nombre d'enregistrement par Boxplot", cex =0.7, col="orange", text.col="orange", merge=FALSE)
-    }else{
-        tkmessageBox(message="Graphique impossible - pas d'enregistrements dans votre sélection")
-        gestionMSGerreur.f("ZeroEnregistrement")
-    }
-    choix <- "0"
-}
-
-GraphDeltaPlus.f <- function ()
-{
-    print("fonction GraphDeltaPlus activée")
-    extremes.f()
-    if (unique(unitobs$type)=="LIT")
-    {
-        tkmessageBox(message="ATTENTION, veillez à ce que le référentiel espèce ne contienne que des espèces \n (pas de catégories benthiques) pour calculer un indice corect")
-    }
-    if (length(unit$DeltaPlus)>0)
-    {
-
-        textstatut <- c("HR : Hors Réserve", "PP : Protection Partielle", "RE : En réserve")
-
-        x11(width=120, height=50, pointsize=10)
-        boxplot(unit$DeltaPlus, main=paste("Delta + pour les ", dim(unit)[1], " unités d'observation"))
-        Moyenne <- as.vector(mean(unit$DeltaPlus, na.rm = T))
-        points(Moyenne, pch=19, col="blue")
-        text(Moyenne+(Moyenne/10), col = "blue", cex = 1, labels=as.character(round(Moyenne, digits=1)))
-        abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
-        legend("topleft", "Nombre d'enregistrement par Boxplot", cex =0.7, col="orange", text.col="orange", merge=FALSE)
-
-        x11(width=120, height=50, pointsize=10)
-        boxplot(unit$DeltaPlus ~unit$an,  las=2, col=heat.colors(length(unique(unit$an))), main=paste("Delta + pour les ", dim(unit)[1], " unités d'observation selon l'année\n\n"))
-        nbObs <- tapply(unit$DeltaPlus, unit$an, length)
-        axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5)
-        Moyenne <- as.vector(tapply(unit$DeltaPlus, unit$an, na.rm = T, mean))
-        points(Moyenne, pch=19, col="blue")
-        text(Moyenne+(Moyenne/10), col = "blue", cex = 1, labels=as.character(round(Moyenne, digits=1)))
-        abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
-
-        x11(width=120, height=50, pointsize=10)
-        boxplot(unit$DeltaPlus ~unit$statut,  las=2, col=heat.colors(length(unique(unit$statut))), main=paste("Delta + pour les ", dim(unit)[1], " unités d'observation selon le statut\n\n"))
-        nbObs <- tapply(unit$DeltaPlus, unit$statut, length)
-        axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5)
-        Moyenne <- as.vector(tapply(unit$DeltaPlus, unit$statut, na.rm = T, mean))
-        points(Moyenne, pch=19, col="blue")
-        text(Moyenne+(Moyenne/10), col = "blue", cex = 1, labels=as.character(round(Moyenne, digits=1)))
-        abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
-        textstatut <- c("HR : Hors Réserve", "PP : Protection Partielle", "RE : En réserve")
-        legend("bottomright", textstatut, col=heat.colors(length(unique(unit$statut))), pch = 15, cex =0.9, title="Statuts")
-        legend("topleft", "Nombre d'enregistrement par Boxplot", cex =0.7, col="orange", text.col="orange", merge=FALSE)
+##         x11(width=120, height=50, pointsize=10)
+##         boxplot(unit$DeltaEtoile ~unit$statut,  las=2, col=heat.colors(length(unique(unit$statut))), main=paste("Delta * pour les ", dim(unit)[1], " unités d'observation selon le statut\n\n"))
+##         nbObs <- tapply(unit$DeltaEtoile, unit$statut, length)
+##         axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5)
+##         Moyenne <- as.vector(tapply(unit$DeltaEtoile, unit$statut, na.rm = T, mean))
+##         points(Moyenne, pch=19, col="blue")
+##         text(Moyenne+(Moyenne/10), col = "blue", cex = 1, labels=as.character(round(Moyenne, digits=1)))
+##         abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
+##         textstatut <- c("HR : Hors Réserve", "PP : Protection Partielle", "RE : En réserve")
+##         legend("bottomright", textstatut, col=heat.colors(length(unique(unit$statut))), pch = 15, cex =0.9, title="Statuts")
+##         legend("topleft", "Nombre d'enregistrement par Boxplot", cex =0.7, col="orange", text.col="orange", merge=FALSE)
 
 
-        x11(width=120, height=50, pointsize=10)
-        boxplot(unit$DeltaPlus ~unit$statut+unit$an, las=2, legend.text=TRUE, args.legend = list(x = "topright", title = "Statut"), col=heat.colors(length(unique(unit$statut))), main=paste("Delta + pour les ", dim(unit)[1], " unités d'observation selon l'année et le statut\n\n"))
-        nbObs <- tapply(unit$DeltaPlus, list(unit$statut, unit$an), length)
-        axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5)
-        Moyenne <- as.vector(tapply(unit$DeltaPlus, list(unit$statut, unit$an), na.rm = T, mean))
-        points(Moyenne, pch=19, col="blue")
-        text(Moyenne+(Moyenne/10), col = "blue", cex = 1, labels=as.character(round(Moyenne, digits=1)))
-        abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
-        abline(v = 0.5+(1:length(as.vector(unique(unit$an))))*length(as.vector(unique(unit$statut))), col = "red")
-        textstatut <- c("HR : Hors Réserve", "PP : Protection Partielle", "RE : En réserve")
-        legend("bottomright", textstatut, col=heat.colors(length(unique(unit$statut))), pch = 15, cex =0.9, title="Statuts")
-        legend("topleft", "Nombre d'enregistrement par Boxplot", cex =0.7, col="orange", text.col="orange", merge=FALSE)
-    }else{
-        tkmessageBox(message="Graphique impossible - pas d'enregistrements dans votre sélection")
-        gestionMSGerreur.f("ZeroEnregistrement")
-    }
-    choix <- "0"
-}
+##         x11(width=120, height=50, pointsize=10)
+##         boxplot(unit$DeltaEtoile ~unit$statut+unit$an, las=2, legend.text=TRUE, args.legend = list(x = "topright", title = "Statut"), col=heat.colors(length(unique(unit$statut))), main=paste("Delta * pour les ", dim(unit)[1], " unités d'observation selon l'année et le statut\n\n"))
+##         nbObs <- tapply(unit$DeltaEtoile, list(unit$statut, unit$an), length)
+##         axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5)
+##         Moyenne <- as.vector(tapply(unit$DeltaEtoile, list(unit$statut, unit$an), na.rm = T, mean))
+##         points(Moyenne, pch=19, col="blue")
+##         text(Moyenne+(Moyenne/10), col = "blue", cex = 1, labels=as.character(round(Moyenne, digits=1)))
+##         abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
+##         abline(v = 0.5+(1:length(as.vector(unique(unit$an))))*length(as.vector(unique(unit$statut))), col = "red")
+##         textstatut <- c("HR : Hors Réserve", "PP : Protection Partielle", "RE : En réserve")
+##         legend("bottomright", textstatut, col=heat.colors(length(unique(unit$statut))), pch = 15, cex =0.9, title="Statuts")
+##         legend("topleft", "Nombre d'enregistrement par Boxplot", cex =0.7, col="orange", text.col="orange", merge=FALSE)
+##     }else{
+##         tkmessageBox(message="Graphique impossible - pas d'enregistrements dans votre sélection")
+##         gestionMSGerreur.f("ZeroEnregistrement")
+##     }
+##     choix <- "0"
+## }
 
-GraphSDeltaPlus.f <- function ()
-{
-    print("fonction GraphSDeltaPlus activée")
-    extremes.f()
-    if (unique(unitobs$type)=="LIT")
-    {
-        tkmessageBox(message="ATTENTION, veillez à ce que le référentiel espèce ne contienne que des espèces \n (pas de catégories benthiques) pour calculer un indice corect")
-    }
-    if (length(unit$DeltaPlus)>0)
-    {
-        textstatut <- c("HR : Hors Réserve", "PP : Protection Partielle", "RE : En réserve")
+## [sup] [yr: 11/01/2011]
 
-        x11(width=120, height=50, pointsize=10)
-        boxplot(unit$SDeltaPlus, main=paste("SDelta + pour les ", dim(unit)[1], " unités d'observation"))
-        Moyenne <- as.vector(mean(unit$SDeltaPlus, na.rm = T))
-        points(Moyenne, pch=19, col="blue")
-        text(Moyenne+(Moyenne/10), col = "blue", cex = 1, labels=as.character(round(Moyenne, digits=1)))
-        abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
-        legend("topleft", "Nombre d'enregistrement par Boxplot", cex =0.7, col="orange", text.col="orange", merge=FALSE)
+## GraphDeltaPlus.f <- function ()
+## {
+##     print("fonction GraphDeltaPlus activée")
+##     extremes.f()
+##     if (unique(unitobs$type)=="LIT")
+##     {
+##         tkmessageBox(message="ATTENTION, veillez à ce que le référentiel espèce ne contienne que des espèces \n (pas de catégories benthiques) pour calculer un indice corect")
+##     }
+##     if (length(unit$DeltaPlus)>0)
+##     {
 
-        x11(width=120, height=50, pointsize=10)
-        boxplot(unit$SDeltaPlus ~unit$an,  las=2, col=heat.colors(length(unique(unit$an))), main=paste("SDelta + pour les ", dim(unit)[1], " unités d'observation selon l'année\n\n"))
-        nbObs <- tapply(unit$SDeltaPlus, unit$an, length)
-        axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5)
-        Moyenne <- as.vector(tapply(unit$SDeltaPlus, unit$an, na.rm = T, mean))
-        points(Moyenne, pch=19, col="blue")
-        text(Moyenne+(Moyenne/10), col = "blue", cex = 1, labels=as.character(round(Moyenne, digits=1)))
-        abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
+##         textstatut <- c("HR : Hors Réserve", "PP : Protection Partielle", "RE : En réserve")
 
-        x11(width=120, height=50, pointsize=10)
-        boxplot(unit$SDeltaPlus ~unit$statut,  las=2, col=heat.colors(length(unique(unit$statut))), main=paste("SDelta + pour les ", dim(unit)[1], " unités d'observation selon le statut\n\n"))
-        nbObs <- tapply(unit$SDeltaPlus, unit$statut, length)
-        axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5)
-        Moyenne <- as.vector(tapply(unit$SDeltaPlus, unit$statut, na.rm = T, mean))
-        points(Moyenne, pch=19, col="blue")
-        text(Moyenne+(Moyenne/10), col = "blue", cex = 1, labels=as.character(round(Moyenne, digits=1)))
-        abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
-        textstatut <- c("HR : Hors Réserve", "PP : Protection Partielle", "RE : En réserve")
-        legend("bottomright", textstatut, col=heat.colors(length(unique(unit$statut))), pch = 15, cex =0.9, title="Statuts")
-        legend("topleft", "Nombre d'enregistrement par Boxplot", cex =0.7, col="orange", text.col="orange", merge=FALSE)
+##         x11(width=120, height=50, pointsize=10)
+##         boxplot(unit$DeltaPlus, main=paste("Delta + pour les ", dim(unit)[1], " unités d'observation"))
+##         Moyenne <- as.vector(mean(unit$DeltaPlus, na.rm = T))
+##         points(Moyenne, pch=19, col="blue")
+##         text(Moyenne+(Moyenne/10), col = "blue", cex = 1, labels=as.character(round(Moyenne, digits=1)))
+##         abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
+##         legend("topleft", "Nombre d'enregistrement par Boxplot", cex =0.7, col="orange", text.col="orange", merge=FALSE)
 
-        x11(width=120, height=50, pointsize=10)
-        boxplot(unit$SDeltaPlus ~unit$statut+unit$an, las=2, legend.text=TRUE, args.legend = list(x = "topright", title = "Statut"), col=heat.colors(length(unique(unit$statut))), main=paste("SDelta + pour les ", dim(unit)[1], " unités d'observation selon l'année et le statut\n\n"))
-        nbObs <- tapply(unit$SDeltaPlus, list(unit$statut, unit$an), length)
-        axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5)
-        Moyenne <- as.vector(tapply(unit$SDeltaPlus, list(unit$statut, unit$an), na.rm = T, mean))
-        points(Moyenne, pch=19, col="blue")
-        text(Moyenne+(Moyenne/10), col = "blue", cex = 1, labels=as.character(round(Moyenne, digits=1)))
-        abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
-        abline(v = 0.5+(1:length(as.vector(unique(unit$an))))*length(as.vector(unique(unit$statut))), col = "red")
-        textstatut <- c("HR : Hors Réserve", "PP : Protection Partielle", "RE : En réserve")
-        legend("bottomright", textstatut, col=heat.colors(length(unique(unit$statut))), pch = 15, cex =0.9, title="Statuts")
-        legend("topleft", "Nombre d'enregistrement par Boxplot", cex =0.7, col="orange", text.col="orange", merge=FALSE)
-    }else{
-        tkmessageBox(message="Graphique impossible - pas d'enregistrements dans votre sélection")
-        gestionMSGerreur.f("ZeroEnregistrement")
-    }
-    choix <- "0"
-}
+##         x11(width=120, height=50, pointsize=10)
+##         boxplot(unit$DeltaPlus ~unit$an,  las=2, col=heat.colors(length(unique(unit$an))), main=paste("Delta + pour les ", dim(unit)[1], " unités d'observation selon l'année\n\n"))
+##         nbObs <- tapply(unit$DeltaPlus, unit$an, length)
+##         axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5)
+##         Moyenne <- as.vector(tapply(unit$DeltaPlus, unit$an, na.rm = T, mean))
+##         points(Moyenne, pch=19, col="blue")
+##         text(Moyenne+(Moyenne/10), col = "blue", cex = 1, labels=as.character(round(Moyenne, digits=1)))
+##         abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
 
-GraphLambdaPlus.f <- function ()
-{
-    print("fonction GraphLambdaPlus activée")
-    extremes.f()
-    if (unique(unitobs$type)=="LIT")
-    {
-        tkmessageBox(message="ATTENTION, veillez à ce que le référentiel espèce ne contienne que des espèces \n (pas de catégories benthiques) pour calculer un indice corect")
-    }
-    if (length(unit$LambdaPlus)>0)
-    {
-        textstatut <- c("HR : Hors Réserve", "PP : Protection Partielle", "RE : En réserve")
+##         x11(width=120, height=50, pointsize=10)
+##         boxplot(unit$DeltaPlus ~unit$statut,  las=2, col=heat.colors(length(unique(unit$statut))), main=paste("Delta + pour les ", dim(unit)[1], " unités d'observation selon le statut\n\n"))
+##         nbObs <- tapply(unit$DeltaPlus, unit$statut, length)
+##         axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5)
+##         Moyenne <- as.vector(tapply(unit$DeltaPlus, unit$statut, na.rm = T, mean))
+##         points(Moyenne, pch=19, col="blue")
+##         text(Moyenne+(Moyenne/10), col = "blue", cex = 1, labels=as.character(round(Moyenne, digits=1)))
+##         abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
+##         textstatut <- c("HR : Hors Réserve", "PP : Protection Partielle", "RE : En réserve")
+##         legend("bottomright", textstatut, col=heat.colors(length(unique(unit$statut))), pch = 15, cex =0.9, title="Statuts")
+##         legend("topleft", "Nombre d'enregistrement par Boxplot", cex =0.7, col="orange", text.col="orange", merge=FALSE)
 
-        x11(width=120, height=50, pointsize=10)
-        boxplot(unit$LambdaPlus, main=paste("Lambda + pour les ", dim(unit)[1], " unités d'observation"))
-        Moyenne <- as.vector(mean(unit$LambdaPlus, na.rm = T))
-        points(Moyenne, pch=19, col="blue")
-        text(Moyenne+(Moyenne/10), col = "blue", cex = 1, labels=as.character(round(Moyenne, digits=1)))
-        abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
-        legend("topleft", "Nombre d'enregistrement par Boxplot", cex =0.7, col="orange", text.col="orange", merge=FALSE)
 
-        x11(width=120, height=50, pointsize=10)
-        boxplot(unit$LambdaPlus ~unit$an,  las=2, col=heat.colors(length(unique(unit$an))), main=paste("Lambda + pour les ", dim(unit)[1], " unités d'observation selon l'année\n\n"))
-        nbObs <- tapply(unit$LambdaPlus, unit$an, length)
-        axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5)
-        Moyenne <- as.vector(tapply(unit$LambdaPlus, unit$an, na.rm = T, mean))
-        points(Moyenne, pch=19, col="blue")
-        text(Moyenne+(Moyenne/10), col = "blue", cex = 1, labels=as.character(round(Moyenne, digits=1)))
-        abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
+##         x11(width=120, height=50, pointsize=10)
+##         boxplot(unit$DeltaPlus ~unit$statut+unit$an, las=2, legend.text=TRUE, args.legend = list(x = "topright", title = "Statut"), col=heat.colors(length(unique(unit$statut))), main=paste("Delta + pour les ", dim(unit)[1], " unités d'observation selon l'année et le statut\n\n"))
+##         nbObs <- tapply(unit$DeltaPlus, list(unit$statut, unit$an), length)
+##         axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5)
+##         Moyenne <- as.vector(tapply(unit$DeltaPlus, list(unit$statut, unit$an), na.rm = T, mean))
+##         points(Moyenne, pch=19, col="blue")
+##         text(Moyenne+(Moyenne/10), col = "blue", cex = 1, labels=as.character(round(Moyenne, digits=1)))
+##         abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
+##         abline(v = 0.5+(1:length(as.vector(unique(unit$an))))*length(as.vector(unique(unit$statut))), col = "red")
+##         textstatut <- c("HR : Hors Réserve", "PP : Protection Partielle", "RE : En réserve")
+##         legend("bottomright", textstatut, col=heat.colors(length(unique(unit$statut))), pch = 15, cex =0.9, title="Statuts")
+##         legend("topleft", "Nombre d'enregistrement par Boxplot", cex =0.7, col="orange", text.col="orange", merge=FALSE)
+##     }else{
+##         tkmessageBox(message="Graphique impossible - pas d'enregistrements dans votre sélection")
+##         gestionMSGerreur.f("ZeroEnregistrement")
+##     }
+##     choix <- "0"
+## }
 
-        x11(width=120, height=50, pointsize=10)
-        boxplot(unit$LambdaPlus ~unit$statut,  las=2, col=heat.colors(length(unique(unit$statut))), main=paste("Lambda + pour les ", dim(unit)[1], " unités d'observation selon le statut\n\n"))
-        nbObs <- tapply(unit$LambdaPlus, unit$statut, length)
-        axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5)
-        Moyenne <- as.vector(tapply(unit$LambdaPlus, unit$statut, na.rm = T, mean))
-        points(Moyenne, pch=19, col="blue")
-        text(Moyenne+(Moyenne/10), col = "blue", cex = 1, labels=as.character(round(Moyenne, digits=1)))
-        abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
-        textstatut <- c("HR : Hors Réserve", "PP : Protection Partielle", "RE : En réserve")
-        legend("bottomright", textstatut, col=heat.colors(length(unique(unit$statut))), pch = 15, cex =0.9, title="Statuts")
-        legend("topleft", "Nombre d'enregistrement par Boxplot", cex =0.7, col="orange", text.col="orange", merge=FALSE)
+## [sup] [yr: 11/01/2011]
 
-        x11(width=120, height=50, pointsize=10)
-        boxplot(unit$LambdaPlus ~unit$statut+unit$an, las=2, legend.text=TRUE, args.legend = list(x = "topright", title = "Statut"), col=heat.colors(length(unique(unit$statut))), main=paste("Lambda + pour les ", dim(unit)[1], " unités d'observation selon l'année et le statut\n\n"))
-        nbObs <- tapply(unit$LambdaPlus, list(unit$statut, unit$an), length)
-        axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5)
-        Moyenne <- as.vector(tapply(unit$LambdaPlus, list(unit$statut, unit$an), na.rm = T, mean))
-        points(Moyenne, pch=19, col="blue")
-        text(Moyenne+(Moyenne/10), col = "blue", cex = 1, labels=as.character(round(Moyenne, digits=1)))
-        abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
-        abline(v = 0.5+(1:length(as.vector(unique(unit$an))))*length(as.vector(unique(unit$statut))), col = "red")
-        textstatut <- c("HR : Hors Réserve", "PP : Protection Partielle", "RE : En réserve")
-        legend("bottomright", textstatut, col=heat.colors(length(unique(unit$statut))), pch = 15, cex =0.9, title="Statuts")
-        legend("topleft", "Nombre d'enregistrement par Boxplot", cex =0.7, col="orange", text.col="orange", merge=FALSE)
-    }else{
-        tkmessageBox(message="Graphique impossible - pas d'enregistrements dans votre sélection")
-        gestionMSGerreur.f("ZeroEnregistrement")
-    }
-    choix <- "0"
-}
+## GraphSDeltaPlus.f <- function ()
+## {
+##     print("fonction GraphSDeltaPlus activée")
+##     extremes.f()
+##     if (unique(unitobs$type)=="LIT")
+##     {
+##         tkmessageBox(message="ATTENTION, veillez à ce que le référentiel espèce ne contienne que des espèces \n (pas de catégories benthiques) pour calculer un indice corect")
+##     }
+##     if (length(unit$DeltaPlus)>0)
+##     {
+##         textstatut <- c("HR : Hors Réserve", "PP : Protection Partielle", "RE : En réserve")
+
+##         x11(width=120, height=50, pointsize=10)
+##         boxplot(unit$SDeltaPlus, main=paste("SDelta + pour les ", dim(unit)[1], " unités d'observation"))
+##         Moyenne <- as.vector(mean(unit$SDeltaPlus, na.rm = T))
+##         points(Moyenne, pch=19, col="blue")
+##         text(Moyenne+(Moyenne/10), col = "blue", cex = 1, labels=as.character(round(Moyenne, digits=1)))
+##         abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
+##         legend("topleft", "Nombre d'enregistrement par Boxplot", cex =0.7, col="orange", text.col="orange", merge=FALSE)
+
+##         x11(width=120, height=50, pointsize=10)
+##         boxplot(unit$SDeltaPlus ~unit$an,  las=2, col=heat.colors(length(unique(unit$an))), main=paste("SDelta + pour les ", dim(unit)[1], " unités d'observation selon l'année\n\n"))
+##         nbObs <- tapply(unit$SDeltaPlus, unit$an, length)
+##         axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5)
+##         Moyenne <- as.vector(tapply(unit$SDeltaPlus, unit$an, na.rm = T, mean))
+##         points(Moyenne, pch=19, col="blue")
+##         text(Moyenne+(Moyenne/10), col = "blue", cex = 1, labels=as.character(round(Moyenne, digits=1)))
+##         abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
+
+##         x11(width=120, height=50, pointsize=10)
+##         boxplot(unit$SDeltaPlus ~unit$statut,  las=2, col=heat.colors(length(unique(unit$statut))), main=paste("SDelta + pour les ", dim(unit)[1], " unités d'observation selon le statut\n\n"))
+##         nbObs <- tapply(unit$SDeltaPlus, unit$statut, length)
+##         axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5)
+##         Moyenne <- as.vector(tapply(unit$SDeltaPlus, unit$statut, na.rm = T, mean))
+##         points(Moyenne, pch=19, col="blue")
+##         text(Moyenne+(Moyenne/10), col = "blue", cex = 1, labels=as.character(round(Moyenne, digits=1)))
+##         abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
+##         textstatut <- c("HR : Hors Réserve", "PP : Protection Partielle", "RE : En réserve")
+##         legend("bottomright", textstatut, col=heat.colors(length(unique(unit$statut))), pch = 15, cex =0.9, title="Statuts")
+##         legend("topleft", "Nombre d'enregistrement par Boxplot", cex =0.7, col="orange", text.col="orange", merge=FALSE)
+
+##         x11(width=120, height=50, pointsize=10)
+##         boxplot(unit$SDeltaPlus ~unit$statut+unit$an, las=2, legend.text=TRUE, args.legend = list(x = "topright", title = "Statut"), col=heat.colors(length(unique(unit$statut))), main=paste("SDelta + pour les ", dim(unit)[1], " unités d'observation selon l'année et le statut\n\n"))
+##         nbObs <- tapply(unit$SDeltaPlus, list(unit$statut, unit$an), length)
+##         axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5)
+##         Moyenne <- as.vector(tapply(unit$SDeltaPlus, list(unit$statut, unit$an), na.rm = T, mean))
+##         points(Moyenne, pch=19, col="blue")
+##         text(Moyenne+(Moyenne/10), col = "blue", cex = 1, labels=as.character(round(Moyenne, digits=1)))
+##         abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
+##         abline(v = 0.5+(1:length(as.vector(unique(unit$an))))*length(as.vector(unique(unit$statut))), col = "red")
+##         textstatut <- c("HR : Hors Réserve", "PP : Protection Partielle", "RE : En réserve")
+##         legend("bottomright", textstatut, col=heat.colors(length(unique(unit$statut))), pch = 15, cex =0.9, title="Statuts")
+##         legend("topleft", "Nombre d'enregistrement par Boxplot", cex =0.7, col="orange", text.col="orange", merge=FALSE)
+##     }else{
+##         tkmessageBox(message="Graphique impossible - pas d'enregistrements dans votre sélection")
+##         gestionMSGerreur.f("ZeroEnregistrement")
+##     }
+##     choix <- "0"
+## }
+
+## [sup] [yr: 11/01/2011]
+
+## GraphLambdaPlus.f <- function ()
+## {
+##     print("fonction GraphLambdaPlus activée")
+##     extremes.f()
+##     if (unique(unitobs$type)=="LIT")
+##     {
+##         tkmessageBox(message="ATTENTION, veillez à ce que le référentiel espèce ne contienne que des espèces \n (pas de catégories benthiques) pour calculer un indice corect")
+##     }
+##     if (length(unit$LambdaPlus)>0)
+##     {
+##         textstatut <- c("HR : Hors Réserve", "PP : Protection Partielle", "RE : En réserve")
+
+##         x11(width=120, height=50, pointsize=10)
+##         boxplot(unit$LambdaPlus, main=paste("Lambda + pour les ", dim(unit)[1], " unités d'observation"))
+##         Moyenne <- as.vector(mean(unit$LambdaPlus, na.rm = T))
+##         points(Moyenne, pch=19, col="blue")
+##         text(Moyenne+(Moyenne/10), col = "blue", cex = 1, labels=as.character(round(Moyenne, digits=1)))
+##         abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
+##         legend("topleft", "Nombre d'enregistrement par Boxplot", cex =0.7, col="orange", text.col="orange", merge=FALSE)
+
+##         x11(width=120, height=50, pointsize=10)
+##         boxplot(unit$LambdaPlus ~unit$an,  las=2, col=heat.colors(length(unique(unit$an))), main=paste("Lambda + pour les ", dim(unit)[1], " unités d'observation selon l'année\n\n"))
+##         nbObs <- tapply(unit$LambdaPlus, unit$an, length)
+##         axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5)
+##         Moyenne <- as.vector(tapply(unit$LambdaPlus, unit$an, na.rm = T, mean))
+##         points(Moyenne, pch=19, col="blue")
+##         text(Moyenne+(Moyenne/10), col = "blue", cex = 1, labels=as.character(round(Moyenne, digits=1)))
+##         abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
+
+##         x11(width=120, height=50, pointsize=10)
+##         boxplot(unit$LambdaPlus ~unit$statut,  las=2, col=heat.colors(length(unique(unit$statut))), main=paste("Lambda + pour les ", dim(unit)[1], " unités d'observation selon le statut\n\n"))
+##         nbObs <- tapply(unit$LambdaPlus, unit$statut, length)
+##         axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5)
+##         Moyenne <- as.vector(tapply(unit$LambdaPlus, unit$statut, na.rm = T, mean))
+##         points(Moyenne, pch=19, col="blue")
+##         text(Moyenne+(Moyenne/10), col = "blue", cex = 1, labels=as.character(round(Moyenne, digits=1)))
+##         abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
+##         textstatut <- c("HR : Hors Réserve", "PP : Protection Partielle", "RE : En réserve")
+##         legend("bottomright", textstatut, col=heat.colors(length(unique(unit$statut))), pch = 15, cex =0.9, title="Statuts")
+##         legend("topleft", "Nombre d'enregistrement par Boxplot", cex =0.7, col="orange", text.col="orange", merge=FALSE)
+
+##         x11(width=120, height=50, pointsize=10)
+##         boxplot(unit$LambdaPlus ~unit$statut+unit$an, las=2, legend.text=TRUE, args.legend = list(x = "topright", title = "Statut"), col=heat.colors(length(unique(unit$statut))), main=paste("Lambda + pour les ", dim(unit)[1], " unités d'observation selon l'année et le statut\n\n"))
+##         nbObs <- tapply(unit$LambdaPlus, list(unit$statut, unit$an), length)
+##         axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)), col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5)
+##         Moyenne <- as.vector(tapply(unit$LambdaPlus, list(unit$statut, unit$an), na.rm = T, mean))
+##         points(Moyenne, pch=19, col="blue")
+##         text(Moyenne+(Moyenne/10), col = "blue", cex = 1, labels=as.character(round(Moyenne, digits=1)))
+##         abline(v = 0.5+(1:length(Moyenne)) , col = "lightgray", lty = "dotted")
+##         abline(v = 0.5+(1:length(as.vector(unique(unit$an))))*length(as.vector(unique(unit$statut))), col = "red")
+##         textstatut <- c("HR : Hors Réserve", "PP : Protection Partielle", "RE : En réserve")
+##         legend("bottomright", textstatut, col=heat.colors(length(unique(unit$statut))), pch = 15, cex =0.9, title="Statuts")
+##         legend("topleft", "Nombre d'enregistrement par Boxplot", cex =0.7, col="orange", text.col="orange", merge=FALSE)
+##     }else{
+##         tkmessageBox(message="Graphique impossible - pas d'enregistrements dans votre sélection")
+##         gestionMSGerreur.f("ZeroEnregistrement")
+##     }
+##     choix <- "0"
+## }
 
 ## ! a revoir demain    la suite
 

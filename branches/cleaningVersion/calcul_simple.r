@@ -15,21 +15,23 @@
 ## Output : table "RecouvrementParEspece" pour les graphiques
 ################################################################################
 
-CalculRecouvrement.f <- function()
-{
-    print("fonction CalculRecouvrement activée")
+## [sup] [yr:12/01/2011]:
 
-    if (unique(unitobs$type) == "LIT")
-    {
-        obsREC <- tapply(obs$nombre, list(obs$unite_observation, obs$code_espece), sum, na.rm=TRUE)
-        obsTOT <- tapply(obs$nombre, obs$unite_observation, sum, na.rm=TRUE)
-        TabRecouvrementEspUnit <- obsREC/(rep(obsTOT, ncol(obsREC)))
-        ajoutMenuBenthos.f(TabRecouvrementEspUnit)
-        return(TabRecouvrementEspUnit)
-    }else{
-        gestionMSGerreur.f("recouvrementsansLIT")
-    }
-}
+## CalculRecouvrement.f <- function()
+## {
+##     print("fonction CalculRecouvrement activée")
+
+##     if (unique(unitobs$type) == "LIT")
+##     {
+##         obsREC <- tapply(obs$nombre, list(obs$unite_observation, obs$code_espece), sum, na.rm=TRUE)
+##         obsTOT <- tapply(obs$nombre, obs$unite_observation, sum, na.rm=TRUE)
+##         TabRecouvrementEspUnit <- obsREC/(rep(obsTOT, ncol(obsREC)))
+##         ajoutMenuBenthos.f(TabRecouvrementEspUnit)
+##         return(TabRecouvrementEspUnit)
+##     }else{
+##         gestionMSGerreur.f("recouvrementsansLIT")
+##     }
+## }
 ################################################################################
 ## Nom    : classeTaille.f
 ## Objet  : fonction d'attribution des classes de taille à partir de la taille
@@ -614,75 +616,77 @@ grp3f.f <- function (x, y, z)
 ## Output : table "grpCT" pour les graphiques
 ################################################################################
 
-grpCT1.f <- function (x)
-{
+## [sup] [yr:12/01/2011]:
 
-    print("fonction grpCT1.f activée")
-    ## somme des abondances
-    obs[, x] <- unitobs[, x][match(obs$unite_observation, unitobs$unite_observation)]
-    grpCTi <- tapply(obs$nombre[obs$classe_taille==unitesptat$classe_taille[1]],
-                     obs[, x][obs$classe_taille==unitesptat$classe_taille[1]], sum, na.rm=TRUE)
-    grpCT <- as.data.frame(matrix(NA, dim(grpCTi)[1], 2))
-    colnames(grpCT) = c(x, "nombre")
-    grpCT$nombre <- as.integer(grpCTi)  # 'as.numeric' remplacé pour avoir des entiers
-    grpCT[, x] <- rownames(grpCTi)
+## grpCT1.f <- function (x)
+## {
 
-    ## calcul Richesse Specifique
-    a <- tapply(obs$nombre[obs$classe_taille==unitesptat$classe_taille[1]],
-                list(obs[, x][obs$classe_taille==unitesptat$classe_taille[1]],
-                     obs$code_espece[obs$classe_taille==unitesptat$classe_taille[1]]), sum, na.rm=TRUE)
-    a[is.na(a)] <- 0
-    b <- as.data.frame(matrix(NA, dim(a)[1]*dim(a)[2], 3))
-    colnames(b) = c(x, "code_espece", "nombre")
-    b$nombre <- as.vector(a)
-    b[, x] <- rep(dimnames(a)[[1]], dim(a)[2])
-    b$code_espece <- rep(dimnames(a)[[2]], each = dim(a)[1], 1)
-    b$pres_abs[b$nombre!=0] <- as.integer(1) # pour avoir la richesse spécifique en 'integer'.1
-    b$pres_abs[b$nombre==0] <- as.integer(0) # pour avoir la richesse spécifique en 'integer'.0
-    grpCT$richesse_specifique <- tapply(b$pres_abs, b[, x], na.rm = TRUE, sum)
-    rm(a, b, grpCTi)
+##     print("fonction grpCT1.f activée")
+##     ## somme des abondances
+##     obs[, x] <- unitobs[, x][match(obs$unite_observation, unitobs$unite_observation)]
+##     grpCTi <- tapply(obs$nombre[obs$classe_taille==unitesptat$classe_taille[1]],
+##                      obs[, x][obs$classe_taille==unitesptat$classe_taille[1]], sum, na.rm=TRUE)
+##     grpCT <- as.data.frame(matrix(NA, dim(grpCTi)[1], 2))
+##     colnames(grpCT) = c(x, "nombre")
+##     grpCT$nombre <- as.integer(grpCTi)  # 'as.numeric' remplacé pour avoir des entiers
+##     grpCT[, x] <- rownames(grpCTi)
 
-    if (unique(unitobs$type) != "LIT")
-    {
-        ## calcul densites
-        unitesptat[, x] <- unitobs[, x][match(unitesptat$unitobs, unitobs$unite_observation)]
-        d <- tapply(unitesptat$densite, unitesptat[, x], na.rm = TRUE, mean)  # le calcul est fait à partir de $dens donc seul les espece selectionne pour les calculs de densite sont utilisees.
-        grpCT$densite <- d[match(grpCT[, x], rownames(d))]
-        rm(d)
-        grpCT$nombre <- NULL # suppression de la metrique abondance, on ne travaille que en densites
+##     ## calcul Richesse Specifique
+##     a <- tapply(obs$nombre[obs$classe_taille==unitesptat$classe_taille[1]],
+##                 list(obs[, x][obs$classe_taille==unitesptat$classe_taille[1]],
+##                      obs$code_espece[obs$classe_taille==unitesptat$classe_taille[1]]), sum, na.rm=TRUE)
+##     a[is.na(a)] <- 0
+##     b <- as.data.frame(matrix(NA, dim(a)[1]*dim(a)[2], 3))
+##     colnames(b) = c(x, "code_espece", "nombre")
+##     b$nombre <- as.vector(a)
+##     b[, x] <- rep(dimnames(a)[[1]], dim(a)[2])
+##     b$code_espece <- rep(dimnames(a)[[2]], each = dim(a)[1], 1)
+##     b$pres_abs[b$nombre!=0] <- as.integer(1) # pour avoir la richesse spécifique en 'integer'.1
+##     b$pres_abs[b$nombre==0] <- as.integer(0) # pour avoir la richesse spécifique en 'integer'.0
+##     grpCT$richesse_specifique <- tapply(b$pres_abs, b[, x], na.rm = TRUE, sum)
+##     rm(a, b, grpCTi)
 
-        ## calcul du pourcentage d'occurrence
-        unitesp[, x] <- unitobs[, x][match(unitesp$unite_observation, unitobs$unite_observation)]
-        d <- especes$code_espece
-        g <- table(unitesp[, x])/length(unique(unitesp$code_espece))  #calcul du nombre de transects par niveau de facteur
+##     if (unique(unitobs$type) != "LIT")
+##     {
+##         ## calcul densites
+##         unitesptat[, x] <- unitobs[, x][match(unitesptat$unitobs, unitobs$unite_observation)]
+##         d <- tapply(unitesptat$densite, unitesptat[, x], na.rm = TRUE, mean)  # le calcul est fait à partir de $dens donc seul les espece selectionne pour les calculs de densite sont utilisees.
+##         grpCT$densite <- d[match(grpCT[, x], rownames(d))]
+##         rm(d)
+##         grpCT$nombre <- NULL # suppression de la metrique abondance, on ne travaille que en densites
 
-        for (i in d)
-        {
-            grpCT[, i] <- NA
-        }
-        for (i in d )
-        {
-            if(i%in%unitesp$code_espece == FALSE) # [!!!]
-            {
-                grpCT[, i] <- NA
-            }else{
-                f <- tapply(unitesp$pres_abs[unitesp[, "code_espece"]==i], unitesp[, x][unitesp[, "code_espece"]==i], na.rm = TRUE, sum)
-                grpCT[, i] <- (f/g)*100
-            }
-        }
-    }
+##         ## calcul du pourcentage d'occurrence
+##         unitesp[, x] <- unitobs[, x][match(unitesp$unite_observation, unitobs$unite_observation)]
+##         d <- especes$code_espece
+##         g <- table(unitesp[, x])/length(unique(unitesp$code_espece))  #calcul du nombre de transects par niveau de facteur
 
-    ## Pourcentage de recouvrement de chaque espece/categorie pour les couvertures biotiques et abiotiques
-    if (unique(unitobs$type) == "LIT")
-    {
-        s <- tapply(grpCT$nombre, grpCT[, x], na.rm = TRUE, sum)
-        grpCT$recouvrement <- 100 * grpCT$nombre / s[match(grpCT[, x], rownames(s))]
-        rm(s)
-    }
-    assign("grpCT", grpCT, envir=.GlobalEnv)
-    tkmessageBox(message="La table par espece et par groupe d'unite d'observation (1 facteur) calculee: grpCT", icon="info", type="ok")
-    print("La table par espece et par groupe d'unite d'observation (1 facteur) calculee: grpCT")
-}
+##         for (i in d)
+##         {
+##             grpCT[, i] <- NA
+##         }
+##         for (i in d )
+##         {
+##             if(i%in%unitesp$code_espece == FALSE) # [!!!]
+##             {
+##                 grpCT[, i] <- NA
+##             }else{
+##                 f <- tapply(unitesp$pres_abs[unitesp[, "code_espece"]==i], unitesp[, x][unitesp[, "code_espece"]==i], na.rm = TRUE, sum)
+##                 grpCT[, i] <- (f/g)*100
+##             }
+##         }
+##     }
+
+##     ## Pourcentage de recouvrement de chaque espece/categorie pour les couvertures biotiques et abiotiques
+##     if (unique(unitobs$type) == "LIT")
+##     {
+##         s <- tapply(grpCT$nombre, grpCT[, x], na.rm = TRUE, sum)
+##         grpCT$recouvrement <- 100 * grpCT$nombre / s[match(grpCT[, x], rownames(s))]
+##         rm(s)
+##     }
+##     assign("grpCT", grpCT, envir=.GlobalEnv)
+##     tkmessageBox(message="La table par espece et par groupe d'unite d'observation (1 facteur) calculee: grpCT", icon="info", type="ok")
+##     print("La table par espece et par groupe d'unite d'observation (1 facteur) calculee: grpCT")
+## }
 
 ################################################################################
 ## Nom    : grpCT2.f()
@@ -692,70 +696,72 @@ grpCT1.f <- function (x)
 ## Output : table "grpCT2" pour les graphiques
 ################################################################################
 
-grp2fCT.f <- function (x, y)
-{
+## [sup] [yr:12/01/2011]:
 
-    print("fonction grp2fCT.f activée")
-    ## somme des abondances
-    obs[, x] <- unitobs[, x][match(obs$unite_observation, unitobs$unite_observation)]
-    obs[, y] <- unitobs[, y][match(obs$unite_observation, unitobs$unite_observation)]
-    grpCT2T <- tapply(obs$nombre, list(obs[, x], obs[, y]), sum, na.rm=TRUE)
-    grpCT2 <- as.data.frame(matrix(NA, dim(grpCT2T)[1]*dim(grpCT2T)[2], 3))
-    colnames(grpCT2) = c(x, y, "nombre")
-    grpCT2$nombre <- as.vector(grpCT2T)
-    grpCT2[, x] <- rep(dimnames(grpCT2T)[[1]], dim(grpCT2T)[2])
-    grpCT2[, y] <- rep(dimnames(grpCT2T)[[2]], each = dim(grpCT2T)[1], 1)
+## grp2fCT.f <- function (x, y)
+## {
 
-    ## calcul Richesse Specifique
-    a <- tapply(obs$nombre[obs$classe_taille==unitesptat$classe_taille[1]],
-                list(obs[, x][obs$classe_taille==unitesptat$classe_taille[1]],
-                     obs[, y][obs$classe_taille==unitesptat$classe_taille[1]],
-                     obs$code_espece[obs$classe_taille==unitesptat$classe_taille[1]]), sum, na.rm=TRUE)
-    a[is.na(a)] <- 0
-    b <- as.data.frame(matrix(NA, dim(a)[1]*dim(a)[2]*dim(a)[3], 4))
-    colnames(b) = c(x, y, "code_espece", "nombre")
-    b$nombre <- as.vector(a, "integer") # 'numeric' changé pour avoir des entiers.
-    b[, x] <- rep(dimnames(a)[[1]], times = dim(a)[2] * dim(a)[3])
-    b[, y] <- rep(dimnames(a)[[2]], each = dim(a)[1], times = dim(a)[3])
-    b$code_espece <- rep(dimnames(a)[[3]], each = dim(a)[1]*dim(a)[2])
-    b$pres_abs[b$nombre!=0] <- as.integer(1) # pour avoir la richesse spécifique en 'integer'.1
-    b$pres_abs[b$nombre==0] <- as.integer(0) # pour avoir la richesse spécifique en 'integer'.0
-    grpCT2$richesse_specifique <- as.vector(tapply(b$pres_abs, list(b[, x], b[, y]), na.rm = TRUE, sum))
-    grpCT2$richesse_specifique[is.na(grpCT2$nombre)] <- NA # car pour calcul on a besoin de "a[is.na(a)] <- 0" mais apres il ne faut pas confondre les fois où l'espece n'a pas ete vu, et les fois où les facteurs n'etaient pas croises.
-    rm(b)
-    rm(a)
+##     print("fonction grp2fCT.f activée")
+##     ## somme des abondances
+##     obs[, x] <- unitobs[, x][match(obs$unite_observation, unitobs$unite_observation)]
+##     obs[, y] <- unitobs[, y][match(obs$unite_observation, unitobs$unite_observation)]
+##     grpCT2T <- tapply(obs$nombre, list(obs[, x], obs[, y]), sum, na.rm=TRUE)
+##     grpCT2 <- as.data.frame(matrix(NA, dim(grpCT2T)[1]*dim(grpCT2T)[2], 3))
+##     colnames(grpCT2) = c(x, y, "nombre")
+##     grpCT2$nombre <- as.vector(grpCT2T)
+##     grpCT2[, x] <- rep(dimnames(grpCT2T)[[1]], dim(grpCT2T)[2])
+##     grpCT2[, y] <- rep(dimnames(grpCT2T)[[2]], each = dim(grpCT2T)[1], 1)
 
-    if (unique(unitobs$type) != "LIT")
-    {
-        ## calcul densites
-        unitesptat[, x] <- unitobs[, x][match(unitesptat$unitobs, unitobs$unite_observation)]
-        unitesptat[, y] <- unitobs[, y][match(unitesptat$unitobs, unitobs$unite_observation)]
-        d <- tapply(unitesptat$densite, list(unitesptat[, x], unitesptat[, y]), na.rm = TRUE, mean)
-        grpCT2$densite <- as.vector(d, "numeric")
-        rm(d)
+##     ## calcul Richesse Specifique
+##     a <- tapply(obs$nombre[obs$classe_taille==unitesptat$classe_taille[1]],
+##                 list(obs[, x][obs$classe_taille==unitesptat$classe_taille[1]],
+##                      obs[, y][obs$classe_taille==unitesptat$classe_taille[1]],
+##                      obs$code_espece[obs$classe_taille==unitesptat$classe_taille[1]]), sum, na.rm=TRUE)
+##     a[is.na(a)] <- 0
+##     b <- as.data.frame(matrix(NA, dim(a)[1]*dim(a)[2]*dim(a)[3], 4))
+##     colnames(b) = c(x, y, "code_espece", "nombre")
+##     b$nombre <- as.vector(a, "integer") # 'numeric' changé pour avoir des entiers.
+##     b[, x] <- rep(dimnames(a)[[1]], times = dim(a)[2] * dim(a)[3])
+##     b[, y] <- rep(dimnames(a)[[2]], each = dim(a)[1], times = dim(a)[3])
+##     b$code_espece <- rep(dimnames(a)[[3]], each = dim(a)[1]*dim(a)[2])
+##     b$pres_abs[b$nombre!=0] <- as.integer(1) # pour avoir la richesse spécifique en 'integer'.1
+##     b$pres_abs[b$nombre==0] <- as.integer(0) # pour avoir la richesse spécifique en 'integer'.0
+##     grpCT2$richesse_specifique <- as.vector(tapply(b$pres_abs, list(b[, x], b[, y]), na.rm = TRUE, sum))
+##     grpCT2$richesse_specifique[is.na(grpCT2$nombre)] <- NA # car pour calcul on a besoin de "a[is.na(a)] <- 0" mais apres il ne faut pas confondre les fois où l'espece n'a pas ete vu, et les fois où les facteurs n'etaient pas croises.
+##     rm(b)
+##     rm(a)
 
-        ## calcul du pourcentage d'occurrence
-        unitesp[, x] <- unitobs[, x][match(unitesp$unite_observation, unitobs$unite_observation)]
-        unitesp[, y] <- unitobs[, y][match(unitesp$unite_observation, unitobs$unite_observation)]
-        d <- especes$code_espece
-        g <- table(unitesp[, x], unitesp[, y])/length(unique(unitesp$code_espece))
+##     if (unique(unitobs$type) != "LIT")
+##     {
+##         ## calcul densites
+##         unitesptat[, x] <- unitobs[, x][match(unitesptat$unitobs, unitobs$unite_observation)]
+##         unitesptat[, y] <- unitobs[, y][match(unitesptat$unitobs, unitobs$unite_observation)]
+##         d <- tapply(unitesptat$densite, list(unitesptat[, x], unitesptat[, y]), na.rm = TRUE, mean)
+##         grpCT2$densite <- as.vector(d, "numeric")
+##         rm(d)
 
-        for (i in d )
-        {
-            if (i%in%unitesp$code_espece == FALSE) # [!!!]
-            {
-                grpCT2[, i] <- NA
-            }else{
-                f <- tapply(unitesp$pres_abs[unitesp[, "code_espece"]==i], list(unitesp[, x][unitesp[, "code_espece"]==i], unitesp[, y][unitesp[, "code_espece"]==i]), na.rm = TRUE, sum)
-                grpCT2[, i] <- as.vector((f/g)*100)
-            }
-        }
-        rm(f)
-        rm(g)
-        assign("grpCT2", grpCT2, envir=.GlobalEnv)
-        print("La table par espece et par groupe d'unite unite d'observation (2 facteurs) calculee: grpCT2")
-    }
-} # fin grp2fCT
+##         ## calcul du pourcentage d'occurrence
+##         unitesp[, x] <- unitobs[, x][match(unitesp$unite_observation, unitobs$unite_observation)]
+##         unitesp[, y] <- unitobs[, y][match(unitesp$unite_observation, unitobs$unite_observation)]
+##         d <- especes$code_espece
+##         g <- table(unitesp[, x], unitesp[, y])/length(unique(unitesp$code_espece))
+
+##         for (i in d )
+##         {
+##             if (i%in%unitesp$code_espece == FALSE) # [!!!]
+##             {
+##                 grpCT2[, i] <- NA
+##             }else{
+##                 f <- tapply(unitesp$pres_abs[unitesp[, "code_espece"]==i], list(unitesp[, x][unitesp[, "code_espece"]==i], unitesp[, y][unitesp[, "code_espece"]==i]), na.rm = TRUE, sum)
+##                 grpCT2[, i] <- as.vector((f/g)*100)
+##             }
+##         }
+##         rm(f)
+##         rm(g)
+##         assign("grpCT2", grpCT2, envir=.GlobalEnv)
+##         print("La table par espece et par groupe d'unite unite d'observation (2 facteurs) calculee: grpCT2")
+##     }
+## } # fin grp2fCT
 
 ################################################################################
 ## Nom    : grp3fCT.f()
@@ -765,82 +771,84 @@ grp2fCT.f <- function (x, y)
 ## Output : table "grpCT3" pour les graphiques
 ################################################################################
 
-grp3fCT.f <- function (x, y, z)
-{
+## [sup] [yr:12/01/2011]:
 
-    print("fonction grp3fCT.f activée")
-    ## somme des abondances
-    ## obs$nombre = as.numeric(obs$nombre)
-    obs[, x] <- unitobs[, x][match(obs$unite_observation, unitobs$unite_observation)]
-    obs[, y] <- unitobs[, y][match(obs$unite_observation, unitobs$unite_observation)]
-    obs[, z] <- unitobs[, z][match(obs$unite_observation, unitobs$unite_observation)]
-    grpCT3T <- tapply(obs$nombre, list(obs[, x], obs[, y], obs[, z]), sum, na.rm=TRUE)
-    grpCT3 <- as.data.frame(matrix(NA, dim(grpCT3T)[1]*dim(grpCT3T)[2]*dim(grpCT3T)[3], 4))
-    colnames(grpCT3) = c(x, y, z, "nombre")
-    grpCT3$nombre <- as.vector(grpCT3T, "integer") # 'numeric' changé pour avoir des entiers.
-    grpCT3[, x] <- rep(dimnames(grpCT3T)[[1]], times = dim(grpCT3T)[2] * dim(grpCT3T)[3])
-    grpCT3[, y] <- rep(dimnames(grpCT3T)[[2]], each = dim(grpCT3T)[1], times = dim(grpCT3T)[3])
-    grpCT3[, z] <- rep(dimnames(grpCT3T)[[3]], each = dim(grpCT3T)[1]*dim(grpCT3T)[2])
+## grp3fCT.f <- function (x, y, z)
+## {
 
-    ## calcul Richesse Specifique
-    a <- tapply(obs$nombre[obs$classe_taille==unitesptat$classe_taille[1]],
-                list(obs[, x][obs$classe_taille==unitesptat$classe_taille[1]],
-                     obs[, y][obs$classe_taille==unitesptat$classe_taille[1]],
-                     obs[, z][obs$classe_taille==unitesptat$classe_taille[1]],
-                     obs$code_espece[obs$classe_taille==unitesptat$classe_taille[1]]), sum, na.rm=TRUE)
-    a[is.na(a)] <- 0
-    b <- as.data.frame(matrix(NA, dim(a)[1]*dim(a)[2]*dim(a)[3]*dim(a)[4], 5))
-    colnames(b) = c(x, y, z, "code_espece", "nombre")
-    b$nombre <- as.vector(a, "integer") # 'numeric' changé pour avoir des entiers.
-    b[, x] <- rep(dimnames(a)[[1]], times = dim(a)[2] * dim(a)[3] * dim(a)[4])    # <=>   b[, x] <- rownames(a[, , , 1])
-    b[, y] <- rep(dimnames(a)[[2]], each = dim(a)[1], times = dim(a)[3] * dim(a)[4])
-    b[, z] <- rep(dimnames(a)[[3]], each = dim(a)[1] * dim(a)[2], times = dim(a)[4])
-    b$code_espece <- rep(dimnames(a)[[4]], each=dim(a)[1] * dim(a)[2] * dim(a)[3])
-    b$pres_abs[b$nombre!=0] <- as.integer(1) # pour avoir la richesse spécifique en 'integer'.1
-    b$pres_abs[b$nombre==0] <- as.integer(0) # pour avoir la richesse spécifique en 'integer'.0
-    grpCT3$richesse_specifique <- as.vector(tapply(b$pres_abs, list(b[, x], b[, y], b[, z]), na.rm = TRUE, sum))
-    grpCT3$richesse_specifique[is.na(grpCT3$densite)] <- NA # car pour calcul on à besoin de "a[is.na(a)] <- 0" mais apres il ne faut pas confondre les fois où l'espece n'a pas ete vu, et les fois où les facteurs n'etaient pas croises.
-    rm(a)
-    rm(b)
+##     print("fonction grp3fCT.f activée")
+##     ## somme des abondances
+##     ## obs$nombre = as.numeric(obs$nombre)
+##     obs[, x] <- unitobs[, x][match(obs$unite_observation, unitobs$unite_observation)]
+##     obs[, y] <- unitobs[, y][match(obs$unite_observation, unitobs$unite_observation)]
+##     obs[, z] <- unitobs[, z][match(obs$unite_observation, unitobs$unite_observation)]
+##     grpCT3T <- tapply(obs$nombre, list(obs[, x], obs[, y], obs[, z]), sum, na.rm=TRUE)
+##     grpCT3 <- as.data.frame(matrix(NA, dim(grpCT3T)[1]*dim(grpCT3T)[2]*dim(grpCT3T)[3], 4))
+##     colnames(grpCT3) = c(x, y, z, "nombre")
+##     grpCT3$nombre <- as.vector(grpCT3T, "integer") # 'numeric' changé pour avoir des entiers.
+##     grpCT3[, x] <- rep(dimnames(grpCT3T)[[1]], times = dim(grpCT3T)[2] * dim(grpCT3T)[3])
+##     grpCT3[, y] <- rep(dimnames(grpCT3T)[[2]], each = dim(grpCT3T)[1], times = dim(grpCT3T)[3])
+##     grpCT3[, z] <- rep(dimnames(grpCT3T)[[3]], each = dim(grpCT3T)[1]*dim(grpCT3T)[2])
 
-    if (unique(unitobs$type) != "LIT")
-    {
-        ## calcul densites
-        unitesptat[, x] <- unitobs[, x][match(unitesptat$unitobs, unitobs$unite_observation)]
-        unitesptat[, y] <- unitobs[, y][match(unitesptat$unitobs, unitobs$unite_observation)]
-        unitesptat[, z] <- unitobs[, z][match(unitesptat$unitobs, unitobs$unite_observation)]
-        d <- tapply(unitesptat$densite, list(unitesptat[, x], unitesptat[, y], unitesptat[, z]), na.rm = TRUE, mean)
-        grpCT3$densite <- as.vector(d, "numeric")  # les champs facteurs ont deja ete remplit dans le calcul d'abondances
-        rm(d)
-        grpCT3$nombre <- NULL # suppression de la metrique abondance, on ne travaille qu'en densites
+##     ## calcul Richesse Specifique
+##     a <- tapply(obs$nombre[obs$classe_taille==unitesptat$classe_taille[1]],
+##                 list(obs[, x][obs$classe_taille==unitesptat$classe_taille[1]],
+##                      obs[, y][obs$classe_taille==unitesptat$classe_taille[1]],
+##                      obs[, z][obs$classe_taille==unitesptat$classe_taille[1]],
+##                      obs$code_espece[obs$classe_taille==unitesptat$classe_taille[1]]), sum, na.rm=TRUE)
+##     a[is.na(a)] <- 0
+##     b <- as.data.frame(matrix(NA, dim(a)[1]*dim(a)[2]*dim(a)[3]*dim(a)[4], 5))
+##     colnames(b) = c(x, y, z, "code_espece", "nombre")
+##     b$nombre <- as.vector(a, "integer") # 'numeric' changé pour avoir des entiers.
+##     b[, x] <- rep(dimnames(a)[[1]], times = dim(a)[2] * dim(a)[3] * dim(a)[4])    # <=>   b[, x] <- rownames(a[, , , 1])
+##     b[, y] <- rep(dimnames(a)[[2]], each = dim(a)[1], times = dim(a)[3] * dim(a)[4])
+##     b[, z] <- rep(dimnames(a)[[3]], each = dim(a)[1] * dim(a)[2], times = dim(a)[4])
+##     b$code_espece <- rep(dimnames(a)[[4]], each=dim(a)[1] * dim(a)[2] * dim(a)[3])
+##     b$pres_abs[b$nombre!=0] <- as.integer(1) # pour avoir la richesse spécifique en 'integer'.1
+##     b$pres_abs[b$nombre==0] <- as.integer(0) # pour avoir la richesse spécifique en 'integer'.0
+##     grpCT3$richesse_specifique <- as.vector(tapply(b$pres_abs, list(b[, x], b[, y], b[, z]), na.rm = TRUE, sum))
+##     grpCT3$richesse_specifique[is.na(grpCT3$densite)] <- NA # car pour calcul on à besoin de "a[is.na(a)] <- 0" mais apres il ne faut pas confondre les fois où l'espece n'a pas ete vu, et les fois où les facteurs n'etaient pas croises.
+##     rm(a)
+##     rm(b)
 
-        ## calcul du pourcentage d'occurrence
-        unitesp[, x] <- unitobs[, x][match(unitesp$unite_observation, unitobs$unite_observation)]
-        unitesp[, y] <- unitobs[, y][match(unitesp$unite_observation, unitobs$unite_observation)]
-        unitesp[, z] <- unitobs[, z][match(unitesp$unite_observation, unitobs$unite_observation)]
-        d <- especes$code_espece
-        g <- table(unitesp[, x], unitesp[, y], unitesp[, z])/length(unique(unitesp$code_espece))
+##     if (unique(unitobs$type) != "LIT")
+##     {
+##         ## calcul densites
+##         unitesptat[, x] <- unitobs[, x][match(unitesptat$unitobs, unitobs$unite_observation)]
+##         unitesptat[, y] <- unitobs[, y][match(unitesptat$unitobs, unitobs$unite_observation)]
+##         unitesptat[, z] <- unitobs[, z][match(unitesptat$unitobs, unitobs$unite_observation)]
+##         d <- tapply(unitesptat$densite, list(unitesptat[, x], unitesptat[, y], unitesptat[, z]), na.rm = TRUE, mean)
+##         grpCT3$densite <- as.vector(d, "numeric")  # les champs facteurs ont deja ete remplit dans le calcul d'abondances
+##         rm(d)
+##         grpCT3$nombre <- NULL # suppression de la metrique abondance, on ne travaille qu'en densites
 
-        ## ! manque description des boucles
-        for (i in d)
-        {
-            grpCT3[, i] <- NA
-        }
-        ## ! manque description des boucles
-        for (i in d )
-        {
-            if (i%in%unitesp$code_espece == FALSE) # [!!!]
-            {
-                grpCT3[, i] <- NA
-            }else{
-                f <- tapply(unitesp$pres_abs[unitesp[, "code_espece"]==i], list(unitesp[, x][unitesp[, "code_espece"]==i], unitesp[, y][unitesp[, "code_espece"]==i], unitesp[, z][unitesp[, "code_espece"]==i]), na.rm = TRUE, sum)
-                grpCT3[, i] <- as.vector((f/g)*100)
-            }
-        }
-    }
-    assign("grpCT3", grpCT3, envir=.GlobalEnv)
-    print("La table par espece et par groupe d'unite unite d'observation (3 facteurs) calculee: grpCT3")
-} # fin grp3fCT.f
+##         ## calcul du pourcentage d'occurrence
+##         unitesp[, x] <- unitobs[, x][match(unitesp$unite_observation, unitobs$unite_observation)]
+##         unitesp[, y] <- unitobs[, y][match(unitesp$unite_observation, unitobs$unite_observation)]
+##         unitesp[, z] <- unitobs[, z][match(unitesp$unite_observation, unitobs$unite_observation)]
+##         d <- especes$code_espece
+##         g <- table(unitesp[, x], unitesp[, y], unitesp[, z])/length(unique(unitesp$code_espece))
+
+##         ## ! manque description des boucles
+##         for (i in d)
+##         {
+##             grpCT3[, i] <- NA
+##         }
+##         ## ! manque description des boucles
+##         for (i in d )
+##         {
+##             if (i%in%unitesp$code_espece == FALSE) # [!!!]
+##             {
+##                 grpCT3[, i] <- NA
+##             }else{
+##                 f <- tapply(unitesp$pres_abs[unitesp[, "code_espece"]==i], list(unitesp[, x][unitesp[, "code_espece"]==i], unitesp[, y][unitesp[, "code_espece"]==i], unitesp[, z][unitesp[, "code_espece"]==i]), na.rm = TRUE, sum)
+##                 grpCT3[, i] <- as.vector((f/g)*100)
+##             }
+##         }
+##     }
+##     assign("grpCT3", grpCT3, envir=.GlobalEnv)
+##     print("La table par espece et par groupe d'unite unite d'observation (3 facteurs) calculee: grpCT3")
+## } # fin grp3fCT.f
 
 ################################################################################
 ## Nom     : indicesDiv.f

@@ -14,21 +14,27 @@ ModifierMenuApresImport.f = function()
 {
 
     print("fonction ModifierMenuApresImport activée")
-    ## tkinvoke(statut,state="normal")
+
+    ## Réactivation des menus qui nécessitent le chargement préalable :
     tkentryconfigure(topMenu,1,state="normal")
     tkentryconfigure(topMenu,2,state="normal")
+    tkentryconfigure(topMenu,3,state="normal")
+    tkentryconfigure(topMenu,4,state="normal")
     tkentryconfigure(topMenu,5,state="normal")
-    tkentryconfigure(topMenu,6,state="normal")
-    tkentryconfigure(pampainfos,2,state="normal")
-    tkentryconfigure(pampainfos,3,state="normal")
-    tkentryconfigure(pampainfos,4,state="normal")
-    if (unique(unitobs$type) == "LIT")
-    {
-        tkentryconfigure(topMenu,4,state="normal")   # traitement benthos actif si c'est du LIT
-        tkentryconfigure(selection,3,state="normal") # traitement benthos actif si c'est du LIT
-    }else{
-        tkentryconfigure(topMenu,3,state="normal") #traitement standart actif si ce n'est pas du benthos
-    }
+
+    ## Réactivation des entrées du menu "Données" qui nécessitent le chargement préalable :
+    tkentryconfigure(import,3,state="normal")
+    tkentryconfigure(import,7,state="normal")
+    tkentryconfigure(import,8,state="normal")
+
+    ## [sup] [yr:12/01/2011]:
+    ## if (unique(unitobs$type) == "LIT")
+    ## {
+    ##     tkentryconfigure(topMenu,4,state="normal")   # traitement benthos actif si c'est du LIT
+    ##     tkentryconfigure(selection,3,state="normal") # traitement benthos actif si c'est du LIT
+    ## }else{
+    ##     tkentryconfigure(topMenu,3,state="normal") #traitement standart actif si ce n'est pas du benthos
+    ## }
     NbEsp<-length(unique(obs$code_espece))
     tkconfigure(ResumerSituationEspecesSelectionnees,text=paste("-> Nombre d'espèces concernées : ",NbEsp))
     Nbunitobs<-length(unique(obs$unite_observation))

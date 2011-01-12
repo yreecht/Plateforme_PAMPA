@@ -147,21 +147,23 @@ VoirInformationsDonneesUnitobs.f <- function()
                                       height=Nbunitobs, width=5, nrow=Nbunitobs, ncol=5)
 }
 
-MontrerTableMetrique.f <- function()
-{
-    print(names(TableMetrique))
-    tkinsert(txt.w, "end", paste("\nINFO : ", "Les champs de la TableMetrique sont :\n", sep=""))
-    tkinsert(txt.w, "end", names(TableMetrique))
-    tkinsert(txt.w, "end", paste("\nINFO : ", "Les champs de la TableBiodiv sont :\n", sep=""))
-    tkinsert(txt.w, "end", names(TableBiodiv))
-    tkinsert(helpframe, "end",
-             paste("INFO : ",
-                   "TableMetrique et TableBiodiv peuvent vous servir",
-                   " à faire les tests statistiques dans la console de R\n",
-                   sep=""))
-    tkyview.moveto(txt.w, 1)
-    tkyview.moveto(helpframe, 1)
-}
+## [sup] [yr:12/01/2011]:
+
+## MontrerTableMetrique.f <- function()
+## {
+##     print(names(TableMetrique))
+##     tkinsert(txt.w, "end", paste("\nINFO : ", "Les champs de la TableMetrique sont :\n", sep=""))
+##     tkinsert(txt.w, "end", names(TableMetrique))
+##     tkinsert(txt.w, "end", paste("\nINFO : ", "Les champs de la TableBiodiv sont :\n", sep=""))
+##     tkinsert(txt.w, "end", names(TableBiodiv))
+##     tkinsert(helpframe, "end",
+##              paste("INFO : ",
+##                    "TableMetrique et TableBiodiv peuvent vous servir",
+##                    " à faire les tests statistiques dans la console de R\n",
+##                    sep=""))
+##     tkyview.moveto(txt.w, 1)
+##     tkyview.moveto(helpframe, 1)
+## }
 
 
 ## > pacha$code_espece[pacha$pres_abs==1 & pacha$unite_obsertation=="REA0031213"]

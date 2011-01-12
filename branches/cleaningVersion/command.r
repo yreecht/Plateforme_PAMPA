@@ -48,28 +48,32 @@ RestaurerDonnees.f <- function ()
 ## Objet  : exécution des fonctions choixdeuxFacteurs.f et gra2.f
 ## ################################################################################
 
-RegroupementDeuxFactUnitobs.f <- function ()
-{
+## [sup] [yr:12/01/2011]:
 
-    print("fonction RegroupementDeuxFactUnitobs.f activée")
-    ## ChoixUneEspece.f()
-    ## choixDeuxFacteursUnitobs.f()
-    GraphGroup2factUnitobs.f()
-    ## gra2.f(fact21, fact22)
-}
+## RegroupementDeuxFactUnitobs.f <- function ()
+## {
+
+##     print("fonction RegroupementDeuxFactUnitobs.f activée")
+##     ## ChoixUneEspece.f()
+##     ## choixDeuxFacteursUnitobs.f()
+##     GraphGroup2factUnitobs.f()
+##     ## gra2.f(fact21, fact22)
+## }
 
 ## ################################################################################
 ## Nom    : RegroupementUnFactUnitobs.f()
 ## Objet  : exécution des fonctions choixUnFacteur.f et gra1.f
 ## ################################################################################
 
-RegroupementUnFactUnitobs.f <- function ()
-{
+## [sup] [yr:12/01/2011]:
 
-    print("fonction RegroupementUnFactUnitobs.f activée")
-    GraphGroup1factUnitobs.f()
+## RegroupementUnFactUnitobs.f <- function ()
+## {
 
-}
+##     print("fonction RegroupementUnFactUnitobs.f activée")
+##     GraphGroup1factUnitobs.f()
+
+## }
 
 ## ################################################################################
 ## Nom    : SelectionUnBiotope.f()
@@ -232,17 +236,19 @@ SelectionUnCritereUnitobs.f <- function ()
 ##          dans "obs"
 ## ################################################################################
 
-selectionEspeceStatut.f <- function ()
-{
+## [sup] [yr:12/01/2011]:
 
-    print("fonction selectionEspeceStatut.f activée")
-    obs <- UnStatutDansObs.f()
-    assign("obs", obs, envir=.GlobalEnv)
-    creationTablesBase.f()
-    creationTablesCalcul.f()
-    ModifierInterfaceApresSelection.f(statut, dim(obs)[1])
-    gestionMSGinfo.f("Statutselectionne", dim(obs)[1])
-}
+## selectionEspeceStatut.f <- function ()
+## {
+
+##     print("fonction selectionEspeceStatut.f activée")
+##     obs <- UnStatutDansObs.f()
+##     assign("obs", obs, envir=.GlobalEnv)
+##     creationTablesBase.f()
+##     creationTablesCalcul.f()
+##     ModifierInterfaceApresSelection.f(statut, dim(obs)[1])
+##     gestionMSGinfo.f("Statutselectionne", dim(obs)[1])
+## }
 
 ## ################################################################################
 ## Nom    : benthosUneEspece.f()
@@ -252,7 +258,7 @@ selectionEspeceStatut.f <- function ()
 benthosUneEspece.f <- function ()
 {
     ChoixUneEspece.f()
-} # fin graphuneespece.f()
+} # fin
 
 ## ################################################################################
 ## Nom    : changerUnitobs.f()      changerObservations.f
@@ -303,11 +309,13 @@ unfacteur.f <- function ()
 ## Objet  : exécution des fonctions ChoixUneEspece.f et grpunitobsUneEspece.f
 ## ################################################################################
 
-graphuneespece.f <- function ()
-{
-    ChoixUneEspece.f()
-    grpunitobsUneEspece.f()
-} # fin graphuneespece.f()
+## [sup] [yr:12/01/2011]:
+
+## graphuneespece.f <- function ()
+## {
+##     ChoixUneEspece.f()
+##     grpunitobsUneEspece.f()
+## } # fin graphuneespece.f()
 
 ## ################################################################################
 ## Nom    : unf.f()
@@ -349,13 +357,15 @@ troisf.f <- function ()
 ##          graphCT1.f
 ## ################################################################################
 
-unfacteurCT.f <- function ()
-{
-    choixunfacteurCT.f()
-    choixCT.f()
-    grpCT1.f(fact)
-    graphCT1.f(fact)
-} # fin unfacteurCT.f
+## [sup] [yr:12/01/2011]:
+
+## unfacteurCT.f <- function ()
+## {
+##     choixunfacteurCT.f()
+##     choixCT.f()
+##     grpCT1.f(fact)
+##     graphCT1.f(fact)
+## } # fin unfacteurCT.f
 
 ## ################################################################################
 ## Nom    : deuxFacteur.f()
@@ -377,13 +387,13 @@ deuxfacteur.f <- function ()
 ##          et graphCT3.f
 ## ################################################################################
 
-troisfacteurCT.f <- function ()
-{
-    choixtroisfacteursCT.f()
-    choixCT.f()
-    grp3fCT.f(fact31, fact32, fact33)
-    graphCT3.f(fact31, fact32, fact33)
-}
+## troisfacteurCT.f <- function ()
+## {
+##     choixtroisfacteursCT.f()
+##     choixCT.f()
+##     grp3fCT.f(fact31, fact32, fact33)
+##     graphCT3.f(fact31, fact32, fact33)
+## }
 ## ################################################################################
 ## Nom    : taillemoyenne.f
 ## Objet  : fonction de calcul de la taille moyenne
@@ -394,14 +404,16 @@ troisfacteurCT.f <- function ()
 ## ################################################################################
 ## ! que fait cette fonction?
 
-taillemoyenne.f <- function ()
-{          # [!!!] [inc] Fonction fausse / pas finie ! [yr: 13/08/2010]
+## [sup] [yr:12/01/2011]:
 
-    print("fonction taillemoyenne activée")
-    ## il faut que la taille soit renseignée
-    if (ct == 1)  obs$taillemoyenne =
-        assign("obs", obs, envir=.GlobalEnv)
-}
+## taillemoyenne.f <- function ()
+## {          # [!!!] [inc] Fonction fausse / pas finie ! [yr: 13/08/2010]
+
+##     print("fonction taillemoyenne activée")
+##     ## il faut que la taille soit renseignée
+##     if (ct == 1)  obs$taillemoyenne =
+##         assign("obs", obs, envir=.GlobalEnv)
+## }
 ## fin taillemoyenne.f
 
 
@@ -413,19 +425,21 @@ taillemoyenne.f <- function ()
 ## ! CT nom peu explicite
 ## ! doit executer les fonctions : place dans interface?
 
-grpunitobsCT.f <- function ()
-{
-    bb <- tktoplevel()
-    tkwm.title(bb, "Choix des groupes d'unites d'observation, toutes especes par classe de taille")
-    quit <- tclVar(0)
-    f.but <- tkbutton(bb, text="Grouper selon 1 seul facteur", command=unfacteurCT.f)
-    ff.but <- tkbutton(bb, text="Grouper en croisant 2 facteurs", command=deuxfacteurCT.f)
-    fff.but <- tkbutton(bb, text="Grouper en croisant 3 facteurs", command=troisfacteurCT.f)
-    quit.but <- tkbutton(bb, text="Quitter", command=function() tclvalue(quit) <- 1)
-    tkpack(f.but, ff.but, fff.but, quit.but)
-    tkwait.variable(quit)
-    tkdestroy(bb)
-} # fin grpunitobsCT.f()
+## [sup] [yr:12/01/2011]:
+
+## grpunitobsCT.f <- function ()
+## {
+##     bb <- tktoplevel()
+##     tkwm.title(bb, "Choix des groupes d'unites d'observation, toutes especes par classe de taille")
+##     quit <- tclVar(0)
+##     f.but <- tkbutton(bb, text="Grouper selon 1 seul facteur", command=unfacteurCT.f)
+##     ff.but <- tkbutton(bb, text="Grouper en croisant 2 facteurs", command=deuxfacteurCT.f)
+##     fff.but <- tkbutton(bb, text="Grouper en croisant 3 facteurs", command=troisfacteurCT.f)
+##     quit.but <- tkbutton(bb, text="Quitter", command=function() tclvalue(quit) <- 1)
+##     tkpack(f.but, ff.but, fff.but, quit.but)
+##     tkwait.variable(quit)
+##     tkdestroy(bb)
+## } # fin grpunitobsCT.f()
 
 ## ################################################################################
 ## Nom    : grpunitobsUneEspece.f()
@@ -433,19 +447,21 @@ grpunitobsCT.f <- function ()
 ## ################################################################################
 ## ! doit executer les fonctions : place dans interface?
 
-grpunitobsUneEspece.f <- function ()
-{
-    bb <- tktoplevel()
-    tkwm.title(bb, "Choix des groupes d'unites d'observation")
-    quit <- tclVar(0)
-    f.but <- tkbutton(bb, text="Grouper selon 1 seul facteur", command=unf.f)
-    ff.but <- tkbutton(bb, text="Grouper en croisant 2 facteurs", command=deuxf.f)
-    fff.but <- tkbutton(bb, text="Grouper en croisant 3 facteurs", command=troisf.f)
-    quit.but <- tkbutton(bb, text="Quitter", command=function() tclvalue(quit) <- 1)
-    tkpack(f.but, ff.but, fff.but, quit.but)
-    tkwait.variable(quit)
-    tkdestroy(bb)
-}
+## [sup] [yr:12/01/2011]:
+
+## grpunitobsUneEspece.f <- function ()
+## {
+##     bb <- tktoplevel()
+##     tkwm.title(bb, "Choix des groupes d'unites d'observation")
+##     quit <- tclVar(0)
+##     f.but <- tkbutton(bb, text="Grouper selon 1 seul facteur", command=unf.f)
+##     ff.but <- tkbutton(bb, text="Grouper en croisant 2 facteurs", command=deuxf.f)
+##     fff.but <- tkbutton(bb, text="Grouper en croisant 3 facteurs", command=troisf.f)
+##     quit.but <- tkbutton(bb, text="Quitter", command=function() tclvalue(quit) <- 1)
+##     tkpack(f.but, ff.but, fff.but, quit.but)
+##     tkwait.variable(quit)
+##     tkdestroy(bb)
+## }
 
 ## ################################################################################
 ## Nom    : deuxFacteurCT.f()
@@ -453,13 +469,13 @@ grpunitobsUneEspece.f <- function ()
 ##          graphCT2.f
 ## ################################################################################
 
-deuxfacteurCT.f <- function ()
-{
-    choixdeuxfacteursCT.f()
-    choixCT.f()
-    grp2fCT.f(fact21, fact22)
-    graphCT2.f(fact21, fact22)
-} # fin deuxfacteurCT.f
+## deuxfacteurCT.f <- function ()
+## {
+##     choixdeuxfacteursCT.f()
+##     choixCT.f()
+##     grp2fCT.f(fact21, fact22)
+##     graphCT2.f(fact21, fact22)
+## } # fin deuxfacteurCT.f
 
 ## ################################################################################
 ## Nom    : troisFacteur.f()
@@ -480,133 +496,167 @@ troisfacteur.f <- function ()
 ## Objet  : exécution des fonctions unfacteur.f, deuxfacteur.f et troisfacteur.f
 ## ################################################################################
 
-grpunitobs.f <- function ()
-{
+## [sup] [yr:12/01/2011]:
 
-    print("fonction grpunitobs.f activée")
-    bb <- tktoplevel()
-    tkwm.title(bb, "Choix des groupes d'unites d'observation, toutes especes")
-    quit <- tclVar(0)
-    f.but <- tkbutton(bb, text="Grouper selon 1 seul facteur", command=unfacteur.f)
-    ff.but <- tkbutton(bb, text="Grouper en croisant 2 facteurs", command=deuxfacteur.f)
-    fff.but <- tkbutton(bb, text="Grouper en croisant 3 facteurs", command=troisfacteur.f)
-    quit.but <- tkbutton(bb, text="Quitter", command=function(){tclvalue(quit) <- 1})
-    tkpack(f.but, ff.but, fff.but, quit.but)
-    tkwait.variable(quit)
-    tkdestroy(bb)
-} #fin grpunitobs.f()
+## grpunitobs.f <- function ()
+## {
+
+##     print("fonction grpunitobs.f activée")
+##     bb <- tktoplevel()
+##     tkwm.title(bb, "Choix des groupes d'unites d'observation, toutes especes")
+##     quit <- tclVar(0)
+##     f.but <- tkbutton(bb, text="Grouper selon 1 seul facteur", command=unfacteur.f)
+##     ff.but <- tkbutton(bb, text="Grouper en croisant 2 facteurs", command=deuxfacteur.f)
+##     fff.but <- tkbutton(bb, text="Grouper en croisant 3 facteurs", command=troisfacteur.f)
+##     quit.but <- tkbutton(bb, text="Quitter", command=function(){tclvalue(quit) <- 1})
+##     tkpack(f.but, ff.but, fff.but, quit.but)
+##     tkwait.variable(quit)
+##     tkdestroy(bb)
+## } #fin grpunitobs.f()
 
 ## ################################################################################
 ## Nom    : Organisation du menu Recouvrement
 ## Objet  : exécution des fonctions graphiques du Benthos
 ## ################################################################################
 
-GraphRecouvrementParUnitobs.f <- function ()
-{
-    print("fonction GraphRecouvrementParUnitobs.f activée")
-    ## permet de choisir la ou les Cath_benthiques
-    Graphbenthos.f("recouvrement", "unite_observation")
-}
+## [sup] [yr:12/01/2011]:
 
-GraphRecouvrementParStation.f <- function ()
-{
-    print("fonction GraphRecouvrementParStation.f activée")
-    Graphbenthos.f("recouvrement", "station")
-}
+## GraphRecouvrementParUnitobs.f <- function ()
+## {
+##     print("fonction GraphRecouvrementParUnitobs.f activée")
+##     ## permet de choisir la ou les Cath_benthiques
+##     Graphbenthos.f("recouvrement", "unite_observation")
+## }
 
-GraphRecouvrementParSite.f <- function ()
-{
-    print("fonction GraphRecouvrementParSite.f activée")
-    Graphbenthos.f("recouvrement", "site")
-}
+## [sup] [yr:12/01/2011]:
 
-GraphRecouvrementParCathegorieBenthique.f <- function ()
-{
-    print("fonction GraphRecouvrementParCathegorieBenthique.f activée")
-    Graphbenthos.f("recouvrement", "Cath_benthique")
-}
+## GraphRecouvrementParStation.f <- function ()
+## {
+##     print("fonction GraphRecouvrementParStation.f activée")
+##     Graphbenthos.f("recouvrement", "station")
+## }
 
-GraphRecouvrementParFamille.f <- function ()
-{
-    print("fonction GraphRecouvrementParFamille.f activée")
-    Graphbenthos.f("recouvrement", "Famille")
-}
+## [sup] [yr:12/01/2011]:
 
-GraphRecouvrementParGenre.f <- function ()
-{
-    print("fonction GraphRecouvrementParGenre.f activée")
-    Graphbenthos.f("recouvrement", "Genre")
-}
+## GraphRecouvrementParSite.f <- function ()
+## {
+##     print("fonction GraphRecouvrementParSite.f activée")
+##     Graphbenthos.f("recouvrement", "site")
+## }
 
-GraphRecouvrementParEspece.f <- function ()
-{
-    print("fonction GraphRecouvrementParEspece.f activée")
-    Graphbenthos.f("recouvrement", "espece")
-}
+## [sup] [yr:12/01/2011]:
 
-GraphColonieParUnitobs.f <- function ()
-{
-    print("fonction GraphColonieParUnitobs.f activée")
-    ## permet de choisir la ou les Cath_benthiques
-    Graphbenthos.f("colonie", "unite_observation")
-}
+## GraphRecouvrementParCathegorieBenthique.f <- function ()
+## {
+##     print("fonction GraphRecouvrementParCathegorieBenthique.f activée")
+##     Graphbenthos.f("recouvrement", "Cath_benthique")
+## }
 
-GraphColonieParStation.f <- function ()
-{
-    print("fonction GraphColonieParStation.f activée")
-    Graphbenthos.f("colonie", "station")
-}
+## [sup] [yr:12/01/2011]:
 
-GraphColonieParSite.f <- function ()
-{
-    print("fonction GraphColonieParSite.f activée")
-    Graphbenthos.f("colonie", "site")
-}
+## GraphRecouvrementParFamille.f <- function ()
+## {
+##     print("fonction GraphRecouvrementParFamille.f activée")
+##     Graphbenthos.f("recouvrement", "Famille")
+## }
 
-GraphColonieParCathegorieBenthique.f <- function ()
-{
-    print("fonction GraphColonieParCathegorieBenthique.f activée")
-    Graphbenthos.f("colonie", "Cath_benthique")
-}
+## [sup] [yr:12/01/2011]:
 
-GraphColonieParFamille.f <- function ()
-{
-    print("fonction GraphColonieParFamille.f activée")
-    Graphbenthos.f("colonie", "Famille")
-}
+## GraphRecouvrementParGenre.f <- function ()
+## {
+##     print("fonction GraphRecouvrementParGenre.f activée")
+##     Graphbenthos.f("recouvrement", "Genre")
+## }
 
-GraphColonieParGenre.f <- function ()
-{
-    print("fonction GraphColonieParGenre.f activée")
-    Graphbenthos.f("colonie", "Genre")
-}
+## [sup] [yr:12/01/2011]:
 
-GraphColonieParEspece.f <- function ()
-{
-    print("fonction GraphColonieParEspece.f activée")
-    Graphbenthos.f("colonie", "espece")
-}
+## GraphRecouvrementParEspece.f <- function ()
+## {
+##     print("fonction GraphRecouvrementParEspece.f activée")
+##     Graphbenthos.f("recouvrement", "espece")
+## }
 
-GraphMetriqueParFacteurEspece.f <- function ()
-{        # a mettre en fin de menu graphbenthos (interface.r), tester puis généraliser dans Graph...
-    print("fonction GraphMetriqueParFacteurEspece.f activée")
-    matable <- "listespunit"
-    choixchamptable.f(matable)
-    metrique <- champtrouve
-    print(metrique)
-    critereespref.f()
-    print(factesp)
-    Graphbenthos.f(metrique, facteurMenu=factesp, 1)
-}
+## [sup] [yr:12/01/2011]:
 
-GraphMetriqueParFacteurUnitobs.f <- function ()
-{       # a mettre en fin de menu graphbenthos (interface.r)
-    print("fonction GraphMetriqueParFacteurEspece.f activée")
-    matable <- "listespunit"
-    choixchamptable.f(matable)
-    metrique <- champtrouve
-    print(metrique)
-    choixunfacteurUnitobs.f()
-    print(fact)
-    Graphbenthos.f(metrique, facteurMenu=fact, 2)
-}
+## GraphColonieParUnitobs.f <- function ()
+## {
+##     print("fonction GraphColonieParUnitobs.f activée")
+##     ## permet de choisir la ou les Cath_benthiques
+##     Graphbenthos.f("colonie", "unite_observation")
+## }
+
+## [sup] [yr:12/01/2011]:
+
+## GraphColonieParStation.f <- function ()
+## {
+##     print("fonction GraphColonieParStation.f activée")
+##     Graphbenthos.f("colonie", "station")
+## }
+
+## [sup] [yr:12/01/2011]:
+
+## GraphColonieParSite.f <- function ()
+## {
+##     print("fonction GraphColonieParSite.f activée")
+##     Graphbenthos.f("colonie", "site")
+## }
+
+## [sup] [yr:12/01/2011]:
+
+## GraphColonieParCathegorieBenthique.f <- function ()
+## {
+##     print("fonction GraphColonieParCathegorieBenthique.f activée")
+##     Graphbenthos.f("colonie", "Cath_benthique")
+## }
+
+## [sup] [yr:12/01/2011]:
+
+## GraphColonieParFamille.f <- function ()
+## {
+##     print("fonction GraphColonieParFamille.f activée")
+##     Graphbenthos.f("colonie", "Famille")
+## }
+
+## [sup] [yr:12/01/2011]:
+
+## GraphColonieParGenre.f <- function ()
+## {
+##     print("fonction GraphColonieParGenre.f activée")
+##     Graphbenthos.f("colonie", "Genre")
+## }
+
+## [sup] [yr:12/01/2011]:
+
+## GraphColonieParEspece.f <- function ()
+## {
+##     print("fonction GraphColonieParEspece.f activée")
+##     Graphbenthos.f("colonie", "espece")
+## }
+
+## [sup] [yr:12/01/2011]:
+
+## GraphMetriqueParFacteurEspece.f <- function ()
+## {        # a mettre en fin de menu graphbenthos (interface.r), tester puis généraliser dans Graph...
+##     print("fonction GraphMetriqueParFacteurEspece.f activée")
+##     matable <- "listespunit"
+##     choixchamptable.f(matable)
+##     metrique <- champtrouve
+##     print(metrique)
+##     critereespref.f()
+##     print(factesp)
+##     Graphbenthos.f(metrique, facteurMenu=factesp, 1)
+## }
+
+## [sup] [yr:12/01/2011]:
+
+## GraphMetriqueParFacteurUnitobs.f <- function ()
+## {       # a mettre en fin de menu graphbenthos (interface.r)
+##     print("fonction GraphMetriqueParFacteurEspece.f activée")
+##     matable <- "listespunit"
+##     choixchamptable.f(matable)
+##     metrique <- champtrouve
+##     print(metrique)
+##     choixunfacteurUnitobs.f()
+##     print(fact)
+##     Graphbenthos.f(metrique, facteurMenu=fact, 2)
+## }

@@ -734,12 +734,14 @@ ChoixUnbiotope.f <- function ()
     tkwait.window(eu)
 }
 
-selectionEspeceStatut.f <- function ()
-{
-    print("fonction selectionEspeceStatut activée")
-    ## teste si les tailles sont renseignees dans la table observation
-    ## if (length(unique(obs$taille))>1) {} [inc][???]
-}
+## [sup] [yr:12/01/2011]:
+
+## selectionEspeceStatut.f <- function ()
+## {
+##     print("fonction selectionEspeceStatut activée")
+##     ## teste si les tailles sont renseignees dans la table observation
+##     ## if (length(unique(obs$taille))>1) {} [inc][???]
+## }
 
 ################################################################################
 ## Nom     : choixespeces.f
@@ -818,40 +820,42 @@ choixespeces.f <- function()
 ## Output : facteur de groupement sélectionné
 ################################################################################
 
-grpesp.f <- function ()
-{
+## [sup] [yr:12/01/2011]:
 
-    print("fonction grpesp activée")
-    aa <- tktoplevel()
-    tkwm.title(aa, "Selection du facteur de groupement des especes")
-    scr <- tkscrollbar(aa, repeatinterval=5, command=function(...)tkyview(tl, ...))
-    tl <- tklistbox(aa, height=20, selectmode="single",
-                    yscrollcommand=function(...)tkset(scr, ...), background="white")
+## grpesp.f <- function ()
+## {
 
-    tkgrid(tklabel(aa, text="Liste des facteurs de groupement"))
-    tkgrid(tl, scr)
-    tkgrid.configure(scr, rowspan=4, sticky="nsw")
-    facts <- sort(names(especes))
-    a <- length(facts)
-    for (i in (1:a))
-    {
-        tkinsert(tl, "end", facts[i])
-    }
-    tkselection.set(tl, 0)
+##     print("fonction grpesp activée")
+##     aa <- tktoplevel()
+##     tkwm.title(aa, "Selection du facteur de groupement des especes")
+##     scr <- tkscrollbar(aa, repeatinterval=5, command=function(...)tkyview(tl, ...))
+##     tl <- tklistbox(aa, height=20, selectmode="single",
+##                     yscrollcommand=function(...)tkset(scr, ...), background="white")
 
-    OnOK <- function ()
-    {
-        factesp <- facts[as.numeric(tkcurselection(tl))+1]
-        assign("factesp", factesp, envir=.GlobalEnv)
-        tkdestroy(aa)
-        grpespcalc.f(factesp)
-    }
-    OK.but <-tkbutton(aa, text="OK", command=OnOK)
-    tkgrid(OK.but)
-    tkfocus(aa)
-    tkwait.window(aa)
-    rm(a)
-} # fin grpesp.f
+##     tkgrid(tklabel(aa, text="Liste des facteurs de groupement"))
+##     tkgrid(tl, scr)
+##     tkgrid.configure(scr, rowspan=4, sticky="nsw")
+##     facts <- sort(names(especes))
+##     a <- length(facts)
+##     for (i in (1:a))
+##     {
+##         tkinsert(tl, "end", facts[i])
+##     }
+##     tkselection.set(tl, 0)
+
+##     OnOK <- function ()
+##     {
+##         factesp <- facts[as.numeric(tkcurselection(tl))+1]
+##         assign("factesp", factesp, envir=.GlobalEnv)
+##         tkdestroy(aa)
+##         grpespcalc.f(factesp)
+##     }
+##     OK.but <-tkbutton(aa, text="OK", command=OnOK)
+##     tkgrid(OK.but)
+##     tkfocus(aa)
+##     tkwait.window(aa)
+##     rm(a)
+## } # fin grpesp.f
 
 ################################################################################
 ## Nom    : affichageMetriques.f
@@ -916,46 +920,48 @@ affichageMetriques.f <- function ()
 ## Output : table obs pour un seul statut
 ################################################################################
 
-UnStatutDansObs.f <- function ()
-{
+## [sup] [yr:12/01/2011]:
 
-    print("fonction UnStatutDansObs activée")
-    ## AMPEtudie=unique(unitobs$AMP)
-    if (length(unique(unitobs$AMP))> 1)   gestionMSGinfo.f("plusieursAMP")
-    suffixeAMP <- unique(unitobs$AMP)
-    ## match(obs$code_espece, subset(especes, especes$emblematiqueRUN=="oui")) -> il n'y a pas d'espèces emblématiques
-    ## pour le benthos
+## UnStatutDansObs.f <- function ()
+## {
 
-    if (tclvalue(SelectIUCN)!="0")
-    {
-        statutchoisi <- "stat.IUCN"
-        ChampStatutSelect <- paste("especes$", statutchoisi, sep="")
-        obs$statut <- especes$stat.IUCN[match(obs$code_espece, especes$code_espece)]
-    }else{
-        ## [!!!]
-        if (tclvalue(SelectEmble)!="0") statutchoisi="emblematique" #puis griser le widget et le remettre à 0 pour
-                                        #permettre les analyses successives
-        if (tclvalue(SelectEndem)!="0") statutchoisi="endemique"
-        if (tclvalue(SelectMenace)!="0") statutchoisi="etat.pop.local"
-        if (tclvalue(SelectAutreStatut)!="0") statutchoisi="autre.statut"
+##     print("fonction UnStatutDansObs activée")
+##     ## AMPEtudie=unique(unitobs$AMP)
+##     if (length(unique(unitobs$AMP))> 1)   gestionMSGinfo.f("plusieursAMP")
+##     suffixeAMP <- unique(unitobs$AMP)
+##     ## match(obs$code_espece, subset(especes, especes$emblematiqueRUN=="oui")) -> il n'y a pas d'espèces emblématiques
+##     ## pour le benthos
 
-        ChampStatutSelect <- paste("obs$statut=especes$", statutchoisi,
-                                   suffixeAMP, "[match(obs$code_espece, especes$code_espece)]", sep="")
-        print(ChampStatutSelect)
-        eval(parse(text=ChampStatutSelect)) #permet d'executer le contenu de la chaîne de caractères
+##     if (tclvalue(SelectIUCN)!="0")
+##     {
+##         statutchoisi <- "stat.IUCN"
+##         ChampStatutSelect <- paste("especes$", statutchoisi, sep="")
+##         obs$statut <- especes$stat.IUCN[match(obs$code_espece, especes$code_espece)]
+##     }else{
+##         ## [!!!]
+##         if (tclvalue(SelectEmble)!="0") statutchoisi="emblematique" #puis griser le widget et le remettre à 0 pour
+##                                         #permettre les analyses successives
+##         if (tclvalue(SelectEndem)!="0") statutchoisi="endemique"
+##         if (tclvalue(SelectMenace)!="0") statutchoisi="etat.pop.local"
+##         if (tclvalue(SelectAutreStatut)!="0") statutchoisi="autre.statut"
 
-    }
-    print(paste("Sélection faite sur ", ChampStatutSelect, sep=""))
-    obs <- subset(obs, obs$statut!=NA)
-    ##
-    gestionMSGaide.f("etapeselected")
-    Jeuxdonnescoupe <- 1
-    assign("Jeuxdonnescoupe", Jeuxdonnescoupe, envir=.GlobalEnv)
-    return(obs)
+##         ChampStatutSelect <- paste("obs$statut=especes$", statutchoisi,
+##                                    suffixeAMP, "[match(obs$code_espece, especes$code_espece)]", sep="")
+##         print(ChampStatutSelect)
+##         eval(parse(text=ChampStatutSelect)) #permet d'executer le contenu de la chaîne de caractères
 
-    ## obs$statut=especes$statut_protection[match(obs$code_espece, especes$code_espece)]
-    ## obs=subset(obs, obs$statut_protection==statutchoisi)
-}
+##     }
+##     print(paste("Sélection faite sur ", ChampStatutSelect, sep=""))
+##     obs <- subset(obs, obs$statut!=NA)
+##     ##
+##     gestionMSGaide.f("etapeselected")
+##     Jeuxdonnescoupe <- 1
+##     assign("Jeuxdonnescoupe", Jeuxdonnescoupe, envir=.GlobalEnv)
+##     return(obs)
+
+##     ## obs$statut=especes$statut_protection[match(obs$code_espece, especes$code_espece)]
+##     ## obs=subset(obs, obs$statut_protection==statutchoisi)
+## }
 ################################################################################
 ## Nom    : UnBiotopeDansObs.f
 ## Objet  : Restreindre le fichier obs à uniquement une famille

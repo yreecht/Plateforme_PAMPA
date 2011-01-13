@@ -16,63 +16,64 @@
 ################################################################################
 ## !Fonction à mieux documenter
 
+## [sup] [yr: 13/01/2011]:
 
-occurrence.f <- function(fact)
-{
-    print("fonction occurrence.f activée")
-    ## Demande d'affichage du pourcentage d'occurrence d'une espece
-    nn <- tktoplevel()
-    tkwm.title(nn, "Pourcentage d'occurrence")
-    tkgrid(tklabel(nn, text="Voulez-vous calculer le pourcentage d'occurrence d'une espece?"))
-    done <- tclVar(0)
-    OK.but <- tkbutton(nn, text="OUI", command=function() {tclvalue(done) <- 1})
-    Cancel.but <- tkbutton(nn, text="NON", command=function() {tclvalue(done) <- 2})
-    tkgrid(OK.but, Cancel.but)
-    tkbind(nn, "<Destroy>", function() {tclvalue(done) <- 2})
-    tkfocus(nn)
-    tkwait.variable(done)
-    doneVal <- as.integer(tclvalue(done))
-    tkdestroy(nn)
+## occurrence.f <- function(fact)
+## {
+##     print("fonction occurrence.f activée")
+##     ## Demande d'affichage du pourcentage d'occurrence d'une espece
+##     nn <- tktoplevel()
+##     tkwm.title(nn, "Pourcentage d'occurrence")
+##     tkgrid(tklabel(nn, text="Voulez-vous calculer le pourcentage d'occurrence d'une espece?"))
+##     done <- tclVar(0)
+##     OK.but <- tkbutton(nn, text="OUI", command=function() {tclvalue(done) <- 1})
+##     Cancel.but <- tkbutton(nn, text="NON", command=function() {tclvalue(done) <- 2})
+##     tkgrid(OK.but, Cancel.but)
+##     tkbind(nn, "<Destroy>", function() {tclvalue(done) <- 2})
+##     tkfocus(nn)
+##     tkwait.variable(done)
+##     doneVal <- as.integer(tclvalue(done))
+##     tkdestroy(nn)
 
-    if (doneVal==1)
-    {
-        tt <- tktoplevel()
-        tkwm.title(tt, "Pourcentage d'occurrence par espece")
-        scr <- tkscrollbar(tt, repeatinterval=5, command=function(...){tkyview(tl, ...)})
-        tl <- tklistbox(tt, height=20, width=50, selectmode="single",
-                        yscrollcommand=function(...){tkset(scr, ...)}, background="white")
-        tkgrid(tklabel(tt, text="Especes presentes"))
-        tkgrid(tl, scr)
-        tkgrid.configure(scr, rowspan=4, sticky="nsw")
+##     if (doneVal==1)
+##     {
+##         tt <- tktoplevel()
+##         tkwm.title(tt, "Pourcentage d'occurrence par espece")
+##         scr <- tkscrollbar(tt, repeatinterval=5, command=function(...){tkyview(tl, ...)})
+##         tl <- tklistbox(tt, height=20, width=50, selectmode="single",
+##                         yscrollcommand=function(...){tkset(scr, ...)}, background="white")
+##         tkgrid(tklabel(tt, text="Especes presentes"))
+##         tkgrid(tl, scr)
+##         tkgrid.configure(scr, rowspan=4, sticky="nsw")
 
-        ## on ne propose uniquement les especes presentes dans le jeu de donnees
-        ## ATTENTION PRENDRE EN COMPTE LES ESPECES EXCLUES
-        especesPresentes <- subset(unitesp, unitesp$pres_abs==1)$code_espece
-        esp <- sort(unique(especesPresentes))
-        a <- length(esp)
-        for (i in (1:a))
-        {
-            tkinsert(tl, "end", esp[i])
-        }
-        tkselection.set(tl, 0)
+##         ## on ne propose uniquement les especes presentes dans le jeu de donnees
+##         ## ATTENTION PRENDRE EN COMPTE LES ESPECES EXCLUES
+##         especesPresentes <- subset(unitesp, unitesp$pres_abs==1)$code_espece
+##         esp <- sort(unique(especesPresentes))
+##         a <- length(esp)
+##         for (i in (1:a))
+##         {
+##             tkinsert(tl, "end", esp[i])
+##         }
+##         tkselection.set(tl, 0)
 
-        OnOK <- function()
-        {
-            choixespece <- esp[as.numeric(tkcurselection(tl))+1]
-            b <- especes$code_espece[especes$code_espece == choixespece]
-            tkdestroy(tt)
-            print(paste("Pourcentage d'occurrence de", choixespece))
-            print(grp[, b])
-            assign("b", b, envir=.GlobalEnv)
-        }
-        OK.but <-tkbutton(tt, text="OK", command=OnOK)
-        tkgrid(OK.but)
-        tkfocus(tt)
-        tkwait.window(tt)
-        rm(a)
-        rm(fact, envir=.GlobalEnv)
-    } ##  fin doneVal
-} ## fin occurrence.f
+##         OnOK <- function()
+##         {
+##             choixespece <- esp[as.numeric(tkcurselection(tl))+1]
+##             b <- especes$code_espece[especes$code_espece == choixespece]
+##             tkdestroy(tt)
+##             print(paste("Pourcentage d'occurrence de", choixespece))
+##             print(grp[, b])
+##             assign("b", b, envir=.GlobalEnv)
+##         }
+##         OK.but <-tkbutton(tt, text="OK", command=OnOK)
+##         tkgrid(OK.but)
+##         tkfocus(tt)
+##         tkwait.window(tt)
+##         rm(a)
+##         rm(fact, envir=.GlobalEnv)
+##     } ##  fin doneVal
+## } ## fin occurrence.f
 
 ################################################################################
 ## Nom    : choixDeuxFacteursUnitobs.f()
@@ -81,71 +82,73 @@ occurrence.f <- function(fact)
 ## Output : table "unit" + les 2 facteurs de la table unitobs choisis
 ################################################################################
 
-choixDeuxFacteursUnitobs.f <- function()
-{
+## [sup] [yr: 13/01/2011]:
 
-    print("fonction choixDeuxFacteursUnitobs.f activée")
+## choixDeuxFacteursUnitobs.f <- function()
+## {
 
-    ## selection du premier facteur
-    aa <- tktoplevel()
-    tkwm.title(aa, "Selection du PREMIER facteur de groupement des unites d'observation")
-    scr <- tkscrollbar(aa, repeatinterval=5, command=function(...){tkyview(tl, ...)})
-    tl <- tklistbox(aa, height=20, selectmode="single",
-                    yscrollcommand=function(...){tkset(scr, ...)}, background="white")
-    tkgrid(tklabel(aa, text="Liste des facteurs de groupement"))
-    tkgrid(tl, scr)
-    tkgrid.configure(scr, rowspan=4, sticky="nsw")
-    facts <- sort(names(unitobs))
-    a <- length(facts)
-    for (i in (1:a))
-    {
-        tkinsert(tl, "end", facts[i])
-    }
-    tkselection.set(tl, 0)
+##     print("fonction choixDeuxFacteursUnitobs.f activée")
 
-    OnOK <- function()
-    {
-        fact21 <- facts[as.numeric(tkcurselection(tl))+1]
-        assign("fact21", fact21, envir=.GlobalEnv)
-        tkdestroy(aa)
-        assign("unit", unit, envir=.GlobalEnv)
-    }
-    OK.but <-tkbutton(aa, text="OK", command=OnOK)
-    tkgrid(OK.but)
-    tkfocus(aa)
-    tkwait.window(aa)
-    rm(a)
+##     ## selection du premier facteur
+##     aa <- tktoplevel()
+##     tkwm.title(aa, "Selection du PREMIER facteur de groupement des unites d'observation")
+##     scr <- tkscrollbar(aa, repeatinterval=5, command=function(...){tkyview(tl, ...)})
+##     tl <- tklistbox(aa, height=20, selectmode="single",
+##                     yscrollcommand=function(...){tkset(scr, ...)}, background="white")
+##     tkgrid(tklabel(aa, text="Liste des facteurs de groupement"))
+##     tkgrid(tl, scr)
+##     tkgrid.configure(scr, rowspan=4, sticky="nsw")
+##     facts <- sort(names(unitobs))
+##     a <- length(facts)
+##     for (i in (1:a))
+##     {
+##         tkinsert(tl, "end", facts[i])
+##     }
+##     tkselection.set(tl, 0)
 
-    ## selection du deuxieme facteur ##
-    aa <- tktoplevel()
-    tkwm.title(aa, "Selection du SECOND facteur de groupement des unites d'observation")
-    scr <- tkscrollbar(aa, repeatinterval=5, command=function(...){tkyview(tl, ...)})
-    tl <- tklistbox(aa, height=20, selectmode="single",
-                    yscrollcommand=function(...){tkset(scr, ...)}, background="white")
-    tkgrid(tklabel(aa, text="Liste des facteurs de groupement"))
-    tkgrid(tl, scr)
-    tkgrid.configure(scr, rowspan=4, sticky="nsw")
-    facts <- sort(names(unitobs))
-    a <- length(facts)
-    for (i in (1:a))
-    {
-        tkinsert(tl, "end", facts[i])
-    }
-    tkselection.set(tl, 0)
+##     OnOK <- function()
+##     {
+##         fact21 <- facts[as.numeric(tkcurselection(tl))+1]
+##         assign("fact21", fact21, envir=.GlobalEnv)
+##         tkdestroy(aa)
+##         assign("unit", unit, envir=.GlobalEnv)
+##     }
+##     OK.but <-tkbutton(aa, text="OK", command=OnOK)
+##     tkgrid(OK.but)
+##     tkfocus(aa)
+##     tkwait.window(aa)
+##     rm(a)
 
-    OnOK <- function()
-    {
-        fact22 <- facts[as.numeric(tkcurselection(tl))+1]
-        assign("fact22", fact22, envir=.GlobalEnv)
-        tkdestroy(aa)
-        assign("unit", unit, envir=.GlobalEnv)
-    }
-    OK.but <-tkbutton(aa, text="OK", command=OnOK)
-    tkgrid(OK.but)
-    tkfocus(aa)
-    tkwait.window(aa)
-    rm(a)
-} ##  fin choixDeuxFacteursUnitobs.f
+##     ## selection du deuxieme facteur ##
+##     aa <- tktoplevel()
+##     tkwm.title(aa, "Selection du SECOND facteur de groupement des unites d'observation")
+##     scr <- tkscrollbar(aa, repeatinterval=5, command=function(...){tkyview(tl, ...)})
+##     tl <- tklistbox(aa, height=20, selectmode="single",
+##                     yscrollcommand=function(...){tkset(scr, ...)}, background="white")
+##     tkgrid(tklabel(aa, text="Liste des facteurs de groupement"))
+##     tkgrid(tl, scr)
+##     tkgrid.configure(scr, rowspan=4, sticky="nsw")
+##     facts <- sort(names(unitobs))
+##     a <- length(facts)
+##     for (i in (1:a))
+##     {
+##         tkinsert(tl, "end", facts[i])
+##     }
+##     tkselection.set(tl, 0)
+
+##     OnOK <- function()
+##     {
+##         fact22 <- facts[as.numeric(tkcurselection(tl))+1]
+##         assign("fact22", fact22, envir=.GlobalEnv)
+##         tkdestroy(aa)
+##         assign("unit", unit, envir=.GlobalEnv)
+##     }
+##     OK.but <-tkbutton(aa, text="OK", command=OnOK)
+##     tkgrid(OK.but)
+##     tkfocus(aa)
+##     tkwait.window(aa)
+##     rm(a)
+## } ##  fin choixDeuxFacteursUnitobs.f
 
 ################################################################################
 ## Nom    : occurrence2.f()
@@ -156,63 +159,65 @@ choixDeuxFacteursUnitobs.f <- function()
 ##          de regroupement
 ################################################################################
 
-occurrence2.f <- function(fact21, fact22)
-{
-    ## Demande d'affichage du pourcentage d'occurrence d'une espece
-    nn <- tktoplevel()
-    tkwm.title(nn, "Pourcentage d'occurrence")
-    tkgrid(tklabel(nn, text="Voulez-vous calculer le pourcentage d'occurrence d'une espece?"))
-    done <- tclVar(0)
-    OK.but <- tkbutton(nn, text="OUI", command=function() {tclvalue(done) <- 1})
-    Cancel.but <- tkbutton(nn, text="NON", command=function() {tclvalue(done) <- 2})
-    tkgrid(OK.but, Cancel.but)
-    tkbind(nn, "<Destroy>", function() {tclvalue(done) <- 2})
-    tkfocus(nn)
-    tkwait.variable(done)
-    doneVal <- as.integer(tclvalue(done))
-    tkdestroy(nn)
+## [sup] [yr: 13/01/2011]:
 
-    if (doneVal==1)
-    {
-        tt <- tktoplevel()
-        tkwm.title(tt, "Pourcentage d'occurrence par espece")
-        scr <- tkscrollbar(tt, repeatinterval=5, command=function(...){tkyview(tl, ...)})
-        tl <- tklistbox(tt, height=20, width=50, selectmode="single",
-                        yscrollcommand=function(...){tkset(scr, ...)}, background="white")
-        tkgrid(tklabel(tt, text="Especes presentes:"))
-        tkgrid(tl, scr)
-        tkgrid.configure(scr, rowspan=4, sticky="nsw")
+## occurrence2.f <- function(fact21, fact22)
+## {
+##     ## Demande d'affichage du pourcentage d'occurrence d'une espece
+##     nn <- tktoplevel()
+##     tkwm.title(nn, "Pourcentage d'occurrence")
+##     tkgrid(tklabel(nn, text="Voulez-vous calculer le pourcentage d'occurrence d'une espece?"))
+##     done <- tclVar(0)
+##     OK.but <- tkbutton(nn, text="OUI", command=function() {tclvalue(done) <- 1})
+##     Cancel.but <- tkbutton(nn, text="NON", command=function() {tclvalue(done) <- 2})
+##     tkgrid(OK.but, Cancel.but)
+##     tkbind(nn, "<Destroy>", function() {tclvalue(done) <- 2})
+##     tkfocus(nn)
+##     tkwait.variable(done)
+##     doneVal <- as.integer(tclvalue(done))
+##     tkdestroy(nn)
 
-        ## on ne propose uniquement les especes presentes dans le jeu de donnees
-        ## ATTENTION PRENDRE EN COMPTE LES ESPECES EXCLUES
-        especesPresentes <- subset(unitesp, unitesp$pres_abs==1)$code_espece
-        esp <- sort(unique(especesPresentes))
-        a <- length(esp)
-        for (i in (1:a))
-        {
-            tkinsert(tl, "end", esp[i])
-        }
-        tkselection.set(tl, 0)
+##     if (doneVal==1)
+##     {
+##         tt <- tktoplevel()
+##         tkwm.title(tt, "Pourcentage d'occurrence par espece")
+##         scr <- tkscrollbar(tt, repeatinterval=5, command=function(...){tkyview(tl, ...)})
+##         tl <- tklistbox(tt, height=20, width=50, selectmode="single",
+##                         yscrollcommand=function(...){tkset(scr, ...)}, background="white")
+##         tkgrid(tklabel(tt, text="Especes presentes:"))
+##         tkgrid(tl, scr)
+##         tkgrid.configure(scr, rowspan=4, sticky="nsw")
 
-        OnOK <- function()
-        {
-            choixespece <- esp[as.numeric(tkcurselection(tl))+1]
-            b <- especes$code_espece[especes$code_espece == choixespece]
-            tkdestroy(tt)
-            print(paste("Pourcentage d'occurrence de", choixespece))
-            print(cbind(grp12[, fact21], grp12[, fact22], grp12[, b]))
-            assign("b", b, envir=.GlobalEnv)
-        }
-        OK.but <-tkbutton(tt, text="OK", command=OnOK)
-        tkgrid(OK.but)
-        tkfocus(tt)
-        tkwait.window(tt)
-        rm(a)
+##         ## on ne propose uniquement les especes presentes dans le jeu de donnees
+##         ## ATTENTION PRENDRE EN COMPTE LES ESPECES EXCLUES
+##         especesPresentes <- subset(unitesp, unitesp$pres_abs==1)$code_espece
+##         esp <- sort(unique(especesPresentes))
+##         a <- length(esp)
+##         for (i in (1:a))
+##         {
+##             tkinsert(tl, "end", esp[i])
+##         }
+##         tkselection.set(tl, 0)
 
-        rm(fact21, fact22, envir=.GlobalEnv)
-        rm(b, envir=.GlobalEnv)
-    }## fin doneVal
-} ##  fin occurrence2.f
+##         OnOK <- function()
+##         {
+##             choixespece <- esp[as.numeric(tkcurselection(tl))+1]
+##             b <- especes$code_espece[especes$code_espece == choixespece]
+##             tkdestroy(tt)
+##             print(paste("Pourcentage d'occurrence de", choixespece))
+##             print(cbind(grp12[, fact21], grp12[, fact22], grp12[, b]))
+##             assign("b", b, envir=.GlobalEnv)
+##         }
+##         OK.but <-tkbutton(tt, text="OK", command=OnOK)
+##         tkgrid(OK.but)
+##         tkfocus(tt)
+##         tkwait.window(tt)
+##         rm(a)
+
+##         rm(fact21, fact22, envir=.GlobalEnv)
+##         rm(b, envir=.GlobalEnv)
+##     }## fin doneVal
+## } ##  fin occurrence2.f
 
 ################################################################################
 ## Nom    : choixTroisFacteurs.f()
@@ -222,99 +227,101 @@ occurrence2.f <- function(fact21, fact22)
 ################################################################################
 ## ! code dans un fichier "choix"
 
-choixtroisfacteurs.f <- function()
-{
+## [sup] [yr: 13/01/2011]:
 
-    ## sélection du premier facteur
-    aa <- tktoplevel()
-    tkwm.title(aa, "Selection du PREMIER facteur de groupement des unites d'observation")
-    scr <- tkscrollbar(aa, repeatinterval=5, command=function(...){tkyview(tl, ...)})
-    tl <- tklistbox(aa, height=20, selectmode="single",
-                    yscrollcommand=function(...){tkset(scr, ...)}, background="white")
-    tkgrid(tklabel(aa, text="Liste des facteurs de groupement"))
-    tkgrid(tl, scr)
-    tkgrid.configure(scr, rowspan=4, sticky="nsw")
-    facts <- sort(names(unitobs))
-    a <- length(facts)
-    for (i in (1:a))
-    {
-        tkinsert(tl, "end", facts[i])
-    }
-    tkselection.set(tl, 0)
+## choixtroisfacteurs.f <- function()
+## {
 
-    OnOK <- function(){
-        fact31 <- facts[as.numeric(tkcurselection(tl))+1]
-        assign("fact31", fact31, envir=.GlobalEnv)
-        tkdestroy(aa)
-    }
-    OK.but <-tkbutton(aa, text="OK", command=OnOK)
-    tkgrid(OK.but)
-    tkfocus(aa)
-    tkwait.window(aa)
-    rm(a)
+##     ## sélection du premier facteur
+##     aa <- tktoplevel()
+##     tkwm.title(aa, "Selection du PREMIER facteur de groupement des unites d'observation")
+##     scr <- tkscrollbar(aa, repeatinterval=5, command=function(...){tkyview(tl, ...)})
+##     tl <- tklistbox(aa, height=20, selectmode="single",
+##                     yscrollcommand=function(...){tkset(scr, ...)}, background="white")
+##     tkgrid(tklabel(aa, text="Liste des facteurs de groupement"))
+##     tkgrid(tl, scr)
+##     tkgrid.configure(scr, rowspan=4, sticky="nsw")
+##     facts <- sort(names(unitobs))
+##     a <- length(facts)
+##     for (i in (1:a))
+##     {
+##         tkinsert(tl, "end", facts[i])
+##     }
+##     tkselection.set(tl, 0)
 
-    ## sélection du deuxieme facteur
-    aa <- tktoplevel()
-    tkwm.title(aa, "Selection du SECOND facteur de groupement des unites d'observation")
-    scr <- tkscrollbar(aa, repeatinterval=5, command=function(...){tkyview(tl, ...)})
-    tl <- tklistbox(aa, height=20, selectmode="single",
-                    yscrollcommand=function(...){tkset(scr, ...)}, background="white")
-    tkgrid(tklabel(aa, text="Liste des facteurs de groupement"))
-    tkgrid(tl, scr)
-    tkgrid.configure(scr, rowspan=4, sticky="nsw")
-    facts <- sort(names(unitobs))
-    a <- length(facts)
-    for (i in (1:a))
-    {
-        tkinsert(tl, "end", facts[i])
-    }
-    tkselection.set(tl, 0)
+##     OnOK <- function(){
+##         fact31 <- facts[as.numeric(tkcurselection(tl))+1]
+##         assign("fact31", fact31, envir=.GlobalEnv)
+##         tkdestroy(aa)
+##     }
+##     OK.but <-tkbutton(aa, text="OK", command=OnOK)
+##     tkgrid(OK.but)
+##     tkfocus(aa)
+##     tkwait.window(aa)
+##     rm(a)
 
-    OnOK <- function()
-    {
-        fact32 <- facts[as.numeric(tkcurselection(tl))+1]
-        assign("fact32", fact32, envir=.GlobalEnv)
-        tkdestroy(aa)
-    }
-    OK.but <-tkbutton(aa, text="   OK   ", command=OnOK)
-    tkgrid(OK.but)
-    tkfocus(aa)
-    tkwait.window(aa)
-    rm(a)
+##     ## sélection du deuxieme facteur
+##     aa <- tktoplevel()
+##     tkwm.title(aa, "Selection du SECOND facteur de groupement des unites d'observation")
+##     scr <- tkscrollbar(aa, repeatinterval=5, command=function(...){tkyview(tl, ...)})
+##     tl <- tklistbox(aa, height=20, selectmode="single",
+##                     yscrollcommand=function(...){tkset(scr, ...)}, background="white")
+##     tkgrid(tklabel(aa, text="Liste des facteurs de groupement"))
+##     tkgrid(tl, scr)
+##     tkgrid.configure(scr, rowspan=4, sticky="nsw")
+##     facts <- sort(names(unitobs))
+##     a <- length(facts)
+##     for (i in (1:a))
+##     {
+##         tkinsert(tl, "end", facts[i])
+##     }
+##     tkselection.set(tl, 0)
 
-    ## sélection du troisieme facteur
-    aa <- tktoplevel()
-    tkwm.title(aa, "Selection du TROISIEME facteur de groupement des unites d'observation")
-    scr <- tkscrollbar(aa, repeatinterval=5, command=function(...){tkyview(tl, ...)})
-    tl <- tklistbox(aa, height=20, selectmode="single",
-                    yscrollcommand=function(...){tkset(scr, ...)}, background="white")
-    tkgrid(tklabel(aa, text="Liste des facteurs de groupement"))
-    tkgrid(tl, scr)
-    tkgrid.configure(scr, rowspan=4, sticky="nsw")
-    facts <- sort(names(unitobs))
-    a <- length(facts)
-    for (i in (1:a))
-    {
-        tkinsert(tl, "end", facts[i])
-    }
-    tkselection.set(tl, 0)
+##     OnOK <- function()
+##     {
+##         fact32 <- facts[as.numeric(tkcurselection(tl))+1]
+##         assign("fact32", fact32, envir=.GlobalEnv)
+##         tkdestroy(aa)
+##     }
+##     OK.but <-tkbutton(aa, text="   OK   ", command=OnOK)
+##     tkgrid(OK.but)
+##     tkfocus(aa)
+##     tkwait.window(aa)
+##     rm(a)
 
-    OnOK <- function()
-    {
-        fact33 <- facts[as.numeric(tkcurselection(tl))+1]
-        assign("fact33", fact33, envir=.GlobalEnv)
-        tkdestroy(aa)
-        unit[, fact31] <- unitobs[, fact31][match(unit$unitobs, unitobs$unite_observation)]
-        unit[, fact32] <- unitobs[, fact32][match(unit$unitobs, unitobs$unite_observation)]
-        unit[, fact33] <- unitobs[, fact33][match(unit$unitobs, unitobs$unite_observation)]
-        assign("unit", unit, envir=.GlobalEnv)
-    }
-    OK.but <-tkbutton(aa, text="OK", command=OnOK)
-    tkgrid(OK.but)
-    tkfocus(aa)
-    tkwait.window(aa)
-    rm(a)
-} ##  fin choixtroisfacteurs.f
+##     ## sélection du troisieme facteur
+##     aa <- tktoplevel()
+##     tkwm.title(aa, "Selection du TROISIEME facteur de groupement des unites d'observation")
+##     scr <- tkscrollbar(aa, repeatinterval=5, command=function(...){tkyview(tl, ...)})
+##     tl <- tklistbox(aa, height=20, selectmode="single",
+##                     yscrollcommand=function(...){tkset(scr, ...)}, background="white")
+##     tkgrid(tklabel(aa, text="Liste des facteurs de groupement"))
+##     tkgrid(tl, scr)
+##     tkgrid.configure(scr, rowspan=4, sticky="nsw")
+##     facts <- sort(names(unitobs))
+##     a <- length(facts)
+##     for (i in (1:a))
+##     {
+##         tkinsert(tl, "end", facts[i])
+##     }
+##     tkselection.set(tl, 0)
+
+##     OnOK <- function()
+##     {
+##         fact33 <- facts[as.numeric(tkcurselection(tl))+1]
+##         assign("fact33", fact33, envir=.GlobalEnv)
+##         tkdestroy(aa)
+##         unit[, fact31] <- unitobs[, fact31][match(unit$unitobs, unitobs$unite_observation)]
+##         unit[, fact32] <- unitobs[, fact32][match(unit$unitobs, unitobs$unite_observation)]
+##         unit[, fact33] <- unitobs[, fact33][match(unit$unitobs, unitobs$unite_observation)]
+##         assign("unit", unit, envir=.GlobalEnv)
+##     }
+##     OK.but <-tkbutton(aa, text="OK", command=OnOK)
+##     tkgrid(OK.but)
+##     tkfocus(aa)
+##     tkwait.window(aa)
+##     rm(a)
+## } ##  fin choixtroisfacteurs.f
 
 ################################################################################
 ## Nom    : occurrence3.f()
@@ -325,61 +332,63 @@ choixtroisfacteurs.f <- function()
 ##          de regroupement
 ################################################################################
 
-occurrence3.f <- function(fact31, fact32, fact33)
-{
-    ## Demande d'affichage du pourcentage d'occurrence d'une espece
-    nn <- tktoplevel()
-    tkwm.title(nn, "Pourcentage d'occurrence")
-    tkgrid(tklabel(nn, text="Voulez-vous calculer le pourcentage d'occurrence d'une espece?"))
-    done <- tclVar(0)
-    OK.but <- tkbutton(nn, text="OUI", command=function() {tclvalue(done) <- 1})
-    Cancel.but <- tkbutton(nn, text="NON", command=function() {tclvalue(done) <- 2})
-    tkgrid(OK.but, Cancel.but)
-    tkbind(nn, "<Destroy>", function() {tclvalue(done) <- 2})
-    tkfocus(nn)
-    tkwait.variable(done)
-    doneVal <- as.integer(tclvalue(done))
-    tkdestroy(nn)
+## [sup] [yr: 13/01/2011]:
 
-    if (doneVal==1)
-    {
-        tt <- tktoplevel()
-        tkwm.title(tt, "Pourcentage d'occurrence par espece")
-        scr <- tkscrollbar(tt, repeatinterval=5, command=function(...){tkyview(tl, ...)})
-        tl <- tklistbox(tt, height=20, width=50, selectmode="single",
-                        yscrollcommand=function(...){tkset(scr, ...)}, background="white")
-        tkgrid(tklabel(tt, text="Occurrence de l'espece:"))
-        tkgrid(tl, scr)
-        tkgrid.configure(scr, rowspan=4, sticky="nsw")
-        ## on ne propose uniquement les especes presentes dans le jeu de donnees
-        ## ATTENTION PRENDRE EN COMPTE LES ESPECES EXCLUES
-        especesPresentes <- subset(unitesp, unitesp$pres_abs==1)$code_espece
-        esp <- sort(unique(especesPresentes))
-        a <- length(esp)
-        for (i in (1:a))
-        {
-            tkinsert(tl, "end", esp[i])
-        }
-        tkselection.set(tl, 0)
+## occurrence3.f <- function(fact31, fact32, fact33)
+## {
+##     ## Demande d'affichage du pourcentage d'occurrence d'une espece
+##     nn <- tktoplevel()
+##     tkwm.title(nn, "Pourcentage d'occurrence")
+##     tkgrid(tklabel(nn, text="Voulez-vous calculer le pourcentage d'occurrence d'une espece?"))
+##     done <- tclVar(0)
+##     OK.but <- tkbutton(nn, text="OUI", command=function() {tclvalue(done) <- 1})
+##     Cancel.but <- tkbutton(nn, text="NON", command=function() {tclvalue(done) <- 2})
+##     tkgrid(OK.but, Cancel.but)
+##     tkbind(nn, "<Destroy>", function() {tclvalue(done) <- 2})
+##     tkfocus(nn)
+##     tkwait.variable(done)
+##     doneVal <- as.integer(tclvalue(done))
+##     tkdestroy(nn)
 
-        OnOK <- function(){
-            choixespece <- esp[as.numeric(tkcurselection(tl))+1]
-            b <- especes$code_espece[especes$code_espece == choixespece]
-            tkdestroy(tt)
-            print(paste("Pourcentage d'occurrence de", choixespece))
-            print(cbind(grp13[, fact31], grp13[, fact32], grp13[, fact33], grp13[, b]))
-            assign("b", b, envir=.GlobalEnv)
-        }
-        OK.but <-tkbutton(tt, text="   OK   ", command=OnOK)
-        tkgrid(OK.but)
-        tkfocus(tt)
-        tkwait.window(tt)
-        rm(a)
+##     if (doneVal==1)
+##     {
+##         tt <- tktoplevel()
+##         tkwm.title(tt, "Pourcentage d'occurrence par espece")
+##         scr <- tkscrollbar(tt, repeatinterval=5, command=function(...){tkyview(tl, ...)})
+##         tl <- tklistbox(tt, height=20, width=50, selectmode="single",
+##                         yscrollcommand=function(...){tkset(scr, ...)}, background="white")
+##         tkgrid(tklabel(tt, text="Occurrence de l'espece:"))
+##         tkgrid(tl, scr)
+##         tkgrid.configure(scr, rowspan=4, sticky="nsw")
+##         ## on ne propose uniquement les especes presentes dans le jeu de donnees
+##         ## ATTENTION PRENDRE EN COMPTE LES ESPECES EXCLUES
+##         especesPresentes <- subset(unitesp, unitesp$pres_abs==1)$code_espece
+##         esp <- sort(unique(especesPresentes))
+##         a <- length(esp)
+##         for (i in (1:a))
+##         {
+##             tkinsert(tl, "end", esp[i])
+##         }
+##         tkselection.set(tl, 0)
 
-        rm(fact31, fact32, fact33, envir=.GlobalEnv)
-        rm(b, envir=.GlobalEnv)
-    }
-} ## fin occurrence3.f
+##         OnOK <- function(){
+##             choixespece <- esp[as.numeric(tkcurselection(tl))+1]
+##             b <- especes$code_espece[especes$code_espece == choixespece]
+##             tkdestroy(tt)
+##             print(paste("Pourcentage d'occurrence de", choixespece))
+##             print(cbind(grp13[, fact31], grp13[, fact32], grp13[, fact33], grp13[, b]))
+##             assign("b", b, envir=.GlobalEnv)
+##         }
+##         OK.but <-tkbutton(tt, text="   OK   ", command=OnOK)
+##         tkgrid(OK.but)
+##         tkfocus(tt)
+##         tkwait.window(tt)
+##         rm(a)
+
+##         rm(fact31, fact32, fact33, envir=.GlobalEnv)
+##         rm(b, envir=.GlobalEnv)
+##     }
+## } ## fin occurrence3.f
 
 
 ################################################################################
@@ -395,37 +404,39 @@ occurrence3.f <- function(fact31, fact32, fact33)
 ##     - grpunitobsGrpEspece.f()
 ################################################################################
 
-grpunitobsGrpEspece.f <- function(){
+## [sup] [yr: 13/01/2011]:
 
-    print("fonction grpunitobsGrpEspece.f activée")
-    aa <- tktoplevel()
-    tkwm.title(aa, "Selection du facteur de groupement des especes")
-    scr <- tkscrollbar(aa, repeatinterval=5, command=function(...)tkyview(tl, ...))
-    tl <- tklistbox(aa, height=20, selectmode="single",
-                    yscrollcommand=function(...)tkset(scr, ...), background="white")
-    tkgrid(tklabel(aa, text="Liste des facteurs de groupement"))
-    tkgrid(tl, scr)
-    tkgrid.configure(scr, rowspan=4, sticky="nsw")
-    facts <- sort(names(especes))
-    a <- length(facts)
-    for (i in (1:a))
-    {
-        tkinsert(tl, "end", facts[i])
-    }
-    tkselection.set(tl, 0)
+## grpunitobsGrpEspece.f <- function(){
 
-    OnOK <- function(){
-        factesp <- facts[as.numeric(tkcurselection(tl))+1]
-        assign("factesp", factesp, envir=.GlobalEnv)
-        tkdestroy(aa)
-        tkmessageBox(message="Non programme")
-    }
-    OK.but <-tkbutton(aa, text="OK", command=OnOK)
-    tkgrid(OK.but)
-    tkfocus(aa)
-    tkwait.window(aa)
-    rm(a)
-}  # fin grpunitobsGrpEspece.f()
+##     print("fonction grpunitobsGrpEspece.f activée")
+##     aa <- tktoplevel()
+##     tkwm.title(aa, "Selection du facteur de groupement des especes")
+##     scr <- tkscrollbar(aa, repeatinterval=5, command=function(...)tkyview(tl, ...))
+##     tl <- tklistbox(aa, height=20, selectmode="single",
+##                     yscrollcommand=function(...)tkset(scr, ...), background="white")
+##     tkgrid(tklabel(aa, text="Liste des facteurs de groupement"))
+##     tkgrid(tl, scr)
+##     tkgrid.configure(scr, rowspan=4, sticky="nsw")
+##     facts <- sort(names(especes))
+##     a <- length(facts)
+##     for (i in (1:a))
+##     {
+##         tkinsert(tl, "end", facts[i])
+##     }
+##     tkselection.set(tl, 0)
+
+##     OnOK <- function(){
+##         factesp <- facts[as.numeric(tkcurselection(tl))+1]
+##         assign("factesp", factesp, envir=.GlobalEnv)
+##         tkdestroy(aa)
+##         tkmessageBox(message="Non programme")
+##     }
+##     OK.but <-tkbutton(aa, text="OK", command=OnOK)
+##     tkgrid(OK.but)
+##     tkfocus(aa)
+##     tkwait.window(aa)
+##     rm(a)
+## }  # fin grpunitobsGrpEspece.f()
 
 
 ################################################################################

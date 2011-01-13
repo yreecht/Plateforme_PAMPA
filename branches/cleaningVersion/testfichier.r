@@ -1,26 +1,29 @@
 
 ## Vérifie la présence de caractères listés dans CaractereRecherche
-testcaracteres.f <- function (dataframe, CaractereRecherche, nomdataframe)
-{
 
-    ## fonction cherchant   l e s   c  a r a c t è r e s
-    print("fonction testcaracteres.f activée")
-    listechamps <- "  * "
+## [sup] [yr: 13/01/2011]:
 
-    if (length(colnames(dataframe[grep(CaractereRecherche, dataframe)]))>0)
-    {
-        TitreFichiers <- paste("LISTE DES CHAMPS DE ", nomdataframe, " contenant le caractère \"", CaractereRecherche,
-                               "\"\n******************\n\n", sep="")
-        for (i in (1:length(colnames(dataframe[grep(CaractereRecherche, dataframe)]))))
-        {
-            listechamps <- paste(listechamps, " - ", colnames(dataframe[grep(CaractereRecherche, dataframe)])[i],
-                                 sep="")
-        }
-        tkmessageBox(message=paste(TitreFichiers, listechamps))
-        gestionMSGerreur.f("CaractereInterdit", nomdataframe)
-        ## return(bilanFichiers)
-    }
-}
+## testcaracteres.f <- function (dataframe, CaractereRecherche, nomdataframe)
+## {
+
+##     ## fonction cherchant   l e s   c  a r a c t è r e s
+##     print("fonction testcaracteres.f activée")
+##     listechamps <- "  * "
+
+##     if (length(colnames(dataframe[grep(CaractereRecherche, dataframe)]))>0)
+##     {
+##         TitreFichiers <- paste("LISTE DES CHAMPS DE ", nomdataframe, " contenant le caractère \"", CaractereRecherche,
+##                                "\"\n******************\n\n", sep="")
+##         for (i in (1:length(colnames(dataframe[grep(CaractereRecherche, dataframe)]))))
+##         {
+##             listechamps <- paste(listechamps, " - ", colnames(dataframe[grep(CaractereRecherche, dataframe)])[i],
+##                                  sep="")
+##         }
+##         tkmessageBox(message=paste(TitreFichiers, listechamps))
+##         gestionMSGerreur.f("CaractereInterdit", nomdataframe)
+##         ## return(bilanFichiers)
+##     }
+## }
 
 ## essais de rendre générique après avec unitobs et obs
 testfileref.f <- function ()

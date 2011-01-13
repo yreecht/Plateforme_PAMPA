@@ -71,51 +71,53 @@ critereespref.f <- function ()
 ## Output  : champs sélectionné
 ################################################################################
 
-critere2espref.f <- function ()
-{
+## [sup] [yr: 13/01/2011]:
 
-    print("fonction critere2espref activée")
-    aa <- tktoplevel()
-    tkwm.title(aa, "Selection du facteur du référentiel des espèces")
-    scr <- tkscrollbar(aa, repeatinterval=5, command=function(...)tkyview(tl, ...))
-    tl <- tklistbox(aa, height=20, width=50, selectmode="single",
-                    yscrollcommand=function(...)tkset(scr, ...), background="white")
+## critere2espref.f <- function ()
+## {
 
-    tkgrid(tklabel(aa, text="Liste des facteurs du référentiel des espèces"))
-    tkgrid(tl, scr)
-    tkgrid.configure(scr, rowspan=4, sticky="nsw")
-    facts <- sort(names(especes))
-    ## ici, on liste les AMP qui ne correspondent pas au jeu de données
-    listeSite <- c("RUN" , "MAY" , "BA" , "BO" , "CB" , "CR" , "STM" , "NC")
-    listeSiteExclus <- subset(listeSite, listeSite!=SiteEtudie)
-    print("les sites exclus sont :")
-    print(listeSiteExclus)
-    ## on retire les champs contenant les lettres des sites exclus
-    for (k in (1:length(listeSiteExclus)))
-    {
-        ## print(listeSiteExclus[k])
-        facts <- facts[-grep(listeSiteExclus[k], facts)]
-        ## print(facts)
-    }
-    a <- length(facts)
-    for (i in (1:a))
-    {
-        tkinsert(tl, "end", facts[i])
-    }
-    tkselection.set(tl, 0)
+##     print("fonction critere2espref activée")
+##     aa <- tktoplevel()
+##     tkwm.title(aa, "Selection du facteur du référentiel des espèces")
+##     scr <- tkscrollbar(aa, repeatinterval=5, command=function(...)tkyview(tl, ...))
+##     tl <- tklistbox(aa, height=20, width=50, selectmode="single",
+##                     yscrollcommand=function(...)tkset(scr, ...), background="white")
 
-    OnOK <- function ()
-    {
-        factesp2 <- facts[as.numeric(tkcurselection(tl))+1]
-        assign("factesp2", factesp2, envir=.GlobalEnv)
-        tkdestroy(aa)
-    }
-    OK.but <-tkbutton(aa, text="OK", command=OnOK)
-    tkgrid(OK.but)
-    tkfocus(aa)
-    tkwait.window(aa)
-    rm(a)
-} # fin critereespref.f
+##     tkgrid(tklabel(aa, text="Liste des facteurs du référentiel des espèces"))
+##     tkgrid(tl, scr)
+##     tkgrid.configure(scr, rowspan=4, sticky="nsw")
+##     facts <- sort(names(especes))
+##     ## ici, on liste les AMP qui ne correspondent pas au jeu de données
+##     listeSite <- c("RUN" , "MAY" , "BA" , "BO" , "CB" , "CR" , "STM" , "NC")
+##     listeSiteExclus <- subset(listeSite, listeSite!=SiteEtudie)
+##     print("les sites exclus sont :")
+##     print(listeSiteExclus)
+##     ## on retire les champs contenant les lettres des sites exclus
+##     for (k in (1:length(listeSiteExclus)))
+##     {
+##         ## print(listeSiteExclus[k])
+##         facts <- facts[-grep(listeSiteExclus[k], facts)]
+##         ## print(facts)
+##     }
+##     a <- length(facts)
+##     for (i in (1:a))
+##     {
+##         tkinsert(tl, "end", facts[i])
+##     }
+##     tkselection.set(tl, 0)
+
+##     OnOK <- function ()
+##     {
+##         factesp2 <- facts[as.numeric(tkcurselection(tl))+1]
+##         assign("factesp2", factesp2, envir=.GlobalEnv)
+##         tkdestroy(aa)
+##     }
+##     OK.but <-tkbutton(aa, text="OK", command=OnOK)
+##     tkgrid(OK.but)
+##     tkfocus(aa)
+##     tkwait.window(aa)
+##     rm(a)
+## } # fin critereespref.f
 
 
 ################################################################################
@@ -189,47 +191,49 @@ ChoixFacteurSelect.f <- function (tableselect, monchamp, Nbselectmax, ordre, mav
 ## Output  : champs sélectionné
 ################################################################################
 
-choixchamptable.f <- function (matable)
-{
+## [sup] [yr: 13/01/2011]:
 
-    print("fonction choixchamptable activée")
-    print(matable)
-    aa <- tktoplevel()
-    tkwm.title(aa, paste("Métrique de", matable, "à représenter"))
-    scr <- tkscrollbar(aa, repeatinterval=5, command=function(...)tkyview(tl, ...))
-    tl <- tklistbox(aa, height=20, width=15, selectmode="single",
-                    yscrollcommand=function(...)tkset(scr, ...), background="white")
+## choixchamptable.f <- function (matable)
+## {
 
-    tkgrid(tklabel(aa, text=paste("Métrique à représenter de ", matable)))
-    tkgrid(tklabel(aa, text="ATTENTION, selectionnez\n uniquement des champs numériques (***)"))
-    tkgrid(tl, scr)
-    tkgrid.configure(scr, rowspan=4, sticky="nsw")
-    objtable <- eval(parse(text=matable))
+##     print("fonction choixchamptable activée")
+##     print(matable)
+##     aa <- tktoplevel()
+##     tkwm.title(aa, paste("Métrique de", matable, "à représenter"))
+##     scr <- tkscrollbar(aa, repeatinterval=5, command=function(...)tkyview(tl, ...))
+##     tl <- tklistbox(aa, height=20, width=15, selectmode="single",
+##                     yscrollcommand=function(...)tkset(scr, ...), background="white")
 
-    facts <- sort(names(objtable)[names(objtable)!="an"])
-    a <- length(facts)
-    for (i in (1:a))
-    {
-        if (is.numeric(objtable[, facts[i]]))  #on signale les champs non numériques de la liste
-        {
-            tkinsert(tl, "end", paste(" *** ", facts[i]))
-        }else{
-            tkinsert(tl, "end", paste("     ", facts[i]))}
-    }
-    tkselection.set(tl, 0)
+##     tkgrid(tklabel(aa, text=paste("Métrique à représenter de ", matable)))
+##     tkgrid(tklabel(aa, text="ATTENTION, selectionnez\n uniquement des champs numériques (***)"))
+##     tkgrid(tl, scr)
+##     tkgrid.configure(scr, rowspan=4, sticky="nsw")
+##     objtable <- eval(parse(text=matable))
 
-    OnOK <- function ()
-    {
-        champtrouve <- facts[as.numeric(tkcurselection(tl))+1]
-        assign("champtrouve", champtrouve, envir=.GlobalEnv)
-        tkdestroy(aa)
-    }
-    OK.but <-tkbutton(aa, text="OK", command=OnOK)
-    tkgrid(OK.but)
-    tkfocus(aa)
-    tkwait.window(aa)
-    rm(a)
-} # fin choixchamptable.f
+##     facts <- sort(names(objtable)[names(objtable)!="an"])
+##     a <- length(facts)
+##     for (i in (1:a))
+##     {
+##         if (is.numeric(objtable[, facts[i]]))  #on signale les champs non numériques de la liste
+##         {
+##             tkinsert(tl, "end", paste(" *** ", facts[i]))
+##         }else{
+##             tkinsert(tl, "end", paste("     ", facts[i]))}
+##     }
+##     tkselection.set(tl, 0)
+
+##     OnOK <- function ()
+##     {
+##         champtrouve <- facts[as.numeric(tkcurselection(tl))+1]
+##         assign("champtrouve", champtrouve, envir=.GlobalEnv)
+##         tkdestroy(aa)
+##     }
+##     OK.but <-tkbutton(aa, text="OK", command=OnOK)
+##     tkgrid(OK.but)
+##     tkfocus(aa)
+##     tkwait.window(aa)
+##     rm(a)
+## } # fin choixchamptable.f
 
 
 
@@ -293,45 +297,47 @@ choixunfacteurUnitobs.f <- function ()
 ## Output  : codes espèce sélectionné sp
 ################################################################################
 
-ChoixUneEspece.f <- function ()
-{
+## [sup] [yr: 13/01/2011]:
 
-    print("fonction ChoixUneEspece activée")
-    ee <- tktoplevel(width = 80)
-    tkwm.title(ee, "Selection d'une espece")
-    scr <- tkscrollbar(ee, repeatinterval=5, command=function(...)tkyview(tl, ...))
-    tl <- tklistbox(ee, height=20, width=30, selectmode="single",
-                    yscrollcommand=function(...)tkset(scr, ...), background="white")
+## ChoixUneEspece.f <- function ()
+## {
 
-    tkgrid(tklabel(ee, text="Liste des especes presentes"))
-    tkgrid(tl, scr)
-    tkgrid.configure(scr, rowspan=4, sticky="nsw")
-    ## liste des codes espèces
-    especesPresentes <- subset(unitesp, unitesp$pres_abs==1)$code_espece
-    spe <- sort(as.character(unique(especesPresentes)))
+##     print("fonction ChoixUneEspece activée")
+##     ee <- tktoplevel(width = 80)
+##     tkwm.title(ee, "Selection d'une espece")
+##     scr <- tkscrollbar(ee, repeatinterval=5, command=function(...)tkyview(tl, ...))
+##     tl <- tklistbox(ee, height=20, width=30, selectmode="single",
+##                     yscrollcommand=function(...)tkset(scr, ...), background="white")
 
-    ## liste des identifiants à afficher
-    identSp <- as.character(especes$Identifiant[match(spe, especes$code_espece)])
-    ## affichage des identifiants
-    a <- length(identSp)
-    for (i in (1:a))
-    {
-        tkinsert(tl, "end", identSp[i])
-    }
-    tkselection.set(tl, 0)
+##     tkgrid(tklabel(ee, text="Liste des especes presentes"))
+##     tkgrid(tl, scr)
+##     tkgrid.configure(scr, rowspan=4, sticky="nsw")
+##     ## liste des codes espèces
+##     especesPresentes <- subset(unitesp, unitesp$pres_abs==1)$code_espece
+##     spe <- sort(as.character(unique(especesPresentes)))
 
-    OnOK <- function ()
-    {
-        sp <- spe[as.numeric(tkcurselection(tl))+1]
-        print(sp)
-        assign("sp", sp, envir=.GlobalEnv)
-        tkdestroy(ee)
-    }
-    OK.but <-tkbutton(ee, text="OK", command=OnOK)
-    tkgrid(OK.but)
-    tkfocus(ee)
-    tkwait.window(ee)
-}
+##     ## liste des identifiants à afficher
+##     identSp <- as.character(especes$Identifiant[match(spe, especes$code_espece)])
+##     ## affichage des identifiants
+##     a <- length(identSp)
+##     for (i in (1:a))
+##     {
+##         tkinsert(tl, "end", identSp[i])
+##     }
+##     tkselection.set(tl, 0)
+
+##     OnOK <- function ()
+##     {
+##         sp <- spe[as.numeric(tkcurselection(tl))+1]
+##         print(sp)
+##         assign("sp", sp, envir=.GlobalEnv)
+##         tkdestroy(ee)
+##     }
+##     OK.but <-tkbutton(ee, text="OK", command=OnOK)
+##     tkgrid(OK.but)
+##     tkfocus(ee)
+##     tkwait.window(ee)
+## }
 
 
 ################################################################################
@@ -341,45 +347,47 @@ ChoixUneEspece.f <- function ()
 ## Output  : codes espèce sélectionné sp
 ################################################################################
 
-ChoixDesEspeces.f <- function ()
-{
+## [sup] [yr: 13/01/2011]:
 
-    print("fonction ChoixDesEspeces activée")
-    ee <- tktoplevel(width = 80)
-    tkwm.title(ee, "Selection des espèces")
-    scr <- tkscrollbar(ee, repeatinterval=5, command=function(...)tkyview(tl, ...))
-    tl <- tklistbox(ee, height=20, width=30, selectmode="multiple",
-                    yscrollcommand=function(...)tkset(scr, ...), background="white")
+## ChoixDesEspeces.f <- function ()
+## {
 
-    tkgrid(tklabel(ee, text="Liste des espèces presentes"))
-    tkgrid(tl, scr)
-    tkgrid.configure(scr, rowspan=4, sticky="nsw")
-    ## liste des codes espèces
-    especesPresentes <- subset(unitesp, unitesp$pres_abs==1)$code_espece
-    spe <- sort(as.character(unique(especesPresentes)))
+##     print("fonction ChoixDesEspeces activée")
+##     ee <- tktoplevel(width = 80)
+##     tkwm.title(ee, "Selection des espèces")
+##     scr <- tkscrollbar(ee, repeatinterval=5, command=function(...)tkyview(tl, ...))
+##     tl <- tklistbox(ee, height=20, width=30, selectmode="multiple",
+##                     yscrollcommand=function(...)tkset(scr, ...), background="white")
 
-    ## liste des identifiants à afficher
-    identSp <- as.character(especes$Identifiant[match(spe, especes$code_espece)])
-    ## affichage des identifiants
-    a <- length(identSp)
-    for (i in (1:a))
-    {
-        tkinsert(tl, "end", identSp[i])
-    }
-    tkselection.set(tl, 0)
+##     tkgrid(tklabel(ee, text="Liste des espèces presentes"))
+##     tkgrid(tl, scr)
+##     tkgrid.configure(scr, rowspan=4, sticky="nsw")
+##     ## liste des codes espèces
+##     especesPresentes <- subset(unitesp, unitesp$pres_abs==1)$code_espece
+##     spe <- sort(as.character(unique(especesPresentes)))
 
-    OnOK <- function ()
-    {
-        sp <- spe[as.numeric(tkcurselection(tl))+1]
-        print(sp)
-        assign("sp", sp, envir=.GlobalEnv)
-        tkdestroy(ee)
-    }
-    OK.but <-tkbutton(ee, text="OK", command=OnOK)
-    tkgrid(OK.but)
-    tkfocus(ee)
-    tkwait.window(ee)
-}
+##     ## liste des identifiants à afficher
+##     identSp <- as.character(especes$Identifiant[match(spe, especes$code_espece)])
+##     ## affichage des identifiants
+##     a <- length(identSp)
+##     for (i in (1:a))
+##     {
+##         tkinsert(tl, "end", identSp[i])
+##     }
+##     tkselection.set(tl, 0)
+
+##     OnOK <- function ()
+##     {
+##         sp <- spe[as.numeric(tkcurselection(tl))+1]
+##         print(sp)
+##         assign("sp", sp, envir=.GlobalEnv)
+##         tkdestroy(ee)
+##     }
+##     OK.but <-tkbutton(ee, text="OK", command=OnOK)
+##     tkgrid(OK.but)
+##     tkfocus(ee)
+##     tkwait.window(ee)
+## }
 
 ################################################################################
 ## Nom     : ChoixUneFamille.f
@@ -388,44 +396,46 @@ ChoixDesEspeces.f <- function ()
 ## Output  : codes famille sélectionnée fa
 ################################################################################
 
-ChoixUneFamille.f <- function ()
-{
-    print("fonction ChoixUneFamille activée")
+## [sup] [yr: 13/01/2011]:
 
-    ef <- tktoplevel(width = 80)
-    tkwm.title(ef, "Selection d'une Famille")
-    scr <- tkscrollbar(ef, repeatinterval=5, command=function(...)tkyview(tl, ...))
-    tl <- tklistbox(ef, height=20, width=30, selectmode="single",
-                    yscrollcommand=function(...)tkset(scr, ...), background="white")
+## ChoixUneFamille.f <- function ()
+## {
+##     print("fonction ChoixUneFamille activée")
 
-    tkgrid(tklabel(ef, text="Liste des familles presentes"))
-    tkgrid(tl, scr)
-    tkgrid.configure(scr, rowspan=4, sticky="nsw")
-    ## liste des familles
-    especesPresentes <- subset(unitesp, unitesp$pres_abs==1)$code_espece
-    famillesPresentes <- especes$Famille[match(especesPresentes, especes$code_espece)]
-    listeFamille <- sort(as.character(unique(famillesPresentes)))
-    ## affichage des familles
-    a <- length(listeFamille)
-    for (i in (1:a))
-    {
-        tkinsert(tl, "end", listeFamille[i])
-    }
-    tkselection.set(tl, 0)
+##     ef <- tktoplevel(width = 80)
+##     tkwm.title(ef, "Selection d'une Famille")
+##     scr <- tkscrollbar(ef, repeatinterval=5, command=function(...)tkyview(tl, ...))
+##     tl <- tklistbox(ef, height=20, width=30, selectmode="single",
+##                     yscrollcommand=function(...)tkset(scr, ...), background="white")
 
-    OnOK <- function ()
-    {
-        fa <- listeFamille[as.numeric(tkcurselection(tl))+1]
-        ## print(ListeEspFamilleSelectionnee)
-        assign("fa", fa, envir=.GlobalEnv)
-        tkdestroy(ef)
-    }
-    OK.but <-tkbutton(ef, text="OK", command=OnOK)
-    tkgrid(OK.but)
-    tkfocus(ef)
-    tkwait.window(ef)
+##     tkgrid(tklabel(ef, text="Liste des familles presentes"))
+##     tkgrid(tl, scr)
+##     tkgrid.configure(scr, rowspan=4, sticky="nsw")
+##     ## liste des familles
+##     especesPresentes <- subset(unitesp, unitesp$pres_abs==1)$code_espece
+##     famillesPresentes <- especes$Famille[match(especesPresentes, especes$code_espece)]
+##     listeFamille <- sort(as.character(unique(famillesPresentes)))
+##     ## affichage des familles
+##     a <- length(listeFamille)
+##     for (i in (1:a))
+##     {
+##         tkinsert(tl, "end", listeFamille[i])
+##     }
+##     tkselection.set(tl, 0)
 
-}
+##     OnOK <- function ()
+##     {
+##         fa <- listeFamille[as.numeric(tkcurselection(tl))+1]
+##         ## print(ListeEspFamilleSelectionnee)
+##         assign("fa", fa, envir=.GlobalEnv)
+##         tkdestroy(ef)
+##     }
+##     OK.but <-tkbutton(ef, text="OK", command=OnOK)
+##     tkgrid(OK.but)
+##     tkfocus(ef)
+##     tkwait.window(ef)
+
+## }
 
 ################################################################################
 ## Nom     : ChoixUnPhylum.f
@@ -434,43 +444,45 @@ ChoixUneFamille.f <- function ()
 ## Output  : codes phylums sélectionnée phy
 ################################################################################
 
-ChoixUnPhylum.f <- function ()
-{
-    print("fonction ChoixUnPhylum.f activée")
+## [sup] [yr: 13/01/2011]:
 
-    ef <- tktoplevel(width = 80)
-    tkwm.title(ef, "Selection d'un Phylum")
-    scr <- tkscrollbar(ef, repeatinterval=5, command=function(...)tkyview(tl, ...))
-    tl <- tklistbox(ef, height=20, width=30, selectmode="single",
-                    yscrollcommand=function(...)tkset(scr, ...), background="white")
+## ChoixUnPhylum.f <- function ()
+## {
+##     print("fonction ChoixUnPhylum.f activée")
 
-    tkgrid(tklabel(ef, text="Liste des phylums presents"))
-    tkgrid(tl, scr)
-    tkgrid.configure(scr, rowspan=4, sticky="nsw")
-    ## liste des phylums
-    especesPresentes <- subset(unitesp, unitesp$pres_abs==1)$code_espece
-    phylumsPresents <- especes$Phylum[match(especesPresentes, especes$code_espece)]
-    listePhylums <- sort(as.character(unique(phylumsPresents)))
-    ## affichage des familles
-    a <- length(listePhylums)
-    for (i in (1:a))
-    {
-        tkinsert(tl, "end", listePhylums[i])
-    }
-    tkselection.set(tl, 0)
+##     ef <- tktoplevel(width = 80)
+##     tkwm.title(ef, "Selection d'un Phylum")
+##     scr <- tkscrollbar(ef, repeatinterval=5, command=function(...)tkyview(tl, ...))
+##     tl <- tklistbox(ef, height=20, width=30, selectmode="single",
+##                     yscrollcommand=function(...)tkset(scr, ...), background="white")
 
-    OnOK <- function ()
-    {
-        phy <- listePhylums[as.numeric(tkcurselection(tl))+1]
-        ## print(ListeEspFamilleSelectionnee)
-        assign("phy", phy, envir=.GlobalEnv)
-        tkdestroy(ef)
-    }
-    OK.but <-tkbutton(ef, text="OK", command=OnOK)
-    tkgrid(OK.but)
-    tkfocus(ef)
-    tkwait.window(ef)
-}
+##     tkgrid(tklabel(ef, text="Liste des phylums presents"))
+##     tkgrid(tl, scr)
+##     tkgrid.configure(scr, rowspan=4, sticky="nsw")
+##     ## liste des phylums
+##     especesPresentes <- subset(unitesp, unitesp$pres_abs==1)$code_espece
+##     phylumsPresents <- especes$Phylum[match(especesPresentes, especes$code_espece)]
+##     listePhylums <- sort(as.character(unique(phylumsPresents)))
+##     ## affichage des familles
+##     a <- length(listePhylums)
+##     for (i in (1:a))
+##     {
+##         tkinsert(tl, "end", listePhylums[i])
+##     }
+##     tkselection.set(tl, 0)
+
+##     OnOK <- function ()
+##     {
+##         phy <- listePhylums[as.numeric(tkcurselection(tl))+1]
+##         ## print(ListeEspFamilleSelectionnee)
+##         assign("phy", phy, envir=.GlobalEnv)
+##         tkdestroy(ef)
+##     }
+##     OK.but <-tkbutton(ef, text="OK", command=OnOK)
+##     tkgrid(OK.but)
+##     tkfocus(ef)
+##     tkwait.window(ef)
+## }
 
 ################################################################################
 ## Nom     : ChoixUnOrdre.f
@@ -479,260 +491,275 @@ ChoixUnPhylum.f <- function ()
 ## Output  : codes ordres sélectionnée phy
 ################################################################################
 
-ChoixUnOrdre.f <- function ()
-{
-    print("fonction ChoixUnOrdre.f activée")
+## [sup] [yr: 13/01/2011]:
 
-    ef <- tktoplevel(width = 80)
-    tkwm.title(ef, "Selection d'un Ordre")
-    scr <- tkscrollbar(ef, repeatinterval=5, command=function(...)tkyview(tl, ...))
-    tl <- tklistbox(ef, height=20, width=30, selectmode="single",
-                    yscrollcommand=function(...)tkset(scr, ...), background="white")
+## ChoixUnOrdre.f <- function ()
+## {
+##     print("fonction ChoixUnOrdre.f activée")
 
-    tkgrid(tklabel(ef, text="Liste des ordres presents"))
-    tkgrid(tl, scr)
-    tkgrid.configure(scr, rowspan=4, sticky="nsw")
-    ## liste des ordres
-    especesPresentes <- subset(unitesp, unitesp$pres_abs==1)$code_espece
-    ordresPresents <- especes$Ordre[match(especesPresentes, especes$code_espece)]
-    listeOrdres <- sort(as.character(unique(ordresPresents)))
-    ## affichage des familles
-    a <- length(listeOrdres)
-    for (i in (1:a))
-    {
-        tkinsert(tl, "end", listeOrdres[i])
-    }
-    tkselection.set(tl, 0)
+##     ef <- tktoplevel(width = 80)
+##     tkwm.title(ef, "Selection d'un Ordre")
+##     scr <- tkscrollbar(ef, repeatinterval=5, command=function(...)tkyview(tl, ...))
+##     tl <- tklistbox(ef, height=20, width=30, selectmode="single",
+##                     yscrollcommand=function(...)tkset(scr, ...), background="white")
 
-    OnOK <- function ()
-    {
-        ord <- listeOrdres[as.numeric(tkcurselection(tl))+1]
-        ## print(ListeEspFamilleSelectionnee)
-        assign("ord", ord, envir=.GlobalEnv)
-        tkdestroy(ef)
-    }
-    OK.but <-tkbutton(ef, text="OK", command=OnOK)
-    tkgrid(OK.but)
-    tkfocus(ef)
-    tkwait.window(ef)
-}
+##     tkgrid(tklabel(ef, text="Liste des ordres presents"))
+##     tkgrid(tl, scr)
+##     tkgrid.configure(scr, rowspan=4, sticky="nsw")
+##     ## liste des ordres
+##     especesPresentes <- subset(unitesp, unitesp$pres_abs==1)$code_espece
+##     ordresPresents <- especes$Ordre[match(especesPresentes, especes$code_espece)]
+##     listeOrdres <- sort(as.character(unique(ordresPresents)))
+##     ## affichage des familles
+##     a <- length(listeOrdres)
+##     for (i in (1:a))
+##     {
+##         tkinsert(tl, "end", listeOrdres[i])
+##     }
+##     tkselection.set(tl, 0)
 
-ChoixUneClasse.f <- function ()
-{
-    print("fonction ChoixUneClasse.f activée")
+##     OnOK <- function ()
+##     {
+##         ord <- listeOrdres[as.numeric(tkcurselection(tl))+1]
+##         ## print(ListeEspFamilleSelectionnee)
+##         assign("ord", ord, envir=.GlobalEnv)
+##         tkdestroy(ef)
+##     }
+##     OK.but <-tkbutton(ef, text="OK", command=OnOK)
+##     tkgrid(OK.but)
+##     tkfocus(ef)
+##     tkwait.window(ef)
+## }
 
-    ef <- tktoplevel(width = 80)
-    tkwm.title(ef, "Selection d'une Classe")
-    scr <- tkscrollbar(ef, repeatinterval=5, command=function(...)tkyview(tl, ...))
-    tl <- tklistbox(ef, height=20, width=30, selectmode="single",
-                    yscrollcommand=function(...)tkset(scr, ...), background="white")
+## [sup] [yr: 13/01/2011]:
 
-    tkgrid(tklabel(ef, text="Liste des classes presents"))
-    tkgrid(tl, scr)
-    tkgrid.configure(scr, rowspan=4, sticky="nsw")
-    ## liste des ordres
-    especesPresentes <- subset(unitesp, unitesp$pres_abs==1)$code_espece
-    classesPresents <- especes$Classe[match(especesPresentes, especes$code_espece)]
-    listeClasses <- sort(as.character(unique(classesPresents)))
-    ## affichage des familles
-    a <- length(listeClasses)
-    for (i in (1:a))
-    {
-        tkinsert(tl, "end", listeClasses[i])
-    }
-    tkselection.set(tl, 0)
+## ChoixUneClasse.f <- function ()
+## {
+##     print("fonction ChoixUneClasse.f activée")
 
-    OnOK <- function ()
-    {
-        cla <- listeClasses[as.numeric(tkcurselection(tl))+1]
-        ## print(ListeEspFamilleSelectionnee)
-        assign("cla", cla, envir=.GlobalEnv)
-        tkdestroy(ef)
-    }
-    OK.but <-tkbutton(ef, text="OK", command=OnOK)
-    tkgrid(OK.but)
-    tkfocus(ef)
-    tkwait.window(ef)
-}
+##     ef <- tktoplevel(width = 80)
+##     tkwm.title(ef, "Selection d'une Classe")
+##     scr <- tkscrollbar(ef, repeatinterval=5, command=function(...)tkyview(tl, ...))
+##     tl <- tklistbox(ef, height=20, width=30, selectmode="single",
+##                     yscrollcommand=function(...)tkset(scr, ...), background="white")
 
-ChoixUneUnitobs.f <- function ()
-{
+##     tkgrid(tklabel(ef, text="Liste des classes presents"))
+##     tkgrid(tl, scr)
+##     tkgrid.configure(scr, rowspan=4, sticky="nsw")
+##     ## liste des ordres
+##     especesPresentes <- subset(unitesp, unitesp$pres_abs==1)$code_espece
+##     classesPresents <- especes$Classe[match(especesPresentes, especes$code_espece)]
+##     listeClasses <- sort(as.character(unique(classesPresents)))
+##     ## affichage des familles
+##     a <- length(listeClasses)
+##     for (i in (1:a))
+##     {
+##         tkinsert(tl, "end", listeClasses[i])
+##     }
+##     tkselection.set(tl, 0)
 
-    print("fonction ChoixUneUnitobs activée")
-    eu <- tktoplevel(width = 80)
-    tkwm.title(eu, "Selection d'une Unité d'observation")
-    scr <- tkscrollbar(eu, repeatinterval=5, command=function(...)tkyview(tl, ...))
-    tl <- tklistbox(eu, height=20, width=30, selectmode="single",
-                    yscrollcommand=function(...)tkset(scr, ...), background="white")
+##     OnOK <- function ()
+##     {
+##         cla <- listeClasses[as.numeric(tkcurselection(tl))+1]
+##         ## print(ListeEspFamilleSelectionnee)
+##         assign("cla", cla, envir=.GlobalEnv)
+##         tkdestroy(ef)
+##     }
+##     OK.but <-tkbutton(ef, text="OK", command=OnOK)
+##     tkgrid(OK.but)
+##     tkfocus(ef)
+##     tkwait.window(ef)
+## }
 
-    tkgrid(tklabel(eu, text="Liste des Unités d'observations presentes"))
-    tkgrid(tl, scr)
-    tkgrid.configure(scr, rowspan=4, sticky="nsw")
-    ## affichage de la liste des unités d'observations
-    maliste<- sort(as.character(unique(unitobs$unite_observation)))
-    a <- length(unitobs$unite_observation)
-    for (i in (1:a))
-    {
-        tkinsert(tl, "end", paste(unitobs$unite_observation[i], " ", unitobs$site[i]))
-    }
-    tkselection.set(tl, 0)
+## [sup] [yr: 13/01/2011]:
 
-    OnOK <- function ()
-    {
-        uo <- maliste[as.numeric(tkcurselection(tl))+1]
-        si <- (unitobs$site[as.numeric(tkcurselection(tl))+1])
-        print(si)
-        assign("uo", uo, envir=.GlobalEnv)
-        assign("si", si, envir=.GlobalEnv)
-        tkdestroy(eu)
-    }
-    OK.but <-tkbutton(eu, text="OK", command=OnOK)
-    tkgrid(OK.but)
-    tkfocus(eu)
-    tkwait.window(eu)
-}
+## ChoixUneUnitobs.f <- function ()
+## {
+
+##     print("fonction ChoixUneUnitobs activée")
+##     eu <- tktoplevel(width = 80)
+##     tkwm.title(eu, "Selection d'une Unité d'observation")
+##     scr <- tkscrollbar(eu, repeatinterval=5, command=function(...)tkyview(tl, ...))
+##     tl <- tklistbox(eu, height=20, width=30, selectmode="single",
+##                     yscrollcommand=function(...)tkset(scr, ...), background="white")
+
+##     tkgrid(tklabel(eu, text="Liste des Unités d'observations presentes"))
+##     tkgrid(tl, scr)
+##     tkgrid.configure(scr, rowspan=4, sticky="nsw")
+##     ## affichage de la liste des unités d'observations
+##     maliste<- sort(as.character(unique(unitobs$unite_observation)))
+##     a <- length(unitobs$unite_observation)
+##     for (i in (1:a))
+##     {
+##         tkinsert(tl, "end", paste(unitobs$unite_observation[i], " ", unitobs$site[i]))
+##     }
+##     tkselection.set(tl, 0)
+
+##     OnOK <- function ()
+##     {
+##         uo <- maliste[as.numeric(tkcurselection(tl))+1]
+##         si <- (unitobs$site[as.numeric(tkcurselection(tl))+1])
+##         print(si)
+##         assign("uo", uo, envir=.GlobalEnv)
+##         assign("si", si, envir=.GlobalEnv)
+##         tkdestroy(eu)
+##     }
+##     OK.but <-tkbutton(eu, text="OK", command=OnOK)
+##     tkgrid(OK.but)
+##     tkfocus(eu)
+##     tkwait.window(eu)
+## }
 
 ## les fonctions ci dessous sont à factoriser
-ChoixUnSite.f <- function ()
-{
 
-    print("fonction ChoixUnSite activée")
-    eu <- tktoplevel(width = 80)
-    tkwm.title(eu, "Selection d'un site d'observation")
-    scr <- tkscrollbar(eu, repeatinterval=5, command=function(...)tkyview(tl, ...))
-    tl <- tklistbox(eu, height=20, width=30, selectmode="single",
-                    yscrollcommand=function(...)tkset(scr, ...), background="white")
+## [sup] [yr: 13/01/2011]:
 
-    tkgrid(tklabel(eu, text="Liste des Sites presents"))
-    tkgrid(tl, scr)
-    tkgrid.configure(scr, rowspan=4, sticky="nsw")
-    ## affichage de la liste des unités d'observations
-    maliste<- as.character(unique(unitobs$site))
-    a <- length(maliste)
-    for (i in (1:a))
-    {
-        tkinsert(tl, "end", maliste[i])
-    }
-    tkselection.set(tl, 0)
+## ChoixUnSite.f <- function ()
+## {
 
-    OnOK <- function ()
-    {
-        si <- (maliste[as.numeric(tkcurselection(tl))+1])
-        print(si)
-        assign("si", si, envir=.GlobalEnv)
-        tkdestroy(eu)
-    }
-    OK.but <-tkbutton(eu, text="OK", command=OnOK)
-    tkgrid(OK.but)
-    tkfocus(eu)
-    tkwait.window(eu)
-}
+##     print("fonction ChoixUnSite activée")
+##     eu <- tktoplevel(width = 80)
+##     tkwm.title(eu, "Selection d'un site d'observation")
+##     scr <- tkscrollbar(eu, repeatinterval=5, command=function(...)tkyview(tl, ...))
+##     tl <- tklistbox(eu, height=20, width=30, selectmode="single",
+##                     yscrollcommand=function(...)tkset(scr, ...), background="white")
 
-ChoixUneAnnee.f <- function ()
-{
-    print("fonction ChoixUneAnnee activée")
+##     tkgrid(tklabel(eu, text="Liste des Sites presents"))
+##     tkgrid(tl, scr)
+##     tkgrid.configure(scr, rowspan=4, sticky="nsw")
+##     ## affichage de la liste des unités d'observations
+##     maliste<- as.character(unique(unitobs$site))
+##     a <- length(maliste)
+##     for (i in (1:a))
+##     {
+##         tkinsert(tl, "end", maliste[i])
+##     }
+##     tkselection.set(tl, 0)
 
-    eu <- tktoplevel(width = 80)
-    tkwm.title(eu, "Selection d'une année")
-    scr <- tkscrollbar(eu, repeatinterval=5, command=function(...)tkyview(tl, ...))
-    tl <- tklistbox(eu, height=20, width=30, selectmode="single",
-                    yscrollcommand=function(...)tkset(scr, ...), background="white")
+##     OnOK <- function ()
+##     {
+##         si <- (maliste[as.numeric(tkcurselection(tl))+1])
+##         print(si)
+##         assign("si", si, envir=.GlobalEnv)
+##         tkdestroy(eu)
+##     }
+##     OK.but <-tkbutton(eu, text="OK", command=OnOK)
+##     tkgrid(OK.but)
+##     tkfocus(eu)
+##     tkwait.window(eu)
+## }
 
-    tkgrid(tklabel(eu, text="Liste des années"))
-    tkgrid(tl, scr)
-    tkgrid.configure(scr, rowspan=4, sticky="nsw")
-    ## affichage de la liste des années
-    maliste<- unique(unitobs$an[order(unitobs$an, decreasing=FALSE)])
-    a <- length(maliste)
-    for (i in (1:a))
-    {
-        tkinsert(tl, "end", maliste[i])
-    }
-    tkselection.set(tl, 0)
+## [sup] [yr: 13/01/2011]:
 
-    OnOK <- function ()
-    {
-        varAn <- (maliste[as.numeric(tkcurselection(tl))+1])
-        print(varAn)
-        assign("varAn", varAn, envir=.GlobalEnv)
-        tkdestroy(eu)
-    }
-    OK.but <-tkbutton(eu, text="OK", command=OnOK)
-    tkgrid(OK.but)
-    tkfocus(eu)
-    tkwait.window(eu)
-}
+## ChoixUneAnnee.f <- function ()
+## {
+##     print("fonction ChoixUneAnnee activée")
 
-ChoixUnhabitat1.f <- function ()
-{
+##     eu <- tktoplevel(width = 80)
+##     tkwm.title(eu, "Selection d'une année")
+##     scr <- tkscrollbar(eu, repeatinterval=5, command=function(...)tkyview(tl, ...))
+##     tl <- tklistbox(eu, height=20, width=30, selectmode="single",
+##                     yscrollcommand=function(...)tkset(scr, ...), background="white")
 
-    print("fonction ChoixUnhabitat1 activée")
+##     tkgrid(tklabel(eu, text="Liste des années"))
+##     tkgrid(tl, scr)
+##     tkgrid.configure(scr, rowspan=4, sticky="nsw")
+##     ## affichage de la liste des années
+##     maliste<- unique(unitobs$an[order(unitobs$an, decreasing=FALSE)])
+##     a <- length(maliste)
+##     for (i in (1:a))
+##     {
+##         tkinsert(tl, "end", maliste[i])
+##     }
+##     tkselection.set(tl, 0)
 
-    eu <- tktoplevel(width = 80)
-    tkwm.title(eu, "Selection d'un habitat")
-    scr <- tkscrollbar(eu, repeatinterval=5, command=function(...)tkyview(tl, ...))
-    tl <- tklistbox(eu, height=20, width=30, selectmode="single",
-                    yscrollcommand=function(...)tkset(scr, ...), background="white")
+##     OnOK <- function ()
+##     {
+##         varAn <- (maliste[as.numeric(tkcurselection(tl))+1])
+##         print(varAn)
+##         assign("varAn", varAn, envir=.GlobalEnv)
+##         tkdestroy(eu)
+##     }
+##     OK.but <-tkbutton(eu, text="OK", command=OnOK)
+##     tkgrid(OK.but)
+##     tkfocus(eu)
+##     tkwait.window(eu)
+## }
 
-    tkgrid(tklabel(eu, text="Liste des habitats presents"))
-    tkgrid(tl, scr)
-    tkgrid.configure(scr, rowspan=4, sticky="nsw")
-    ## affichage de la liste des unités d'observations
-    maliste<- as.character(unique(unitobs$habitat1))
-    a <- length(maliste)
-    for (i in (1:a))
-    {
-        tkinsert(tl, "end", maliste[i])
-    }
-    tkselection.set(tl, 0)
+## [sup] [yr: 13/01/2011]:
 
-    OnOK <- function ()
-    {
-        ha <- (maliste[as.numeric(tkcurselection(tl))+1])
-        print(ha)
-        assign("ha", ha, envir=.GlobalEnv)
-        tkdestroy(eu)
-    }
-    OK.but <-tkbutton(eu, text="OK", command=OnOK)
-    tkgrid(OK.but)
-    tkfocus(eu)
-    tkwait.window(eu)
-}
+## ChoixUnhabitat1.f <- function ()
+## {
 
-ChoixUnbiotope.f <- function ()
-{
-    print("fonction ChoixUnbiotope activée")
+##     print("fonction ChoixUnhabitat1 activée")
 
-    eu <- tktoplevel(width = 80)
-    tkwm.title(eu, "Selection d'un habitat")
-    scr <- tkscrollbar(eu, repeatinterval=5, command=function(...)tkyview(tl, ...))
-    tl <- tklistbox(eu, height=20, width=30, selectmode="single",
-                    yscrollcommand=function(...)tkset(scr, ...), background="white")
+##     eu <- tktoplevel(width = 80)
+##     tkwm.title(eu, "Selection d'un habitat")
+##     scr <- tkscrollbar(eu, repeatinterval=5, command=function(...)tkyview(tl, ...))
+##     tl <- tklistbox(eu, height=20, width=30, selectmode="single",
+##                     yscrollcommand=function(...)tkset(scr, ...), background="white")
 
-    tkgrid(tklabel(eu, text="Liste des habitats presents"))
-    tkgrid(tl, scr)
-    tkgrid.configure(scr, rowspan=4, sticky="nsw")
-    ## affichage de la liste des unités d'observations
-    maliste<- as.character(unique(unitobs$biotope))
-    a <- length(maliste)
-    for (i in (1:a))
-    {
-        tkinsert(tl, "end", maliste[i])
-    }
-    tkselection.set(tl, 0)
+##     tkgrid(tklabel(eu, text="Liste des habitats presents"))
+##     tkgrid(tl, scr)
+##     tkgrid.configure(scr, rowspan=4, sticky="nsw")
+##     ## affichage de la liste des unités d'observations
+##     maliste<- as.character(unique(unitobs$habitat1))
+##     a <- length(maliste)
+##     for (i in (1:a))
+##     {
+##         tkinsert(tl, "end", maliste[i])
+##     }
+##     tkselection.set(tl, 0)
 
-    OnOK <- function ()
-    {
-        bio <- (maliste[as.numeric(tkcurselection(tl))+1])
-        print(bio)
-        assign("bio", bio, envir=.GlobalEnv)
-        tkdestroy(eu)
-    }
-    OK.but <-tkbutton(eu, text="OK", command=OnOK)
-    tkgrid(OK.but)
-    tkfocus(eu)
-    tkwait.window(eu)
-}
+##     OnOK <- function ()
+##     {
+##         ha <- (maliste[as.numeric(tkcurselection(tl))+1])
+##         print(ha)
+##         assign("ha", ha, envir=.GlobalEnv)
+##         tkdestroy(eu)
+##     }
+##     OK.but <-tkbutton(eu, text="OK", command=OnOK)
+##     tkgrid(OK.but)
+##     tkfocus(eu)
+##     tkwait.window(eu)
+## }
+
+## [sup] [yr: 13/01/2011]:
+
+## ChoixUnbiotope.f <- function ()
+## {
+##     print("fonction ChoixUnbiotope activée")
+
+##     eu <- tktoplevel(width = 80)
+##     tkwm.title(eu, "Selection d'un habitat")
+##     scr <- tkscrollbar(eu, repeatinterval=5, command=function(...)tkyview(tl, ...))
+##     tl <- tklistbox(eu, height=20, width=30, selectmode="single",
+##                     yscrollcommand=function(...)tkset(scr, ...), background="white")
+
+##     tkgrid(tklabel(eu, text="Liste des habitats presents"))
+##     tkgrid(tl, scr)
+##     tkgrid.configure(scr, rowspan=4, sticky="nsw")
+##     ## affichage de la liste des unités d'observations
+##     maliste<- as.character(unique(unitobs$biotope))
+##     a <- length(maliste)
+##     for (i in (1:a))
+##     {
+##         tkinsert(tl, "end", maliste[i])
+##     }
+##     tkselection.set(tl, 0)
+
+##     OnOK <- function ()
+##     {
+##         bio <- (maliste[as.numeric(tkcurselection(tl))+1])
+##         print(bio)
+##         assign("bio", bio, envir=.GlobalEnv)
+##         tkdestroy(eu)
+##     }
+##     OK.but <-tkbutton(eu, text="OK", command=OnOK)
+##     tkgrid(OK.but)
+##     tkfocus(eu)
+##     tkwait.window(eu)
+## }
 
 ## [sup] [yr:12/01/2011]:
 

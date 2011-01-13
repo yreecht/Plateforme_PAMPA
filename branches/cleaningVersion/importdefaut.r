@@ -1,7 +1,5 @@
 
 ########################################################################################################################
-
-
 selectionObs.SVR.f <- function()
 {
     ## Purpose: Définir le seuil de Dmin (en m) au-dessus duquel les
@@ -107,64 +105,6 @@ selectionObs.SVR.f <- function()
     tkdestroy(WinSVR)
 }
 
-########################################################################################################################
-## Choix des fichiers de donnees source en .txt
-## [sup] [yr: 13/01/2011]:
-## openUnitobs.f <- function()
-## {
-
-##     print("fonction openUnitobs activée")
-##     nameUnitobs <- tclvalue(tkgetOpenFile())
-##     nameUnitobs <- sub(paste(nameWorkspace, "/Data/", sep=""), '', nameUnitobs)   #ici, on enlève le nom de chemin pour ne conserver que le nom du fichier
-##     if (!nchar(nameUnitobs))
-##     {
-##         tkmessageBox(message="Aucun fichier n'a ete selectionne!")
-##     }
-##     print(nameUnitobs)
-
-##     tkconfigure(ResumerSituationFichierUnitesObs, text=paste("Fichier d'unités d'observations : ", nameUnitobs))
-##     tkinsert(helpframe, "end", "\n Choisissez maintenant votre fichier d'observations")
-##     ## nameUnitobs
-##     assign("fileNameUnitObs", paste(nameWorkspace, "/Data/", nameUnitobs, sep=""), envir=.GlobalEnv)
-##     assign("fileName1", paste(nameWorkspace, "/Data/", nameUnitobs, sep=""), envir=.GlobalEnv)
-## }
-
-## [sup] [yr: 13/01/2011]:
-
-## openObservations.f <- function()
-## {
-
-##     print("fonction openObservations activée")
-##     namefileObs <- tclvalue(tkgetOpenFile())
-##     namefileObs <- sub(paste(nameWorkspace, "/Data/", sep=""), '', namefileObs)   #ici, on enlève le nom de chemin pour ne conserver que le nom du fichier
-##     if (!nchar(namefileObs))
-##     {
-##         tkmessageBox(message="Aucun fichier n'a ete selectionne!")
-##     }
-##     print(namefileObs)
-##     assign("fileNameObs", namefileObs, envir=.GlobalEnv)
-##     assign("fileName2", namefileObs, envir=.GlobalEnv)
-##     ## ici du coup, on peut y mettre un choix ou reconnaitre le référenciel automatiquement
-##     tkconfigure(ResumerSituationFichierObs, text=paste("Fichier d'observations : ", namefileObs))
-##     tkinsert(helpframe, "end", "\n Sélectionnez votre référenciel espèce")
-## }
-
-## [sup] [yr: 13/01/2011]:
-
-## openListespeces.f <- function()
-## {
-
-##     print("fonction openListespeces activée")
-##     namefileRef <- tclvalue(tkgetOpenFile())
-##     namefileRef <- sub(paste(nameWorkspace, "/Data/", sep=""), '', namefileRef)   #ici, on enlève le nom de chemin pour ne conserver que le nom du fichier
-##     if (!nchar(namefileRef))
-##     {
-##         tkmessageBox(message="Aucun fichier n'a ete selectionne!")
-##     }
-##     print(namefileRef)
-##     tkconfigure(ResumerSituationReferencielEspece, text=paste("Fichier référenciel espèce : ", namefileRef))
-##     assign("fileName3", namefileRef, envir=.GlobalEnv)
-## }
 
 ################################################################################
 ## Nom    : lectureFichierEspeces.f()
@@ -219,6 +159,7 @@ lectureFichierEspeces.f <- function ()
     especes <- subset(especes, !is.na(especes$code_espece))
     assign("especes", especes, envir=.GlobalEnv)
 }
+
 ################################################################################
 ## Nom    : opendefault.f()
 ## Objet  : choix de l'espace de travail par defaut C:/PAMPA
@@ -561,6 +502,5 @@ opendefault.f <- function ()
     ## ################################################################################
 } # fin de opendefault.f
 ################################################################################
-################################################################################
-################################################################################
+
 

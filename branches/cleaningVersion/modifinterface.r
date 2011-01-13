@@ -1,18 +1,3 @@
-## [sup] [yr: 13/01/2011]:
-
-## ajoutMenuBenthos.f = function(TabRecouvrementEspUnit)
-## {
-##     ## tkadd(habitat,"command",label="Hist % de recouvrement Total",command=PartRecouvrementTot.f(TabRecouvrementEspUnit))
-##     ## tkadd(habitat,"command",label="Hist % de recouvrement par espèce",command=PartRecouvrementEsp.f(TabRecouvrementEspUnit))
-##     ## tkadd(habitat,"command",label="Hist % de recouvrement par unitobs",command=PartRecouvrementUnitobs.f(TabRecouvrementEspUnit))
-## }
-
-## [sup] [yr: 13/01/2011]:
-
-## ajoutMenuExport.f = function()
-## {
-##     tkadd(habitat,"command",label="Calcul % de recouvrement",command=test())
-## }
 
 ModifierMenuApresImport.f = function()
 {

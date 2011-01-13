@@ -150,7 +150,7 @@ tkadd(import,"command",label="Dossiers et fichiers par defaut", accelerator="CTR
 tkadd(import,"separator")
 tkadd(import,"command",label="Test du référentiel (espèces concernées)",underline=9,accelerator="CTRL+R",
       state="disabled", command = testfileref.f)
-tkadd(import,"command",label="Test des données importées",underline=0, accelerator="CTRL+T", state="disabled")
+## tkadd(import,"command",label="Test des données importées",underline=0, accelerator="CTRL+T", state="disabled")  ## [sup] [yr: 13/01/2011]
 tkadd(import,"command",label="Champs de 'TableMetrique' et TableBiodiv",underline=0, accelerator="CTRL+M",
       state="disabled")
 
@@ -245,8 +245,6 @@ tkconfigure(button.DataRestore, state="disabled")
  tkbind(tm, "<Control-N>", function(){openfile.f()})
  tkbind(tm, "<Control-r>", testfileref.f)
  tkbind(tm, "<Control-R>", testfileref.f)
- ## tkbind(tm, "<Control-t>", testdonnees.f) ## [sup] [yr:12/01/2011]
- ## tkbind(tm, "<Control-T>", testdonnees.f) ## [sup] [yr:12/01/2011]
  ## tkbind(tm, "<Control-F1>", aide.f)
  ## tkbind(tm, "<Control-?>", aide.f)
  tkbind(tm, "<Control-p>", VoirPlanEchantillonnage.f)

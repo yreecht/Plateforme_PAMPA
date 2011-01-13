@@ -109,57 +109,62 @@ selectionObs.SVR.f <- function()
 
 ########################################################################################################################
 ## Choix des fichiers de donnees source en .txt
-openUnitobs.f <- function()
-{
+## [sup] [yr: 13/01/2011]:
+## openUnitobs.f <- function()
+## {
 
-    print("fonction openUnitobs activée")
-    nameUnitobs <- tclvalue(tkgetOpenFile())
-    nameUnitobs <- sub(paste(nameWorkspace, "/Data/", sep=""), '', nameUnitobs)   #ici, on enlève le nom de chemin pour ne conserver que le nom du fichier
-    if (!nchar(nameUnitobs))
-    {
-        tkmessageBox(message="Aucun fichier n'a ete selectionne!")
-    }
-    print(nameUnitobs)
+##     print("fonction openUnitobs activée")
+##     nameUnitobs <- tclvalue(tkgetOpenFile())
+##     nameUnitobs <- sub(paste(nameWorkspace, "/Data/", sep=""), '', nameUnitobs)   #ici, on enlève le nom de chemin pour ne conserver que le nom du fichier
+##     if (!nchar(nameUnitobs))
+##     {
+##         tkmessageBox(message="Aucun fichier n'a ete selectionne!")
+##     }
+##     print(nameUnitobs)
 
-    tkconfigure(ResumerSituationFichierUnitesObs, text=paste("Fichier d'unités d'observations : ", nameUnitobs))
-    tkinsert(helpframe, "end", "\n Choisissez maintenant votre fichier d'observations")
-    ## nameUnitobs
-    assign("fileNameUnitObs", paste(nameWorkspace, "/Data/", nameUnitobs, sep=""), envir=.GlobalEnv)
-    assign("fileName1", paste(nameWorkspace, "/Data/", nameUnitobs, sep=""), envir=.GlobalEnv)
-}
+##     tkconfigure(ResumerSituationFichierUnitesObs, text=paste("Fichier d'unités d'observations : ", nameUnitobs))
+##     tkinsert(helpframe, "end", "\n Choisissez maintenant votre fichier d'observations")
+##     ## nameUnitobs
+##     assign("fileNameUnitObs", paste(nameWorkspace, "/Data/", nameUnitobs, sep=""), envir=.GlobalEnv)
+##     assign("fileName1", paste(nameWorkspace, "/Data/", nameUnitobs, sep=""), envir=.GlobalEnv)
+## }
 
-openObservations.f <- function()
-{
+## [sup] [yr: 13/01/2011]:
 
-    print("fonction openObservations activée")
-    namefileObs <- tclvalue(tkgetOpenFile())
-    namefileObs <- sub(paste(nameWorkspace, "/Data/", sep=""), '', namefileObs)   #ici, on enlève le nom de chemin pour ne conserver que le nom du fichier
-    if (!nchar(namefileObs))
-    {
-        tkmessageBox(message="Aucun fichier n'a ete selectionne!")
-    }
-    print(namefileObs)
-    assign("fileNameObs", namefileObs, envir=.GlobalEnv)
-    assign("fileName2", namefileObs, envir=.GlobalEnv)
-    ## ici du coup, on peut y mettre un choix ou reconnaitre le référenciel automatiquement
-    tkconfigure(ResumerSituationFichierObs, text=paste("Fichier d'observations : ", namefileObs))
-    tkinsert(helpframe, "end", "\n Sélectionnez votre référenciel espèce")
-}
+## openObservations.f <- function()
+## {
 
-openListespeces.f <- function()
-{
+##     print("fonction openObservations activée")
+##     namefileObs <- tclvalue(tkgetOpenFile())
+##     namefileObs <- sub(paste(nameWorkspace, "/Data/", sep=""), '', namefileObs)   #ici, on enlève le nom de chemin pour ne conserver que le nom du fichier
+##     if (!nchar(namefileObs))
+##     {
+##         tkmessageBox(message="Aucun fichier n'a ete selectionne!")
+##     }
+##     print(namefileObs)
+##     assign("fileNameObs", namefileObs, envir=.GlobalEnv)
+##     assign("fileName2", namefileObs, envir=.GlobalEnv)
+##     ## ici du coup, on peut y mettre un choix ou reconnaitre le référenciel automatiquement
+##     tkconfigure(ResumerSituationFichierObs, text=paste("Fichier d'observations : ", namefileObs))
+##     tkinsert(helpframe, "end", "\n Sélectionnez votre référenciel espèce")
+## }
 
-    print("fonction openListespeces activée")
-    namefileRef <- tclvalue(tkgetOpenFile())
-    namefileRef <- sub(paste(nameWorkspace, "/Data/", sep=""), '', namefileRef)   #ici, on enlève le nom de chemin pour ne conserver que le nom du fichier
-    if (!nchar(namefileRef))
-    {
-        tkmessageBox(message="Aucun fichier n'a ete selectionne!")
-    }
-    print(namefileRef)
-    tkconfigure(ResumerSituationReferencielEspece, text=paste("Fichier référenciel espèce : ", namefileRef))
-    assign("fileName3", namefileRef, envir=.GlobalEnv)
-}
+## [sup] [yr: 13/01/2011]:
+
+## openListespeces.f <- function()
+## {
+
+##     print("fonction openListespeces activée")
+##     namefileRef <- tclvalue(tkgetOpenFile())
+##     namefileRef <- sub(paste(nameWorkspace, "/Data/", sep=""), '', namefileRef)   #ici, on enlève le nom de chemin pour ne conserver que le nom du fichier
+##     if (!nchar(namefileRef))
+##     {
+##         tkmessageBox(message="Aucun fichier n'a ete selectionne!")
+##     }
+##     print(namefileRef)
+##     tkconfigure(ResumerSituationReferencielEspece, text=paste("Fichier référenciel espèce : ", namefileRef))
+##     assign("fileName3", namefileRef, envir=.GlobalEnv)
+## }
 
 ################################################################################
 ## Nom    : lectureFichierEspeces.f()
@@ -313,15 +318,6 @@ opendefault.f <- function ()
                               })
 
         unitobs$DimObs1[unitobs$DimObs1 == 0] <- NA
-
-        ## unitobs <- unitobs[, c("AMP", "unite_observation", "type", "site", "station",
-        ##                        "caracteristique_1", "caracteristique_2", "fraction_echantillonnee",
-        ##                        "jour", "mois", "an", "heure", "nebulosite", "direction_vent",
-        ##                        "force_vent", "etat_mer", "courant", "maree", "phase_lunaire",
-        ##                        "latitude", "longitude", "statut_protection", "avant_apres",
-        ##                        "biotope", "biotope_2", "habitat1", "habitat2", "habitat3",
-        ##                        "visibilite", "prof_min", "prof_max", "DimObs1", "DimObs2",
-        ##                        "nb_plong", "plongeur")]
     }
 
     if (nrow(unitobs)!=0)
@@ -341,12 +337,14 @@ opendefault.f <- function ()
     ## ## Vérification du nombre de colonnes:
     ## if (dim(refSpatial)[2] != 15)
     ## {
-    ##     tkmessageBox(message=paste("ATTENTION, votre fichier 'Référentiel spatial' comporte ", dim(refSpatial)[2], " champs au lieu de 15. Corrigez le et recommencez l'importation.", sep=""), icon="warning", type="ok")
+    ##     tkmessageBox(message=paste("ATTENTION, votre fichier 'Référentiel spatial' comporte ", dim(refSpatial)[2], "
+    ## champs au lieu de 15. Corrigez le et recommencez l'importation.", sep=""), icon="warning", type="ok")
     ##     rm(refSpatial)
     ## }
     ## ## renomination des colonnes du référentiel spatial
 
-    ## colnames(refSpatial) <- c("codeZone", "zone", "AMP", "site", "station", "groupe", "longitude", "latitude", "surface", "lineaireCotier", "statutProtec", "zonagePeche", "codeSIH", "statutPAMPA", "nbCM")
+    ## colnames(refSpatial) <- c("codeZone", "zone", "AMP", "site", "station", "groupe", "longitude", "latitude",
+    ## "surface", "lineaireCotier", "statutProtec", "zonagePeche", "codeSIH", "statutPAMPA", "nbCM")
     ## ## remplacement des -999 en NA
     ## if (nrow(refSpatial)!=0)
     ## {
@@ -399,10 +397,6 @@ opendefault.f <- function ()
     ## nombre : numeric -> factor (nécessaire pour une bonne prise en compte dans les analyses stat) :
     obs$nombre <- as.integer(obs$nombre)
 
-    ## Ajout d'estimations de tailles si seules les classes de taille sont renseignées:
-    ## obs <- AjoutTaillesMoyennes.f(data=obs)
-
-
     ## if (is.na(unique(obs$unite_observation[-unique(unitobs$unite_observation)]))==FALSE) # [!!!]
                                         # cause erreur + complètement tordu
     if (!all(is.element(obs$unite_observation, unitobs$unite_observation))) # Ça devrait être mieux
@@ -419,21 +413,10 @@ opendefault.f <- function ()
                      icon="warning")
     }
 
-
-    ## ## suppression des observations dont le nombre d'individus est à zero
-    ## if (dim(subset(obs, nombre == 0))[1] > 0) # [!!!] nrow ?
-    ## {
-    ##     obs0 <- dim(subset(obs, nombre != 0))
-    ##     obssup <- dim(subset(obs, nombre == 0))
-    ##     obs <- subset(obs, nombre != 0)
-    ##     ## tkinsert(txt.w, "end",
-    ##     ##          paste("\n", obssup[1],
-    ##     ##                " observations dont le nombre d'individus est à 0 ont ete supprimees.", sep=""))
-    ## }
-
+    ## Référentiel espèces :
     lectureFichierEspeces.f()
 
-    ## ############# Récapitulatif du plan d'échantillonnage #############
+    ## ############# Récapitulatif du plan d'échantillonnage ############# # [!!!] : revoir tout ça !
     if (NA %in% unique(unitobs$site) == FALSE) # [!!!]
     {
         PlanEchantillonnage <- with(unitobs, table(an, caracteristique_1, biotope, statut_protection, exclude = NA))
@@ -446,7 +429,8 @@ opendefault.f <- function ()
         }
     }
 
-    PlanEchantillonnage <- with(unitobs, table(an, type, exclude = NA))
+    PlanEchantillonnage <- with(unitobs, table(an, type, exclude = NA)) # [!!!] Et ça sert à quoi ce qu'il y a juste
+                                        # avant ?
     ## A l'ajout de avant_apres, table de sortie vide ! trop de parametres ?
     ## PlanEchantillonnage = with(unitobs, table(an, type, site, biotope, statut_protection, avant_apres, exclude = NA))
     recap <- as.data.frame(PlanEchantillonnage)
@@ -455,6 +439,7 @@ opendefault.f <- function ()
     ## rm(PlanEchantillonnage)
     ## ################
     assign("obs", obs, envir=.GlobalEnv)
+
     tkconfigure(ResumerSituationFichierUnitesObs,
                 text=paste("Fichier d'unités d'observations : ", fileNameUnitObs, " Nb Enr : ",
                            dim(unitobs)[1], " Nb Champs : ", dim(unitobs)[2]))
@@ -556,11 +541,9 @@ opendefault.f <- function ()
         assign("unitobs", unitobs, envir=.GlobalEnv)
     }
 
-    ## print(paste("\t\t", paste(dim(obs), collapse="x")))
-    ## Creation des tables de base
+    ## Creation des tables de base :
     creationTablesBase.f()
 
-    ## print(paste("\t\t", paste(dim(obs), collapse="x")))
     ## ! ici, donner des noms avec une base variable, pour rendre les fichiers indépendants et plus facilement reconnaissables
 
     gestionMSGinfo.f("BasetxtCreate")

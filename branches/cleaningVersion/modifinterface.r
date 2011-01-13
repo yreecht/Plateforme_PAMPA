@@ -1,14 +1,18 @@
-ajoutMenuBenthos.f = function(TabRecouvrementEspUnit)
-{
-    ## tkadd(habitat,"command",label="Hist % de recouvrement Total",command=PartRecouvrementTot.f(TabRecouvrementEspUnit))
-    ## tkadd(habitat,"command",label="Hist % de recouvrement par espèce",command=PartRecouvrementEsp.f(TabRecouvrementEspUnit))
-    ## tkadd(habitat,"command",label="Hist % de recouvrement par unitobs",command=PartRecouvrementUnitobs.f(TabRecouvrementEspUnit))
-}
+## [sup] [yr: 13/01/2011]:
 
-ajoutMenuExport.f = function()
-{
-    tkadd(habitat,"command",label="Calcul % de recouvrement",command=test())
-}
+## ajoutMenuBenthos.f = function(TabRecouvrementEspUnit)
+## {
+##     ## tkadd(habitat,"command",label="Hist % de recouvrement Total",command=PartRecouvrementTot.f(TabRecouvrementEspUnit))
+##     ## tkadd(habitat,"command",label="Hist % de recouvrement par espèce",command=PartRecouvrementEsp.f(TabRecouvrementEspUnit))
+##     ## tkadd(habitat,"command",label="Hist % de recouvrement par unitobs",command=PartRecouvrementUnitobs.f(TabRecouvrementEspUnit))
+## }
+
+## [sup] [yr: 13/01/2011]:
+
+## ajoutMenuExport.f = function()
+## {
+##     tkadd(habitat,"command",label="Calcul % de recouvrement",command=test())
+## }
 
 ModifierMenuApresImport.f = function()
 {
@@ -27,14 +31,6 @@ ModifierMenuApresImport.f = function()
     tkentryconfigure(import,7,state="normal")
     tkentryconfigure(import,8,state="normal")
 
-    ## [sup] [yr:12/01/2011]:
-    ## if (unique(unitobs$type) == "LIT")
-    ## {
-    ##     tkentryconfigure(topMenu,4,state="normal")   # traitement benthos actif si c'est du LIT
-    ##     tkentryconfigure(selection,3,state="normal") # traitement benthos actif si c'est du LIT
-    ## }else{
-    ##     tkentryconfigure(topMenu,3,state="normal") #traitement standart actif si ce n'est pas du benthos
-    ## }
     NbEsp<-length(unique(obs$code_espece))
     tkconfigure(ResumerSituationEspecesSelectionnees,text=paste("-> Nombre d'espèces concernées : ",NbEsp))
     Nbunitobs<-length(unique(obs$unite_observation))

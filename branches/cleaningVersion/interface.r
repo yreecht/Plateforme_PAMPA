@@ -82,13 +82,6 @@ tclRequire("Tktable")
 table1 <-tkwidget(tm,"table",variable=tclarray,rows=4,cols=4,titlerows=1,selectmode="extended",colwidth=25,background="white")
 tkgrid(table1)
 tkgrid.configure(table1,columnspan=3,sticky="w")
-#button.widget1 <- tkbutton(tm,text="changer les Tables Unitobs et Obs",command=changerUnitobs.f)
-#button.widget2 <- tkbutton(tm,text="changer la Table Obs",command=changerObservations.f)
-#button.widget3 <- tkbutton(tm,text="changer le Référentiel especes",command=changerListespeces.f)
-#tkgrid(button.widget1,button.widget3,sticky="w")
-#tkgrid.configure(button.widget1,column=0,sticky="w")
-#tkgrid.configure(button.widget2,column=1,sticky="ew")
-#tkgrid.configure(button.widget3,column=2,sticky="e")
 
   #déclaration et mise à 0 de toutes les variables de sélection dans les menus
   SelectListEsp <- tclVar(0)
@@ -115,211 +108,25 @@ tkgrid.configure(table1,columnspan=3,sticky="w")
   GraphRichesse_specifique <- tclVar(0)
 
 #############initialisation des entrées de menu déchirables (ie qui donne accès à un sous menu)
-## importPeche <- tkmenu(topMenu,tearoff=FALSE)  ## [sup] [yr: 11/01/2011]
-## Anova <- tkmenu(topMenu,tearoff=FALSE) ## [sup] [yr:12/01/2011]
 arbreRegression <- tkmenu(topMenu,tearoff=FALSE)
-## analyseGrpUnit <- tkmenu(topMenu,tearoff=FALSE) ## [sup] [yr:12/01/2011]
-## analyseUnit <- tkmenu(topMenu,tearoff=FALSE) ## [sup] [yr:12/01/2011]
 analyse <- tkmenu(topMenu,tearoff=FALSE)
 import <- tkmenu(topMenu,tearoff=FALSE)
 selection <- tkmenu(topMenu,tearoff=FALSE)
-## statut <- tkmenu(topMenu,tearoff=FALSE) ## [sup] [yr:12/01/2011]
 traitement <- tkmenu(topMenu,tearoff=FALSE)
-## benthos <- tkmenu(topMenu,tearoff=FALSE) ## [sup] [yr:12/01/2011]
-## regroupements  <- tkmenu(topMenu,tearoff=FALSE) ## [sup] [yr:12/01/2011]
-## benthosUneEspece <- tkmenu(topMenu,tearoff=FALSE) ## [sup] [yr:12/01/2011]
-## importManu <- tkmenu(topMenu,tearoff=FALSE)     ## [sup] [yr: 10/01/2011]
-## traitementNbObs   <- tkmenu(topMenu,tearoff=FALSE)     ## [sup] [yr: 10/01/2011]
-## traitementNbEspeces  <- tkmenu(topMenu,tearoff=FALSE)     ## [sup] [yr: 10/01/2011]
-## traitementDensiteAbondance  <- tkmenu(topMenu,tearoff=FALSE)     ## [sup] [yr: 10/01/2011]
-## traitementBiomasse   <- tkmenu(topMenu,tearoff=FALSE)     ## [sup] [yr: 10/01/2011]
-## traitementIndicesHill   <- tkmenu(topMenu,tearoff=FALSE)     ## [sup] [yr: 10/01/2011]
-## traitementIndicesPielou   <- tkmenu(topMenu,tearoff=FALSE)     ## [sup] [yr: 10/01/2011]
-## traitementIndicesL.simpson   <- tkmenu(topMenu,tearoff=FALSE)     ## [sup] [yr: 10/01/2011]
-## traitementIndicesSimpson   <- tkmenu(topMenu,tearoff=FALSE)     ## [sup] [yr: 10/01/2011]
-## traitementIndicesRichesse_specifique    <- tkmenu(topMenu,tearoff=FALSE)     ## [sup] [yr: 10/01/2011]
 pampainfos   <- tkmenu(topMenu,tearoff=FALSE)
 outils <- tkmenu(topMenu,tearoff=FALSE)
-## traitementIndices  <- tkmenu(topMenu,tearoff=FALSE)     ## [sup] [yr: 10/01/2011]
-## NbEspeceParUnitobs  <- tkmenu(topMenu,tearoff=FALSE)     ## [sup] [yr: 10/01/2011]
-## NbEspeceParAn  <- tkmenu(topMenu,tearoff=FALSE)     ## [sup] [yr: 10/01/2011]
-## NbEspeceParUnitobsbenthos <- tkmenu(topMenu,tearoff=FALSE) ## [sup] [yr:12/01/2011]
-## NbEspeceParAnbenthos <- tkmenu(topMenu,tearoff=FALSE) ## [sup] [yr:12/01/2011]
-## benthosrecouvrement  <- tkmenu(topMenu,tearoff=FALSE) ## [sup] [yr:12/01/2011]
-## benthoscolonie  <- tkmenu(topMenu,tearoff=FALSE) ## [sup] [yr:12/01/2011]
 ## Ajout [yr: 25/08/2010] :
 modelesInferentiels <- tkmenu(topMenu,tearoff=FALSE)
 analysesExplo <- tkmenu(topMenu,tearoff=FALSE)
 
 ##Troisieme niveau de menu
 
-  # Menu deroulant de "Analyse / Par groupe d'unites d'observation"
-## [sup] [yr:12/01/2011]:
-  ## tkadd(analyseGrpUnit,"command",label="Toutes especes confondues", command = grpunitobs.f)
-  #tkadd(analyseGrpUnit,"command",label="Par groupe d'especes",command= grpunitobsGrpEspece.f) # Pas encore operationnel
-  ## tkadd(analyseGrpUnit,"command",label="Une espece au choix",command = graphuneespece.f)
+## Menu deroulant de "arbre de regression"
+tkadd(arbreRegression,"command",label="1 facteur",command=arbre1.f)
+tkadd(arbreRegression,"command",label="2 facteurs",command=arbre2.f)
+tkadd(arbreRegression,"command",label="3 facteurs",command=arbre3.f)
 
-  # Menu deroulant de "Analyse"
-## [sup] [yr:12/01/2011]:
-  ## tkadd(analyseUnit,"command",label="Toutes especes confondues",command = graphIndicesDiv.f)
-  ## tkadd(analyseUnit,"command",label="En fonction de groupes d'especes", command = grpesp.f)
-  ## tkadd(analyseUnit,"command",label="Une espece au choix",command = graphNbreParEsp.f)
-
-  # Menu deroulant de "ANOVA"
-## [sup] [yr:12/01/2011]:
-  ## tkadd(Anova,"command",label="1 facteur",command=anova1.f)
-  ## tkadd(Anova,"command",label="2 facteurs",command=anova2.f)
-  ## tkadd(Anova,"command",label="3 facteurs",command=anova3.f)
-
-  # Menu deroulant de "arbre de regression"
-  tkadd(arbreRegression,"command",label="1 facteur",command=arbre1.f)
-  tkadd(arbreRegression,"command",label="2 facteurs",command=arbre2.f)
-  tkadd(arbreRegression,"command",label="3 facteurs",command=arbre3.f)
-
-## [sup] [yr: 10/01/2011]
-  ## #Menu deroulant "Peche"
-  ## tkadd(importPeche,"command",label="Tremail",command=importTremail.f)
-  ## tkadd(importPeche,"command",label="Chasse fusil",command=importChasseFusil.f)
-  ## tkadd(importPeche,"command",label="Ligne sans canne",command=importLigneSansCanne.f)
-  ## tkadd(importPeche,"command",label="Ligne avec canne",command=importLigneAvecCanne.f)
-
-    # Menu deroulant de "Selection + espece + par statut"
-      #on ne peut pas passer d'arguments directement
-  #récupérer la variable  =  tclvalue(SelectEndem)
-## [sup] [yr:12/01/2011]:
-  ## tkadd(statut,"checkbutton",label="Endemique",variable=SelectEndem,onvalue=1,offvalue=0,command={selectionEspeceStatut.f})
-  ## tkadd(statut,"checkbutton",label="Emblématique",onvalue=1,offvalue=0,variable=SelectEmble,command={selectionEspeceStatut.f})
-  ## tkadd(statut,"checkbutton",label="Menacé localement",variable=SelectMenace,onvalue=1,offvalue=0,command=selectionEspeceStatut.f)
-  ## tkadd(statut,"checkbutton",label="statut UICN",variable=SelectIUCN,onvalue=1,offvalue=0,command=selectionEspeceStatut.f)
-  ## tkadd(statut,"checkbutton",label="Autres statuts",variable=SelectAutreStatut,onvalue=1,offvalue=0,command=selectionEspeceStatut.f)
-
-    # Menu deroulant de "benthosUneEspece"
-## [sup] [yr:12/01/2011]:
-  ## tkadd(benthosUneEspece,"command",label="Recouvrement total",command=GraphRecouvrementPourUneEspece.f)
-  ## tkadd(benthosUneEspece,"command",label="Recouvrement en fonction des habitats",command=CalculRecouvrement.f)
-  ## tkadd(benthosUneEspece,"command",label="Recouvrement en fonction des familles",command=CalculRecouvrement.f)
-  ## tkadd(benthosUneEspece,"command",label="Recouvrement en fonction des annees",command=CalculRecouvrement.f)
-
-        # Menu deroulant de "traitementNbEspeces"
-## [sup] [yr: 11/01/2011]
-  ## tkadd(traitementNbEspeces,"cascade",label=" en fonction des unite d'observation",menu=NbEspeceParUnitobs)
-  ## tkadd(traitementNbEspeces,"command",label=" en fonction des habitats",command=GraphNbEspeceParHabitat.f)
-  #manque par biotope et par statut + combinaisons
-  ## tkadd(traitementNbEspeces,"command",label=" en fonction des familles",command=GraphNbEspeceParFamille.f)
-  ## tkadd(traitementNbEspeces,"cascade",label=" en fonction des annees",menu=NbEspeceParAn)
-  ## tkadd(NbEspeceParUnitobs,"command",label="pour toutes espèces",command=GraphNbEspeceParUnitobs.f)     ## [sup] [yr: 10/01/2011]
-  ## tkadd(NbEspeceParUnitobs,"command",label="avec choix d'espèces",command=GraphchoixNbEspeceParUnitobs.f)
-  ## tkadd(NbEspeceParAn,"command",label="pour toutes espèces",command=GraphNbEspeceParAn.f)
-  ## tkadd(NbEspeceParAn,"command",label="avec choix d'espèces",command=GraphchoixNbEspeceParAn.f)
-
-            # Menu deroulant de "traitementNbObs"
-## [sup] [yr: 11/01/2011]
-  ## tkadd(traitementNbObs,"command",label=" en fonction des sites",command=GraphNbObsParSite.f)
-  ## tkadd(traitementNbObs,"command",label=" en fonction des espèces",command=GraphNbObsParEspece.f)
-  ## tkadd(traitementNbObs,"command",label="pour 1 espèce",command=GraphNbObsPourUneEspece.f)
-  ## tkadd(traitementNbObs,"separator")
-  ## tkadd(traitementNbObs,"command",label=" en fonction des biotopes",command=GraphNbObsParbiotope.f)
-  ## tkadd(traitementNbObs,"command",label=" en fonction des habitats",command=GraphNbObsParhabitat1.f)
-  ## tkadd(traitementNbObs,"command",label=" en fonction des familles",command=GraphNbObsParfamille.f)
-  ## tkadd(traitementNbObs,"command",label=" en fonction des années",command=GraphNbObsParAn.f)
-  ## tkadd(traitementNbObs,"command",label=" en fonction des statuts",command=GraphNbObsParStatut.f)
-  ## tkadd(traitementNbObs,"command",label=" en fonction des années puis statuts",command=GraphNbObsParAnStatut.f)
-
-        # Menu deroulant de "traitementDensiteAbondance"
-## [sup] [yr: 11/01/2011]
-  ## tkadd(traitementDensiteAbondance,"checkbutton",label="Totale",variable=GraphDensite,onvalue=1,offvalue=0,command=GraphDensiteParUnitObs.f)
-  ## tkadd(traitementDensiteAbondance,"checkbutton",label="Totale en fonction des années",variable=GraphDensite,onvalue=2,offvalue=0,command=GraphDensiteParUnitObs.f)
-  ## tkadd(traitementDensiteAbondance,"checkbutton",label="Totale en fonction des statuts",variable=GraphDensite,onvalue=3,offvalue=0,command=GraphDensiteParUnitObs.f)
-  ## tkadd(traitementDensiteAbondance,"checkbutton",label="Totale en fonction des années puis des statuts",variable=GraphDensite,onvalue=4,offvalue=0,command=GraphDensiteParUnitObs.f)
-  ## tkadd(traitementDensiteAbondance,"checkbutton",label="Totale / en fonction des biotopes puis statuts puis années",variable=GraphDensiteEsp,onvalue=5,offvalue=0,command=GraphDensiteParUnitObs.f)
-  ## tkadd(traitementDensiteAbondance,"separator")
-  ## tkadd(traitementDensiteAbondance,"checkbutton",label="Pour un choix d'espèces",variable=GraphDensiteEsp,onvalue=1,offvalue=0,command=GraphDensiteParEspece.f)
-  ## tkadd(traitementDensiteAbondance,"checkbutton",label="Pour un choix d'espèces, par statut ",variable=GraphDensiteEsp,onvalue=2,offvalue=0,command=GraphDensiteParEspece.f)
-  ## tkadd(traitementDensiteAbondance,"checkbutton",label="Pour un choix d'espèces, par an ",variable=GraphDensiteEsp,onvalue=3,offvalue=0,command=GraphDensiteParEspece.f)
-  ## tkadd(traitementDensiteAbondance,"checkbutton",label="Pour un choix d'espèces, par an et par statut",variable=GraphDensiteEsp,onvalue=4,offvalue=0,command=GraphDensiteParEspece.f)
-  ## tkadd(traitementDensiteAbondance,"checkbutton",label="Pour un choix d'espèces / par biotope / statut / an",variable=GraphDensiteEsp,onvalue=5,offvalue=0,command=GraphDensiteParEspece.f)
-  ## tkadd(traitementDensiteAbondance,"separator")
-  ## tkadd(traitementDensiteAbondance,"checkbutton",label="Pour une famille",variable=GraphDensiteFam,onvalue=1,offvalue=0,command=GraphDensiteParFamille.f)
-  ## tkadd(traitementDensiteAbondance,"checkbutton",label="Pour une famille, par statut ",variable=GraphDensiteFam,onvalue=2,offvalue=0,command=GraphDensiteParFamille.f)
-  ## tkadd(traitementDensiteAbondance,"checkbutton",label="Pour une famille, par an ",variable=GraphDensiteFam,onvalue=3,offvalue=0,command=GraphDensiteParFamille.f)
-  ## tkadd(traitementDensiteAbondance,"checkbutton",label="Pour une famille, par an et par statut ",variable=GraphDensiteFam,onvalue=4,offvalue=0,command=GraphDensiteParFamille.f)
-  ## tkadd(traitementDensiteAbondance,"checkbutton",label="Pour une famille / par biotope / statut / an",variable=GraphDensiteFam,onvalue=5,offvalue=0,command=GraphDensiteParFamille.f)
-
-        # Menu deroulant de "traitementBiomasse"
-## [sup] [yr: 11/01/2011]
-  ## tkadd(traitementBiomasse,"checkbutton",label="Totale",variable=GraphBiomasse,onvalue=1,offvalue=0,command=GraphBiomasseParUnitObs.f)
-  ## tkadd(traitementBiomasse,"checkbutton",label="Totale en fonction des années",variable=GraphBiomasse,onvalue=2,offvalue=0,command=GraphBiomasseParUnitObs.f)
-  ## tkadd(traitementBiomasse,"checkbutton",label="Totale en fonction des statuts",variable=GraphBiomasse,onvalue=3,offvalue=0,command=GraphBiomasseParUnitObs.f)
-  ## tkadd(traitementBiomasse,"checkbutton",label="Totale en fonction des années puis des statuts",variable=GraphBiomasse,onvalue=4,offvalue=0,command=GraphBiomasseParUnitObs.f)
-  ## tkadd(traitementBiomasse,"checkbutton",label="Totale  / en fonction des biotopes / statuts / ans",variable=GraphBiomasse,onvalue=5,offvalue=0,command=GraphBiomasseParUnitObs.f)
-  ## tkadd(traitementBiomasse,"separator")
-  ## tkadd(traitementBiomasse,"checkbutton",label="Pour un choix d'espèces",variable=GraphBiomasse,onvalue=1,offvalue=0,command=GraphBiomasseParEspece.f)
-  ## tkadd(traitementBiomasse,"checkbutton",label="Pour un choix d'espèces / statut",variable=GraphBiomasse,onvalue=2,offvalue=0,command=GraphBiomasseParEspece.f)
-  ## tkadd(traitementBiomasse,"checkbutton",label="Pour un choix d'espèces / an",variable=GraphBiomasse,onvalue=3,offvalue=0,command=GraphBiomasseParEspece.f)
-  ## tkadd(traitementBiomasse,"checkbutton",label="Pour un choix d'espèces / statut / an",variable=GraphBiomasse,onvalue=4,offvalue=0,command=GraphBiomasseParEspece.f)
-  ## tkadd(traitementBiomasse,"checkbutton",label="Pour un choix d'espèces / par biotope / statut / an",variable=GraphBiomasse,onvalue=5,offvalue=0,command=GraphBiomasseParEspece.f)
-  ## tkadd(traitementBiomasse,"separator")
-  ## tkadd(traitementBiomasse,"checkbutton",label="Pour une famille",variable=GraphBiomasse,onvalue=1,offvalue=0,command=GraphBiomasseParFamille.f)
-  ## tkadd(traitementBiomasse,"checkbutton",label="Pour une famille, par statut ",variable=GraphBiomasse,onvalue=2,offvalue=0,command=GraphBiomasseParFamille.f)
-  ## tkadd(traitementBiomasse,"checkbutton",label="Pour une famille, par an ",variable=GraphBiomasse,onvalue=3,offvalue=0,command=GraphBiomasseParFamille.f)
-  ## tkadd(traitementBiomasse,"checkbutton",label="Pour une famille, par an et par statut ",variable=GraphBiomasse,onvalue=4,offvalue=0,command=GraphBiomasseParFamille.f)
-  ## tkadd(traitementBiomasse,"checkbutton",label="Pour une famille / par biotope / statut / an",variable=GraphBiomasse,onvalue=5,offvalue=0,command=GraphBiomasseParFamille.f)
-
-
-        # Menu deroulant de "traitementIndices"  DEFINI UNE SEULE FOIS POUR LE BENTHOS ET LES TRAITEMENTS STANDARDS
-## [sup] [yr: 11/01/2011]
-  ## tkadd(traitementIndices,"command",label="Delta",command=GraphDelta.f)
-  ## tkadd(traitementIndices,"command",label="Delta*",command=GraphDeltaEtoile.f)
-  ## tkadd(traitementIndices,"command",label="Delta+",command=GraphDeltaPlus.f)
-  ## tkadd(traitementIndices,"command",label="SDelta+",command=GraphSDeltaPlus.f)
-  ## tkadd(traitementIndices,"command",label="Lambda+",command=GraphLambdaPlus.f)
-  ## tkadd(traitementIndices,"cascade",label="Hill",menu=traitementIndicesHill)
-  ## tkadd(traitementIndicesHill,"checkbutton",label="Total",variable=GraphHill,onvalue=1,offvalue=0,command=GraphHillParUnitObs.f)
-  ## tkadd(traitementIndicesHill,"checkbutton",label="Total en fonction des années",variable=GraphHill,onvalue=2,offvalue=0,command=GraphHillParUnitObs.f)
-  ## tkadd(traitementIndicesHill,"checkbutton",label="Total en fonction des statuts",variable=GraphHill,onvalue=3,offvalue=0,command=GraphHillParUnitObs.f)
-  ## tkadd(traitementIndicesHill,"checkbutton",label="Total en fonction des années puis des statuts",variable=GraphHill,onvalue=4,offvalue=0,command=GraphHillParUnitObs.f)
-  ## tkadd(traitementIndices,"cascade",label="Pielou",menu=traitementIndicesPielou)
-  ## tkadd(traitementIndicesPielou,"checkbutton",label="Total",variable=GraphPielou,onvalue=1,offvalue=0,command=GraphPielouParUnitObs.f)
-  ## tkadd(traitementIndicesPielou,"checkbutton",label="Total en fonction des années",variable=GraphPielou,onvalue=2,offvalue=0,command=GraphPielouParUnitObs.f)
-  ## tkadd(traitementIndicesPielou,"checkbutton",label="Total en fonction des statuts",variable=GraphPielou,onvalue=3,offvalue=0,command=GraphPielouParUnitObs.f)
-  ## tkadd(traitementIndicesPielou,"checkbutton",label="Total par an et par statut",variable=GraphPielou,onvalue=4,offvalue=0,command=GraphPielouParUnitObs.f)
-  ## tkadd(traitementIndices,"cascade",label="L.simpson",menu=traitementIndicesL.simpson)
-  ## tkadd(traitementIndicesL.simpson,"checkbutton",label="Total",variable=GraphL.simpson,onvalue=1,offvalue=0,command=GraphL.simpsonParUnitObs.f)
-  ## tkadd(traitementIndicesL.simpson,"checkbutton",label="Total en fonction des années",variable=GraphL.simpson,onvalue=2,offvalue=0,command=GraphL.simpsonParUnitObs.f)
-  ## tkadd(traitementIndicesL.simpson,"checkbutton",label="Total en fonction des statuts",variable=GraphL.simpson,onvalue=3,offvalue=0,command=GraphL.simpsonParUnitObs.f)
-  ## tkadd(traitementIndicesL.simpson,"checkbutton",label="Total en fonction des années puis des statuts",variable=GraphL.simpson,onvalue=4,offvalue=0,command=GraphL.simpsonParUnitObs.f)
-  ## tkadd(traitementIndices,"cascade",label="Simpson",menu=traitementIndicesSimpson)
-  ## tkadd(traitementIndicesSimpson,"checkbutton",label="Total",variable=GraphSimpson,onvalue=1,offvalue=0,command=GraphSimpsonParUnitObs.f)
-  ## tkadd(traitementIndicesSimpson,"checkbutton",label="Total en fonction des années",variable=GraphSimpson,onvalue=2,offvalue=0,command=GraphSimpsonParUnitObs.f)
-  ## tkadd(traitementIndicesSimpson,"checkbutton",label="Total en fonction des statuts",variable=GraphSimpson,onvalue=3,offvalue=0,command=GraphSimpsonParUnitObs.f)
-  ## tkadd(traitementIndicesSimpson,"checkbutton",label="Total en fonction des années puis des statuts",variable=GraphSimpson,onvalue=4,offvalue=0,command=GraphSimpsonParUnitObs.f)
-  ## tkadd(traitementIndices,"cascade",label="Richesse spécifique",menu=traitementIndicesRichesse_specifique)
-  ## tkadd(traitementIndicesRichesse_specifique,"checkbutton",label="Totale",variable=GraphRichesse_specifique,onvalue=1,offvalue=0,command=GraphRichesse_specifiqueParUnitObs.f)
-  ## tkadd(traitementIndicesRichesse_specifique,"checkbutton",label="Totale en fonction des années",variable=GraphRichesse_specifique,onvalue=2,offvalue=0,command=GraphRichesse_specifiqueParUnitObs.f)
-  ## tkadd(traitementIndicesRichesse_specifique,"checkbutton",label="Totale en fonction des statuts",variable=GraphRichesse_specifique,onvalue=3,offvalue=0,command=GraphRichesse_specifiqueParUnitObs.f)
-  ## tkadd(traitementIndicesRichesse_specifique,"checkbutton",label="Totale en fonction des années puis des statuts",variable=GraphRichesse_specifique,onvalue=4,offvalue=0,command=GraphRichesse_specifiqueParUnitObs.f)
-
-## [sup] [yr: 10/01/2011]
-##   # Menu deroulant de "importManu"
-## tkadd(importManu,"command",label="UVC", command = import.donnees.f)
-## tkadd(importManu,"cascade",label="Pêche", menu = importPeche)
-## tkadd(importManu,"command",label="STAVIRO", command = import.donnees.f)
-## tkadd(importManu,"command",label="LIT", command = import.donnees.f)
-## tkadd(importManu,"command",label="Photo recouvrement", command = import.donnees.f)
-
-##Second niveau de menu
-
-## Menu deroulant de "traitement"
-
-## tkadd(traitement,"cascade",label="Nombre d'observations",menu = traitementNbObs)  ## [sup] [yr: 11/01/2011]
-## tkadd(traitement,"cascade",label="Nombre d'espèces",menu = traitementNbEspeces)     ## [sup] [yr: 10/01/2011]
-## tkadd(traitement,"cascade",label="Densité d'abondance",menu = traitementDensiteAbondance)     ## [sup] [yr: 10/01/2011]
-## tkadd(traitement,"cascade",label="Biomasse",menu = traitementBiomasse)     ## [sup] [yr: 10/01/2011]
-## tkadd(traitement,"cascade",label="Indices de diversité",menu = traitementIndices)     ## [sup] [yr: 10/01/2011]
-## tkadd(traitement,"separator")
-## tkadd(traitement,"cascade",label="Métriques regroupées en fonction de",menu=regroupements) ## [sup] [yr:12/01/2011]
-## tkadd(traitement,"command",label="Métrique par facteur espèce",command=GraphMetriqueParFacteurEspece.f) ## [sup] [yr:12/01/2011]
-## tkadd(traitement,"command",label="Métrique par facteur unités d'observation",command=GraphMetriqueParFacteurUnitobs.f) ## [sup] [yr:12/01/2011]
+## Graphiques :
 
 ## Ajout [yr: 14/10/2010]
 tkadd(traitement,"separator")
@@ -336,87 +143,18 @@ tkadd(traitement, "command", label="Fréquences d'occurrence...",
       background="#FFFBCF",
       command=function(){selectionVariables.f("freq_occurrence") ; winRaise.f(tm)})
 
+## Menu deroulant de "Import de donnees"
+tkadd(import,"command",label="Choix des dossiers et fichiers de données...", accelerator="CTRL+N", command = {openfile.f})
+tkadd(import,"command",label="Dossiers et fichiers par defaut", accelerator="CTRL+A",
+      command = function(){opendefault.f()})
+tkadd(import,"separator")
+tkadd(import,"command",label="Test du référentiel (espèces concernées)",underline=9,accelerator="CTRL+R",
+      state="disabled", command = testfileref.f)
+tkadd(import,"command",label="Test des données importées",underline=0, accelerator="CTRL+T", state="disabled")
+tkadd(import,"command",label="Champs de 'TableMetrique' et TableBiodiv",underline=0, accelerator="CTRL+M",
+      state="disabled")
 
-         # Menu deroulant de "regroupements"
-## [sup] [yr:12/01/2011]:
-  ## tkadd(regroupements,"command",label="1 Facteur du référentiel espèce",command=GraphGroup1factEsp.f)
-  ## tkadd(regroupements,"command",label="2 Facteurs du référentiel espèce",command=GraphGroup2factEsp.f)
-  ## tkadd(regroupements,"command",label="1 Facteur de l'unité d'observation",command=RegroupementUnFactUnitobs.f)
-  ## tkadd(regroupements,"command",label="2 Facteurs de l'unité d'observation",command=RegroupementDeuxFactUnitobs.f)
-  ## tkadd(regroupements,"command",label="2 Facteurs : 1 unité d'obs et 1 référentiel espèce",command=GraphGroup2factEspUnitobs.f)
-  ## tkadd(regroupements,"command",label="Toutes especes confondues par classe de taille (petits, moyens, grands)", command = grpunitobsCT.f)
-
-     # Menu deroulant de "Benthos"
-## [sup] [yr:12/01/2011]:
-  ## tkadd(benthos,"cascade",label="Recouvrement",menu = benthosrecouvrement)
-  ## tkadd(benthosrecouvrement,"cascade",label=" en fonction des Unitobs choisis",command=GraphRecouvrementParUnitobs.f)
-  ## tkadd(benthosrecouvrement,"cascade",label=" en fonction des Stations choisies",command=GraphRecouvrementParStation.f)
-  ## tkadd(benthosrecouvrement,"cascade",label=" en fonction des Sites choisis",command=GraphRecouvrementParSite.f)
-  ## tkadd(benthosrecouvrement,"cascade",label=" en fonction des Catégories Benthiques choisies",command=GraphColonieParCathegorieBenthique.f)
-  ## tkadd(benthosrecouvrement,"cascade",label=" en fonction des Familles choisies",command=GraphColonieParFamille.f)
-  ## tkadd(benthosrecouvrement,"cascade",label=" en fonction des Genres choisis",command=GraphRecouvrementParGenre.f)
-  ## tkadd(benthosrecouvrement,"cascade",label=" en fonction des Especes choisis",command=GraphRecouvrementParEspece.f)
-  ## tkadd(benthos,"cascade",label="Occurence de colonies",menu = benthoscolonie)
-  ## tkadd(benthoscolonie,"cascade",label=" en fonction des Unitobs choisis",command=GraphColonieParUnitobs.f)
-  ## tkadd(benthoscolonie,"cascade",label=" en fonction des Stations choisies",command=GraphRecouvrementParStation.f)
-  ## tkadd(benthoscolonie,"cascade",label=" en fonction des Sites choisis",command=GraphRecouvrementParSite.f)
-  ## tkadd(benthoscolonie,"cascade",label=" en fonction des Catégories Benthiques choisies",command=GraphColonieParCathegorieBenthique.f)
-  ## tkadd(benthoscolonie,"cascade",label=" en fonction des Familles choisies",command=GraphColonieParFamille.f)
-  ## tkadd(benthoscolonie,"cascade",label=" en fonction des Genres choisis",command=GraphRecouvrementParGenre.f)
-  ## tkadd(benthoscolonie,"cascade",label=" en fonction des Espèces choisies",command=GraphRecouvrementParEspece.f)
-  ## tkadd(benthos,"cascade",label="Métriques regroupées en fonction de",menu=regroupements) ## [sup] [yr:12/01/2011]
-
-  ## tkadd(import,"separator") ## [sup] [yr:12/01/2011]
-
-  ## tkadd(benthos,"command",label="typologie",command=test.f) ## [sup] [yr:12/01/2011]
-
-## tkadd(benthos,"cascade",label="Indices",menu=traitementIndices) ## [sup] [yr:12/01/2011]
-  ## tkadd(benthos,"separator") ## [sup] [yr:12/01/2011]
-  ## tkadd(benthos,"command",label="Métrique par facteur espèce",command=GraphMetriqueParFacteurEspece.f) ## [sup] [yr:12/01/2011]
-  ## tkadd(benthos,"command",label="Métrique par facteur unités d'observation",command=GraphMetriqueParFacteurUnitobs.f) ## [sup] [yr:12/01/2011]
-
-## Ajout [yr: 14/10/2010]
-## tkadd(benthos,"separator") ## [sup] [yr:12/01/2011]
-## Ajout [yr: 18/08/2010]
-## [sup] [yr:12/01/2011]:
-## tkadd(benthos, "command", label="Boxplots métrique /espèce/unité d'observation + Biodiversité...",
-##       background="#FFFBCF",
-##       command=function(){selectionVariables.f("boxplot.esp") ; winRaise.f(tm)})
-## ## Ajout [yr: 25/10/2010]
-## tkadd(benthos, "command", label="Boxplots métrique /unité d'observation...",
-##       background="#FFFBCF",
-##       command=function(){selectionVariables.f("boxplot.unitobs") ; winRaise.f(tm)})
-## ## Ajout [yr: 14/10/2010]
-## tkadd(benthos, "command", label="Fréquences d'occurrence...",
-##       background="#FFFBCF",
-##       command=function(){selectionVariables.f("freq_occurrence") ; winRaise.f(tm)})
-
-
-  # Menu deroulant de "Import de donnees"
-  tkadd(import,"command",label="Choix des dossiers et fichiers de données...", accelerator="CTRL+N", command = {openfile.f})
-  tkadd(import,"command",label="Dossiers et fichiers par defaut", accelerator="CTRL+A",
-        command = function(){opendefault.f()})
-  tkadd(import,"separator")
-  tkadd(import,"command",label="Test du référentiel (espèces concernées)",underline=9,accelerator="CTRL+R",
-        state="disabled", command = testfileref.f)
-  tkadd(import,"command",label="Test des données importées",underline=0, accelerator="CTRL+T", state="disabled")
-  tkadd(import,"command",label="Champs de 'TableMetrique' et TableBiodiv",underline=0, accelerator="CTRL+M",
-        state="disabled")
-
-## [sup] [yr: 10/01/2011]:
-## tkadd(import,"cascade",label="Ancienne importation manuelle", menu = importManu)
-
-  # Menu deroulant de "Sélection d'espèce"
-   #cascade, checkbutton, command, radiobutton, or separator.
-## [sup] [yr: 11/01/2011]
-  ## tkadd(selection,"checkbutton",label="Par famille",variable=SelectFam,onvalue=1,offvalue=0,command = SelectionUneFamille.f)
-  ## tkadd(selection,"checkbutton",label="Par biotope",variable=SelectBiot,onvalue=1,offvalue=0,command = SelectionUnBiotope.f)
-  ## tkadd(selection,"checkbutton",label="Par catégorie Benthique ",variable=SelectCB,onvalue=1,offvalue=0, state="disabled",command = SelectionUneCatBenth.f)
-  ## tkadd(selection,"checkbutton",label="Par phylum ",variable=SelectPhylum,onvalue=1,offvalue=0,command = SelectionUnPhylum.f)
-  ## tkadd(selection,"checkbutton",label="Par ordre ",variable=SelectOrdre,onvalue=1,offvalue=0,command = SelectionUnOrdre.f)
-  ## tkadd(selection,"checkbutton",label="Par classe ",variable=SelectClasse,onvalue=1,offvalue=0,command = SelectionUneClasse.f)
-  ## tkadd(selection,"cascade",label="Par statut", menu=statut)
-
+## Sélection et recalcul :
 tkadd(selection,"command",label="Selon un champs du référentiel espèce...",
       command = function(){SelectionUnCritereEsp.f() ; winRaise.f(tm)})
 tkadd(selection,"command",label="Selon un champs des unités d'observation...",
@@ -426,10 +164,7 @@ tkadd(selection,"separator")
 tkadd(selection,"checkbutton",label="Par liste d'espèces (fichier)",variable=SelectListEsp,onvalue=1,offvalue=0, command =
       choixespeces.f, state="disabled")
 
-  # Menu deroulant de "Statistiques"
-  ## tkadd(analyse,"cascade",label="ANOVA",menu=Anova) ## [sup] [yr:12/01/2011]
-  ## tkadd(analyse,"cascade",label=" en fonction des unités d'observation", menu=analyseUnit) ## [sup] [yr:12/01/2011]
-  ## tkadd(analyse,"cascade",label=" en fonction des groupes d'unités d'observation", menu=analyseGrpUnit) ## [sup] [yr:12/01/2011]
+## Analyses :
 ## Ajout [yr: 25/08/2010] :
 tkadd(analyse, "cascade", label="Modèles inférentiels", menu=modelesInferentiels,
       background="#FFFBCF")
@@ -450,43 +185,34 @@ tkadd(modelesInferentiels, "command", label="Modèles linéaires sur 'présences/ab
       command=function(){selectionVariables.f("pres_abs") ; winRaise.f(tm)})
 
 
+## Menu deroulant de "Outils"
+tkadd(outils,"command",label="Aide", accelerator="CTRL+?", command = test.f, state="disabled")
+tkadd(outils,"command",label="mise à jour", state="disabled", command = test.f)
+## tkadd(outils,"command",label="Options", state="disabled", command = test.f)
+tkadd(outils,"command",label="Langue", state="disabled", command = test.f)
+tkadd(outils,"command",label="Export de donnees", state="disabled", command = test.f)
 
-
-
-  #Menu deroulant de "Outils"
-  tkadd(outils,"command",label="Aide", accelerator="CTRL+?", command = aide.f)
-  tkadd(outils,"command",label="mise à jour", state="disabled", command = test.f)
-  #tkadd(outils,"command",label="Options", state="disabled", command = test.f)
-  tkadd(outils,"command",label="Langue", state="disabled", command = test.f)
-  tkadd(outils,"command",label="Export de donnees", state="disabled", command = test.f)
-## [sup] [yr:12/01/2011]:
-  ## tkadd(outils,"command",label="Tous les graphes par espèce en PDF", command = ChaqueEspeceDansPDF.f)
-  ## tkadd(outils,"separator")
-  ## tkadd(outils,"command",label="Principaux graphes pour une famille en PDF", command = UneFamilleDansPDF.f)
-  ## tkadd(outils,"command",label="Principaux graphes pour une espèce en PDF", command = UneEspeceDansPDF.f)
-
-  #Menu deroulant de "Infos"
-  tkadd(pampainfos,"command",label="A propos de Pampa", command = test.f)
-  tkadd(pampainfos,"command",label="Notice utilisateur", command = test.f)
+## Menu deroulant de "Infos"
+tkadd(pampainfos,"command",label="A propos de Pampa", command = test.f)
+tkadd(pampainfos,"command",label="Notice utilisateur", command = test.f)
 
 ## [dep] [yr: 11/01/2011]
-  tkadd(import,"command",label="Voir le plan d'échantillonnage", accelerator="CTRL+P", state="disabled", command = VoirPlanEchantillonnage.f)
-  tkadd(import,"command",label="Info données par espèces", state="disabled", accelerator="CTRL+E", command = VoirInformationsDonneesEspeces.f)
-  tkadd(import,"command",label="Info données par unité d'observation", state="disabled", accelerator="CTRL+U", command = VoirInformationsDonneesUnitobs.f)
+tkadd(import,"command",label="Voir le plan d'échantillonnage", accelerator="CTRL+P", state="disabled", command = VoirPlanEchantillonnage.f)
+tkadd(import,"command",label="Info données par espèces", state="disabled", accelerator="CTRL+E", command = VoirInformationsDonneesEspeces.f)
+tkadd(import,"command",label="Info données par unité d'observation", state="disabled", accelerator="CTRL+U", command = VoirInformationsDonneesUnitobs.f)
 
-# Premier niveau de menu
-  tkadd(topMenu,"cascade",label="Données",menu=import) # Renommé [yr: 10/01/2011]
-  tkadd(topMenu,"cascade",label="Sélection et recalcul", state="disabled", menu=selection)
-  tkadd(topMenu,"cascade",label="Graphiques", state="disabled",menu=traitement)
-## tkadd(topMenu,"cascade",label="Graphiques Benthos", state="disabled",menu=benthos)  ## [sup] [yr: 11/01/2011]
-## (répercuter !)
-  tkadd(topMenu,"cascade",label="Statistiques", state="disabled",menu=analyse)
-  tkadd(topMenu,"cascade",label="Outils", menu=outils)
-  tkadd(topMenu,"cascade",label="Aide", menu=pampainfos) # Renommé [yr: 10/01/2011]
-  tkadd(topMenu,"command",label="Quitter", command=function() tkdestroy(tm))
+## Premier niveau de menu
+tkadd(topMenu,"cascade",label="Données",menu=import) # Renommé [yr: 10/01/2011]
+tkadd(topMenu,"cascade",label="Sélection et recalcul", state="disabled", menu=selection)
+tkadd(topMenu,"cascade",label="Graphiques", state="disabled",menu=traitement)
 
-  gestionMSGinfo.f("start")
-  print("fonction interface activée")
+tkadd(topMenu,"cascade",label="Statistiques", state="disabled",menu=analyse)
+tkadd(topMenu,"cascade",label="Outils", menu=outils)
+tkadd(topMenu,"cascade",label="Aide", menu=pampainfos) # Renommé [yr: 10/01/2011]
+tkadd(topMenu,"command",label="Quitter", command=function() tkdestroy(tm))
+
+gestionMSGinfo.f("start")
+print("fonction interface activée")
 tkfocus(tm)
 
 # Frame des sélections
@@ -521,7 +247,7 @@ tkconfigure(button.DataRestore, state="disabled")
  tkbind(tm, "<Control-R>", testfileref.f)
  ## tkbind(tm, "<Control-t>", testdonnees.f) ## [sup] [yr:12/01/2011]
  ## tkbind(tm, "<Control-T>", testdonnees.f) ## [sup] [yr:12/01/2011]
- tkbind(tm, "<Control-F1>", aide.f)
+ ## tkbind(tm, "<Control-F1>", aide.f)
  ## tkbind(tm, "<Control-?>", aide.f)
  tkbind(tm, "<Control-p>", VoirPlanEchantillonnage.f)
  tkbind(tm, "<Control-P>", VoirPlanEchantillonnage.f)

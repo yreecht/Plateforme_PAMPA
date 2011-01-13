@@ -8,6 +8,7 @@ gestionMSGerreur.f <- function (nameerror, variable)
     print("fonction gestionMSGerreur.f activée")
 
     ## langue = FR
+    ## [!!!]: utiliser un switch à la place !!
     if (nameerror=="recouvrementsansLIT")
     {
         MGS <- "Le champs obs$type n'est pas 'LIT', vous ne pouvez pas calculer un % de recouvrement avec des espèces non benthiques\n"
@@ -68,10 +69,11 @@ gestionMSGerreur.f <- function (nameerror, variable)
     tkyview.moveto(helpframe, 1)
 }
 
+## [sup] [yr: 13/01/2011]:
 
-gestionMSGmenus.f <- function (namemenu)
-{
-}
+## gestionMSGmenus.f <- function (namemenu)
+## {
+## }
 
 gestionMSGaide.f <- function (namemsg)
 {
@@ -211,76 +213,80 @@ gestionMSGinfo.f <- function (namemsg, parametrenum,...)
                              # index, insert, mark, peer, replace, scan, search, see, tag, window, xview, or yview.
 }
 
-gestionMSGchoix <- function(title, question, valeurdef, Largeurchamp=5, returnValOnCancel="ID_CANCEL")
-{
-    print("fonction gestionMSGchoix.f activée")
-    dlg <- tktoplevel()
-    tkwm.deiconify(dlg)
-    tkgrab.set(dlg)
-    tkfocus(dlg)
-    tkwm.title(dlg, title)
-    MSGchoixVarTcl <- tclVar(paste(valeurdef))
-    MSGchoixWidget <- tkentry(dlg, width=paste(Largeurchamp), textvariable=MSGchoixVarTcl)
-    tkgrid(tklabel(dlg, text="       "))
-    tkgrid(tklabel(dlg, text=question), MSGchoixWidget)
-    tkgrid(tklabel(dlg, text="       "))
-    ReturnVal <- returnValOnCancel
-    onOK <- function()
-    {
-        ReturnVal <<- tclvalue(MSGchoixVarTcl)
-        tkgrab.release(dlg)
-        tkdestroy(dlg)
-        tkfocus(tm)
-    }
-    onCancel <- function()
-    {
-        ReturnVal <<- returnValOnCancel
-        tkgrab.release(dlg)
-        tkdestroy(dlg)
-        tkfocus(tm)
-    }
-    OK.but     <-tkbutton(dlg, text="   OK   ", command=onOK)
-    Cancel.but <-tkbutton(dlg, text=" Cancel ", command=onCancel)
-    tkgrid(OK.but, Cancel.but)
-    tkgrid(tklabel(dlg, text="    "))
+## [sup] [yr: 13/01/2011]:
 
-    tkfocus(dlg)
-    tkbind(dlg, "<Destroy>", function() {tkgrab.release(dlg);tkfocus(tm)})
-    tkbind(MSGchoixWidget, "<Return>", onOK)
-    tkwait.window(dlg)
+## gestionMSGchoix <- function(title, question, valeurdef, Largeurchamp=5, returnValOnCancel="ID_CANCEL")
+## {
+##     print("fonction gestionMSGchoix.f activée")
+##     dlg <- tktoplevel()
+##     tkwm.deiconify(dlg)
+##     tkgrab.set(dlg)
+##     tkfocus(dlg)
+##     tkwm.title(dlg, title)
+##     MSGchoixVarTcl <- tclVar(paste(valeurdef))
+##     MSGchoixWidget <- tkentry(dlg, width=paste(Largeurchamp), textvariable=MSGchoixVarTcl)
+##     tkgrid(tklabel(dlg, text="       "))
+##     tkgrid(tklabel(dlg, text=question), MSGchoixWidget)
+##     tkgrid(tklabel(dlg, text="       "))
+##     ReturnVal <- returnValOnCancel
+##     onOK <- function()
+##     {
+##         ReturnVal <<- tclvalue(MSGchoixVarTcl)
+##         tkgrab.release(dlg)
+##         tkdestroy(dlg)
+##         tkfocus(tm)
+##     }
+##     onCancel <- function()
+##     {
+##         ReturnVal <<- returnValOnCancel
+##         tkgrab.release(dlg)
+##         tkdestroy(dlg)
+##         tkfocus(tm)
+##     }
+##     OK.but     <-tkbutton(dlg, text="   OK   ", command=onOK)
+##     Cancel.but <-tkbutton(dlg, text=" Cancel ", command=onCancel)
+##     tkgrid(OK.but, Cancel.but)
+##     tkgrid(tklabel(dlg, text="    "))
 
-    return(ReturnVal)
-}
+##     tkfocus(dlg)
+##     tkbind(dlg, "<Destroy>", function() {tkgrab.release(dlg);tkfocus(tm)})
+##     tkbind(MSGchoixWidget, "<Return>", onOK)
+##     tkwait.window(dlg)
 
-aide.f <- function()
-{
+##     return(ReturnVal)
+## }
 
-    require(tcltk) || stop("Package tcltk is not available.") # Add path to BWidgets
-    addTclPath(".")
-    version.BWidget <<- tclvalue(tclRequire("BWidget"))
+## [sup] [yr: 13/01/2011]:
 
-    print("fonction aide.f activée")
-    tmaide <- tktoplevel()
-    tkwm.title(tmaide, "aide de l'utilisateur de l'interface PAMPA")
-    tn <- tkwidget(tmaide, "ttk::notebook")
-    tkgrid(tn, sticky="news")
+## aide.f <- function()
+## {
 
-    tbn <- tclvalue(tkadd(tn, label="1"))
-    tkgrid(tbw <- .Tk.newwin(tbn))
-    tkgrid(fr <- tkframe(tbw))
-    tkgrid(lb <- tklabel(fr, text=paste("This is tab", "1")))
-    ID <- paste(tn$ID, evalq(num.subwin <- num.subwin+1, tn$env), sep=".")
-    win <- .Tk.newwin(ID)
-    assign(ID, tbw, envir = tn$env)
-    assign("parent", tn, envir = tbw$env)
+##     require(tcltk) || stop("Package tcltk is not available.") # Add path to BWidgets
+##     addTclPath(".")
+##     version.BWidget <<- tclvalue(tclRequire("BWidget"))
 
-    tbn <- tclvalue(tkadd(tn, label="2"))
-    tkgrid(tbw <- .Tk.newwin(tbn))
-    tkgrid(fr <- tkframe(tbw))
-    tkgrid(lb <- tklabel(fr, text=paste("This is tab", "2")))
+##     print("fonction aide.f activée")
+##     tmaide <- tktoplevel()
+##     tkwm.title(tmaide, "aide de l'utilisateur de l'interface PAMPA")
+##     tn <- tkwidget(tmaide, "ttk::notebook")
+##     tkgrid(tn, sticky="news")
 
-    ## list(tbw, fr, lb) # return all three in case you need them later
-}
+##     tbn <- tclvalue(tkadd(tn, label="1"))
+##     tkgrid(tbw <- .Tk.newwin(tbn))
+##     tkgrid(fr <- tkframe(tbw))
+##     tkgrid(lb <- tklabel(fr, text=paste("This is tab", "1")))
+##     ID <- paste(tn$ID, evalq(num.subwin <- num.subwin+1, tn$env), sep=".")
+##     win <- .Tk.newwin(ID)
+##     assign(ID, tbw, envir = tn$env)
+##     assign("parent", tn, envir = tbw$env)
+
+##     tbn <- tclvalue(tkadd(tn, label="2"))
+##     tkgrid(tbw <- .Tk.newwin(tbn))
+##     tkgrid(fr <- tkframe(tbw))
+##     tkgrid(lb <- tklabel(fr, text=paste("This is tab", "2")))
+
+##     ## list(tbw, fr, lb) # return all three in case you need them later
+## }
 
 ## tcl(tn, "raise", "text2")
 

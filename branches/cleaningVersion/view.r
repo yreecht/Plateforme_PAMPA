@@ -147,47 +147,4 @@ VoirInformationsDonneesUnitobs.f <- function()
                                       height=Nbunitobs, width=5, nrow=Nbunitobs, ncol=5)
 }
 
-## [sup] [yr:12/01/2011]:
 
-## MontrerTableMetrique.f <- function()
-## {
-##     print(names(TableMetrique))
-##     tkinsert(txt.w, "end", paste("\nINFO : ", "Les champs de la TableMetrique sont :\n", sep=""))
-##     tkinsert(txt.w, "end", names(TableMetrique))
-##     tkinsert(txt.w, "end", paste("\nINFO : ", "Les champs de la TableBiodiv sont :\n", sep=""))
-##     tkinsert(txt.w, "end", names(TableBiodiv))
-##     tkinsert(helpframe, "end",
-##              paste("INFO : ",
-##                    "TableMetrique et TableBiodiv peuvent vous servir",
-##                    " à faire les tests statistiques dans la console de R\n",
-##                    sep=""))
-##     tkyview.moveto(txt.w, 1)
-##     tkyview.moveto(helpframe, 1)
-## }
-
-
-## > pacha$code_espece[pacha$pres_abs==1 & pacha$unite_obsertation=="REA0031213"]
-## character(0)
-## codeagarder
-## cbind(unique(pacha$unite_observation), unique(pacha$unite_observation)[match(unique(pacha$unite_observation), unitobs$unite_observation)])
-
-## Statespeces <- cbind(unitesp$code_espece[unitesp$nombre!=0], unitesp$nombre[unitesp$nombre!=0])
-## Statespeces <- cbind(unitesp$code_espece[unitesp$nombre!=0], unitesp$nombre[unitesp$nombre!=0])
-## cbind(unitesp$code_espece[unitesp$nombre==0], unitesp$nombre[unitesp$nombre==0])
-
-## cbind(mini, maxi, frequence)
-
-## tableInfodonnees <- tkwidget(id, "table", variable=tclarrayID, rows=Nbesp+1, cols=4, titlerows=1, selectmode="extended", colwidth=30, background="white")
-## print(min(unitesp$nombre)[unitesp$code_espece==ChaqueEspece])
-
-## colnames(unitobs)
-## [1] "AMP"                     "unite_observation"       "type"                    "site"                    "station"
-## [6] "caracteristique_1"       "caracteristique_2"       "fraction_echantillonnee" "jour"                    "mois"
-## [11] "an"                      "heure"                   "nebulosite"              "direction_vent"          "force_vent"
-## [16] "etat_mer"                "courant"                 "maree"                   "phase_lunaire"           "latitude"
-## [21] "longitude"               "statut_protection"       "avant_apres"             "biotope"                 "biotope_2"
-## [26] "habitat1"                "habitat2"                "habitat3"                "visibilite"              "prof_min"
-## [31] "prof_max"                "DimObs1"                 "DimObs2"                 "nb_plong"                "plongeur"
-
-## [1] "unite_observation" "code_espece"       "nombre"            "recouvrement"      "colonie"           "pres_abs"          "site"
-## [8] "biotope"           "an"                "statut_protection"

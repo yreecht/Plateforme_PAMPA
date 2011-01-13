@@ -28,7 +28,7 @@
 ########################################################################################################################
 
 ## Type de pêche.
-typePeche <- c("")
+## typePeche <- c("")  ## [sup] [yr: 13/01/2011]
 
 ## Vérification de l'existances de la configuration :
 requiredVar <- c("SiteEtudie", "fileName1", "fileName2", "fileName3", "nameWorkspace")
@@ -61,9 +61,9 @@ fileimage <- "./Exec/img/pampa2.GIF"
 
 ##################### Initialisation des variables globales ####################
 ## variables d'environnement pour les graphiques (couleurs et colonnes)
-nbColMax <- 30
-GraphPartMax <- 0.95
-choixPDF <- 0
+## nbColMax <- 30  ## [sup] [yr: 13/01/2011]
+## GraphPartMax <- 0.95  ## [sup] [yr: 13/01/2011]
+## choixPDF <- 0  ## [sup] [yr: 13/01/2011]
 Jeuxdonnescoupe <- 0
 
 ## variables d'environnement pour l'interface
@@ -90,7 +90,7 @@ pathMaker.f <- function()
 
 pathMaker.f()
 
-assign("typePeche", typePeche)
+## assign("typePeche", typePeche)  ## [sup] [yr: 13/01/2011]
 ## ! cette variable sert visiblement à choisir le type de graphique. le code ci dessous est dupliqué dans plusieurs fonctions
 ## !#on renomme densite en CPUE pour les jeux de données pêche
 ## !if (length(typePeche)>1) {
@@ -103,8 +103,8 @@ assign("siteEtudie", SiteEtudie, envir=.GlobalEnv)
 assign("fileimage", fileimage, envir=.GlobalEnv)
 assign("Jeuxdonnescoupe", Jeuxdonnescoupe, envir=.GlobalEnv)
 
-assign("nbColMax", nbColMax, envir=.GlobalEnv)
-assign("GraphPartMax", GraphPartMax, envir=.GlobalEnv)
+## assign("nbColMax", nbColMax, envir=.GlobalEnv)  ## [sup] [yr: 13/01/2011]
+## assign("GraphPartMax", GraphPartMax, envir=.GlobalEnv)  ## [sup] [yr: 13/01/2011]
 
 ########################################################################################################################
 ## Ajouts pour les graphs génériques [yr: 13/08/2010] :

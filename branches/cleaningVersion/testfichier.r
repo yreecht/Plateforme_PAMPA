@@ -22,22 +22,6 @@ testcaracteres.f <- function (dataframe, CaractereRecherche, nomdataframe)
     }
 }
 
-## [sup] [yr:12/01/2011]:
-## testfichier
-## testdonnees.f <- function ()
-## {
-##     print("fonction testdonnees.f activée")
-##     ## liste des caractères recherchés
-##     MauvaisCaracteres <- c(";", " ", ",")
-##     for (j in 1:length(MauvaisCaracteres))
-##     {
-##         testcaracteres.f(unitobs, MauvaisCaracteres[j], "d'unités d'observation")
-##         testcaracteres.f(obs, MauvaisCaracteres[j], "d'observations")
-##         testcaracteres.f(especes, MauvaisCaracteres[j], "du référentiel espèces")
-##     }
-##     print("TEST des FICHIERS REALISE")
-## }
-
 ## essais de rendre générique après avec unitobs et obs
 testfileref.f <- function ()
 {

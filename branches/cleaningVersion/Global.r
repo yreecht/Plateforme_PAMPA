@@ -67,7 +67,6 @@ source("./Exec/mkfilegroupe.r", encoding="latin1")         # faite
 
 source("./Exec/calcul_simple.r", encoding="latin1")        # faite [sll]
 source("./Exec/arbre_regression.r", encoding="latin1")     # fai.. [sll]
-## source("./Exec/anova.r", encoding="latin1")  ## [sup] [yr: 13/01/2011]
 
 
 source("./Exec/requetes.r", encoding="latin1")             # faite

@@ -1,43 +1,4 @@
 
-## Vérifie la présence de caractères listés dans CaractereRecherche
-testcaracteres.f <- function (dataframe, CaractereRecherche, nomdataframe)
-{
-
-    ## fonction cherchant   l e s   c  a r a c t è r e s
-    print("fonction testcaracteres.f activée")
-    listechamps <- "  * "
-
-    if (length(colnames(dataframe[grep(CaractereRecherche, dataframe)]))>0)
-    {
-        TitreFichiers <- paste("LISTE DES CHAMPS DE ", nomdataframe, " contenant le caractère \"", CaractereRecherche,
-                               "\"\n******************\n\n", sep="")
-        for (i in (1:length(colnames(dataframe[grep(CaractereRecherche, dataframe)]))))
-        {
-            listechamps <- paste(listechamps, " - ", colnames(dataframe[grep(CaractereRecherche, dataframe)])[i],
-                                 sep="")
-        }
-        tkmessageBox(message=paste(TitreFichiers, listechamps))
-        gestionMSGerreur.f("CaractereInterdit", nomdataframe)
-        ## return(bilanFichiers)
-    }
-}
-
-
-## testfichier
-testdonnees.f <- function ()
-{
-    print("fonction testdonnees.f activée")
-    ## liste des caractères recherchés
-    MauvaisCaracteres <- c(";", " ", ",")
-    for (j in 1:length(MauvaisCaracteres))
-    {
-        testcaracteres.f(unitobs, MauvaisCaracteres[j], "d'unités d'observation")
-        testcaracteres.f(obs, MauvaisCaracteres[j], "d'observations")
-        testcaracteres.f(especes, MauvaisCaracteres[j], "du référentiel espèces")
-    }
-    print("TEST des FICHIERS REALISE")
-}
-
 ## essais de rendre générique après avec unitobs et obs
 testfileref.f <- function ()
 {

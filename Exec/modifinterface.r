@@ -1,35 +1,21 @@
-ajoutMenuBenthos.f = function(TabRecouvrementEspUnit)
-{
-    ## tkadd(habitat,"command",label="Hist % de recouvrement Total",command=PartRecouvrementTot.f(TabRecouvrementEspUnit))
-    ## tkadd(habitat,"command",label="Hist % de recouvrement par espèce",command=PartRecouvrementEsp.f(TabRecouvrementEspUnit))
-    ## tkadd(habitat,"command",label="Hist % de recouvrement par unitobs",command=PartRecouvrementUnitobs.f(TabRecouvrementEspUnit))
-}
-
-ajoutMenuExport.f = function()
-{
-    tkadd(habitat,"command",label="Calcul % de recouvrement",command=test())
-}
 
 ModifierMenuApresImport.f = function()
 {
 
     print("fonction ModifierMenuApresImport activée")
-    ## tkinvoke(statut,state="normal")
+
+    ## Réactivation des menus qui nécessitent le chargement préalable :
     tkentryconfigure(topMenu,1,state="normal")
     tkentryconfigure(topMenu,2,state="normal")
+    tkentryconfigure(topMenu,3,state="normal")
+    tkentryconfigure(topMenu,4,state="normal")
     tkentryconfigure(topMenu,5,state="normal")
-    tkentryconfigure(topMenu,6,state="normal")
-    tkentryconfigure(pampainfos,2,state="normal")
-    tkentryconfigure(pampainfos,3,state="normal")
-    tkentryconfigure(pampainfos,4,state="normal")
-    if (unique(unitobs$type) == "LIT")
-    {
-        ## tkadd(selection,"checkbutton",label="Par Catégories Benthiques",variable=SelectBenth,onvalue=1,offvalue=0,command = SelectionUneCatBenth.f)
-        tkentryconfigure(topMenu,4,state="normal")   # traitement benthos actif si c'est du LIT
-        tkentryconfigure(selection,3,state="normal") # traitement benthos actif si c'est du LIT
-    }else{
-        tkentryconfigure(topMenu,3,state="normal") #traitement standart actif si ce n'est pas du benthos
-    }
+
+    ## Réactivation des entrées du menu "Données" qui nécessitent le chargement préalable :
+    tkentryconfigure(import,3,state="normal")
+    tkentryconfigure(import,6,state="normal")
+    ## tkentryconfigure(import,7,state="normal")
+
     NbEsp<-length(unique(obs$code_espece))
     tkconfigure(ResumerSituationEspecesSelectionnees,text=paste("-> Nombre d'espèces concernées : ",NbEsp))
     Nbunitobs<-length(unique(obs$unite_observation))

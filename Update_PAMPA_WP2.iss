@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "PAMPA WP2"
-#define MyAppVersion "0.99-10"
+#define MyAppVersion "1.0-alpha-1"
 #define MyAppPublisher "Ifremer"
 #define MyAppURL "https://www.ifremer.fr/ezprod/index.php/pampa/"
 #define MyAppExeName "PAMPA WP2.bat"
@@ -45,7 +45,6 @@ Source: ".\Exec\img\*"; DestDir: "{app}\img"; Flags: ignoreversion
 Source: ".\Exec\Doc\*"; DestDir: "{app}\Doc"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 Source: ".\Exec\config.r"; DestDir: "{app}"; Flags: uninsneveruninstall onlyifdoesntexist
-Source: "Exec\anova.r"; DestDir: "{app}"
 Source: "Exec\arbre_regression.r"; DestDir: "{app}"
 Source: "Exec\barplots_occurrence.R"; DestDir: "{app}"
 Source: "Exec\boxplots_esp_generiques.R"; DestDir: "{app}"
@@ -56,8 +55,6 @@ Source: "Exec\corresp-cat-benth.csv"; DestDir: "{app}"
 Source: "Exec\fonctions_base.R"; DestDir: "{app}"
 Source: "Exec\gestionmessages.r"; DestDir: "{app}"
 Source: "Exec\Global.r"; DestDir: "{app}"
-Source: "Exec\graphique.r"; DestDir: "{app}"
-Source: "Exec\graphique_benthos.r"; DestDir: "{app}"
 Source: "Exec\import.r"; DestDir: "{app}"
 Source: "Exec\importdefaut.r"; DestDir: "{app}"
 Source: "Exec\interface.r"; DestDir: "{app}"

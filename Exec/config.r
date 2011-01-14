@@ -27,9 +27,6 @@
 ## Fin de la zone éditable
 ########################################################################################################################
 
-## Type de pêche.
-typePeche <- c("")
-
 ## Vérification de l'existances de la configuration :
 requiredVar <- c("SiteEtudie", "fileName1", "fileName2", "fileName3", "nameWorkspace")
 existVar <- sapply(requiredVar, exists)
@@ -55,20 +52,6 @@ if (any(! existVar))                    # Si au moins une des variables n'est pa
 
 }else{}
 
-#### Logo :
-fileimage <- "./Exec/img/pampa2.GIF"
-
-
-##################### Initialisation des variables globales ####################
-## variables d'environnement pour les graphiques (couleurs et colonnes)
-nbColMax <- 30
-GraphPartMax <- 0.95
-choixPDF <- 0
-Jeuxdonnescoupe <- 0
-
-## variables d'environnement pour l'interface
-lang <- "FR"
-
 
 pathMaker.f <- function()
 {
@@ -90,21 +73,20 @@ pathMaker.f <- function()
 
 pathMaker.f()
 
-assign("typePeche", typePeche)
-## ! cette variable sert visiblement à choisir le type de graphique. le code ci dessous est dupliqué dans plusieurs fonctions
-## !#on renomme densite en CPUE pour les jeux de données pêche
-## !if (length(typePeche)>1) {
-## !   unit$CPUE <- unit$densite
-## !   unit$densite = NULL
-## ! }
+##################### Initialisation des variables globales ####################
+Jeuxdonnescoupe <- 0
+
+#### Logo :
+fileimage <- "./Exec/img/pampa2.GIF"
+
+
+## variables d'environnement pour l'interface
+lang <- "FR"
 
 
 assign("siteEtudie", SiteEtudie, envir=.GlobalEnv)
 assign("fileimage", fileimage, envir=.GlobalEnv)
 assign("Jeuxdonnescoupe", Jeuxdonnescoupe, envir=.GlobalEnv)
-
-assign("nbColMax", nbColMax, envir=.GlobalEnv)
-assign("GraphPartMax", GraphPartMax, envir=.GlobalEnv)
 
 ########################################################################################################################
 ## Ajouts pour les graphs génériques [yr: 13/08/2010] :

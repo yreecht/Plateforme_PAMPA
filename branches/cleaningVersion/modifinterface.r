@@ -13,8 +13,8 @@ ModifierMenuApresImport.f = function()
 
     ## Réactivation des entrées du menu "Données" qui nécessitent le chargement préalable :
     tkentryconfigure(import,3,state="normal")
-    tkentryconfigure(import,7,state="normal")
-    tkentryconfigure(import,8,state="normal")
+    tkentryconfigure(import,6,state="normal")
+    ## tkentryconfigure(import,7,state="normal")
 
     NbEsp<-length(unique(obs$code_espece))
     tkconfigure(ResumerSituationEspecesSelectionnees,text=paste("-> Nombre d'espèces concernées : ",NbEsp))

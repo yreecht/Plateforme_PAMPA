@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "PAMPA WP2"
-#define MyAppVersion "1.0-alpha1"
+#define MyAppVersion "0.99-11"
 #define MyAppPublisher "Ifremer"
 #define MyAppURL "https://www.ifremer.fr/ezprod/index.php/pampa/"
 #define MyAppExeName "PAMPA WP2.bat"
@@ -45,7 +45,6 @@ Source: ".\cleaningVersion\img\*"; DestDir: "{app}\img"; Flags: ignoreversion
 Source: ".\cleaningVersion\Doc\*"; DestDir: "{app}\Doc"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 Source: ".\cleaningVersion\config.r"; DestDir: "{app}"; Flags: uninsneveruninstall onlyifdoesntexist
-Source: "cleaningVersion\anova.r"; DestDir: "{app}"
 Source: "cleaningVersion\arbre_regression.r"; DestDir: "{app}"
 Source: "cleaningVersion\barplots_occurrence.R"; DestDir: "{app}"
 Source: "cleaningVersion\boxplots_esp_generiques.R"; DestDir: "{app}"
@@ -56,8 +55,6 @@ Source: "cleaningVersion\corresp-cat-benth.csv"; DestDir: "{app}"
 Source: "cleaningVersion\fonctions_base.R"; DestDir: "{app}"
 Source: "cleaningVersion\gestionmessages.r"; DestDir: "{app}"
 Source: "cleaningVersion\Global.r"; DestDir: "{app}"
-Source: "cleaningVersion\graphique.r"; DestDir: "{app}"
-Source: "cleaningVersion\graphique_benthos.r"; DestDir: "{app}"
 Source: "cleaningVersion\import.r"; DestDir: "{app}"
 Source: "cleaningVersion\importdefaut.r"; DestDir: "{app}"
 Source: "cleaningVersion\interface.r"; DestDir: "{app}"

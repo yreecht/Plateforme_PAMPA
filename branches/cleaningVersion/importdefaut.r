@@ -470,7 +470,8 @@ opendefault.f <- function ()
     paste("Type d'observation =", unique(unitobs$type), sep=" ")
     if (length(unique(unitobs$type)) > 1)
     {
-        tkmessageBox(message="Choisissez le ou les types d'observations que vous souhaitez analyser", icon="warning", type="ok")
+        tkmessageBox(message="Choisissez le ou les types d'observations que vous souhaitez analyser",
+                     icon="warning", type="ok")
         print("choix du type de jeux de données activé")
         ChoixFacteurSelect.f(unitobs$type, "type", "multiple", 1, "selectType")
         print("choix du type de jeux de données activé, sélection sur :")
@@ -485,7 +486,8 @@ opendefault.f <- function ()
     ## Creation des tables de base :
     creationTablesBase.f()
 
-    ## ! ici, donner des noms avec une base variable, pour rendre les fichiers indépendants et plus facilement reconnaissables
+    ## ! ici, donner des noms avec une base variable, pour rendre les fichiers indépendants et plus facilement
+    ## ! reconnaissables
 
     gestionMSGinfo.f("BasetxtCreate")
     gestionMSGaide.f("SelectionOuTraitement")

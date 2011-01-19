@@ -9,17 +9,20 @@ testfileref.f <- function ()
     ## Déclaration des objets fenetre, tableau
     wintest <- tktoplevel(width = 100)
     tclarrayRefEsp <- tclArray()
+
     ## Fonctions activées par les boutons de la fenêtre
     FermerWinTest <- function ()
     {
         tkdestroy(wintest)
     }
+
     EnregistrerWinTest <- function ()
     {
         FichierCSV <- paste(NomDossierTravail, "Infos_", fileName3, ".csv", sep="")
         write.csv(dataframeRefEsp, file=FichierCSV, row.names = FALSE)
         gestionMSGinfo.f("InfoRefSpeEnregistre", FichierCSV)
-        tkmessageBox(message="Votre fichier d'information sur le référentiel espèce a été enregistré au format CSV dans le dossier de travail")
+        tkmessageBox(message=paste("Votre fichier d'information sur le référentiel espèce",
+                                   " a été enregistré au format CSV dans le dossier de travail", sep=""))
     }
 
     ## Déclaration des objets bouton
@@ -53,9 +56,11 @@ testfileref.f <- function ()
         tclarrayRefEsp[[nbChamp, 1]] <- names(especes[nbChamp])
         tclarrayRefEsp[[nbChamp, 2]] <- length(unique(especes[, nbChamp][match(obs$code_espece, especes$code_espece)],
                                                       na.rm=TRUE))
+
         tclarrayRefEsp[[nbChamp, 3]] <-
             paste(round(length(unique(especesPresentes$code_espece[!is.na(especesPresentes[, nbChamp])])) /
                         length(unique(especesPresentes$code_espece))*100, digits=2), "%")
+
         ## Remplissage du dataframe pour l'enregistrement
         dataframeRefEsp[nbChamp, 2] <- length(unique(especes[, nbChamp][match(obs$code_espece, especes$code_espece)],
                                                      na.rm=TRUE))
@@ -76,36 +81,47 @@ testfileref.f <- function ()
     tkgrid(tklabel(frameOverwintest, text=paste("Taux de renseignement des champs de ", fileName3,
                                      "\npour le jeu de données\n", fileName2), relief="groove", borderwidth=2,
                    bg="yellow"))
+
     ## tkgrid.configure(frameOverwintest, columnspan=1, column=1)
     tkgrid(tklabel(wintest, text=paste("Nombre de champs de ", fileName3, " : ", dim(especesPresentes)[2])),
            Enregistrer.but)
+
     tkgrid(tklabel(wintest,
                    text=paste("Nombre d'espèces référencées pour ", SiteEtudie, " : ", dim(especesPresentes)[1])))
+
     tkgrid(tklabel(wintest,
                    text=paste("Nombre d'espèces du jeux de données ", fileName2, " : ",
                    length(unique(obs$code_espece)))), Fermer.but)
+
     tkgrid(tklabel(wintest,
                    text=paste("\nInformations sur les ", length(unique(obs$code_espece)),
                    "espèces \nDU JEU DE DONNEES \n\nVous pouvez copier-coller ce tableau dans Excel")))
+
     ## tclarrayRefEsp[[0, ]] <- c("Année", "Type", "Fréquence")
-    ## tableTestRefEsp <- tkwidget(wintest, "table", variable=tclarrayRefEsp, rows=dim(especesPresentes)[1]+1, cols=4, titlerows=1, selectmode="extended", colwidth=25, background="white")
+    ## tableTestRefEsp <- tkwidget(wintest, "table", variable=tclarrayRefEsp, rows=dim(especesPresentes)[1]+1, cols=4,
+    ##                             titlerows=1, selectmode="extended", colwidth=25, background="white")
     ## largeurcol=c(3, 25, 25, 25)
+
     tableTestRefEsp <- tkwidget(wintest, "table", variable=tclarrayRefEsp, rows=dim(especesPresentes)[2]+1, cols=4,
                                 colwidth=27, titlerows=1, titlecols=1, selectmode="extended", background="white",
                                 xscrollcommand=function(...) {tkset(xscr, ...)}, yscrollcommand=function(...)
                                 tkset(yscrtb, ...))
+
     xscr <-tkscrollbar(wintest, orient="horizontal", command=function(...)tkxview(tableTestRefEsp, ...))
     yscrtb <- tkscrollbar(wintest, command=function(...)tkyview(tableTestRefEsp, ...))
     tkgrid(tableTestRefEsp, yscrtb, columnspan=3)
     tkgrid.configure(yscrtb, sticky="nse")
     tkgrid(xscr, sticky="new")
+
     tkconfigure(tableTestRefEsp, variable=tclarrayRefEsp, background="white", selectmode="extended",
                 rowseparator="\"\n\"", colseparator="\"\t\"")
+
     tkgrid.configure(tableTestRefEsp, columnspan=2, sticky="w")
     ## barplot(dataframeRefEsp)
     tkfocus(wintest)
     ## tkgrid.configure(button.widget1, column=0, sticky="w")
-    ## TauxEspCritereSansNA <- round(length(unique(obsSansExtreme$code_espece[is.na(obsSansExtreme[, factesp])==TRUE]))/length(unique(obsSansExtreme$code_espece)), digits=2)
+    ## TauxEspCritereSansNA <- round(length(unique(obsSansExtreme$code_espece[is.na(obsSansExtreme[, factesp])])) /
+    ##                                 length(unique(obsSansExtreme$code_espece)), digits=2)
     ## tkgrid.configure(scr, rowspan=4, sticky="nsw")
     ## tkgrid.configure(sticky="w")
     ## tkwait.window(wintest)

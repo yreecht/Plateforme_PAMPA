@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: interface_fonctions.R
-### Time-stamp: <2010-09-29 10:14:46 yreecht>
+### Time-stamp: <2011-01-19 13:59:03 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -77,7 +77,64 @@ winRaise.f <- function(win)
     }
 }
 
+########################################################################################################################
+quitConfirm.f <- function(win)
+{
+    ## Purpose: Confirmer avant de quitter le programme (ou une fenêtre
+    ##          quelconque).
+    ## ----------------------------------------------------------------------
+    ## Arguments: win : l'objet fenêtre.
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date: 19 janv. 2011, 11:47
 
+    Done <- tclVar("0")
+    WinConfirm <- tktoplevel()
+
+    tkwm.title(WinConfirm, "Confirmation...")
+
+    ## Boutons :
+    OK.but <- tkbutton(WinConfirm, text = "   Oui   ",
+                       command = function() tclvalue(Done) <- 1)
+    Cancel.but <- tkbutton(WinConfirm, text = "   Non   ",
+                           command = function() tclvalue(Done) <- 2)
+
+    ## Placement des éléments graphiques :
+
+    tkgrid(tklabel(WinConfirm, text="\n "), row=1)
+
+    ## Question sensible au contexte (à améliorer) :
+    tkgrid(tklabel(WinConfirm, text=ifelse(win$ID == ".1",
+                                           "Voulez vous vraiment quitter le programme ?",
+                                           "Voulez vous vraiment fermer cette fenêtre ?")),
+           row=1, column=1, columnspan=3)
+
+    tkgrid(tklabel(WinConfirm, text=" "), row=1, column=4)
+
+    tkgrid(tklabel(WinConfirm, text=" \n"), OK.but, ## tklabel(WinConfirm, text=" \n"),
+           sticky="e", row=3)
+    tkgrid(Cancel.but, sticky="w", row=3, column=3)
+
+    ## Configuration :
+    tkbind(WinConfirm, "<Destroy>", function() tclvalue(Done) <- 2)
+
+    winSmartPlace.f(WinConfirm)         # placement de la fenêtre.
+
+    ## Attente d'une action de l'utilisateur :
+    tkwait.variable(Done)
+
+    ## Stockage de la valeur obtenue :
+    doneVal <- tclvalue(Done)           # nécessaire pour éviter d'avoir systématiquement "2" après destruction
+                                        # automatique de la fenêtre.
+
+    ## Destruction automatique de la fenêtre :
+    tkdestroy(WinConfirm)
+
+    ## Si c'est le souhait de l'utilisateur, destruction de la fenêtre :
+    if (doneVal == "1")
+    {
+        tkdestroy(win)
+    }else{}
+}
 
 
 

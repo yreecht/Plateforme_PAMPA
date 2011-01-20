@@ -65,22 +65,22 @@ source("./Exec/gestionmessages.r", encoding="latin1")      # faite
 source("./Exec/nombres_SVR.R", encoding="latin1")          # OK
 source("./Exec/mkfilegroupe.r", encoding="latin1")         # faite
 
-source("./Exec/calcul_simple.r", encoding="latin1")        # faite [sll]
-source("./Exec/arbre_regression.r", encoding="latin1")     # fai.. [sll]
+source("./Exec/calcul_simple.r", encoding="latin1")        # faite
+source("./Exec/arbre_regression.r", encoding="latin1")     # faite
 
 
 source("./Exec/requetes.r", encoding="latin1")             # faite
-source("./Exec/modifinterface.r", encoding="latin1")       #
+source("./Exec/modifinterface.r", encoding="latin1")       # faite
 source("./Exec/command.r", encoding="latin1")              # faite
 
 
-source("./Exec/testfichier.r", encoding="latin1")
+source("./Exec/testfichier.r", encoding="latin1")          # faite
 source("./Exec/view.r", encoding="latin1")                 # faite
 source("./Exec/import.r", encoding="latin1")               # faite
-source("./Exec/importdefaut.r", encoding="latin1")         # faite [sll]
+source("./Exec/importdefaut.r", encoding="latin1")         # faite
 
-source("./Exec/interface_fonctions.R", encoding="latin1")
-source("./Exec/interface.r", encoding="latin1")
+source("./Exec/interface_fonctions.R", encoding="latin1")  # OK
+source("./Exec/interface.r", encoding="latin1")            # faite
 
 ##################################################
 ## Nouvelle interface de sélection des variables :

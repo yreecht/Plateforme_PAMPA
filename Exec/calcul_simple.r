@@ -301,14 +301,16 @@ indicesDiv.f <- function ()
     sp.taxon <- sp.taxon[! manque.taxon, , drop=FALSE]
     contingence <- contingence[, ! manque.taxon, drop=FALSE]
 
-    ## le jeu de donnees doit comporter au moins 2 genres et 2 unité d'observations sinon la fonction taxa2dist ne fonctionne pas
+    ## le jeu de donnees doit comporter au moins 2 genres et 2 unité d'observations sinon la fonction taxa2dist ne
+    ## fonctionne pas
     if (length(unique(sp.taxon$genre))>2)
     {
         ## calcul des distances taxonomiques entre les especes
         taxdis <- taxa2dist(sp.taxon, varstep=TRUE)
 
         contingence <- round(contingence)
-        ## Function finds indices of taxonomic diversity and distinctiness, which are averaged taxonomic distances among species or individuals in the community
+        ## Function finds indices of taxonomic diversity and distinctiness, which are averaged taxonomic distances among
+        ## species or individuals in the community
         div <- taxondive(contingence, taxdis)
 
         ## mise de div sous data frame

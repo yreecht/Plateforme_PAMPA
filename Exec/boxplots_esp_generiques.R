@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: Boxplot_generique_calc.R
-### Time-stamp: <2010-12-16 15:49:17 yreecht>
+### Time-stamp: <2011-01-24 16:59:03 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -128,79 +128,6 @@ colBoxplot.f <- function(terms, data)
     }
 }
 
-########################################################################################################################
-openDevice.f <- function(noGraph, metrique, factGraph, listFact)
-{
-    ## Purpose: Ouvrir les périphériques graphiques avec les bonnes options
-    ## ----------------------------------------------------------------------
-    ## Arguments: noGraph : le numéro de graphique (integer)
-    ##            metrique : la métrique choisie.
-    ##            factGraph : le facteur de séparation des graphiques.
-    ##            listFact : liste du (des) facteur(s) de regroupement
-    ## ----------------------------------------------------------------------
-    ## Author: Yves Reecht, Date: 12 août 2010, 14:54
-
-
-    if (!getOption("P.graphPDF")) # sorties graphiques à l'écran.
-    {
-        if (isTRUE(getOption("P.graphPNG")))
-        {
-            if (noGraph == 1)
-            {
-                pngFileName <- paste(nameWorkspace, "/FichiersSortie/",
-                                     metrique, "_", factGraph, "_", paste(listFact, collapse="-"), "-%03d.png", sep="")
-
-                png(pngFileName, width=70*15, height=38*15, pointsize=14)
-
-                 ## Si plusieurs graphiques par page :
-                if (getOption("P.plusieursGraphPage"))
-                {
-                    par(mfrow=c(getOption("P.nrowGraph"), getOption("P.ncolGraph")))
-                }else{}
-            }else{}
-
-        }else{
-            if (getOption("P.plusieursGraphPage"))     # Plusieurs graphs par page...
-            {
-                if ((noGraph %% # ...et page remplie.
-                     (getOption("P.nrowGraph") * getOption("P.ncolGraph"))) == 1)
-                {
-                    print(paste("Fenêtre", noGraph))
-                    X11(width=60, height=35, pointsize=10)
-                    par(mfrow=c(getOption("P.nrowGraph"), getOption("P.ncolGraph")))
-                }else{}
-            }else{                      # Pas plusieurs graphs par page.
-                X11(width=50, height=20, pointsize=10)
-            }
-        }
-    }else{ ## Sorties graphiques en pdf :
-        if (noGraph == 1)
-        {
-            ## Nom de fichier de fichier :
-            if (getOption("P.PDFunFichierPage")) # Un fichier par graphique avec numéro.
-            {
-                pdfFileName <- paste(nameWorkspace, "/FichiersSortie/",
-                                     metrique, "_", factGraph, "_", paste(listFact, collapse="-"), "-%03d.pdf", sep="")
-                onefile <- FALSE
-
-            }else{                          # Tous les graphiques dans des pages séparées d'un même fichier.
-                pdfFileName <- paste(nameWorkspace, "/FichiersSortie/",
-                                     metrique, "_", factGraph, "_", paste(listFact, collapse="-"), ".pdf", sep="")
-                onefile <- TRUE
-            }
-            ## Ouverture de fichier :
-            pdf(pdfFileName, encoding="ISOLatin1", family="URWHelvetica", onefile=onefile,
-                width=20, height=12, pointsize=14)
-
-            ## Si plusieurs graphiques par page :
-            if (getOption("P.plusieursGraphPage"))
-            {
-                par(mfrow=c(getOption("P.nrowGraph"), getOption("P.ncolGraph")))
-            }else{}
-        }else{}
-    }
-}
-
 
 ########################################################################################################################
 legendBoxplot.f <- function(terms, data)
@@ -244,12 +171,16 @@ graphTitle.f <- function(metrique, modGraphSel, factGraph, listFact, model=NULL,
     return(paste(ifelse(is.null(model),
                         "valeurs de ",
                         paste(model, " pour ", varNames[metrique, "article"], sep="")),
-                 varNames[metrique, "nom"], " agrégé",
-                 switch(varNames[metrique, "genre"], # Accord de "agrégé".
-                        f="e", fp="es", mp="s", ""),
+                 varNames[metrique, "nom"],
+                 ifelse(is.element(type, c("espece", "unitobs")),
+                        paste(" agrégé",
+                              switch(varNames[metrique, "genre"], # Accord de "agrégé".
+                                     f="e", fp="es", mp="s", ""), sep=""),
+                        ""),
                  switch(type,
                         "espece"=" par espèce et unité d'observation",
                         "unitobs"=" par unité d'observation",
+                        "biodiv"=" par unité d'observation",
                         ""),
                  switch(type,
                         "espece"={
@@ -261,6 +192,12 @@ graphTitle.f <- function(metrique, modGraphSel, factGraph, listFact, model=NULL,
                             ifelse(modGraphSel[1] == "", # Facteur de séparation uniquement si défini.
                                    "\npour toutes les espèces",
                                    paste("\npour les espèces correspondant à '", factGraph, "' = (",
+                                         paste(modGraphSel, collapse=", "), ")", sep=""))
+                        },
+                        "biodiv"={
+                            ifelse(modGraphSel[1] == "", # Facteur de séparation uniquement si défini.
+                                   "",
+                                   paste("\npour les unités d'observation correspondant à '", factGraph, "' = (",
                                          paste(modGraphSel, collapse=", "), ")", sep=""))
                         },
                         ""),
@@ -495,14 +432,28 @@ WP2boxplot.f <- function(metrique, factGraph, factGraphSel, listFact, listFactSe
 
         ## Ouverture et configuration du périphérique graphique :
         openDevice.f(noGraph=which(modGraphSel == iFactGraphSel),
-                     metrique=metrique, factGraph=factGraph, listFact=listFact)
+                     metrique=metrique,
+                     factGraph=factGraph,
+                     modSel=if (getOption("P.plusieursGraphPage"))
+                 {
+                     iFactGraphSel      # toutes les modalités.
+                 }else{
+                     modGraphSel        # la modalité courante uniquement.
+                 },
+                     listFact=listFact,
+                     type="espece", typeGraph="boxplot")
 
         par(mar=c(9, 5, 8, 1), mgp=c(3.5, 1, 0)) # paramètres graphiques.
 
         ## Titre (d'après les métriques, modalité du facteur de séparation et facteurs de regroupement) :
         mainTitle <- graphTitle.f(metrique=metrique,
                                   modGraphSel=modGraphSel, factGraph=factGraph,
-                                  listFact=listFact, type="espece")
+                                  listFact=listFact,
+                                  type=switch(tableMetrique, # différents types de graphs en fonction de la table de
+                                        # données.
+                                              "listespunit"={"espece"},
+                                              "TableBiodiv"={"biodiv"},
+                                              "espece"))
 
         ## Les couleurs pour l'identification des modalités du facteur de second niveau :
         colors <- colBoxplot.f(terms=attr(terms(exprBP), "term.labels"), data=tmpDataMod)
@@ -588,10 +539,19 @@ WP2boxplot.f <- function(metrique, factGraph, factGraphSel, listFact, listFactSe
         ##            paste("Enregistrements > ", 100 * getOption("P.GraphPartMax"), "% du maximum retirés", sep=""),
         ##            cex =0.9, col="red", text.col="red", merge=FALSE)
         ## }else{}
+
+        ## On ferme les périphériques PNG en mode fichier individuel :
+        if (isTRUE(getOption("P.graphPNG")) &&
+            (! getOption("P.plusieursGraphPage") || length(iFactGraphSel) <= 1))
+        {
+            dev.off()
+        }else{}
+
     }  ## Fin de boucle graphique.
 
-    ## On ferme les périphériques PDF :
-    if (getOption("P.graphPDF") || isTRUE(getOption("P.graphPNG")))
+    ## On ferme les périphériques PDF ou PNG restants :
+    if (getOption("P.graphPDF") ||
+        (isTRUE(getOption("P.graphPNG")) && getOption("P.plusieursGraphPage") && length(iFactGraphSel) > 1))
     {
         dev.off()
     }else{}

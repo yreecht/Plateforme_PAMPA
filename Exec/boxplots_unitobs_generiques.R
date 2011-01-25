@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: boxplots_ttesp_generic.R
-### Time-stamp: <2010-12-21 17:18:07 yreecht>
+### Time-stamp: <2011-01-21 15:23:39 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -132,7 +132,11 @@ WP2boxplot.unitobs.f <- function(metrique, factGraph, factGraphSel, listFact, li
 
         ## Ouverture et configuration du périphérique graphique :
         openDevice.f(noGraph=1,
-                     metrique=metrique, factGraph=factGraph, listFact=listFact)
+                     metrique=metrique,
+                     factGraph=factGraph,
+                     modSel=iFactGraphSel,
+                     listFact=listFact,
+                     type="unitobs", typeGraph="boxplot")
 
         par(mar=c(9, 5, 8, 1), mgp=c(3.5, 1, 0)) # paramètres graphiques.
 

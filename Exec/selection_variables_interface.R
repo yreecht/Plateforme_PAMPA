@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: Selection_variables_interface.R
-### Time-stamp: <2011-01-21 15:02:54 yreecht>
+### Time-stamp: <2011-01-19 12:03:37 yreecht>
 ###
 ### Author: Yves Reecht
 ###

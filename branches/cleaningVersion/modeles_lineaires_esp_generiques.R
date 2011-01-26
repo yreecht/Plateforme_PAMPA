@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: comparaison_distri_generique.R
-### Time-stamp: <2010-12-22 17:08:06 yreecht>
+### Time-stamp: <2011-01-20 16:03:13 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -750,11 +750,16 @@ plotDist.f <- function(y, family, metrique, env=NULL,...)
 
     ## Noms et fonction de densité de la loi pour ajouter les titres ainsi qu'ajuster et représenter la distribution :
     loi <- switch(family,
-                  NO=list(name="Normale", densfunName="normal", densfun="dnorm"),
-                  LOGNO=list(name="log-Normale", densfunName="log-normal", densfun="dlnorm"),
-                  PO=list(name="de Poisson", densfunName="poisson", densfun="dpois"),
-                  NBI=list(name="Binomiale négative", densfunName="negative binomial", densfun="dnbinom"),
-                  GA=list(name="Gamma", densfunName="gamma", densfun="dgamma"))
+                  NO=list(name="Normale", densfunName="normal",
+                          densfun="dnorm", start=NULL),
+                  LOGNO=list(name="log-Normale", densfunName="log-normal",
+                             densfun="dlnorm", start=NULL),
+                  PO=list(name="de Poisson", densfunName="poisson",
+                          densfun="dpois", start=NULL),
+                  NBI=list(name="Binomiale négative", densfunName="negative binomial",
+                           densfun="dnbinom", start=NULL),
+                  GA=list(name="Gamma", densfunName="gamma",
+                          densfun="dgamma", start=list(shape=1, scale=2)))
 
     ## Traitement des zéros pour la loi Log-Normale :
     if (is.element(family, c("LOGNO", "GA")) & sum(y == 0, na.rm=TRUE))
@@ -775,14 +780,24 @@ plotDist.f <- function(y, family, metrique, env=NULL,...)
     ## On ajuste la distribution :
     ## browser()
 
-    try(coefLoi <- fitdistr(na.omit(y), densfun=loi$densfunName))
+    coefLoi <- tryCatch(fitdistr(na.omit(y), densfun=loi$densfunName, start=loi$start),
+                        error=function(e)
+                    {
+                        return(NULL)
+                    })
 
     ## Calcul des points théoriques à représenter :
-    expr <- parse(text=paste(loi$densfun, "(xi, ",       # points à représenter.
-                             paste(names(coefLoi$estimate), coefLoi$estimate, sep="=", collapse=", "), # coefs estimés.
-                             ")", sep=""))
+    if (! is.null(coefLoi))             # Uniquement si coefLoi peut être estimé...
+    {
+        expr <- parse(text=paste(loi$densfun, "(xi, ",       # points à représenter.
+                                 paste(names(coefLoi$estimate), coefLoi$estimate, # coefs estimés.
+                                       sep="=", collapse=", "),
+                                 ")", sep=""))
 
-    yi <- eval(expr)                    # valeurs pour la loi de distribution théorique ajustée.
+        yi <- eval(expr)                # valeurs pour la loi de distribution théorique ajustée.
+    }else{
+        yi <- 0                         # ...sinon, yi neutre dans les max !
+    }
 
     ## Représentation graphique :
     nbreaks <- 60                       # Nombre de barres.
@@ -803,7 +818,16 @@ plotDist.f <- function(y, family, metrique, env=NULL,...)
          ylab="Densité de la métrique",
          col="lightgray")
 
-    lines(xi, yi, lwd=2, col="red")     # courbe (distribution théorique).
+    if (! is.null(coefLoi))
+    {
+        lines(xi, yi, lwd=2, col="red")     # courbe (distribution théorique).
+    }else{
+        text(x=mean(c(min(y, na.rm=TRUE), max(y, na.rm=TRUE))),
+             y=mean(c(0, ifelse(max(yi, na.rm=TRUE) > 3 * max(histTmp$density, na.rm=TRUE),
+                    3 * max(histTmp$density, na.rm=TRUE),
+                    1.05 * max(c(histTmp$density, yi), na.rm=TRUE)))),
+             labels="Échec de fitdistr() !\n(ceci n'affecte que le visuel)", col="red")
+    }
 
     ## Calcul d'AIC (entre autres) :
     FA <- as.gamlss.family(family)      # On procède comme dans la fonction histDist.

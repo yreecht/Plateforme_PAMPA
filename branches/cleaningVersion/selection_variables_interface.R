@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: Selection_variables_interface.R
-### Time-stamp: <2011-01-13 10:31:57 yreecht>
+### Time-stamp: <2011-01-19 12:03:37 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -26,17 +26,18 @@ initialiseGraphOptions.f <- function()
             P.maxExclu = FALSE,                 # Suppressions des données suppérieures à une certaine proportion du
                                         # maximum ?
             P.GraphPartMax = 0.95,              # Proportion du maximum à conserver si P.maxExclu == TRUE
-            P.NbObs = FALSE,                    # Afichage sur le graphique du nombre d'observations
+            P.NbObs = TRUE,                     # Afichage sur le graphique du nombre d'observations
                                         # par boite à moustache.
             P.NbObsCol = "orange",              # Couleur d'affichage des nombres d'observations.
             P.pointMoyenne = FALSE,             # Affichage des moyennes (points) sur le graphique.
             P.pointMoyenneCol = "blue",         # Couleur d'affichage des moyennes (points).
-            P.valMoyenne = FALSE,               # Affichage des moyennes (valeurs) sur le graphique.
+            P.valMoyenne = TRUE,                # Affichage des moyennes (valeurs) sur le graphique.
             P.valMoyenneCol = "blue",           # Couleur d'affichage des moyennes (valeurs).
             P.MinNbObs = 1,                     # ??
             P.sepGroupes = TRUE,                # Séparateurs du premier niveau de regroupements sur un même graphique ?
             P.sepGroupesCol = "red",            # Couleur des séparateurs de groupes.
             P.graphPDF = FALSE,                 # Sorties graphiques en pdf ?
+            P.graphPNG = FALSE,                 # Sorties graphiques en png ?
             P.plusieursGraphPage = FALSE,       # Plusieurs graphiques par page/fenêtre ?
             P.ncolGraph = 2,                    # Nombres de colonnes de graphiques (si P.plusieursGraphPage est TRUE).
             P.nrowGraph = 2,                    # Nombres de lignes de graphiques (si P.plusieursGraphPage est TRUE).
@@ -49,7 +50,8 @@ initialiseGraphOptions.f <- function()
                                P.pointMoyenne="logical", P.pointMoyenneCol="characters", P.valMoyenne="logical",
                                P.valMoyenneCol="characters", "P.GraphPartMax"="numeric",
                                P.MinNbObs="integer", P.sepGroupes="logical", P.sepGroupesCol="characters",
-                               P.graphPDF="logical", P.plusieursGraphPage="logical", P.ncolGraph="integer",
+                               P.graphPDF="logical", P.graphPNG="logical", P.plusieursGraphPage="logical",
+                               P.ncolGraph="integer",
                                P.nrowGraph="integer", P.PDFunFichierPage="logical", P.NbDecimal="integer",
                                P.legendeCouleurs="logical")
             )
@@ -102,6 +104,7 @@ choixOptionsGraphiques.f <- function()
     B.legendeCouleurs <- tkcheckbutton(WinOpt, variable=P.options[["P.legendeCouleurs"]])
 
     B.graphPDF <- tkcheckbutton(WinOpt, variable=P.options[["P.graphPDF"]])
+    B.graphPNG <- tkcheckbutton(WinOpt, variable=P.options[["P.graphPNG"]])
     B.PDFunFichierPage <- tkcheckbutton(WinOpt, variable=P.options[["P.PDFunFichierPage"]])
     B.plusGraph <- tkcheckbutton(WinOpt, variable=P.options[["P.plusieursGraphPage"]])
 
@@ -152,15 +155,37 @@ choixOptionsGraphiques.f <- function()
 
 
     tkgrid(ttkseparator(WinOpt, orient="horizontal"), columnspan=2, sticky="ew")
+    tkgrid(tklabel(WinOpt, text="Sortie des graphiques dans des fichiers PNG ? "), B.graphPNG, sticky="es")
     tkgrid(tklabel(WinOpt, text="Sortie des graphiques dans des fichiers PDF ? "), B.graphPDF, sticky="es")
     tkgrid(tklabel(WinOpt, text="Créer un fichier par page (PDF) ? "), B.PDFunFichierPage, sticky="es")
     tkgrid(tklabel(WinOpt, text=paste("Plusieurs graphiques par page (", tclvalue(P.options[["P.nrowGraph"]]), "x",
                            tclvalue(P.options[["P.ncolGraph"]]), ")", sep="")), B.plusGraph, sticky="es")
 
     tkconfigure(B.PDFunFichierPage , state=ifelse(tclvalue(P.options[["P.graphPDF"]]) == "0", "disabled", "normal"))
+
     ##  Activer le choix de sortie dans un fichier par page en mode PDF uniquement.
     tkconfigure(B.graphPDF, command=function()
             {
+                tkconfigure(B.PDFunFichierPage ,
+                            state=ifelse(tclvalue(P.options[["P.graphPDF"]]) == "0", "disabled", "normal"))
+
+                ## Décocher les graphiques png :
+                if (tclvalue(P.options[["P.graphPDF"]]) == "1")
+                {
+                    tclvalue(P.options[["P.graphPNG"]]) <- "0"
+                }else{}
+            })
+
+    ## Décocher les graphiques pdf lorsque png activé :
+    tkconfigure(B.graphPNG, command=function()
+            {
+
+                if (tclvalue(P.options[["P.graphPNG"]]) == "1")
+                {
+                    tclvalue(P.options[["P.graphPDF"]]) <- "0"
+                }else{}
+
+                ## MàJ de l'état du bouton document uniq en pdf :
                 tkconfigure(B.PDFunFichierPage ,
                             state=ifelse(tclvalue(P.options[["P.graphPDF"]]) == "0", "disabled", "normal"))
             })
@@ -929,7 +954,7 @@ selectionVariables.f <- function(nextStep)
                        })
 
     FrameBT <- tkframe(WinSelection)
-    B.OK <- tkbutton(FrameBT, text="   OK   ", command=function(){tclvalue(Done) <- 1})
+    B.OK <- tkbutton(FrameBT, text="  Lancer  ", command=function(){tclvalue(Done) <- 1})
     B.Cancel <- tkbutton(FrameBT, text=" Quitter ", command=function(){tclvalue(Done) <- 2})
     B.optGraph <- tkbutton(FrameBT, text=" Options graphiques... ",
                            command=function(x)

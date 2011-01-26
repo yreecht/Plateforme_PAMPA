@@ -140,25 +140,36 @@ tkadd(traitement, "separator")
 tkadd(traitement, "command", label="Boxplots métrique /espèce/unité d'observation + Biodiversité...",
       background="#FFFBCF",
       command=function ()
-  {selectionVariables.f("boxplot.esp") ; winRaise.f(tm)})
+  {
+      selectionVariables.f("boxplot.esp")
+      winRaise.f(tm)
+  })
 ## Ajout [yr: 25/10/2010]
 tkadd(traitement, "command", label="Boxplots métrique /unité d'observation...",
       background="#FFFBCF",
       command=function ()
-  {selectionVariables.f("boxplot.unitobs") ; winRaise.f(tm)})
+  {
+      selectionVariables.f("boxplot.unitobs")
+      winRaise.f(tm)
+  })
 ## Ajout [yr: 14/10/2010]
 tkadd(traitement, "command", label="Fréquences d'occurrence...",
       background="#FFFBCF",
       command=function ()
-  {selectionVariables.f("freq_occurrence") ; winRaise.f(tm)})
+  {
+      selectionVariables.f("freq_occurrence")
+      winRaise.f(tm)
+  })
 
 ## Menu deroulant de "Import de donnees"
 tkadd(import, "command", label="Choix des dossiers et fichiers de données...",
       accelerator="CTRL+N", command = {openfile.f})
+
 tkadd(import, "command", label="Dossiers et fichiers par defaut", accelerator="CTRL+A",
-      command = function ()
-  {opendefault.f()})
+      command = opendefault.f)
+
 tkadd(import, "separator")
+
 tkadd(import, "command", label="Test du référentiel (espèces concernées)", underline=9, accelerator="CTRL+R",
       state="disabled", command = testfileref.f)
 ## tkadd(import, "command", label="Test des données importées", underline=0,
@@ -169,10 +180,17 @@ tkadd(import, "command", label="Champs de 'TableMetrique' et TableBiodiv", under
 ## Sélection et recalcul :
 tkadd(selection, "command", label="Selon un champs du référentiel espèce...",
       command = function ()
-  {SelectionUnCritereEsp.f() ; winRaise.f(tm)})
+  {
+      SelectionUnCritereEsp.f()
+      winRaise.f(tm)
+  })
+
 tkadd(selection, "command", label="Selon un champs des unités d'observation...",
       command = function ()
-  {SelectionUnCritereUnitobs.f() ; winRaise.f(tm)})
+  {
+      SelectionUnCritereUnitobs.f()
+      winRaise.f(tm)
+  })
 
 tkadd(selection, "separator")
 tkadd(selection, "checkbutton", label="Par liste d'espèces (fichier)", variable=SelectListEsp,
@@ -189,17 +207,26 @@ tkadd(analyse, "cascade", label="Arbre de regression multivariee", menu = arbreR
 tkadd(modelesInferentiels, "command", label="Modèles linéaires métrique /espèce/unité d'observation + Biodiversité...",
       background="#FFFBCF",
       command=function ()
-  {selectionVariables.f("modele_lineaire") ; winRaise.f(tm)})
+  {
+      selectionVariables.f("modele_lineaire")
+      winRaise.f(tm)
+  })
 ## Ajout [yr: 26/10/2010]
 tkadd(modelesInferentiels, "command", label="Modèles linéaires métrique /unité d'observation...",
       background="#FFFBCF",
       command=function ()
-  {selectionVariables.f("modele_lineaire.unitobs") ; winRaise.f(tm)})
+  {
+      selectionVariables.f("modele_lineaire.unitobs")
+      winRaise.f(tm)
+  })
 ## Ajout [yr: 13/10/2010]
 tkadd(modelesInferentiels, "command", label="Modèles linéaires sur 'présences/absences'...",
       background="#FFFBCF",
       command=function ()
-  {selectionVariables.f("pres_abs") ; winRaise.f(tm)})
+  {
+      selectionVariables.f("pres_abs")
+      winRaise.f(tm)
+  })
 
 
 ## Menu deroulant de "Outils"
@@ -222,14 +249,27 @@ tkadd(import, "command", label="Info données par unité d'observation", state="di
       command = VoirInformationsDonneesUnitobs.f)
 
 ## Premier niveau de menu
-tkadd(topMenu, "cascade", label="Données", menu=import) # Renommé [yr: 10/01/2011]
+tkadd(topMenu, "cascade", label="Données", menu=import, activebackground="red") # Renommé [yr: 10/01/2011]
 tkadd(topMenu, "cascade", label="Sélection et recalcul", state="disabled", menu=selection)
 tkadd(topMenu, "cascade", label="Graphiques", state="disabled", menu=traitement)
 
 tkadd(topMenu, "cascade", label="Statistiques", state="disabled", menu=analyse)
 tkadd(topMenu, "cascade", label="Outils", menu=outils)
 tkadd(topMenu, "cascade", label="Aide", menu=pampainfos) # Renommé [yr: 10/01/2011]
-tkadd(topMenu, "command", label="Quitter", command=function() tkdestroy(tm))
+
+## Seul moyen trouvé -- pour l'instant -- afin de détacher le menu "quitter" des autres :
+tkadd(topMenu, "command",
+      label=paste("                                                     ",
+                  "                                                     ",
+                  "                          "), state="disabled")
+
+tkadd(topMenu, "command", label="Quitter", background="#FFFBCF", # Méheeeu, pourquoi ça marche pas cette dernière option [???]
+      ## columnbreak=1,
+      command=function()
+  {
+
+      quitConfirm.f(tm)
+  })
 
 gestionMSGinfo.f("start")
 print("fonction interface activée")

@@ -89,6 +89,7 @@ source("./Exec/selection_variables_interface.R", encoding="latin1")        # OK
 
 ##################################################
 ## Nouveaux boxplots :
+source("./Exec/fonctions_graphiques.R", encoding="latin1")                 # OK
 source("./Exec/boxplots_esp_generiques.R", encoding="latin1")              # OK
 source("./Exec/boxplots_unitobs_generiques.R", encoding="latin1")          # OK
 

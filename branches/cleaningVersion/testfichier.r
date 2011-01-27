@@ -97,11 +97,6 @@ testfileref.f <- function ()
                    text=paste("\nInformations sur les ", length(unique(obs$code_espece)),
                    "espèces \nDU JEU DE DONNEES \n\nVous pouvez copier-coller ce tableau dans Excel")))
 
-    ## tclarrayRefEsp[[0, ]] <- c("Année", "Type", "Fréquence")
-    ## tableTestRefEsp <- tkwidget(wintest, "table", variable=tclarrayRefEsp, rows=dim(especesPresentes)[1]+1, cols=4,
-    ##                             titlerows=1, selectmode="extended", colwidth=25, background="white")
-    ## largeurcol=c(3, 25, 25, 25)
-
     tableTestRefEsp <- tkwidget(wintest, "table", variable=tclarrayRefEsp, rows=dim(especesPresentes)[2]+1, cols=4,
                                 colwidth=27, titlerows=1, titlecols=1, selectmode="extended", background="white",
                                 xscrollcommand=function(...) {tkset(xscr, ...)}, yscrollcommand=function(...)
@@ -119,10 +114,4 @@ testfileref.f <- function ()
     tkgrid.configure(tableTestRefEsp, columnspan=2, sticky="w")
     ## barplot(dataframeRefEsp)
     tkfocus(wintest)
-    ## tkgrid.configure(button.widget1, column=0, sticky="w")
-    ## TauxEspCritereSansNA <- round(length(unique(obsSansExtreme$code_espece[is.na(obsSansExtreme[, factesp])])) /
-    ##                                 length(unique(obsSansExtreme$code_espece)), digits=2)
-    ## tkgrid.configure(scr, rowspan=4, sticky="nsw")
-    ## tkgrid.configure(sticky="w")
-    ## tkwait.window(wintest)
 }

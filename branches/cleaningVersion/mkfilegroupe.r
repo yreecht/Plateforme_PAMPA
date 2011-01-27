@@ -1,452 +1,8 @@
 
-
-
-################################################################################
-## FONCTIONS DE CALCUL DE METRIQUES PAR GROUPE D'UNITE D'OBSERVATION
-##     - occurrence.f(), occurrence2.f(), occurrence3.f()
-################################################################################
-
-################################################################################
-## Nom    : occurrence.f()
-## Objet  : choix d'une espèce parmi la liste des espèces présentes
-##          calcul de la fréquence d'occurrence de l'espèce dans la table "grp"
-## Input  : tables "grp" + facteur fact
-## Output : fréquence d'occurrence de l'espèce sélectionnée selon les facteurs
-##          de regroupement
-################################################################################
-## !Fonction à mieux documenter
-
-## [sup] [yr: 13/01/2011]:
-
-## occurrence.f <- function(fact)
-## {
-##     print("fonction occurrence.f activée")
-##     ## Demande d'affichage du pourcentage d'occurrence d'une espece
-##     nn <- tktoplevel()
-##     tkwm.title(nn, "Pourcentage d'occurrence")
-##     tkgrid(tklabel(nn, text="Voulez-vous calculer le pourcentage d'occurrence d'une espece?"))
-##     done <- tclVar(0)
-##     OK.but <- tkbutton(nn, text="OUI", command=function() {tclvalue(done) <- 1})
-##     Cancel.but <- tkbutton(nn, text="NON", command=function() {tclvalue(done) <- 2})
-##     tkgrid(OK.but, Cancel.but)
-##     tkbind(nn, "<Destroy>", function() {tclvalue(done) <- 2})
-##     tkfocus(nn)
-##     tkwait.variable(done)
-##     doneVal <- as.integer(tclvalue(done))
-##     tkdestroy(nn)
-
-##     if (doneVal==1)
-##     {
-##         tt <- tktoplevel()
-##         tkwm.title(tt, "Pourcentage d'occurrence par espece")
-##         scr <- tkscrollbar(tt, repeatinterval=5, command=function(...){tkyview(tl, ...)})
-##         tl <- tklistbox(tt, height=20, width=50, selectmode="single",
-##                         yscrollcommand=function(...){tkset(scr, ...)}, background="white")
-##         tkgrid(tklabel(tt, text="Especes presentes"))
-##         tkgrid(tl, scr)
-##         tkgrid.configure(scr, rowspan=4, sticky="nsw")
-
-##         ## on ne propose uniquement les especes presentes dans le jeu de donnees
-##         ## ATTENTION PRENDRE EN COMPTE LES ESPECES EXCLUES
-##         especesPresentes <- subset(unitesp, unitesp$pres_abs==1)$code_espece
-##         esp <- sort(unique(especesPresentes))
-##         a <- length(esp)
-##         for (i in (1:a))
-##         {
-##             tkinsert(tl, "end", esp[i])
-##         }
-##         tkselection.set(tl, 0)
-
-##         OnOK <- function()
-##         {
-##             choixespece <- esp[as.numeric(tkcurselection(tl))+1]
-##             b <- especes$code_espece[especes$code_espece == choixespece]
-##             tkdestroy(tt)
-##             print(paste("Pourcentage d'occurrence de", choixespece))
-##             print(grp[, b])
-##             assign("b", b, envir=.GlobalEnv)
-##         }
-##         OK.but <-tkbutton(tt, text="OK", command=OnOK)
-##         tkgrid(OK.but)
-##         tkfocus(tt)
-##         tkwait.window(tt)
-##         rm(a)
-##         rm(fact, envir=.GlobalEnv)
-##     } ##  fin doneVal
-## } ## fin occurrence.f
-
-################################################################################
-## Nom    : choixDeuxFacteursUnitobs.f()
-## Objet  : choix du 2 facteurs de groupement des unités d'observations
-## Input  : tables "unit" et "unitobs"
-## Output : table "unit" + les 2 facteurs de la table unitobs choisis
-################################################################################
-
-## [sup] [yr: 13/01/2011]:
-
-## choixDeuxFacteursUnitobs.f <- function()
-## {
-
-##     print("fonction choixDeuxFacteursUnitobs.f activée")
-
-##     ## selection du premier facteur
-##     aa <- tktoplevel()
-##     tkwm.title(aa, "Selection du PREMIER facteur de groupement des unites d'observation")
-##     scr <- tkscrollbar(aa, repeatinterval=5, command=function(...){tkyview(tl, ...)})
-##     tl <- tklistbox(aa, height=20, selectmode="single",
-##                     yscrollcommand=function(...){tkset(scr, ...)}, background="white")
-##     tkgrid(tklabel(aa, text="Liste des facteurs de groupement"))
-##     tkgrid(tl, scr)
-##     tkgrid.configure(scr, rowspan=4, sticky="nsw")
-##     facts <- sort(names(unitobs))
-##     a <- length(facts)
-##     for (i in (1:a))
-##     {
-##         tkinsert(tl, "end", facts[i])
-##     }
-##     tkselection.set(tl, 0)
-
-##     OnOK <- function()
-##     {
-##         fact21 <- facts[as.numeric(tkcurselection(tl))+1]
-##         assign("fact21", fact21, envir=.GlobalEnv)
-##         tkdestroy(aa)
-##         assign("unit", unit, envir=.GlobalEnv)
-##     }
-##     OK.but <-tkbutton(aa, text="OK", command=OnOK)
-##     tkgrid(OK.but)
-##     tkfocus(aa)
-##     tkwait.window(aa)
-##     rm(a)
-
-##     ## selection du deuxieme facteur ##
-##     aa <- tktoplevel()
-##     tkwm.title(aa, "Selection du SECOND facteur de groupement des unites d'observation")
-##     scr <- tkscrollbar(aa, repeatinterval=5, command=function(...){tkyview(tl, ...)})
-##     tl <- tklistbox(aa, height=20, selectmode="single",
-##                     yscrollcommand=function(...){tkset(scr, ...)}, background="white")
-##     tkgrid(tklabel(aa, text="Liste des facteurs de groupement"))
-##     tkgrid(tl, scr)
-##     tkgrid.configure(scr, rowspan=4, sticky="nsw")
-##     facts <- sort(names(unitobs))
-##     a <- length(facts)
-##     for (i in (1:a))
-##     {
-##         tkinsert(tl, "end", facts[i])
-##     }
-##     tkselection.set(tl, 0)
-
-##     OnOK <- function()
-##     {
-##         fact22 <- facts[as.numeric(tkcurselection(tl))+1]
-##         assign("fact22", fact22, envir=.GlobalEnv)
-##         tkdestroy(aa)
-##         assign("unit", unit, envir=.GlobalEnv)
-##     }
-##     OK.but <-tkbutton(aa, text="OK", command=OnOK)
-##     tkgrid(OK.but)
-##     tkfocus(aa)
-##     tkwait.window(aa)
-##     rm(a)
-## } ##  fin choixDeuxFacteursUnitobs.f
-
-################################################################################
-## Nom    : occurrence2.f()
-## Objet  : choix d'une espèce parmi la liste des espèces présentes
-##          calcul de la fréquence d'occurrence de l'espèce dans la table "grp12"
-## Input  : tables "grp12" + facteur fact21 et fact22
-## Output : fréquence d'occurrence de l'espèce sélectionnée selon les facteurs
-##          de regroupement
-################################################################################
-
-## [sup] [yr: 13/01/2011]:
-
-## occurrence2.f <- function(fact21, fact22)
-## {
-##     ## Demande d'affichage du pourcentage d'occurrence d'une espece
-##     nn <- tktoplevel()
-##     tkwm.title(nn, "Pourcentage d'occurrence")
-##     tkgrid(tklabel(nn, text="Voulez-vous calculer le pourcentage d'occurrence d'une espece?"))
-##     done <- tclVar(0)
-##     OK.but <- tkbutton(nn, text="OUI", command=function() {tclvalue(done) <- 1})
-##     Cancel.but <- tkbutton(nn, text="NON", command=function() {tclvalue(done) <- 2})
-##     tkgrid(OK.but, Cancel.but)
-##     tkbind(nn, "<Destroy>", function() {tclvalue(done) <- 2})
-##     tkfocus(nn)
-##     tkwait.variable(done)
-##     doneVal <- as.integer(tclvalue(done))
-##     tkdestroy(nn)
-
-##     if (doneVal==1)
-##     {
-##         tt <- tktoplevel()
-##         tkwm.title(tt, "Pourcentage d'occurrence par espece")
-##         scr <- tkscrollbar(tt, repeatinterval=5, command=function(...){tkyview(tl, ...)})
-##         tl <- tklistbox(tt, height=20, width=50, selectmode="single",
-##                         yscrollcommand=function(...){tkset(scr, ...)}, background="white")
-##         tkgrid(tklabel(tt, text="Especes presentes:"))
-##         tkgrid(tl, scr)
-##         tkgrid.configure(scr, rowspan=4, sticky="nsw")
-
-##         ## on ne propose uniquement les especes presentes dans le jeu de donnees
-##         ## ATTENTION PRENDRE EN COMPTE LES ESPECES EXCLUES
-##         especesPresentes <- subset(unitesp, unitesp$pres_abs==1)$code_espece
-##         esp <- sort(unique(especesPresentes))
-##         a <- length(esp)
-##         for (i in (1:a))
-##         {
-##             tkinsert(tl, "end", esp[i])
-##         }
-##         tkselection.set(tl, 0)
-
-##         OnOK <- function()
-##         {
-##             choixespece <- esp[as.numeric(tkcurselection(tl))+1]
-##             b <- especes$code_espece[especes$code_espece == choixespece]
-##             tkdestroy(tt)
-##             print(paste("Pourcentage d'occurrence de", choixespece))
-##             print(cbind(grp12[, fact21], grp12[, fact22], grp12[, b]))
-##             assign("b", b, envir=.GlobalEnv)
-##         }
-##         OK.but <-tkbutton(tt, text="OK", command=OnOK)
-##         tkgrid(OK.but)
-##         tkfocus(tt)
-##         tkwait.window(tt)
-##         rm(a)
-
-##         rm(fact21, fact22, envir=.GlobalEnv)
-##         rm(b, envir=.GlobalEnv)
-##     }## fin doneVal
-## } ##  fin occurrence2.f
-
-################################################################################
-## Nom    : choixTroisFacteurs.f()
-## Objet  : choix du facteur de groupement des unités d'observations
-## Input  : tables "unit" et "unitobs"
-## Output : table "unit" + les 3 facteurs de la table unitobs choisis
-################################################################################
-## ! code dans un fichier "choix"
-
-## [sup] [yr: 13/01/2011]:
-
-## choixtroisfacteurs.f <- function()
-## {
-
-##     ## sélection du premier facteur
-##     aa <- tktoplevel()
-##     tkwm.title(aa, "Selection du PREMIER facteur de groupement des unites d'observation")
-##     scr <- tkscrollbar(aa, repeatinterval=5, command=function(...){tkyview(tl, ...)})
-##     tl <- tklistbox(aa, height=20, selectmode="single",
-##                     yscrollcommand=function(...){tkset(scr, ...)}, background="white")
-##     tkgrid(tklabel(aa, text="Liste des facteurs de groupement"))
-##     tkgrid(tl, scr)
-##     tkgrid.configure(scr, rowspan=4, sticky="nsw")
-##     facts <- sort(names(unitobs))
-##     a <- length(facts)
-##     for (i in (1:a))
-##     {
-##         tkinsert(tl, "end", facts[i])
-##     }
-##     tkselection.set(tl, 0)
-
-##     OnOK <- function(){
-##         fact31 <- facts[as.numeric(tkcurselection(tl))+1]
-##         assign("fact31", fact31, envir=.GlobalEnv)
-##         tkdestroy(aa)
-##     }
-##     OK.but <-tkbutton(aa, text="OK", command=OnOK)
-##     tkgrid(OK.but)
-##     tkfocus(aa)
-##     tkwait.window(aa)
-##     rm(a)
-
-##     ## sélection du deuxieme facteur
-##     aa <- tktoplevel()
-##     tkwm.title(aa, "Selection du SECOND facteur de groupement des unites d'observation")
-##     scr <- tkscrollbar(aa, repeatinterval=5, command=function(...){tkyview(tl, ...)})
-##     tl <- tklistbox(aa, height=20, selectmode="single",
-##                     yscrollcommand=function(...){tkset(scr, ...)}, background="white")
-##     tkgrid(tklabel(aa, text="Liste des facteurs de groupement"))
-##     tkgrid(tl, scr)
-##     tkgrid.configure(scr, rowspan=4, sticky="nsw")
-##     facts <- sort(names(unitobs))
-##     a <- length(facts)
-##     for (i in (1:a))
-##     {
-##         tkinsert(tl, "end", facts[i])
-##     }
-##     tkselection.set(tl, 0)
-
-##     OnOK <- function()
-##     {
-##         fact32 <- facts[as.numeric(tkcurselection(tl))+1]
-##         assign("fact32", fact32, envir=.GlobalEnv)
-##         tkdestroy(aa)
-##     }
-##     OK.but <-tkbutton(aa, text="   OK   ", command=OnOK)
-##     tkgrid(OK.but)
-##     tkfocus(aa)
-##     tkwait.window(aa)
-##     rm(a)
-
-##     ## sélection du troisieme facteur
-##     aa <- tktoplevel()
-##     tkwm.title(aa, "Selection du TROISIEME facteur de groupement des unites d'observation")
-##     scr <- tkscrollbar(aa, repeatinterval=5, command=function(...){tkyview(tl, ...)})
-##     tl <- tklistbox(aa, height=20, selectmode="single",
-##                     yscrollcommand=function(...){tkset(scr, ...)}, background="white")
-##     tkgrid(tklabel(aa, text="Liste des facteurs de groupement"))
-##     tkgrid(tl, scr)
-##     tkgrid.configure(scr, rowspan=4, sticky="nsw")
-##     facts <- sort(names(unitobs))
-##     a <- length(facts)
-##     for (i in (1:a))
-##     {
-##         tkinsert(tl, "end", facts[i])
-##     }
-##     tkselection.set(tl, 0)
-
-##     OnOK <- function()
-##     {
-##         fact33 <- facts[as.numeric(tkcurselection(tl))+1]
-##         assign("fact33", fact33, envir=.GlobalEnv)
-##         tkdestroy(aa)
-##         unit[, fact31] <- unitobs[, fact31][match(unit$unitobs, unitobs$unite_observation)]
-##         unit[, fact32] <- unitobs[, fact32][match(unit$unitobs, unitobs$unite_observation)]
-##         unit[, fact33] <- unitobs[, fact33][match(unit$unitobs, unitobs$unite_observation)]
-##         assign("unit", unit, envir=.GlobalEnv)
-##     }
-##     OK.but <-tkbutton(aa, text="OK", command=OnOK)
-##     tkgrid(OK.but)
-##     tkfocus(aa)
-##     tkwait.window(aa)
-##     rm(a)
-## } ##  fin choixtroisfacteurs.f
-
-################################################################################
-## Nom    : occurrence3.f()
-## Objet  : choix d'une espèce parmi la liste des espèces présentes
-##          calcul de la fréquence d'occurrence de l'espèce dans la table "grp13"
-## Input  : tables "grp13" + facteur fact31, fact32 et fact33
-## Output : fréquence d'occurrence de l'espèce sélectionnée selon les facteurs
-##          de regroupement
-################################################################################
-
-## [sup] [yr: 13/01/2011]:
-
-## occurrence3.f <- function(fact31, fact32, fact33)
-## {
-##     ## Demande d'affichage du pourcentage d'occurrence d'une espece
-##     nn <- tktoplevel()
-##     tkwm.title(nn, "Pourcentage d'occurrence")
-##     tkgrid(tklabel(nn, text="Voulez-vous calculer le pourcentage d'occurrence d'une espece?"))
-##     done <- tclVar(0)
-##     OK.but <- tkbutton(nn, text="OUI", command=function() {tclvalue(done) <- 1})
-##     Cancel.but <- tkbutton(nn, text="NON", command=function() {tclvalue(done) <- 2})
-##     tkgrid(OK.but, Cancel.but)
-##     tkbind(nn, "<Destroy>", function() {tclvalue(done) <- 2})
-##     tkfocus(nn)
-##     tkwait.variable(done)
-##     doneVal <- as.integer(tclvalue(done))
-##     tkdestroy(nn)
-
-##     if (doneVal==1)
-##     {
-##         tt <- tktoplevel()
-##         tkwm.title(tt, "Pourcentage d'occurrence par espece")
-##         scr <- tkscrollbar(tt, repeatinterval=5, command=function(...){tkyview(tl, ...)})
-##         tl <- tklistbox(tt, height=20, width=50, selectmode="single",
-##                         yscrollcommand=function(...){tkset(scr, ...)}, background="white")
-##         tkgrid(tklabel(tt, text="Occurrence de l'espece:"))
-##         tkgrid(tl, scr)
-##         tkgrid.configure(scr, rowspan=4, sticky="nsw")
-##         ## on ne propose uniquement les especes presentes dans le jeu de donnees
-##         ## ATTENTION PRENDRE EN COMPTE LES ESPECES EXCLUES
-##         especesPresentes <- subset(unitesp, unitesp$pres_abs==1)$code_espece
-##         esp <- sort(unique(especesPresentes))
-##         a <- length(esp)
-##         for (i in (1:a))
-##         {
-##             tkinsert(tl, "end", esp[i])
-##         }
-##         tkselection.set(tl, 0)
-
-##         OnOK <- function(){
-##             choixespece <- esp[as.numeric(tkcurselection(tl))+1]
-##             b <- especes$code_espece[especes$code_espece == choixespece]
-##             tkdestroy(tt)
-##             print(paste("Pourcentage d'occurrence de", choixespece))
-##             print(cbind(grp13[, fact31], grp13[, fact32], grp13[, fact33], grp13[, b]))
-##             assign("b", b, envir=.GlobalEnv)
-##         }
-##         OK.but <-tkbutton(tt, text="   OK   ", command=OnOK)
-##         tkgrid(OK.but)
-##         tkfocus(tt)
-##         tkwait.window(tt)
-##         rm(a)
-
-##         rm(fact31, fact32, fact33, envir=.GlobalEnv)
-##         rm(b, envir=.GlobalEnv)
-##     }
-## } ## fin occurrence3.f
-
-
-################################################################################
-## FONCTIONS DE CALCUL DE METRIQUES PAR GROUPE D'UNITE D'OBSERVATION
-##                                  ET CLASSES DE TAILLE
-##     - unfacteurCT.f(), deuxfacteursCT.f(), troisfacteursCT.f()
-##     - choixCT.f()
-################################################################################
-
-################################################################################
-## FONCTIONS DE CALCUL DE METRIQUES PAR GROUPE D'UNITE D'OBSERVATION
-##                               ET PAR GROUPE D'ESPECES
-##     - grpunitobsGrpEspece.f()
-################################################################################
-
-## [sup] [yr: 13/01/2011]:
-
-## grpunitobsGrpEspece.f <- function(){
-
-##     print("fonction grpunitobsGrpEspece.f activée")
-##     aa <- tktoplevel()
-##     tkwm.title(aa, "Selection du facteur de groupement des especes")
-##     scr <- tkscrollbar(aa, repeatinterval=5, command=function(...)tkyview(tl, ...))
-##     tl <- tklistbox(aa, height=20, selectmode="single",
-##                     yscrollcommand=function(...)tkset(scr, ...), background="white")
-##     tkgrid(tklabel(aa, text="Liste des facteurs de groupement"))
-##     tkgrid(tl, scr)
-##     tkgrid.configure(scr, rowspan=4, sticky="nsw")
-##     facts <- sort(names(especes))
-##     a <- length(facts)
-##     for (i in (1:a))
-##     {
-##         tkinsert(tl, "end", facts[i])
-##     }
-##     tkselection.set(tl, 0)
-
-##     OnOK <- function(){
-##         factesp <- facts[as.numeric(tkcurselection(tl))+1]
-##         assign("factesp", factesp, envir=.GlobalEnv)
-##         tkdestroy(aa)
-##         tkmessageBox(message="Non programme")
-##     }
-##     OK.but <-tkbutton(aa, text="OK", command=OnOK)
-##     tkgrid(OK.but)
-##     tkfocus(aa)
-##     tkwait.window(aa)
-##     rm(a)
-## }  # fin grpunitobsGrpEspece.f()
-
-
 ################################################################################
 ## CREATION DES TABLES DE BASE
-##      Calcul par unité d'observation / classe de taille / espèce : unitespta.f
-##                  " " " par rotation : unitesptar.f
 ##      Calcul par unité d'observation par espèce : unitesp.f
-##                  " " " par rotation : unitespr.f
 ##      Calcul par unité d'observation toutes espèces confondues : unit.f
-##                  " " " par rotation : unitr.f
 ################################################################################
 
 
@@ -751,92 +307,6 @@ unitespta.f <- function(){
     }
 } #fin unitespta.f()
 
-################################################################################
-## Nom     : unitesptar.f
-## Objet   : calcul des métriques par unité d'observation / rotation / espèce /
-##           classe de taille
-## Input   : tables "obs" et "unitobs"
-## Output  : table "unitesptar"
-################################################################################
-
-## calcul par rotation
-unitesptar.f <- function ()
-{
-    print("fonction unitesptar.f activée")
-    ## creation des classes de tailles si champ classe taille contient uniquement des NA
-    if (NA %in% unique(obs$classe_taille)==TRUE)
-    {
-        classeTaille.f()
-    }else{
-        ## si le champ taille contient uniquement des valeurs a NA
-        if (length(unique(obs$taille))==1 & NA %in% unique(obs$taille)==TRUE) # [!!!] remplacer par all(is.na()) ?  [yr: 13/08/2010]
-        {
-            ct <- 2
-        }else{
-            ct <- 1
-        }
-    }
-    assign("ct", ct, envir=.GlobalEnv)
-
-    ## Creation de la table par unite d'observation, par espece et par classe de taille (et par rotation si SVR)
-
-    ## Somme des individus
-    unitesptaTR <- tapply(obs$nombre, list(obs$unite_observation, obs$rotation, obs$code_espece, obs$classe_taille),
-                          sum, na.rm = TRUE) # Ordre fonction - arguments ! [!!!] [yr: 30/07/2010]
-    unitesptaTR[is.na(unitesptaTR)] <- 0
-    unitesptaR <- as.data.frame(matrix(as.numeric(NA),
-                                       dim(unitesptaTR)[1] * dim(unitesptaTR)[2] *
-                                       dim(unitesptaTR)[3] * dim(unitesptaTR)[4], 5))
-    colnames(unitesptaR) = c("unitobs", "rotation", "code_espece", "classe_taille", "nombre")
-    unitesptaR$nombre <- as.vector(unitesptaTR, "integer") # 'numeric' changé pour avoir des entiers.
-    unitesptaR$unitobs <- rep(dimnames(unitesptaTR)[[1]],
-                              times = dim(unitesptaTR)[2] * dim(unitesptaTR)[3] * dim(unitesptaTR)[4])
-    unitesptaR$rotation <- rep(dimnames(unitesptaTR)[[2]], each = dim(unitesptaTR)[1], times = dim(unitesptaTR)[3])
-    unitesptaR$code_espece <- rep(dimnames(unitesptaTR)[[3]], each = dim(unitesptaTR)[1]*dim(unitesptaTR)[2])
-    unitesptaR$classe_taille <- rep(dimnames(unitesptaTR)[[4]],
-                                    each = dim(unitesptaTR)[1]*dim(unitesptaTR)[2]*dim(unitesptaTR)[3])
-    unitesptaR$classe_taille[unitespta$classe_taille == ""] <- NA
-
-    ## sommes des biomasses par espece par unitobs et par classes de taille
-    unitesptaTR.b <- tapply(obs$poids,
-                            list(obs$unite_observation, obs$rotation, obs$code_espece, obs$classe_taille),
-                            function(x){if (all(is.na(x))) {return(NA)}else{return(sum(x, na.rm=TRUE))}}) # Pour éviter
-                                        # des sommes à zéro là où seulement des NAs. ##sum) # [bio]
-    unitesptaR.b <- as.data.frame(matrix(as.numeric(NA),
-                                         dim(unitesptaTR.b)[1] * dim(unitesptaTR.b)[2] *
-                                         dim(unitesptaTR.b)[3] * dim(unitesptaTR)[4], 5))
-    colnames(unitesptaR.b) = c("unitobs", "rotation", "code_espece", "classe_taille", "biomasse")
-    unitesptaR.b$biomasse <- as.vector(unitesptaTR.b, "numeric")
-    unitesptaR.b$unitobs <- rep(dimnames(unitesptaTR.b)[[1]],
-                                times = dim(unitesptaTR.b)[2] * dim(unitesptaTR.b)[3] * dim(unitesptaTR.b)[4])
-    unitesptaR.b$rotation <- rep(dimnames(unitesptaTR.b)[[2]],
-                                 each = dim(unitesptaTR.b)[1], times = dim(unitesptaTR.b)[3])
-    unitesptaR.b$code_espece <- rep(dimnames(unitesptaTR.b)[[3]], each = dim(unitesptaTR.b)[1]*dim(unitesptaTR.b)[2])
-    unitesptaR.b$classe_taille <- rep(dimnames(unitesptaTR.b)[[4]],
-                                      each = dim(unitesptaTR.b)[1]*dim(unitesptaTR.b)[2]*dim(unitesptaTR.b)[3])
-    unitesptaR.b$an <- unitobs$an[match(unitesptaR.b$unitobs, unitobs$unite_observation)]
-    unitesptaR$biomasse <- unitesptaR.b$biomasse
-
-    ## Presence - absence
-    unitesptaR$pres_abs[unitesptaR$nombre != 0] <- as.integer(1) # pour avoir la richesse spécifique en 'integer'.1
-    unitesptaR$pres_abs[unitesptaR$nombre == 0] <- as.integer(0) # pour avoir la richesse spécifique en 'integer'.0
-
-    ## calcul densites
-    rayonsR.t <- tapply(obs$dmin, list(obs$unite_observation, obs$rotation), max)
-    rayonsR <- as.data.frame(matrix(as.numeric(NA), dim(rayonsR.t)[1]*dim(rayonsR.t)[2], 3))
-    colnames(rayonsR) = c("unitobs", "rotation", "rayonMax")
-    rayonsR$rayonMax <- as.vector(rayonsR.t, "numeric")
-    rayonsR$unitobs <- rep(dimnames(rayonsR.t)[[1]], dim(rayonsR.t)[2])
-    rayonsR$rotation <- rep(dimnames(rayonsR.t)[[2]], each = dim(rayonsR.t)[1], 1)
-    unitesptaR$densite <- unitesptaR$nombre / (pi * rayonsR$rayonMax[match(unitesptaR$unitobs, rayonsR$unitobs)])
-
-    assign("unitesptaR", unitesptaR, envir=.GlobalEnv)
-    write.csv(unitesptaR,
-              file=paste(NomDossierTravail, "UnitobsEspeceClassetailleRotationMetriques.csv", sep=""),
-              row.names = FALSE)
-    print(paste("La table par unite d'observation / rotation / espece / classe de taille",
-                " a ete creee: UnitobsEspeceClassetailleRotationMetriques.csv", sep=""))
-} #fin unitesptar.f()
 
 ################################################################################
 ## Nom     : unitesp.f
@@ -892,9 +362,6 @@ unitesp.f <- function(){
         unitesp$nombreMax <- as.vector(statRotations[["nombresMax"]])
         unitesp$nombreSD <- as.vector(statRotations[["nombresSD"]])
     }else{}
-
-    ## Euh... ce serait pas hyper dangeureux ce qui suit [!!!] [???] [yr: 01/10/2010]
-    ## unitespT[is.na(unitespT)] <- as.integer(0) # Pour conserver des entiers
 
     if (!is.benthos.f())                               # unique(unitobs$type) != "LIT"
     {
@@ -1038,10 +505,9 @@ unitesp.f <- function(){
         ## Vérifier si pas de risque que des longueurs de transitions == 0 => besoin de mettre 0 à count dans ces cas là
         ## [!!!]
         obs$count <- 1                  # [!!!] somme des obs$nombre > 0 [???]
+
         e <- tapply(obs$count, list(obs$unite_observation, obs$code_espece), sum, na.rm=TRUE)
-        ## Vérif faite :
-        ## sapply(1:2, function(x)all(expand.grid(row.names(e), colnames(e))[!is.na(e), ][, x] ==
-        ##                            listespunit[ , c("unite_observation", "code_espece")][, x]))
+
         unitesp$colonie <- as.vector(e)
         unitesp$colonie[is.na(unitesp$colonie)] <- 0 # [???]
         unitesp$taille.moy.colonies <- apply(unitesp[ , c("nombre", "colonie")], 1,
@@ -1083,71 +549,6 @@ unitesp.f <- function(){
 
 
 ################################################################################
-## Nom     : unitespr.f
-## Objet   : calcul des métriques par unité d'observation / rotation /espèce
-## Input   : tables "obs" et "unitobs"
-## Output  : table "unitespr" et "listesprunit"
-################################################################################
-
-unitespr.f <- function(){
-
-    print("fonction unitespr.f activée")
-
-    ## somme des abondances
-    unitespTR <- tapply(obs$nombre, list(obs$unite_observation, obs$rotation, obs$code_espece), sum, na.rm = TRUE)
-    unitespTR[is.na(unitespTR)] <- 0
-
-    ## reaffectation dans un data.frame
-    unitespr <- as.data.frame(matrix(NA, dim(unitespTR)[1]*dim(unitespTR)[2]*dim(unitespTR)[3], 4))
-    colnames(unitespr) = c("unitobs", "rotation", "code_espece", "nombre")
-    unitespr$nombre <- as.vector(unitespTR, "integer") # 'numeric' changé pour avoir des entiers
-    unitespr$unitobs <- rep(dimnames(unitespTR)[[1]], times = dim(unitespTR)[2] * dim(unitespTR)[3])
-    unitespr$rotation <- rep(dimnames(unitespTR)[[2]], each = dim(unitespTR)[1], times = dim(unitespTR)[3])
-    unitespr$code_espece <- rep(dimnames(unitespTR)[[3]], each = dim(unitespTR)[1]*dim(unitespTR)[2])
-
-    ## biomasse
-
-    ## somme des biomasses par espece par unitobs
-    unitespTR.b <- tapply(obs$poids, list(obs$unite_observation, obs$rotation, obs$code_espece),
-                          function(x){if (all(is.na(x))) {return(NA)}else{return(sum(x, na.rm=TRUE))}}) # Pour éviter
-                                        # des sommes à zéro là où seulement des NAs. ## na.rm = TRUE, sum)
-    unitespR.b <- as.data.frame(matrix(NA, dim(unitespTR.b)[1]*dim(unitespTR.b)[2]*dim(unitespTR.b)[3], 4))
-    colnames(unitespR.b) = c("unitobs", "rotation", "code_espece", "biomasse")
-    unitespR.b$biomasse <- as.vector(unitespTR.b)
-    unitespR.b$unitobs <- rep(dimnames(unitespTR.b)[[1]], times = dim(unitespTR.b)[2] * dim(unitespTR.b)[3])
-    unitespR.b$rotation <- rep(dimnames(unitespTR.b)[[2]], each = dim(unitespTR.b)[1], times = dim(unitespTR.b)[3])
-    unitespR.b$code_espece <- rep(dimnames(unitespTR.b)[[3]], each = dim(unitespTR.b)[1]*dim(unitespTR.b)[2])
-    unitespr$biomasse <- unitespR.b$biomasse
-
-    rayons.t <- tapply(obs$dmin, list(obs$unite_observation), max)
-    rayons <- as.data.frame(matrix(as.numeric(NA), dim(rayons.t)[1], 2))
-    colnames(rayons) = c("unitobs", "rayonMax")
-    rayons$rayonMax <- as.vector(rayons.t, "numeric")
-    rayons$unitobs <- rep(dimnames(rayons.t)[[1]])
-    unitespr$densite <- unitespr$nombre / (pi * rayons$rayonMax[match(unitespr$unitobs, rayons$unitobs)]^2)
-
-    ## Creation de l'info Presence/Absence
-    unitespr$pres_abs[unitespr$nombre != 0] <- as.integer(1) # pour avoir la richesse spécifique en 'integer'.1
-    unitespr$pres_abs[unitespr$nombre == 0] <- as.integer(0) # pour avoir la richesse spécifique en 'integer'.0
-
-    ## Ecriture du fichier en sortie
-    assign("unitespr", unitespr, envir=.GlobalEnv)
-    print("La table par unite d'observation / rotation / espece a ete creee : UnitobsEspeceRotationMetriques.csv")
-    write.csv(unitespr,
-              file=paste(nameWorkspace, "/FichiersSortie/UnitobsEspeceRotationMetriques.csv", sep=""),
-              row.names = FALSE)
-
-    ## table avec la liste des especes presentes dans chaque transect
-    listesprunit <- unitespr[unitespr$pres_abs != 0, ]
-    listesprunit <- listesprunit[order(listesprunit$code_espece), ]
-    assign("listesprunit", listesprunit, envir=.GlobalEnv)
-    print("La liste des especes presentes dans chaque transect par rotation a ete creee : ListeEspecesRotationUnitobs.csv")
-    write.csv(listesprunit,
-              file=paste(nameWorkspace, "/FichiersSortie/ListeEspecesRotationUnitobs.csv", sep=""),
-              row.names = FALSE)
-} # fin unitespr.f()
-
-################################################################################
 ## Nom     : unit.f
 ## Objet   : calcul des métriques par unité d'observation toutes espèces confondues
 ## Input   : tables "obs" et "unitobs"
@@ -1157,13 +558,6 @@ unitespr.f <- function(){
 unit.f <- function(){
 
     print("fonction unit.f activée")
-
-    ## somme des abondances
-    ## uniti <- tapply(obs$nombre, obs$unite_observation, sum, na.rm = TRUE)
-    ## unit <- as.data.frame(matrix(NA, dim(uniti)[1], 2))
-    ## unit$nombre <- as.integer(uniti)    # 'as.numeric' changé pour avoir des entiers.
-    ## unit$unitobs <- rownames(uniti)
-    ## rm(uniti)
 
     unit <- as.data.frame(as.table(tapply(obs$nombre, obs$unite_observation, sum, na.rm = TRUE))
                           , responseName="nombre")
@@ -1264,9 +658,7 @@ unit.f <- function(){
         ## suppression de l'indice de shannon (non pertinent)
         unit$shannon <- NULL
 
-        ## browser()
-
-        ## richesse specifique relative  ## Remplacer par un "switch" ou même une construction plus
+        ## richesse specifique relative :  ## Remplacer par un "switch" ou même une construction plus
                                         # générique (e.g. construction et évaluation d'une expression dépendant du site
                                         # étudié) [yreecht: 22/07/2010] OK [yr: 08/10/2010]
 
@@ -1366,103 +758,10 @@ unit.f <- function(){
 
 } # fin unit.f()
 
-################################################################################
-## Nom     : unitr.f
-## Objet   : calcul des métriques par unité d'observation et rotation
-##           toutes espèces confondues
-## Input   : tables "obs" et "unitobs"
-## Output  : table "unitr"
-################################################################################
-
-unitr.f <- function(){
-
-    print("fonction unitr.f activée")
-    ## somme des abondances
-    unitir <- tapply(obs$nombre, list(obs$unite_observation, obs$rotation), sum, na.rm = TRUE)
-    unitir[is.na(unitir)] <- 0
-    unitr <- as.data.frame(matrix(NA, dim(unitir)[1]*dim(unitir)[2], 3))
-    colnames(unitr) = c("unitobs", "rotation", "nombre")
-    unitr$nombre <- as.vector(unitir, "integer") # 'numeric' changé pour avoir des entiers.
-    unitr$unitobs <- rep(dimnames(unitir)[[1]], dim(unitir)[2])
-    unitr$rotation <- rep(dimnames(unitir)[[2]], each = dim(unitir)[1], 1)
-
-    ## biomasse par unite d'observation
-    unitrT.b <- tapply(obs$poids, list(obs$unite_observation, obs$rotation),
-                       function(x){if (all(is.na(x))) {return(NA)}else{return(sum(x, na.rm=TRUE))}}) # Pour éviter
-                                        # des sommes à zéro là où seulement des NAs. ## sum)
-
-    unitr.b <- as.data.frame(matrix(NA, dim(unitrT.b)[1]*dim(unitrT.b)[2], 3))
-    colnames(unitr.b) = c("unitobs", "rotation", "biomasse")
-    unitr.b$biomasse <- as.vector(unitrT.b, "numeric")
-    unitr.b$unitobs <- rep(dimnames(unitrT.b)[[1]], dim(unitrT.b)[2])
-    unitr.b$rotation <- rep(dimnames(unitrT.b)[[2]], each = dim(unitrT.b)[1], 1)
-    unitr$biomasse <- unitr.b$biomasse
-    unitr$rotation <- unitr.b$rotation
-
-    ## ajout des champs "an" et "site"
-    unitr$an <- unitobs$an[match(unitr$unitobs, unitobs$unite_observation)]
-    unitr$site <- unitobs$site[match(unitr$unitobs, unitobs$unite_observation)]
-
-    ## calcul richesse specifique
-    unitrT.RS <- tapply(unitespr$pres_abs, list(unitespr$unitobs, unitespr$rotation), na.rm = TRUE, sum)
-    unitr.RS <- as.data.frame(matrix(NA, dim(unitrT.RS)[1]*dim(unitrT.RS)[2], 3))
-    colnames(unitr.RS) = c("unitobs", "rotation", "RS")
-    unitr.RS$RS <- as.vector(unitrT.RS, "integer") # 'numeric' changé pour avoir des entiers.
-    unitr.RS$unitobs <- rep(dimnames(unitrT.RS)[[1]], dim(unitrT.RS)[2])
-    unitr.RS$rotation <- rep(dimnames(unitrT.RS)[[2]], each = dim(unitrT.RS)[1], 1)
-    unitr$richesse_specifique <- unitr.RS$RS
-
-    ## calcul des indices de Simpson
-    ## le calcul se fait sur les $nombre il n'y a donc aucune espece exclue pour le calcul de ces metriques
-    unitrT <- tapply(obs$nombre, list(obs$unite_observation, obs$rotation, obs$code_espece), sum, na.rm = TRUE)
-    unitrT[is.na(unitrT)] <- as.integer(0) # pour conserver des entiers
-
-    ot <- apply(unitrT, 1, na.rm = TRUE, sum)
-    a <- sweep(unitrT, 1, ot, FUN="/")
-    sim <- a^2
-    sim[is.nan(sim)] <- 0
-    sim <- apply(sim, 1, na.rm = TRUE, sum)
-    sim <- as.data.frame(sim)
-    sim$sim <- as.numeric(sim$sim)
-    unitr$simpson <- NA
-    unitr$simpson <- sim$sim[match(unitr$unitobs, rownames(sim))]
-    unitr$l.simpson <- 1 - unitr$simpson
-    rm(sim)
-
-    ## calcul de l'indice de Shannon
-    sha <- a*log(a) # en base e
-    sha[is.nan(sha)] <- 0
-    sha <- apply(sha, 1, na.rm = TRUE, sum)
-    sha <- as.data.frame(sha)
-    sha$sha <- as.numeric(sha$sha)
-    unitr$shannon <- NA
-    unitr$shannon <- -sha$sha[match(unitr$unitobs, rownames(sha))]
-    rm(a, sha)
-
-    ## calcul de l'indice de Pielou
-    unitr$pielou <- unitr$shannon / log(unitr$richesse_specifique)
-
-    ## calcul de l'indice de Hill
-    unitr$hill <- (1-unitr$simpson) / exp(unitr$shannon)
-
-    ## suppression indice de shannon
-    unitr$shannon <- NULL
-
-    ## deplacement de unit dans l'environnement global
-    assign("unitr", unitr, envir=.GlobalEnv)
-
-    ## message de creation de la table
-    print("La table metriques par unite d'observation a ete creee : UnitobsRotationMetriques.csv")
-    write.csv(unitr,
-              file=paste(nameWorkspace, "/FichiersSortie/UnitobsRotationMetriques.csv", sep=""),
-              row.names = FALSE)
-} # fin unitr.f()
-
 
 ################################################################################
 ## Nom    : creationTablesBase.f()
 ## Objet  : exécution des fonctions unit.f, unitesp.f et unitespta.f
-##          dans le cas de la vidéo rotative, unitr.f, unitespr.f et unitesptar.f
 ################################################################################
 
 creationTablesBase.f <- function(){
@@ -1485,39 +784,19 @@ creationTablesBase.f <- function(){
     }
     unitesp.f()
     unit.f()
+
     ## Sauvegarde des calculs pour restauration sans rechargement
     if (Jeuxdonnescoupe==0)
     {
-        ## SAUVobs <- obs                  # ########################################
-        ## SAUVunitobs <- unitobs          #
-        ## SAUVcontingence <- contingence  # stockages inutiles [yr: 10/08/2010]
-        ## SAUVunitesp <- unitesp          #
-        ## SAUVunit <- unit                # ########################################
         assign("SAUVobs", obs, envir=.GlobalEnv)
         assign("SAUVunitobs", unitobs, envir=.GlobalEnv)
         assign("SAUVcontingence", contingence, envir=.GlobalEnv)
         assign("SAUVunitesp", unitesp, envir=.GlobalEnv)
         assign("SAUVunit", unit, envir=.GlobalEnv)
-        assign("SAUVTablePresAbs", TablePresAbs, envir=.GlobalEnv)
         assign("SAUVlistespunit", listespunit, envir=.GlobalEnv)
     }
 
-    ## si SVR calcul des metriques par rotation
-    if (unique(unitobs$type) == "SVR")
-    {
-        unitesptar.f()
-        unitespr.f()
-        unitr.f()
-        if (Jeuxdonnescoupe==0)
-        {
-            ## SAUVunitesptar <- unitesptaR # ########################################
-            ## SAUVunitespr <- unitespr     # stockages inutiles [yr: 10/08/2010]
-            ## SAUVunitr <- unitr           # ########################################
-            assign("SAUVunitesptar", unitesptaR, envir=.GlobalEnv)
-            assign("SAUVunitespr", unitespr, envir=.GlobalEnv)
-            assign("SAUVunitr", unitr, envir=.GlobalEnv)
-        }
-    }
+    ## Infos :
     if (Jeuxdonnescoupe==1)
     {
         tkmessageBox(message="Les métriques par unités d'observations ont été recalculées sur le jeu de données sélectionnés")
@@ -1575,11 +854,10 @@ creationTablesCalcul.f <- function(){
     {
         TableMetrique$Cath_benthique <- especes$Cath_benthique[match(TableMetrique$code_espece, especes$code_espece)]
     }
-    if (unique(unitobs$type) == "UVC")
+    if (unique(unitobs$type) == "SVR")  # suppr: "UVC" Ô_ô [???]
     {
         ## Si Video     "poids.moyen.petits" "poids.moyen.moyens" "poids.moyen.gros"   "taille_max_petits"  "taille_max_moyens"     "L50"
     }
-    ## print(names(TableMetrique))    # Pas utile sauf en développement.
 
     ## On peut rendre plus lisible ce qui suit... [yreecht: 22/07/2010] OK [yreecht: 08/10/2010]
     TableBiodiv <- unit
@@ -1598,41 +876,10 @@ creationTablesCalcul.f <- function(){
     assign("TableBiodiv", TableBiodiv, envir=.GlobalEnv)
     assign("TableMetrique", TableMetrique, envir=.GlobalEnv)
     print("tableau TableMetrique réalisé")
-    ## print(names(TableMetrique))    # Pas utile sauf en développement.
 
     if (Jeuxdonnescoupe==0)
     {
         assign("SAUVTableBiodiv", TableBiodiv, envir=.GlobalEnv)
         assign("SAUVTableMetrique", TableMetrique, envir=.GlobalEnv)
     }else{}
-}
-
-########################################################################################################################
-calcPresAbs.f <- function()
-{
-    ## Purpose: Créer une table "TablePresAbs" à partir de la table de
-    ##          contingence
-    ## ----------------------------------------------------------------------
-    ## Arguments: aucun.
-    ## ----------------------------------------------------------------------
-    ## Author: Yves Reecht, Date: 13 oct. 2010, 15:18
-
-    if (nrow(contingence) > 0 && ncol(contingence) > 0) # Contingence ne doit pas être vide.
-    {
-        ## Pour avoir les bons noms de colonnes dans ce qui suit :
-        names(dimnames(contingence)) <- c("unite_observation", "code_espece")
-
-        ## On utilise la méthode "as.data.frame" pour la classe "table"
-        ## (fonctionne comme un reshape() en direction="long") :
-        TablePresAbs <- as.data.frame(as.table(contingence), responseName="pres_abs", stringsAsFactors=FALSE)
-
-        ## Seules les présences absences nous intéressent :
-        TablePresAbs$pres_abs[TablePresAbs$pres_abs > 0] <- 1
-
-        assign(x="TablePresAbs", value=TablePresAbs, envir=.GlobalEnv)
-    }else{
-        assign(x="TablePresAbs", value=NULL, envir=.GlobalEnv)
-    }
-
-    statutPresAbs.f()
 }

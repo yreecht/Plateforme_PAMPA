@@ -223,6 +223,7 @@ choixespeces.f <- function()
     ## Suppression des especes qui ne sont jamais vues
     ## Sinon problemes pour les calculs d'indices de diversite.
     a <- which(apply(contingence, 2, sum, na.rm=TRUE) == 0)
+
     if (length(a) != 0)
     {
         contingence <- contingence[, -a, drop=FALSE]
@@ -237,7 +238,6 @@ choixespeces.f <- function()
     }
     rm(b)
     assign("contingence", contingence, envir=.GlobalEnv)
-    calcPresAbs.f()
 
     print("Table de contingence unite d'observations/especes creee : ContingenceUnitObsEspeces.csv")
     write.csv(contingence, file=paste(nameWorkspace, "/FichiersSortie/ContingenceUnitObsEspeces.csv", sep=""))

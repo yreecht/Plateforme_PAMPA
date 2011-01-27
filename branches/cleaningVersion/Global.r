@@ -5,7 +5,7 @@
 ## Output               : CSV
 ## R version            : 2.10.1
 ## Date de création     : Février 2008
-## Date de modification : Avril 2010
+## Date de modification : Janvier 2011
 ################################################################################
 
 ## Réglage de l'encodage des caractères :
@@ -25,17 +25,9 @@ nameWorkspace <- basePath
 
 ## ! suggestions concernant la réorganisation :
 
-## ! -> un fichier global (executable du programme, appelle chaque fonction)
 ## ! -> ajouter un fichier "test des champs"
-## ! -> rajouter un message signalant que l'import des données a réussi pour chaque fichier
 ## ! -> un fichier stats de vérification des données
 ## ! -> un fichier avec les différents modes de calcul des classes de taille (cf WP2/CalculClassesDeTaille.doc)
-## ! -> Un fichier calcul metrique base, un autre pour les métriques avancées, avec pour chaque, les noms de variable = contenu menu
-## ! -> un fichier analyses ou un fichier par type d'analyse
-## ! -> un fichier pour les groupements par classe et préparation de calculs (tri, création d'objets pour les calculs)
-## ! -> un fichier data_temp pour ne pas écraser les fichiers chargés à la base
-## ! -> un fichier interface
-## ! -> un fichier affichage graphique,
 
 ## !amélioration des commentaires : en entête de chaque fichier, un plan du contenu
 ## !améliorer les messages d'alerte, en mettre dés qu'il y a des saisies et après contrôle de saisie
@@ -49,12 +41,6 @@ nameWorkspace <- basePath
 
 
 ## !Messages d'avis :
-## !1: le package 'vegan' a été compilé sous R version 2.7.2 et l'aide ne fonctionnera pas correctement
-## !Veuillez le réinstaller, s'il-vous-plait
-## !2: le package 'maptools' a été compilé sous R version 2.7.2 et l'aide ne fonctionnera pas correctement
-## !Veuillez le réinstaller, s'il-vous-plait
-## !3: le package 'sp' a été compilé sous R version 2.7.2 et l'aide ne fonctionnera pas correctement
-## !Veuillez le réinstaller, s'il-vous-plait
 
                                                            # Mise en forme du code :
                                                            # -----------------------

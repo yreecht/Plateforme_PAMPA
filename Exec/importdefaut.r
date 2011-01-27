@@ -120,21 +120,30 @@ lectureFichierEspeces.f <- function ()
     print("fonction lectureFichierEspeces activée")
     ## Importation des caracteristiques des especes
     especes <- read.table(fileNameRefEsp, sep="\t", dec=".", quote="", header=TRUE, encoding="latin1")
-    names(especes)=c("code_espece", "GrSIH", "CodeSIH", "IssCaap", "TaxoCode", "CodeFAO", "CodeFB", "Phylum", "Cath_benthique", "Classe", "Ordre", "Famille", "Genre", "espece", "Identifiant",
-         "ObsNC", "ObsRUN", "ObsMAY", "ObsSTM", "ObsCB", "ObsBA", "ObsBO", "ObsCR",
-         "taillemax", "L50", "cryptique", "mobilite", "territorial", "nocturne", "comportement.grp", "agreg.saison", "position.col.eau",
-         "strategie.demo", "Type.ponte", "Habitat.Prefere", "Changement.sexe", "regim.alim",
-         "interet.chasseNC", "interet.chasseRUN", "interet.chasseMAY", "interet.chasseSTM", "interet.chasseCB", "interet.chasseBA", "interet.chasseBO", "interet.chasseCR",
-         "interet.ligneNC", "interet.ligneRUN", "interet.ligneMAY", "interet.ligneSTM", "interet.ligneCB", "interet.ligneBA", "interet.ligneBO", "interet.ligneCR",
-         "interet.filetNC", "interet.filetRUN", "interet.filetMAY", "interet.filetSTM", "interet.filetCB", "interet.filetBA", "interet.filetBO", "interet.filetCR",
-         "interet.casierNC", "interet.casierRUN", "interet.casierMAY", "interet.casierSTM", "interet.casierCB", "interet.casierBA", "interet.casierBO", "interet.casierCR",
-         "interet.piedNC", "interet.piedRUN", "interet.piedMAY", "interet.piedSTM", "interet.piedCB", "interet.piedBA", "interet.piedBO", "interet.piedCR", "interetComMAY",
-         "Coeff.a.Med", "Coeff.b.Med", "Coeff.a.NC", "Coeff.a.MAY", "Coeff.b.NC", "Coeff.b.MAY", "poids.moyen.petits", "poids.moyen.moyens", "poids.moyen.gros",
-         "taille_max_petits", "taille_max_moyens", "niveau.a.et.b.MED", "niveau.a.et.b.NC", "niveau.a.et.b.MAY", "emblematiqueNC", "emblematiqueRUN", "emblematiqueMAY",
-         "emblematiqueSTM", "emblematiqueCB", "emblematiqueBA", "emblematiqueBO", "emblematiqueCR", "stat.IUCN", "autre.statutNC", "autre.statutRUN", "autre.statutMAY",
-         "autre.statutSTM", "autre.statutCB", "autre.statutBA", "autre.statutBO", "autre.statutCR", "etat.pop.localNC", "etat.pop.localRUN", "etat.pop.localMAY", "etat.pop.localSTM",
-         "etat.pop.localCB", "etat.pop.localBA", "etat.pop.localBO", "etat.pop.localCR", "endemiqueNC", "endemiqueRUN", "endemiqueMAY", "endemiqueSTM", "endemiqueCB", "endemiqueBA",
-         "endemiqueBO", "endemiqueCR")
+    names(especes) <- c("code_espece", "GrSIH", "CodeSIH", "IssCaap", "TaxoCode", "CodeFAO", "CodeFB", "Phylum",
+                        "Cath_benthique", "Classe", "Ordre", "Famille", "Genre", "espece", "Identifiant", "ObsNC",
+                        "ObsRUN", "ObsMAY", "ObsSTM", "ObsCB", "ObsBA", "ObsBO", "ObsCR", "taillemax", "L50",
+                        "cryptique", "mobilite", "territorial", "nocturne", "comportement.grp", "agreg.saison",
+                        "position.col.eau", "strategie.demo", "Type.ponte", "Habitat.Prefere", "Changement.sexe",
+                        "regim.alim", "interet.chasseNC", "interet.chasseRUN", "interet.chasseMAY", "interet.chasseSTM",
+                        "interet.chasseCB", "interet.chasseBA", "interet.chasseBO", "interet.chasseCR",
+                        "interet.ligneNC", "interet.ligneRUN", "interet.ligneMAY", "interet.ligneSTM",
+                        "interet.ligneCB", "interet.ligneBA", "interet.ligneBO", "interet.ligneCR", "interet.filetNC",
+                        "interet.filetRUN", "interet.filetMAY", "interet.filetSTM", "interet.filetCB",
+                        "interet.filetBA", "interet.filetBO", "interet.filetCR", "interet.casierNC",
+                        "interet.casierRUN", "interet.casierMAY", "interet.casierSTM", "interet.casierCB",
+                        "interet.casierBA", "interet.casierBO", "interet.casierCR", "interet.piedNC", "interet.piedRUN",
+                        "interet.piedMAY", "interet.piedSTM", "interet.piedCB", "interet.piedBA", "interet.piedBO",
+                        "interet.piedCR", "interetComMAY", "Coeff.a.Med", "Coeff.b.Med", "Coeff.a.NC", "Coeff.a.MAY",
+                        "Coeff.b.NC", "Coeff.b.MAY", "poids.moyen.petits", "poids.moyen.moyens", "poids.moyen.gros",
+                        "taille_max_petits", "taille_max_moyens", "niveau.a.et.b.MED", "niveau.a.et.b.NC",
+                        "niveau.a.et.b.MAY", "emblematiqueNC", "emblematiqueRUN", "emblematiqueMAY", "emblematiqueSTM",
+                        "emblematiqueCB", "emblematiqueBA", "emblematiqueBO", "emblematiqueCR", "stat.IUCN",
+                        "autre.statutNC", "autre.statutRUN", "autre.statutMAY", "autre.statutSTM", "autre.statutCB",
+                        "autre.statutBA", "autre.statutBO", "autre.statutCR", "etat.pop.localNC", "etat.pop.localRUN",
+                        "etat.pop.localMAY", "etat.pop.localSTM", "etat.pop.localCB", "etat.pop.localBA",
+                        "etat.pop.localBO", "etat.pop.localCR", "endemiqueNC", "endemiqueRUN", "endemiqueMAY",
+                        "endemiqueSTM", "endemiqueCB", "endemiqueBA", "endemiqueBO", "endemiqueCR")
 
     ## Verification du nombre de colonnes:
     if (dim(especes)[2] != 125)
@@ -193,13 +202,16 @@ environnementdefault.f <- function (nameWorkspace)
             tkinsert(txt.w, "end", paste(nameWorkspace, " existe\n", sep=""))
             if (file.access(paste(nameWorkspace, "/FichiersSortie", sep=""), mode = 0)==-1)
             {
-                dir.create(paste(nameWorkspace, "/FichiersSortie", sep=""), showWarnings = TRUE, recursive = FALSE, mode = "0777")
+                dir.create(paste(nameWorkspace, "/FichiersSortie", sep=""),
+                           showWarnings = TRUE, recursive = FALSE, mode = "0777")
                 tkinsert(txt.w, "end", paste("\n", nameWorkspace, "/FichiersSortie a été créé", sep=""))
             }
         }else{
             dir.create(nameWorkspace, showWarnings = TRUE, recursive = FALSE, mode = "0777")
-            dir.create(paste(nameWorkspace, "/FichiersSortie", sep=""), showWarnings = TRUE, recursive = FALSE, mode = "0777")
-            tkinsert(txt.w, "end", paste("\n", nameWorkspace, " et", nameWorkspace, "/FichiersSortie ont été créés", sep=""))
+            dir.create(paste(nameWorkspace, "/FichiersSortie", sep=""),
+                       showWarnings = TRUE, recursive = FALSE, mode = "0777")
+            tkinsert(txt.w, "end",
+                     paste("\n", nameWorkspace, " et", nameWorkspace, "/FichiersSortie ont été créés", sep=""))
         }
     }else{
         gestionMSGerreur.f("noWorkspace")
@@ -211,6 +223,7 @@ environnementdefault.f <- function (nameWorkspace)
 ## Choix par defauts de C:/PAMPA
 opendefault.f <- function ()
 {
+    pampaProfilingStart.f()
 
     print("fonction opendefault activée !!")
     pathMaker.f()                       # MàJ des variables "fileNameUnitObs", "fileNameObs", "fileNameRefEsp". Pour les
@@ -225,11 +238,11 @@ opendefault.f <- function ()
     ## ################################################################################
     print(fileNameUnitObs)
     unitobs <- read.table(fileNameUnitObs, sep="\t", dec=".", header=TRUE, encoding="latin1")
-    names(unitobs)=c("AMP", "unite_observation", "type", "site", "station", "caracteristique_1", "caracteristique_2",
-         "fraction_echantillonnee", "jour", "mois", "an",
-         "heure", "nebulosite", "direction_vent", "force_vent", "etat_mer", "courant", "maree", "phase_lunaire",
-         "latitude", "longitude", "statut_protection", "avant_apres", "biotope", "biotope_2",
-         "habitat1", "habitat2", "habitat3", "visibilite", "prof_min", "prof_max", "DimObs1", "DimObs2", "nb_plong", "plongeur")
+    names(unitobs) <- c("AMP", "unite_observation", "type", "site", "station", "caracteristique_1", "caracteristique_2",
+         "fraction_echantillonnee", "jour", "mois", "an", "heure", "nebulosite", "direction_vent", "force_vent",
+         "etat_mer", "courant", "maree", "phase_lunaire", "latitude", "longitude", "statut_protection", "avant_apres",
+         "biotope", "biotope_2", "habitat1", "habitat2", "habitat3", "visibilite", "prof_min", "prof_max", "DimObs1",
+         "DimObs2", "nb_plong", "plongeur")
 
     levels(unitobs$caracteristique_1) <- c(levels(unitobs$caracteristique_1), "NA") # bon ça corrige l'erreur ci-dessous
                                         # mais est-ce bien nécessaire ? [yr: 23/08/2010]
@@ -271,27 +284,6 @@ opendefault.f <- function ()
 
     assign("unitobs", unitobs, envir=.GlobalEnv)
     assign("siteEtudie", unique(unitobs$AMP), envir=.GlobalEnv)
-
-    ## ## Référentiel spatial de l'AMP
-    ## refSpatial <- read.table(file=fileNameRefSpa, header=TRUE, sep="\t", dec=".", quote="", encoding="latin1")
-    ## ## 15 colonnes
-    ## ## Vérification du nombre de colonnes:
-    ## if (dim(refSpatial)[2] != 15)
-    ## {
-    ##     tkmessageBox(message=paste("ATTENTION, votre fichier 'Référentiel spatial' comporte ", dim(refSpatial)[2], "
-    ## champs au lieu de 15. Corrigez le et recommencez l'importation.", sep=""), icon="warning", type="ok")
-    ##     rm(refSpatial)
-    ## }
-    ## ## renomination des colonnes du référentiel spatial
-
-    ## colnames(refSpatial) <- c("codeZone", "zone", "AMP", "site", "station", "groupe", "longitude", "latitude",
-    ## "surface", "lineaireCotier", "statutProtec", "zonagePeche", "codeSIH", "statutPAMPA", "nbCM")
-    ## ## remplacement des -999 en NA
-    ## if (nrow(refSpatial)!=0)
-    ## {
-    ##     refSpatial[refSpatial=="-999"] <- NA
-    ## }
-    ## assign("refSpatial", refSpatial, envir=.GlobalEnv)
 
     obs <- read.table(fileNameObs, sep="\t", dec=".", header=TRUE, encoding="latin1")
 
@@ -378,6 +370,7 @@ opendefault.f <- function ()
     write.csv(recap, file=paste(NomDossierTravail, "PlanEchantillonnage.csv", sep=""), row.names=FALSE)
     print("Recapitulatif du plan d'echantillonnage cree : PlanEchantillonnage.csv")
     ## rm(PlanEchantillonnage)
+
     ## ################
     assign("obs", obs, envir=.GlobalEnv)
 
@@ -446,7 +439,6 @@ opendefault.f <- function ()
     }
     rm(b)
     assign("contingence", contingence, envir=.GlobalEnv)
-    calcPresAbs.f()
 
     ## Attention, si la table de contingence avait ete cree anterieurement lors
     ## d'une utilisation des routines par exemple, et est toujours presente
@@ -502,6 +494,8 @@ opendefault.f <- function ()
     cl <<- colors()
     ## Fin lignes temporaires
     ## ################################################################################
+
+    pampaProfilingEnd.f()
 } # fin de opendefault.f
 ################################################################################
 

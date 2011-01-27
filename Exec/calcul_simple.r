@@ -253,7 +253,7 @@ calcPoids.f <- function(Data)
                          Data$taille ^ especes$Coeff.b.NC[match(Data$code_espece, especes$code_espece)])[idxP]
            )
     ## [!!!] Comptabiliser les tailles incalculables !
-    ## Nombre de poids ajoutées à grâce méthode :
+    ## Nombre de poids ajoutées grâce à la méthode :
     nbObsType[c("taille", "taille.moy")] <- c(sum(!is.na(res[idxTaille])), sum(!is.na(res[idxTailleMoy])))
 
     if (isTRUE(casSite[unique(as.character(unitobs$AMP))][1] == "Med"))

@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "PAMPA WP2"
-#define MyAppVersion "1.0-alpha-4"
+#define MyAppVersion "1.0-alpha-5"
 #define MyAppPublisher "Ifremer"
 #define MyAppURL "https://www.ifremer.fr/ezprod/index.php/pampa/"
 #define MyAppExeName "PAMPA WP2.bat"
@@ -47,7 +47,8 @@ Source: ".\Exec\Doc\*"; DestDir: "{app}\Doc"; Flags: ignoreversion
 Source: ".\Exec\config.r"; DestDir: "{app}"; Flags: uninsneveruninstall onlyifdoesntexist
 Source: "Exec\arbre_regression.r"; DestDir: "{app}"
 Source: "Exec\barplots_occurrence.R"; DestDir: "{app}"
-Source: "/Exec/fonctions_graphiques.R"; DestDir: "{app}"
+Source: "Exec\barplots_occurrence_unitobs.R"; DestDir: "{app}"
+Source: "Exec/fonctions_graphiques.R"; DestDir: "{app}"
 Source: "Exec\boxplots_esp_generiques.R"; DestDir: "{app}"
 Source: "Exec\boxplots_unitobs_generiques.R"; DestDir: "{app}"
 Source: "Exec\calcul_simple.r"; DestDir: "{app}"

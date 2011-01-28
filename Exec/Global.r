@@ -88,6 +88,7 @@ source("./Exec/modeles_lineaires_unitobs_generiques.R", encoding="latin1") # OK
 ##################################################
 ## Barplots sur les fréquences d'occurrence :
 source("./Exec/barplots_occurrence.R", encoding="latin1")                  # OK
+source("./Exec/barplots_occurrence_unitobs.R", encoding="latin1")          # OK
 
 tkfocus(tm)
 

@@ -144,6 +144,16 @@ tkadd(traitement, "command", label="Boxplots métrique /espèce/unité d'observatio
       selectionVariables.f("boxplot.esp")
       winRaise.f(tm)
   })
+## Ajout [yr: 14/10/2010]
+tkadd(traitement, "command", label="Fréquences d'occurrence /espèce/unité d'observation...",
+      background="#FFFBCF",
+      command=function ()
+  {
+      selectionVariables.f("freq_occurrence")
+      winRaise.f(tm)
+  })
+## Ajout [yr: 27/01/2011]
+tkadd(traitement, "separator")
 ## Ajout [yr: 25/10/2010]
 tkadd(traitement, "command", label="Boxplots métrique /unité d'observation...",
       background="#FFFBCF",
@@ -153,11 +163,11 @@ tkadd(traitement, "command", label="Boxplots métrique /unité d'observation...",
       winRaise.f(tm)
   })
 ## Ajout [yr: 14/10/2010]
-tkadd(traitement, "command", label="Fréquences d'occurrence...",
+tkadd(traitement, "command", label="Fréquences d'occurrence /unité d'observation...",
       background="#FFFBCF",
       command=function ()
   {
-      selectionVariables.f("freq_occurrence")
+      selectionVariables.f("freq_occurrence.unitobs")
       winRaise.f(tm)
   })
 

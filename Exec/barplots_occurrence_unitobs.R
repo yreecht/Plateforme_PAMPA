@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: barplots_occurrence.R
-### Time-stamp: <2011-01-27 15:52:26 yreecht>
+### Time-stamp: <2011-01-27 15:53:38 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -12,10 +12,10 @@
 ### (utilise certaines fonctions de ./boxplot_generique_calc.R)
 ####################################################################################################
 
-barplotOccurrence.f <- function(factGraph, factGraphSel, listFact, listFactSel)
+barplotOccurrence.unitobs.f <- function(factGraph, factGraphSel, listFact, listFactSel)
 {
-    ## Purpose: création des barplots d'après les sélections de facteurs et
-    ##          modalités.
+    ## Purpose: création d'un barplot d'après les sélections de facteurs et
+    ##          modalités, avec les présences/absences agrégées par unitobs.
     ## ----------------------------------------------------------------------
     ## Arguments: factGraph : le facteur de séparation des graphiques.
     ##            factGraphSel : la sélection de modalités pour ce dernier
@@ -43,8 +43,9 @@ barplotOccurrence.f <- function(factGraph, factGraphSel, listFact, listFactSel)
     tmpData <- subsetToutesTables.f(metrique="pres_abs", facteurs=facteurs, selections=selections,
                                     tableMetrique="TablePresAbs", exclude = NULL)
 
-    ## Identification des différents graphiques à générer:
-    if (factGraph == "")                # Pas de facteur de séparation des graphiques.
+
+    ## Identification des différents modalités (espèces) du graphique à générer :
+    if (factGraph == "")                # Pas de facteur.
     {
         iFactGraphSel <- ""
     }else{
@@ -57,62 +58,47 @@ barplotOccurrence.f <- function(factGraph, factGraphSel, listFact, listFactSel)
     }
 
 
+    ## Agrégation des observations / unité d'observation :
+    tmpData <- na.omit(agregationTableParCritere.f(Data=tmpData,
+                                                   metrique="pres_abs",
+                                                   facteurs=c("unite_observation"),
+                                                   listFact=listFact))
+
     ## Sauvegarde temporaire des données utilisées pour les graphiques (attention : écrasée à chaque nouvelle série de
     ## graphiques) :
-    DataBackup <<- list()
+    DataBackup <<- list(tmpData)
 
     ## ###############################################################
-    ## Boucle de création des graphiques (par facteur de séparation) :
-    for (modGraphSel in iFactGraphSel)
+    ## Création du graphique si le nombre d'observations  < au minimum défini dans les options :
+    if (dim(tmpData)[1] < getOption("P.MinNbObs"))
     {
-        ## Préparation des données pour un graphique :
-        if (modGraphSel == "")          # ...si pas de facteur de séparation des graphiques
-        {
-            tmpDataMod <- tmpData
-        }else{                          # ...sinon.
-            tmpDataMod <- subset(tmpData, tmpData[ , factGraph] == modGraphSel) # Subset des données pour la modalité.
-        }
-
-        ## Passage au graphique suivant si le nombre d'observations  < au minimum défini dans les options.
-        if (dim(tmpDataMod)[1] < getOption("P.MinNbObs"))
-        {
-            warning("Nombre d'observations pour ", modGraphSel, " < ", getOption("P.MinNbObs"),
-                    " : Graphique non créé !\n")
-            next()
-        }else{}
-
+        warning("Nombre d'observations pour (", paste(iFactGraphSel, collapse=", "), ") < ", getOption("P.MinNbObs"),
+                " : Graphique non créé !\n")
+    }else{
         ## Suppression des 'levels' non utilisés :
-        tmpDataMod <- dropLevels.f(tmpDataMod)
-
-        ## Sauvegarde temporaire des données :
-        DataBackup[[modGraphSel]] <<- tmpDataMod
+        tmpData <- dropLevels.f(tmpData)
 
         ## Ouverture et configuration du périphérique graphique :
-        openDevice.f(noGraph=which(modGraphSel == iFactGraphSel),
+        openDevice.f(noGraph=1,
                      metrique=metrique,
                      factGraph=factGraph,
-                     modSel=if (getOption("P.plusieursGraphPage"))
-                 {
-                     iFactGraphSel      # toutes les modalités.
-                 }else{
-                     modGraphSel        # la modalité courante uniquement.
-                 },
+                     modSel=iFactGraphSel,
                      listFact=listFact,
-                     type="espece",
+                     type="unitobs",
                      typeGraph="barplot")
 
         ## Titre (d'après les métriques, modalité du facteur de séparation et facteurs de regroupement) :
         mainTitle <- graphTitle.f(metrique=metrique,
-                                  modGraphSel=modGraphSel,
+                                  modGraphSel=iFactGraphSel,
                                   factGraph=factGraph,
                                   listFact=listFact,
-                                  type="espece")
+                                  type="unitobs")
 
         ## Paramètres graphiques :
         par(mar=c(5, 5, 8, 7) + 0.1,  mgp=c(3.5, 1, 0))
 
         ## Calcul des fréquences :
-        heights <- with(tmpDataMod,
+        heights <- with(tmpData,
                         tapply(pres_abs, lapply(listFact, function(y)eval(parse(text=y))),
                                function(x)
                            {
@@ -135,7 +121,7 @@ barplotOccurrence.f <- function(factGraph, factGraphSel, listFact, listFactSel)
         if (getOption("P.NbObs"))
         {
             ## Nombre d'"observations" :
-            nbObs <- with(tmpDataMod,
+            nbObs <- with(tmpData,
                           tapply(pres_abs,
                                  lapply(listFact, function(y)eval(parse(text=y))),
                                  function(x)
@@ -148,23 +134,15 @@ barplotOccurrence.f <- function(factGraph, factGraphSel, listFact, listFactSel)
                   adj=-0.2)
 
             legend(x="topleft",
-                   legend=expression("Nombre d'observations ("=="nb unités d'observation x nb espèces)"),
+                   legend=expression("Nombre d'unités d'observation"),
                    cex =0.9, col=getOption("P.NbObsCol"), text.col="orange", merge=FALSE)
 
         }else{}
 
-        ## On ferme les périphériques PNG en mode fichier individuel :
-        if (isTRUE(getOption("P.graphPNG")) &&
-            (! getOption("P.plusieursGraphPage") || length(iFactGraphSel) <= 1))
-        {
-            dev.off()
-        }else{}
-
     }                                   # Fin de boucle graphique
 
-    ## On ferme les périphériques PDF ou PNG restants :
-    if (getOption("P.graphPDF") ||
-        (isTRUE(getOption("P.graphPNG")) && getOption("P.plusieursGraphPage") && length(iFactGraphSel) > 1))
+    ## On ferme les périphériques PDF :
+    if (getOption("P.graphPDF") || isTRUE(getOption("P.graphPNG")))
     {
         dev.off()
     }else{}

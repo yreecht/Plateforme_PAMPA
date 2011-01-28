@@ -17,7 +17,7 @@ gestionMSGerreur.f <- function (nameerror, variable)
                "noWorkspace"={
                    "Aucun espace de travail n'est choisi ou opérationnel\n"
                },
-               "nbChampUnitobs"{
+               "nbChampUnitobs"={
                    paste("Votre fichier 'Unites d'observation' ne comporte pas le bon nombre de champs!",
                          " Il devrait en contenir 35. Corrigez le et recommencez l'importation.\n", sep="")
                },
@@ -64,7 +64,7 @@ gestionMSGerreur.f <- function (nameerror, variable)
     ## gestionMSGerreur.f(nbChampUnitobs)
     ## langue = EN
 
-    tkinsert(helpframe, "end", paste("\nERROR : ", MGS, sep=""))
+    tkinsert(helpframe, "end", paste("\nERROR : ", MSG, sep=""))
     tkyview.moveto(helpframe, 1)
 }
 
@@ -94,7 +94,7 @@ gestionMSGaide.f <- function (namemsg)
                },
                "message à définir")
 
-    tkinsert(helpframe, "end", paste("ETAPE : ", MGS, "\n", sep=""))
+    tkinsert(helpframe, "end", paste("ETAPE : ", MSG, "\n", sep=""))
     tkyview.moveto(helpframe, 1)
 }
 
@@ -188,7 +188,7 @@ gestionMSGinfo.f <- function (namemsg, parametrenum,...)
                },
                "message à définir")
 
-    tkinsert(txt.w, "end", paste("INFO : ", MGS, sep=""))
+    tkinsert(txt.w, "end", paste("INFO : ", MSG, sep=""))
     ## tkset(scr, 0.999, 1)     # pour activer l'acensseur : activate, cget, configure, delta, fraction, get, identify,
     ## or set.
     tkyview.moveto(txt.w, 1) # bbox, cget, compare, configure, count, debug, delete, dlineinfo, dump, edit, get, image,

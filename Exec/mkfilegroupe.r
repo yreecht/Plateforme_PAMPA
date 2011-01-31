@@ -161,6 +161,11 @@ unitespta.f <- function(){
                     (pi * (as.vector(tapply(obs$dmin,
                                             as.list(obs[ , c("unite_observation", "code_espece")]),
                                             max, na.rm=TRUE)))^2) # Recyclé 3X.
+
+                unitespta$biomasseMax <- unitespta$biomasseMax /
+                    (pi * (as.vector(tapply(obs$dmin,
+                                            as.list(obs[ , c("unite_observation", "code_espece")]),
+                                            max, na.rm=TRUE)))^2) # Recyclé 3X.
             }else{
                 ## on divise la biomasse par dimObs1*dimObs2
                 unitespta$biomasse <- as.numeric(unitespta$biomasse) /
@@ -234,6 +239,15 @@ unitespta.f <- function(){
 
             ## Vrais zéros :
             unitespta$densiteMax[unitespta$nombreMax == 0 & !is.na(unitespta$nombreMax)] <- 0
+
+            ## SD Densité :
+            unitespta$densiteSD <- unitespta$nombreSD /
+                (pi * (as.vector(tapply(obs$dmin,
+                                        as.list(obs[ , c("unite_observation", "code_espece")]),
+                                        max, na.rm=TRUE)))^2)
+
+            ## Vrais zéros :
+            unitespta$densiteSD[unitespta$nombreSD == 0 & !is.na(unitespta$nombreSD)] <- 0
         }
 
         ## ajout des champs "an", "site", "statut_protection", "biotope", "latitude", "longitude" :
@@ -385,9 +399,7 @@ unitesp.f <- function(){
                                                  function(x)
                                              {
                                                  if (all(is.na(x))) {return(NA)}else{return(sum(x, na.rm=TRUE))}
-                                             }))##  /
-            ## (unitobs$DimObs1[match(unitesp$unite_observation, unitobs$unite_observation)] *
-            ##  unitobs$DimObs2[match(unitesp$unite_observation, unitobs$unite_observation)])
+                                             }))
 
 
 
@@ -435,6 +447,11 @@ unitesp.f <- function(){
                     (pi * (as.vector(tapply(obs$dmin,
                                             as.list(obs[ , c("unite_observation", "code_espece")]),
                                             max, na.rm=TRUE)))^2)
+
+                unitesp$biomasseMax <- unitesp$biomasseMax /
+                    (pi * (as.vector(tapply(obs$dmin,
+                                            as.list(obs[ , c("unite_observation", "code_espece")]),
+                                            max, na.rm=TRUE)))^2)
             }else{
                 ## on divise la biomasse par dimObs1*dimObs2
                 unitesp$biomasse <- as.numeric(unitesp$biomasse) /
@@ -472,7 +489,8 @@ unitesp.f <- function(){
             unitesp$densite <- unitesp$nombre /
                 (unitobs$DimObs1[match(unitesp$unite_observation, unitobs$unite_observation)] *
                  unitobs$DimObs2[match(unitesp$unite_observation, unitobs$unite_observation)])
-        }else{
+
+        }else{                          # Videos rotatives :
             unitesp$densite <- unitesp$nombre /
                 (pi * (as.vector(tapply(obs$dmin,
                                         list(obs$unite_observation, obs$code_espece),
@@ -487,6 +505,14 @@ unitesp.f <- function(){
             ## Vrais zéros :
             unitesp$densiteMax[unitesp$nombreMax == 0 & !is.na(unitesp$nombreMax)] <- 0
 
+            ## SD Densité :
+            unitesp$densiteSD <- unitesp$nombreSD /
+                (pi * (as.vector(tapply(obs$dmin,
+                                        as.list(obs[ , c("unite_observation", "code_espece")]),
+                                        max, na.rm=TRUE)))^2)
+
+            ## Vrais zéros :
+            unitesp$densiteSD[unitesp$nombreSD == 0 & !is.na(unitesp$nombreSD)] <- 0
         }
 
         ## Ajout des vrais zéros :
@@ -609,7 +635,7 @@ unit.f <- function(){
         }
 
         ## Ajout des vrais zéros de densité :
-        unitesp$densite[unitesp$nombre == 0 & !is.na(unitesp$nombre)] <- 0
+        unit$densite[unit$nombre == 0 & !is.na(unit$nombre)] <- 0
 
         ## ##################################################
         ## calcul richesse specifique
@@ -736,18 +762,38 @@ unit.f <- function(){
     print("La table metriques par unite d'observation a ete creee : UnitobsMetriques.csv")
     write.csv(unit, file=paste(NomDossierTravail, "UnitobsMetriques.csv", sep=""), row.names = FALSE)
     ## carte de la CPUE pour les données de pêche NC
-    if (FALSE) # (is.peche.f() & (siteEtudie == "NC")) # (length(typePeche)>1)
+    if (FALSE) ##(siteEtudie == "NC") # (is.peche.f() & (siteEtudie == "NC")) # (length(typePeche)>1)
     {
         x11(width=50, height=30, pointsize=10)
-        MapNC <- read.shape("./shapefiles/NewCaledonia_v7.shp", dbf.data = TRUE, verbose=TRUE, repair=FALSE)
-        plot(MapNC, xlim=c(166, 167), ylim=c(-23, -22), fg="lightyellow", xaxs="i", yaxs="i", axes=TRUE)
-        unit$latitude <- as.vector(unit$latitude , "numeric")
-        unit$longitude <- as.vector(unit$longitude , "numeric")
+        ## MapNC <- read.shape("./shapefiles/NewCaledonia_v7.shp", dbf.data = TRUE, verbose=TRUE, repair=FALSE)
+        MapNC <- readShapePoly("./shapefiles/NewCaledonia_v7.shp", verbose=TRUE, repair=FALSE, delete_null_obj=TRUE)
+
         unitSymbols <- subset(unit, longitude>0)
-        symbols(unitSymbols$longitude, unitSymbols$latitude, unitSymbols$densite, add=TRUE, # Nommer les arguments [yr: 30/07/2010]
-                fg=colours()[seq(10, (nrow(unitSymbols)*10), by=10)], lwd=3) #
+
+        plot(MapNC,
+             xlim=range(unitSymbols$longitude) + c(-0.3, 0.3) * diff(range(unitSymbols$longitude, na.rm=TRUE)),
+             ylim=range(unitSymbols$latitude) + c(-0.3, 0.3) * diff(range(unitSymbols$latitude, na.rm=TRUE)),
+             fg="black", xaxs="i", yaxs="i", axes=TRUE)
+
+        symbols(x=unitSymbols$longitude,
+                y=unitSymbols$latitude,
+                circles=## 0.001 + 0.01 * (
+                        max(unitSymbols$densite, na.rm=TRUE) / 2 +
+                        unitSymbols$densite, ##  -
+                          ##               min(unitSymbols$densite, na.rm=TRUE)) /
+                          ## diff(range(unitSymbols$densite, na.rm=TRUE)),
+                inches=0.15,
+                add=TRUE, # Nommer les arguments [yr: 30/07/2010]
+                fg=rainbow(nlevels(
+                   unique(unitobs$site[match(unitSymbols$unitobs,
+                                             unitobs$unite_observation), drop=TRUE])))[as.numeric(
+                                                                         unitobs$site[match(unitSymbols$unitobs,
+                                                                                            unitobs$unite_observation),
+                                                                                      drop=TRUE])],
+                lwd=1)
         ## title(main=paste("CPUE", typePeche))
     }
+
     if (is.benthos.f())                 # unique(unitobs$type) == "LIT"
     {
         unit$richesse_specifique <- as.integer(tapply(unitesp$pres_abs, unitesp$unite_observation,

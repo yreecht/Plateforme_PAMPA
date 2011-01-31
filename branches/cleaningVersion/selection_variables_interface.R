@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: Selection_variables_interface.R
-### Time-stamp: <2011-01-19 12:03:37 yreecht>
+### Time-stamp: <2011-01-27 15:25:17 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -794,6 +794,7 @@ titreSelVar.f <- function(type, nextStep)
                              modele_lineaire="modèles linéaires (métrique/espèce/unité d'observation)",
                              pres_abs="modèles linéaires présences/absences",
                              freq_occurrence="fréquences d'occurrences",
+                             freq_occurrence.unitobs="fréquences d'occurrences",
                              boxplot.unitobs="boxplots (métrique agrégée/unité d'observation)",
                              modele_lineaire.unitobs="modèles linéaires (métrique/unité d'observation)"),
                   ## Texte pour le choix métrique :
@@ -801,13 +802,15 @@ titreSelVar.f <- function(type, nextStep)
                              modele_lineaire="Métrique expliquée : ",
                              pres_abs="Métrique : \"présences/absences\"",
                              freq_occurrence="Métrique calculée : \"fréquence d'occurrence\"",
+                             freq_occurrence.unitobs="Métrique calculée : \"fréquence d'occurrence\"",
                              boxplot.unitobs="Métrique (agrégée / unité d'observation) à représenter",
                              modele_lineaire.unitobs="Métrique expliquée : "),
                   ## Texte pour le choix d'un facteur de séparation :
-                  factSep=c(boxplot.esp="Créer un graphique par facteur...  (optionnel)" ,
+                  factSep=c(boxplot.esp="Créer un graphique par facteur...  (optionnel, 'code_espece' conseillé)" ,
                             modele_lineaire="Séparer les analyses par facteur...  (optionnel)",
                             pres_abs="Séparer les graphiques/analyses par facteur...  (optionnel)",
-                            freq_occurrence="Séparer les graphiques/analyses par facteur...  (optionnel)",
+                            freq_occurrence="Séparer les graphiques/analyses par facteur...  (optionnel, 'code_espece' conseillé)",
+                            freq_occurrence.unitobs="Sélection d'espèce(s) selon un critère...  (optionnel)",
                             boxplot.unitobs="Sélection d'espèce(s) selon un critère...  (optionnel)",
                             modele_lineaire.unitobs="Sélection d'espèce(s) selon un critère...  (optionnel)"),
                   ## Texte pour le choix du(des) facteur(s) explicatif(s) :
@@ -815,18 +818,21 @@ titreSelVar.f <- function(type, nextStep)
                              modele_lineaire="Choix du(des) facteur(s) explicatif(s)",
                              pres_abs="Choix du(des) facteur(s) explicatif(s)",
                              freq_occurrence="Choix du(des) facteur(s) explicatif(s)/de regroupement",
+                             freq_occurrence.unitobs="Choix du(des) facteur(s) explicatif(s)/de regroupement",
                              boxplot.unitobs="Choix du (des) facteur(s) de regroupement (sur un même graphique)",
                              modele_lineaire.unitobs="Choix du(des) facteur(s) explicatif(s)"),
                   tabListesp=c(boxplot.esp=".../ unité d'observation / espèce" ,
                                modele_lineaire=".../ unité d'observation / espèce",
                                pres_abs=".../ unité d'observation / espèce",
                                freq_occurrence=".../ unité d'observation / espèce",
+                               freq_occurrence.unitobs=".../ unité d'observation",
                                boxplot.unitobs=".../ unité d'observation",
                                modele_lineaire.unitobs=".../ unité d'observation"),
                   tabListespCT=c(boxplot.esp=".../ unité d'observation / espèce / classes de taille" ,
                                  modele_lineaire=".../ unité d'observation / espèce / classes de taille",
                                  pres_abs=".../ unité d'observation / espèce / classes de taille",
                                  freq_occurrence=".../ unité d'observation / espèce / classes de taille",
+                                 freq_occurrence.unitobs=".../ unité d'observation / classes de taille",
                                  boxplot.unitobs=".../ unité d'observation / classes de taille",
                                  modele_lineaire.unitobs=".../ unité d'observation / classes de taille")
                   ## =c(boxplot= , modele_lineaire=),
@@ -860,22 +866,23 @@ selectionVariables.f <- function(nextStep)
     ## Groupes de traitements :
 
     ## Étapes ne nécessitant pas de choix des variables :
-    nextStepMetriqueFixe <- c("pres_abs", "freq_occurrence")
+    nextStepMetriqueFixe <- c("pres_abs", "freq_occurrence", "freq_occurrence.unitobs")
 
     ## Étapes "graphiques" (besoin d'options graphiques) :
-    nextStepGraph <- c("boxplot.esp", "freq_occurrence", "boxplot.unitobs")
+    nextStepGraph <- c("boxplot.esp", "freq_occurrence", "boxplot.unitobs", "freq_occurrence.unitobs")
 
     ## Étapes sans classes de taille :
     nextStepSansCT <- c("")
 
     ## Étapes avec agrégation par unitobs :
-    nextStepUnitobs <- c("boxplot.unitobs", "modele_lineaire.unitobs")
+    nextStepUnitobs <- c("boxplot.unitobs", "modele_lineaire.unitobs", "freq_occurrence", "freq_occurrence.unitobs")
 
     ## Le même traitement des variables peut être appliqué pour différents "nextStep" :
     casStep <- c("modele_lineaire"="modele_lineaire",
                  "pres_abs"="modele_lineaire",
                  "boxplot.esp"="boxplot.esp",
                  "freq_occurrence"="freq_occurrence",
+                 "freq_occurrence.unitobs"="freq_occurrence.unitobs",
                  "boxplot.unitobs"="boxplot.unitobs",
                  "modele_lineaire.unitobs"="modele_lineaire.unitobs")
 
@@ -911,6 +918,10 @@ selectionVariables.f <- function(nextStep)
                    tclvalue(MetriqueChoisie) <- "pres_abs"
                },
                "freq_occurrence"={
+                   tclvalue(TableMetrique) <- "TableOccurrences"
+                   tclvalue(MetriqueChoisie) <- "freq.occurrence"
+               },
+               "freq_occurrence.unitobs"={
                    tclvalue(TableMetrique) <- "TableOccurrences"
                    tclvalue(MetriqueChoisie) <- "freq.occurrence"
                })
@@ -1020,8 +1031,8 @@ selectionVariables.f <- function(nextStep)
 
     ## Choix du facteur de séparation des graphiques :
     tkgrid(FrameFactGraph, column=1, columnspan=3, sticky="ew")
-    tkgrid(tklabel(FrameFactGraph, text=titreSelVar.f(type="factSep", nextStep)), sticky="w")
-    tkgrid(tklabel(FrameGB, text="Modalités (toutes par défaut)"), column=1)
+    tkgrid(tklabel(FrameFactGraph, text=titreSelVar.f(type="factSep", nextStep)), sticky="w", columnspan=2)
+    tkgrid(tklabel(FrameGB, text="    Modalités (toutes par défaut)  "), column=1)
     tkgrid(CB.factGraph, B.factGraphSel, sticky="n")
 
     tkgrid(FrameRB, FrameGB, tklabel(FrameFactGraph, text="\n"), sticky="nw")
@@ -1045,7 +1056,7 @@ selectionVariables.f <- function(nextStep)
            columnspan=3, sticky="w")
 
     tkgrid(ttkseparator(FrameFact, orient = "horizontal"), column=0, columnspan=4, sticky="ew")
-    tkgrid(tklabel(FrameFact, text="Modalités (toutes par défaut)  "), column=2, sticky="w")
+    tkgrid(tklabel(FrameFact, text="    Modalités (toutes par défaut)  "), column=2, sticky="w")
     tkgrid(tklabel(FrameFact, text="Facteur 1 "), CB.fact1, B.factSel1, sticky="n")
 
     tkgrid(tklabel(WinSelection), column=4)
@@ -1093,6 +1104,10 @@ selectionVariables.f <- function(nextStep)
                    },
                    freq_occurrence={
                        barplotOccurrence.f(factGraph=tclvalue(FacteurGraph), factGraphSel=factGraphSel,
+                                           listFact=sapply(listFacteurs, tclvalue), listFactSel=listFactSel)
+                   },
+                   freq_occurrence.unitobs={
+                       barplotOccurrence.unitobs.f(factGraph=tclvalue(FacteurGraph), factGraphSel=factGraphSel,
                                            listFact=sapply(listFacteurs, tclvalue), listFactSel=listFactSel)
                    },
                    boxplot.unitobs={

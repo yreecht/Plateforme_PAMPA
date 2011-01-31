@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: fonctions_graphiques.R
-### Time-stamp: <2011-01-21 15:33:14 yreecht>
+### Time-stamp: <2011-01-27 15:40:29 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -104,14 +104,17 @@ openDevice.f <- function(noGraph, metrique, factGraph, modSel, listFact, type="e
                 ## paste(nameWorkspace, "/FichiersSortie/",
                 ##                  metrique, "_", factGraph, "_", paste(listFact, collapse="-"), "-%03d.png", sep="")
 
-                png(pngFileName, width=70*15, height=38*15, pointsize=14)
+
 
                  ## Si plusieurs graphiques par page :
                 if (getOption("P.plusieursGraphPage") && length(modSel) > 1 &
                     !is.element(type, c("unitobs")))
                 {
+                    png(pngFileName, width=90*15, height=55*15, pointsize=14)
                     par(mfrow=c(getOption("P.nrowGraph"), getOption("P.ncolGraph")))
-                }else{}
+                }else{
+                    png(pngFileName, width=75*15, height=40*15, pointsize=14)
+                }
             }else{}
 
         }else{

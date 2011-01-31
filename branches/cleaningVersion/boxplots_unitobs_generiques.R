@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: boxplots_ttesp_generic.R
-### Time-stamp: <2011-01-21 15:23:39 yreecht>
+### Time-stamp: <2011-01-27 15:53:38 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -81,7 +81,7 @@ WP2boxplot.unitobs.f <- function(metrique, factGraph, factGraphSel, listFact, li
     ## Formule du boxplot
     exprBP <- eval(parse(text=paste(metrique, "~", paste(listFact, collapse=" + "))))
 
-    ## Identification des différents graphiques à générer:
+    ## Identification des différents modalités (espèces) du graphique à générer :
     if (factGraph == "")                # Pas de facteur de séparation des graphiques.
     {
         iFactGraphSel <- ""
@@ -112,7 +112,7 @@ WP2boxplot.unitobs.f <- function(metrique, factGraph, factGraphSel, listFact, li
     ## graphiques) :
     DataBackup <<- list(tmpData)
 
-    ## Passage au graphique suivant si le nombre d'observations  < au minimum défini dans les options.
+    ## Création du graphique si le nombre d'observations  < au minimum défini dans les options :
     if (nrow(tmpData) < getOption("P.MinNbObs"))
     {
         warning("Nombre d'observations pour (", paste(iFactGraphSel, collapse=", "), ") < ", getOption("P.MinNbObs"),
@@ -142,8 +142,10 @@ WP2boxplot.unitobs.f <- function(metrique, factGraph, factGraphSel, listFact, li
 
         ## Titre (d'après les métriques, modalité du facteur de séparation et facteurs de regroupement) :
         mainTitle <- graphTitle.f(metrique=metrique,
-                                  modGraphSel=iFactGraphSel, factGraph=factGraph,
-                                  listFact=listFact, type="unitobs")
+                                  modGraphSel=iFactGraphSel,
+                                  factGraph=factGraph,
+                                  listFact=listFact,
+                                  type="unitobs")
 
         ## Les couleurs pour l'identification des modalités du facteur de second niveau :
         colors <- colBoxplot.f(terms=attr(terms(exprBP), "term.labels"), data=tmpData)

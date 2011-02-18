@@ -2,8 +2,7 @@
 ## essais de rendre générique après avec unitobs et obs
 testfileref.f <- function ()
 {
-
-    print("fonction testfileref.f activée")
+    runLog.f(msg=c("Informations sur le référentiel espèces :"))
 
     tclRequire("Tktable")
     ## Déclaration des objets fenetre, tableau
@@ -69,9 +68,9 @@ testfileref.f <- function ()
                   length(unique(especesPresentes$code_espece))*100, digits=2)
     }
 
-    print(head(dataframeRefEsp))
-    print(dim(tclarrayRefEsp[2]))
-    ## print(head(dataframeRefEsp))
+    ## message(head(dataframeRefEsp))
+    ## message(dim(tclarrayRefEsp[2]))
+    ## message(head(dataframeRefEsp))
 
     ## construction de la fenêtre
     tkwm.title(wintest, paste("Informations sur ", fileName3))

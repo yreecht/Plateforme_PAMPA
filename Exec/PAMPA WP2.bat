@@ -46,9 +46,9 @@ rem Registre XP (ou équivalent) :
 
 rem set R_PROFILE=Rprofile.site
 if not defined R32_HOME (
-    start "PAMPA WP2" "%R_HOME%"\bin\Rgui.exe R_PROFILE=Exec/Rprofile.site --no-restore --sdi
+    start "PAMPA WP2" "%R_HOME%"\bin\Rgui.exe R_PROFILE=Exec/Rprofile.site --no-restore --no-save --sdi
 ) else ( 
-    start "PAMPA WP2" "%R32_HOME%"\bin\i386\Rgui.exe R_PROFILE=Exec/Rprofile.site --no-restore --sdi
+    start "PAMPA WP2" "%R32_HOME%"\bin\i386\Rgui.exe R_PROFILE=Exec/Rprofile.site --no-restore --no-save --sdi
 )
 
 rem Qitter l'invite de commande :

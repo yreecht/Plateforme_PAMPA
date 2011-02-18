@@ -1,6 +1,7 @@
 RestaurerDonnees.f <- function ()
 {
-    print("fonction RestaurerDonnees.f activée")
+    runLog.f(msg=c("Restauration des données originales :"))
+
     if (Jeuxdonnescoupe==1)
     {
         assign("obs", SAUVobs, envir=.GlobalEnv)
@@ -18,13 +19,13 @@ RestaurerDonnees.f <- function ()
             assign("unitespta", SAUVunitespta, envir=.GlobalEnv)
         }
 
-        print("données sauvées réinitialisées dans les tables de base")
+        message("données sauvées réinitialisées dans les tables de base")
         ModifierInterfaceApresRestore.f("Aucun", "Aucune")
         Jeuxdonnescoupe <- 0
         gestionMSGinfo.f("Jeuxdedonnerestore", dim(obs)[1])
         tkmessageBox(message=paste("Jeu de données restauré \n", dim(obs)[1],
                                    "enregistrements dans la table observation"))
-        print("Jeu de données restauré")
+        message("Jeu de données restauré")
     }
 }
 
@@ -37,8 +38,8 @@ RestaurerDonnees.f <- function ()
 
 SelectionUnCritereEsp.f <- function ()
 {
+    runLog.f(msg=c("Sélection des enregistrement selon un critère du référentiel espèces :"))
 
-    print("fonction SelectionUnCritere.f activée")
     obs <- UnCritereEspDansObs.f()
     assign("obs", obs, envir=.GlobalEnv)
     creationTablesBase.f()
@@ -55,8 +56,8 @@ SelectionUnCritereEsp.f <- function ()
 
 SelectionUnCritereUnitobs.f <- function ()
 {
+    runLog.f(msg=c("Sélection des enregistrement selon un critère du référentiel des unités d'observation :"))
 
-    print("fonction SelectionUnCritereUnitobs.f activée")
     obs <- UnCritereUnitobsDansObs.f()
     assign("obs", obs, envir=.GlobalEnv)
     creationTablesBase.f()

@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: Selection_variables_fonctions.R
-### Time-stamp: <2011-01-27 15:27:12 yreecht>
+### Time-stamp: <2011-02-07 14:42:20 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -165,7 +165,7 @@ champsRefEspeces.f <- function(site, ordered=FALSE, tableMetrique="", nextStep=N
     ## Author: Yves Reecht, Date:  3 août 2010, 11:16
 
     ## Champs principaux (externaliser par la suite) :
-    if (is.element(tableMetrique, c("listespunit", "TableOccurrences")) &&
+    if (is.element(tableMetrique, c("listespunit", "TableOccurrences", "unitespta")) &&
         is.element(nextStep, c("boxplot.esp", "modele_lineaire", "freq_occurrence")))
     {
         cPrincip <- c("code_espece", "espece")
@@ -655,7 +655,8 @@ presAbs.f <- function(nombres, logical=FALSE)
 }
 
 ########################################################################################################################
-calcBiodiv.f <- function(Data, unitobs="unite_observation", code.especes="code_espece", nombres="nombre")
+calcBiodiv.f <- function(Data, unitobs="unite_observation", code.especes="code_espece", nombres="nombre",
+                         indices="all")
 {
     ## Purpose: calcul des indices de biodiversité
     ## ----------------------------------------------------------------------
@@ -667,6 +668,8 @@ calcBiodiv.f <- function(Data, unitobs="unite_observation", code.especes="code_e
     ##            unitobs : nom de la colone d'unités d'observation.
     ##            especes : nom de la colone d'espèces.
     ##            nombres : nom de la colone de nombres.
+    ##            indices : liste des indices à calculer
+    ##                      (vecteur de caractères)
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 29 oct. 2010, 08:58
 
@@ -694,8 +697,10 @@ calcBiodiv.f <- function(Data, unitobs="unite_observation", code.especes="code_e
     ## Richesse spécifique :
     Data$pres.abs <- presAbs.f(nombres=Data[ , nombres], logical = FALSE)
 
-    df.biodiv$richesse.specifique <- tapply(Data$pres.abs,
-                                            Data[ , unitobs], sum, na.rm=TRUE)
+    df.biodiv$richesse_specifique <- as.vector(tapply(Data$pres.abs,
+                                                      Data[ , unitobs], sum, na.rm=TRUE),
+                                               "integer")
+    ## ... as.vector to avoid the class "array".
 
     ## richesses specifiques relatives :
 
@@ -704,32 +709,47 @@ calcBiodiv.f <- function(Data, unitobs="unite_observation", code.especes="code_e
                                                                 especes$code_espece)])))
 
     ## RS relative par rapp. au nombre d'espèces du site :
-    df.biodiv$RS.relative.site <- (df.biodiv$richesse.specifique /
-                                   nrow(subset(especes,
-                                               eval(parse(text=paste("Obs", siteEtudie, sep=""))) == "oui"))) * 100
+    if (any(is.element(c("all", "RS.relative.site"), indices)))
+    {
+        df.biodiv$RS.relative.site <- (df.biodiv$richesse_specifique /
+                                       nrow(subset(especes,
+                                                   eval(parse(text=paste("Obs", siteEtudie, sep=""))) == "oui"))) * 100
+    }
 
     ## RS relative par rapp. au nombre d'espèces du site et du(des) phylum(s) concerné(s) (jeu de données) :
-    df.biodiv$RS.relative.site.phylum <- (df.biodiv$richesse.specifique /
-                                          nrow(subset(especes,
-                                                      eval(parse(text=paste("Obs", siteEtudie, sep=""))) == "oui" &
-                                                      is.element(Phylum, phylums)))) * 100
+    if (any(is.element(c("all", "RS.relative.site.phylum"), indices)))
+    {
+        df.biodiv$RS.relative.site.phylum <- (df.biodiv$richesse_specifique /
+                                              nrow(subset(especes,
+                                                          eval(parse(text=paste("Obs", siteEtudie, sep=""))) == "oui" &
+                                                          is.element(Phylum, phylums)))) * 100
+    }
 
     ## RS relative par rapp. au nombre d'espèces des données :
-    df.biodiv$RS.relative.donnees <- (df.biodiv$richesse.specifique /
-                                      nrow(subset(especes,
-                                                  is.element(code_espece, Data[ , code.especes])))) * 100
+    if (any(is.element(c("all", "RS.relative.donnees"), indices)))
+    {
+        df.biodiv$RS.relative.donnees <- (df.biodiv$richesse_specifique /
+                                          nrow(subset(especes,
+                                                      is.element(code_espece, Data[ , code.especes])))) * 100
+    }
 
     ## ## RS relative par rapp. au nombre d'espèces des données + des phyla présents :
     ## Inutile : "RS.relative.donnees" est par définition limitée au phyla présents !
 
     ## RS relative par rapp. au nombre d'espèces au niveau régional (OM ou méditerrannée) :
-    df.biodiv$RS.relative.region <- (df.biodiv$richesse.specifique /
-                                     nrow(especes)) * 100
+    if (any(is.element(c("all", "RS.relative.region"), indices)))
+    {
+        df.biodiv$RS.relative.region <- (df.biodiv$richesse_specifique /
+                                         nrow(especes)) * 100
+    }
 
     ## RS relative par rapp. au nombre d'espèces au niveau régional (OM ou méditerrannée) et
     ## du(des) phylum(s) concerné(s) (jeu de données) :
-    df.biodiv$RS.relative.region.phylum <- (df.biodiv$richesse.specifique /
-                                            nrow(subset(especes, is.element(Phylum, phylums)))) * 100
+    if (any(is.element(c("all", "RS.relative.region.phylum"), indices)))
+    {
+        df.biodiv$RS.relative.region.phylum <- (df.biodiv$richesse_specifique /
+                                                nrow(subset(especes, is.element(Phylum, phylums)))) * 100
+    }
 
     ## ##################################################
     ## Indices de Simpson et Shannon et dérivés :
@@ -745,19 +765,29 @@ calcBiodiv.f <- function(Data, unitobs="unite_observation", code.especes="code_e
                        apply(matNombres, 1, sum, na.rm = TRUE), # Nombre d'individus / unitobs ; équiv df.biodiv$nombre.
                        FUN="/")
 
-    ## Indices de Simpson.
+    ## Indices de Simpson :
     df.biodiv$simpson <- apply(propIndiv^2, 1, sum, na.rm=TRUE)
-    df.biodiv$l.simpson <- 1 - df.biodiv$simpson
+
+    if (any(is.element(c("all", "l.simpson"), indices)))
+    {
+        df.biodiv$l.simpson <- 1 - df.biodiv$simpson
+    }
 
     ## calcul de l'indice de Shannon :
     df.biodiv$shannon <- -1 * apply(propIndiv * log(propIndiv), 1, sum, na.rm=TRUE)
 
     ## calcul de l'indice de Pielou :
-    df.biodiv$pielou <- df.biodiv$shannon / log(df.biodiv$richesse.specifique)
+    if (any(is.element(c("all", "pielou"), indices)))
+    {
+        df.biodiv$pielou <- df.biodiv$shannon / log(df.biodiv$richesse_specifique)
+    }
 
     ## calcul de l'indice de Hill :
-    df.biodiv$hill <- (1 - df.biodiv$simpson) / exp(df.biodiv$shannon)
+    if (any(is.element(c("all", "hill"), indices)))
+    {
+        df.biodiv$hill <- (1 - df.biodiv$simpson) / exp(df.biodiv$shannon)
                                         # équiv df.biodiv$l.simpson / exp(df.biodiv$shannon)
+    }
 
     ## suppression de l'indice de shannon (non pertinent)
     df.biodiv$shannon <- NULL
@@ -766,20 +796,30 @@ calcBiodiv.f <- function(Data, unitobs="unite_observation", code.especes="code_e
     ## Indices de biodiversité taxonomique :
     df.biodivTaxo <- calcBiodivTaxo.f(Data=Data,
                                       unitobs = unitobs, code.especes = code.especes, nombres = nombres,
-                                      global = FALSE, printInfo = FALSE)
+                                      global = FALSE, printInfo = FALSE,
+                                      indices=indices)
 
-    if (!is.null(df.biodivTaxo))
+    if (!is.null(dim(df.biodivTaxo)))
     {
         df.biodiv <- cbind(df.biodiv,
-                           df.biodivTaxo[match(df.biodiv[ ,unitobs], row.names(df.biodivTaxo)), ])
+                           df.biodivTaxo[match(df.biodiv[ ,unitobs], row.names(df.biodivTaxo)), , drop=FALSE])
     }else{}
+
+    for (ind in c("simpson", "shannon", "richesse_specifique"))
+    {
+        if (! any(is.element(c(ind, "all"), indices)))
+        {
+            df.biodiv[ , ind] <- NULL
+        }else{}
+    }
 
     return(df.biodiv)
 }
 
 ########################################################################################################################
 calcBiodivTaxo.f <- function(Data, unitobs="unite_observation", code.especes="code_espece", nombres="nombre",
-                             global=FALSE, printInfo=FALSE)
+                             global=FALSE, printInfo=FALSE,
+                             indices="all")
 {
     ## Purpose: Calcul des indices de biodiversité basés sur la taxonomie.
     ## ----------------------------------------------------------------------
@@ -794,80 +834,109 @@ calcBiodivTaxo.f <- function(Data, unitobs="unite_observation", code.especes="co
     ##            global : est-ce que les résultats doivent être exportés
     ##                     globalement (booléen).
     ##            printInfo : affichage des infos ? (booléen).
+    ##            indices : liste des indices à calculer
+    ##                      (vecteur de caractères), tous par défaut.
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 29 oct. 2010, 14:30
 
-    ## Suppréssion de tout ce qui n'a pas de genre (peut être du non biotique) :
-    Data <- Data[especes$Genre[match(Data$code_espece, especes$code_espece)] != "ge.", ]
+    ## Indices proposés :
+    proposed.indices <- c("D"="Delta",
+                          "Dstar"="DeltaEtoile",
+                          "Lambda"="LambdaPlus",
+                          "Dplus"="DeltaPlus",
+                          "SDplus"="SDeltaPlus")
 
-    ## Suppression des niveaux de facteur inutilisés :
-    Data <- dropLevels.f(df=Data)
-
-    ## Si les données ne sont pas encore agrégées /espèce/unitobs on le fait ici :
-    if (nrow(Data) > nrow(expand.grid(unique(Data[ , unitobs]), unique(Data[ , code.especes]))))
+    ## On sort de la fonction si elle n'a pas d'intéret :
+    if (! any(is.element(c(proposed.indices, "all"), indices)))
     {
-        Data <- agregationTableParCritere.f(Data=Data, metrique=nombres,
-                                            facteurs=c(unitobs, code.especes),
-                                            listFact=NULL)
-    }else{}
+        return(NULL)                    # Rien !
+    }else{
+        ## Suppréssion de tout ce qui n'a pas de genre (peut être du non biotique) :
+        Data <- Data[especes$Genre[match(Data$code_espece, especes$code_espece)] != "ge.", ]
 
-    ## Table de contingence unitobs-espèces :
-    contingence <- tapply(Data[ , nombres],
-                          list(Data[ , unitobs], Data[ , code.especes]),
-                          sum, na.rm=TRUE)
+        ## Suppression des niveaux de facteur inutilisés :
+        Data <- dropLevels.f(df=Data)
 
-    contingence[is.na(contingence)] <- 0 # Vrais zéros.
-
-    ## tableau avec genre, famille, etc.
-    sp.taxon <- dropLevels.f(especes[match(colnames(contingence),
-                                           especes$code_espece, nomatch=NA, incomparables = FALSE),
-                                     c("Genre", "Famille", "Ordre", "Classe", "Phylum")])
-
-    ## colnames(sp.taxon) <- c("genre", "famille", "ordre", "classe", "phylum")
-    rownames(sp.taxon) <- colnames(contingence)
-
-    ## retrait des lignes ayant un niveau taxonomique manquant dans sp.taxon et dans contingence (en colonnes) :
-    manque.taxon <- apply(sp.taxon, 1, function(x){any(is.na(x))})
-    sp.taxon <- sp.taxon[! manque.taxon, , drop=FALSE]
-    contingence <- contingence[, ! manque.taxon, drop=FALSE]
-
-    ## Calcul des indices (librairie "vegan") :
-    if (length(unique(sp.taxon$Genre)) > 2)
-    {
-        ## calcul des distances taxonomiques entre les especes
-        taxdis <- taxa2dist(sp.taxon, varstep=TRUE, check=TRUE)
-
-        ## Function finds indices of taxonomic diversity and distinctiness, which are averaged taxonomic distances among
-        ## species or individuals in the community...
-        divTaxo <- taxondive(contingence, taxdis)
-
-        ## mise de divTaxo sous forme de data.frame :
-        df.biodivTaxo <- as.data.frame(divTaxo[c("D", "Dstar",
-                                                 "Lambda", "Dplus", "SDplus")])
-
-        colnames(df.biodivTaxo) <- c("Delta", "DeltaEtoile",
-                                     "LambdaPlus", "DeltaPlus", "SDeltaPlus") # [!!!] "LambdaPlus" ? vraiment ? [???]
-
-        ## affichage des valeurs attendues :
-        if (printInfo)
+        ## Si les données ne sont pas encore agrégées /espèce/unitobs on le fait ici :
+        if (nrow(Data) > nrow(expand.grid(unique(Data[ , unitobs]), unique(Data[ , code.especes]))))
         {
-            message(paste("La valeur théorique de Delta est :" , round(divTaxo[["ED"]], 3)))
-            message(paste("La valeur théorique de Delta* est :" , round(divTaxo[["EDstar"]], 3)))
-            message(paste("La valeur théorique de Delta+ est :" , round(divTaxo[["EDplus"]], 3)))
+            Data <- agregationTableParCritere.f(Data=Data, metrique=nombres,
+                                                facteurs=c(unitobs, code.especes),
+                                                listFact=NULL)
         }else{}
 
-        ## Résultats :
-        if (global)
+        ## Table de contingence unitobs-espèces :
+        contingence <- tapply(Data[ , nombres],
+                              list(Data[ , unitobs], Data[ , code.especes]),
+                              sum, na.rm=TRUE)
+
+        contingence[is.na(contingence)] <- 0 # Vrais zéros.
+
+        ## tableau avec genre, famille, etc.
+        sp.taxon <- dropLevels.f(especes[match(colnames(contingence),
+                                               especes$code_espece, nomatch=NA, incomparables = FALSE),
+                                         c("Genre", "Famille", "Ordre", "Classe", "Phylum")])
+
+        ## colnames(sp.taxon) <- c("genre", "famille", "ordre", "classe", "phylum")
+        rownames(sp.taxon) <- colnames(contingence)
+
+        ## retrait des lignes ayant un niveau taxonomique manquant dans sp.taxon et dans contingence (en colonnes) :
+        manque.taxon <- apply(sp.taxon, 1, function(x){any(is.na(x))})
+        sp.taxon <- sp.taxon[! manque.taxon, , drop=FALSE]
+        contingence <- contingence[, ! manque.taxon, drop=FALSE]
+
+
+
+        ## Calcul des indices (librairie "vegan") :
+        if (sum(sapply(sp.taxon, function(x)length(unique(x))) > 1) > 2) # typiquement : une seule famille ou même genre.
         {
-            ## Création des objets dans l'environnement global
-            assign("div", divTaxo, envir=.GlobalEnv)
-            assign("taxdis", taxdis, envir=.GlobalEnv)
-            assign("ind_div", df.biodivTaxo, envir=.GlobalEnv)
-        }else{
-            return(df.biodivTaxo)
+            ## Indices retenus :
+            if (is.element("all", indices))
+            {
+                retained.indices <- proposed.indices
+            }else{
+                retained.indices <- proposed.indices[is.element(proposed.indices, indices)]
+            }
+
+            ## calcul des distances taxonomiques entre les especes
+            taxdis <- taxa2dist(sp.taxon, varstep=TRUE, check=TRUE)
+
+            ## Function finds indices of taxonomic diversity and distinctiness, which are averaged taxonomic distances among
+            ## species or individuals in the community...
+            divTaxo <- taxondive(contingence, taxdis)
+
+            ## mise de divTaxo sous forme de data.frame :
+            df.biodivTaxo <- as.data.frame(divTaxo[names(retained.indices)])
+
+            colnames(df.biodivTaxo) <- retained.indices # [!!!] "LambdaPlus" ? vraiment ? [???]
+
+            ## affichage des valeurs attendues :
+            if (printInfo)
+            {
+                message(paste("La valeur théorique de Delta est :" , round(divTaxo[["ED"]], 3)))
+                message(paste("La valeur théorique de Delta* est :" , round(divTaxo[["EDstar"]], 3)))
+                message(paste("La valeur théorique de Delta+ est :" , round(divTaxo[["EDplus"]], 3)))
+            }else{}
+
+            ## Résultats :
+            if (global)
+            {
+                ## Création des objets dans l'environnement global
+                assign("div", divTaxo, envir=.GlobalEnv)
+                assign("taxdis", taxdis, envir=.GlobalEnv)
+                assign("ind_div", df.biodivTaxo, envir=.GlobalEnv)
+            }else{
+                return(df.biodivTaxo)
+            }
+        }else{                              # nombre de genre < 2.
+            switch(sum(sapply(sp.taxon, function(x)length(unique(x))) > 1),
+                   "1"={
+                       warning("Nombre de Familles < 2 : les indices de diversité taxonomique ne peuvent être calculés.")
+                   },
+                   "0"={
+                       warning("Nombre de genres < 2 : les indices de diversité taxonomique ne peuvent être calculés.")
+                   })
         }
-    }else{                              # nombre de genre < 2.
-        warning("Nombre de genre < 1 : les indices de diversité taxonomique ne peuvent être calculés.")
     }
 }
 

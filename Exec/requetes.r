@@ -7,8 +7,8 @@
 
 critereespref.f <- function ()
 {
+    runLog.f(msg=c("Choix d'un Facteur dans le référentiel espèces :"))
 
-    print("fonction critereespref.f activée")
     aa <- tktoplevel()
     tkwm.title(aa, "Selection du facteur du référentiel des espèces")
     scr <- tkscrollbar(aa, repeatinterval=5, command=function(...)tkyview(tl, ...))
@@ -31,15 +31,15 @@ critereespref.f <- function ()
     listeSite <- c("RUN" , "MAY" , "BA" , "BO" , "CB" , "CR" , "STM" , "NC")
     listeSiteExclus <- subset(listeSite, listeSite!=SiteEtudie)
     ## grep(pattern=paste("^", SiteEtudie, "$", sep=""), x=listeSite, value=TRUE, invert=TRUE)
-    print("les sites exclus sont :")
-    print(listeSiteExclus)
+    message("les sites exclus sont :")
+    message(listeSiteExclus)
     ## on retire les champs contenant les lettres des sites exclus
     for (k in (seq(along=listeSiteExclus)))
     { # On peut faire plus simple [yr: 03/08/2010]
-        print(listeSiteExclus[k])
+        message(listeSiteExclus[k])
         facts <- facts[ ! grepl(listeSiteExclus[k], facts)] # ajouter que le motif doit être en fin de chaîne
                                         # [yr: 03/08/2010]
-        ## print(facts)
+        ## message(facts)
     }
 
     ## a <- length(facts)                 # écriture inutile [yr: 26/07/2010]
@@ -74,7 +74,7 @@ critereespref.f <- function ()
 ChoixFacteurSelect.f <- function (tableselect, monchamp, Nbselectmax, ordre, mavar)
 {
 
-    ## print("fonction ChoixFacteurSelect activée")
+    ## message("fonction ChoixFacteurSelect activée")
 
     winfac <- tktoplevel(width = 80)
     tkwm.title(winfac, paste("Selection des valeurs de ", monchamp, sep=""))
@@ -138,8 +138,8 @@ ChoixFacteurSelect.f <- function (tableselect, monchamp, Nbselectmax, ordre, mav
 
 choixunfacteurUnitobs.f <- function ()
 {
+    runLog.f(msg=c("Choix d'un Facteur dans le référentiel des unités d'observation :"))
 
-    print("fonction choixunfacteurUnitobs.f activée")
     aa <- tktoplevel()
     tkwm.title(aa, "Selection du facteur de groupement des unites d'observation")
     scr <- tkscrollbar(aa, repeatinterval=5, command=function(...)tkyview(tl, ...))
@@ -190,7 +190,7 @@ choixunfacteurUnitobs.f <- function ()
 
 choixespeces.f <- function()
 {
-    print("fonction choixespeces activée")
+    runLog.f(msg=c("Chargement d'une liste d'espèces à conserver (fichier) :"))
 
     ## fenetre de chargement du fichier des especes à analyser
     nameFichierEspecesAnalyser <- tclvalue(tkgetOpenFile())
@@ -239,7 +239,7 @@ choixespeces.f <- function()
     rm(b)
     assign("contingence", contingence, envir=.GlobalEnv)
 
-    print("Table de contingence unite d'observations/especes creee : ContingenceUnitObsEspeces.csv")
+    message("Table de contingence unités d'observation/espèces créée : ContingenceUnitObsEspeces.csv")
     write.csv(contingence, file=paste(nameWorkspace, "/FichiersSortie/ContingenceUnitObsEspeces.csv", sep=""))
 
     ## on recrée les tables de base
@@ -320,18 +320,17 @@ affichageMetriques.f <- function ()
 
 UnCritereEspDansObs.f <- function ()
 {
-
-    print("fonction UnCritereEspDansObs.f activée")
+    runLog.f(msg=c("Sélection sur un critère du référentiel espèces :"))
 
     critereespref.f()
     obs[, factesp] <- especes[, factesp][match(obs$code_espece, especes$code_espece)]
 
-    ## print(head(obs))
+    ## message(head(obs))
     ## ChoixFacteurSelect.f(tableselect=obs[, factesp], monchamp=factesp,
     ##                      Nbselectmax="multiple", ordre=1, mavar="selectfactesp")
     selectfactesp <- selectModWindow.f(factesp, obs, selectmode="extended")
     assign("selectfactesp", selectfactesp, envir=.GlobalEnv)
-    ## print(selectfactesp)
+    ## message(selectfactesp)
     obs <- dropLevels.f(subset(obs, is.element(obs[, factesp], selectfactesp)), which="code_espece")
     gestionMSGaide.f("etapeselected")
     ## Jeuxdonnescoupe <- 1
@@ -350,18 +349,17 @@ UnCritereEspDansObs.f <- function ()
 
 UnCritereUnitobsDansObs.f <- function ()
 {
-
-    print("fonction UnCritereUnitobsDansObs.f activée")
+    runLog.f(msg=c("Sélection sur un critère du référentiel des unités d'observation :"))
 
     choixunfacteurUnitobs.f()
     factunitobs <- fact
     obs[, factunitobs] <- unitobs[, factunitobs][match(obs$unite_observation, unitobs$unite_observation)]
-    ## print(head(obs))
+    ## message(head(obs))
     ## ChoixFacteurSelect.f(obs[, factunitobs], factunitobs, "multiple", 1, "selectfactunitobs")
 
     selectfactunitobs <- selectModWindow.f(factunitobs, obs, selectmode="extended")
     assign("selectfactunitobs", selectfactunitobs, envir=.GlobalEnv)
-    print(selectfactunitobs)
+    ## message(selectfactunitobs)
 
     obs <- dropLevels.f(subset(obs, is.element(obs[, factunitobs], selectfactunitobs)),
                         which="unite_observation") # Vérifier si c'est correct [!!!]

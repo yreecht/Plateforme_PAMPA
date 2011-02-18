@@ -137,7 +137,7 @@ tkadd(arbreRegression, "command", label="3 facteurs", command=arbre3.f)
 ## Ajout [yr: 14/10/2010]
 tkadd(traitement, "separator")
 ## Ajout [yr: 11/08/2010]
-tkadd(traitement, "command", label="Boxplots métrique /espèce/unité d'observation + Biodiversité...",
+tkadd(traitement, "command", label="Boxplots métrique /espèce/unité d'observation...",
       background="#FFFBCF",
       command=function ()
   {
@@ -155,7 +155,7 @@ tkadd(traitement, "command", label="Fréquences d'occurrence /espèce/unité d'obse
 ## Ajout [yr: 27/01/2011]
 tkadd(traitement, "separator")
 ## Ajout [yr: 25/10/2010]
-tkadd(traitement, "command", label="Boxplots métrique /unité d'observation...",
+tkadd(traitement, "command", label="Boxplots métrique /unité d'observation (dont biodiversité)...",
       background="#FFFBCF",
       command=function ()
   {
@@ -214,7 +214,7 @@ tkadd(analyse, "cascade", label="Analyses exploratoires", menu=analysesExplo, st
 tkadd(analyse, "separator")
 tkadd(analyse, "cascade", label="Arbre de regression multivariee", menu = arbreRegression)
 
-tkadd(modelesInferentiels, "command", label="Modèles linéaires métrique /espèce/unité d'observation + Biodiversité...",
+tkadd(modelesInferentiels, "command", label="Modèles linéaires métrique /espèce/unité d'observation...",
       background="#FFFBCF",
       command=function ()
   {
@@ -222,21 +222,23 @@ tkadd(modelesInferentiels, "command", label="Modèles linéaires métrique /espèce/
       winRaise.f(tm)
   })
 ## Ajout [yr: 26/10/2010]
-tkadd(modelesInferentiels, "command", label="Modèles linéaires métrique /unité d'observation...",
+tkadd(modelesInferentiels, "command", label="Modèles linéaires métrique /unité d'observation (dont biodiversité)...",
       background="#FFFBCF",
       command=function ()
   {
       selectionVariables.f("modele_lineaire.unitobs")
       winRaise.f(tm)
   })
-## Ajout [yr: 13/10/2010]
-tkadd(modelesInferentiels, "command", label="Modèles linéaires sur 'présences/absences'...",
-      background="#FFFBCF",
-      command=function ()
-  {
-      selectionVariables.f("pres_abs")
-      winRaise.f(tm)
-  })
+
+## [sup] parce que ambigüe + dispo dans les autres interfaces
+## ## Ajout [yr: 13/10/2010]
+## tkadd(modelesInferentiels, "command", label="Modèles linéaires sur 'présences/absences'...",
+##       background="#FFFBCF",
+##       command=function ()
+##   {
+##       selectionVariables.f("pres_abs")
+##       winRaise.f(tm)
+##   })
 
 
 ## Menu deroulant de "Outils"
@@ -282,7 +284,9 @@ tkadd(topMenu, "command", label="Quitter", background="#FFFBCF", # Méheeeu, pour
   })
 
 gestionMSGinfo.f("start")
-print("fonction interface activée")
+
+runLog.f(msg=c("Chargement de l'interface :"))
+
 tkfocus(tm)
 
 ## Frame des sélections

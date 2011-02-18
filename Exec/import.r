@@ -1,6 +1,6 @@
 openfile.f <- function()
 {
-    print("fonction openfile.f activée")
+    runLog.f(msg=c("Choix manuel des fichiers de données :"))
 
     ## Choix de l'espace de travail
     chercheEspaceTravail.f <- function() # [imb]
@@ -21,8 +21,8 @@ openfile.f <- function()
     ## ####  Choix des fichiers de donnees source en .txt
     openUnitobs.f <- function() # [imb]
     {
+        runLog.f(msg=c("Choix manuel du fichiers d'unités d'observations :"))
 
-        print("fonction openUnitobs activée")
         nameUnitobs <- tclvalue(tkgetOpenFile(initialdir=paste(nameWorkspace, "/Data/", sep="")))
 
         ## On enlève le nom de chemin pour ne conserver que le nom du fichier:
@@ -32,7 +32,7 @@ openfile.f <- function()
         {
             ## tkmessageBox(message="Aucun fichier n'a ete selectionne!")
         }else{
-            print(nameUnitobs)
+            message(nameUnitobs)
 
             tkconfigure(ResumerSituationFichierUnitesObs, text=paste("Fichier d'unités d'observations : ", nameUnitobs))
             tkinsert(helpframe, "end", "\n Choisissez maintenant votre fichier d'observations")
@@ -44,8 +44,8 @@ openfile.f <- function()
 
     openObservations.f <- function() # [imb]
     {
+        runLog.f(msg=c("Choix manuel du fichiers d'observations :"))
 
-        print("fonction openObservations activée")
         namefileObs <- tclvalue(tkgetOpenFile(initialdir=paste(nameWorkspace, "/Data/", sep="")))
 
         ## On enlève le nom de chemin pour ne conserver que le nom du fichier:
@@ -55,7 +55,7 @@ openfile.f <- function()
         {
             ## tkmessageBox(message="Aucun fichier n'a ete selectionne!")
         }else{
-            print(namefileObs)
+            message(namefileObs)
             ## assign("fileNameObs", paste(nameWorkspace, "/Data/", namefileObs, sep=""), envir=.GlobalEnv)
             assign("fileName2", namefileObs, envir=.GlobalEnv)
             ## ici du coup, on peut y mettre un choix ou reconnaitre le référenciel automatiquement
@@ -66,8 +66,8 @@ openfile.f <- function()
 
     openListespeces.f <- function() # [imb]
     {
+        runLog.f(msg=c("Choix manuel du fichiers du référentiel espèces :"))
 
-        print("fonction openListespeces activée")
         namefileRef <- tclvalue(tkgetOpenFile(initialdir=paste(nameWorkspace, "/Data/", sep="")))
 
         ## On enlève le nom de chemin pour ne conserver que le nom du fichier:
@@ -77,7 +77,7 @@ openfile.f <- function()
         {
             ## tkmessageBox(message="Aucun fichier n'a ete selectionne!")
         }else{
-            print(namefileRef)
+            message(namefileRef)
             tkconfigure(ResumerSituationReferencielEspece, text=paste("Fichier référenciel espèce : ", namefileRef))
             assign("fileName3", namefileRef, envir=.GlobalEnv)
         }

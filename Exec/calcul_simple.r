@@ -17,7 +17,7 @@
 
 classeTaille.f <- function()
 {
-    print("fonction classeTaille activée")
+    runLog.f(msg=c("Attribution des individus à des classes de taille :"))
 
     ## teste si les tailles sont renseignees dans la table observation
     if (length(unique(obs$taille))>1)
@@ -49,7 +49,7 @@ AjoutTaillesMoyennes.f <- function(data)
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 26 août 2010, 16:20
 
-    print("fonction AjoutTaillesMoyennes.f activée")
+    runLog.f(msg=c("Calcul des tailles moyennes d'après les classes de taille :"))
 
     ## Calcul des tailles comme tailles moyennes à partir des classes de taille si nécessaire :
     if (all(is.na(data$taille)) &
@@ -76,9 +76,9 @@ AjoutTaillesMoyennes.f <- function(data)
                                             eval))
 
         ## Avertissement :
-        tkmessageBox(message=paste("Attention, les tailles sont des estimations d'après les classes de taille !\n",
-                                   "Les calculs de biomasses et tailles moyennes dépendront directement",
-                                   " de ces estimations."),
+        infoLoading.f(msg=paste("Attention, les tailles sont des estimations d'après les classes de taille !",
+                                "\nLes calculs de biomasses et tailles moyennes dépendront directement",
+                                " de ces estimations.", sep=""),
                      icon="warning")
     }else{}
 
@@ -95,6 +95,8 @@ poids.moyen.CT.f <- function(Data)
     ## Arguments: Data (type obs).
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 11 oct. 2010, 14:58
+
+    runLog.f(msg=c("Calcul des poids moyens d'après les classes de taille :"))
 
     refespTmp <- as.matrix(especes[ , c("poids.moyen.petits", "poids.moyen.moyens", "poids.moyen.gros")])
     row.names(refespTmp) <- as.character(especes$code_espece)
@@ -127,7 +129,7 @@ calcTaillesMoyennes.f <- function(data)
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 26 août 2010, 16:20
 
-    print("fonction calcTaillesMoyennes.f activée")
+    runLog.f(msg=c("Calcul des tailles moyennes d'après les classes de taille :"))
 
     res <- data$taille
     classes.taille <- data$classe_taille
@@ -177,22 +179,31 @@ bilanCalcPoids.f <- function(x)
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date:  7 déc. 2010, 13:56
 
-    tkmessageBox(message=paste("Les poids sont renseignés pour ",
-                 sum(x[-1]), "/", x["total"], " observations et se répartissent comme suit :",
-                 "\n\t*  ", x["obs"], " poids observés.",
-                 "\n\t*  ", x["taille"], " calculs d'après la taille observée.",
-                 ifelse(any(x[-(1:3)] > 0),
-                        paste("\n\t*  ", x["taille.moy"],
-                              " calculs d'après des tailles estimées sur la base des classes de tailles.",
-                              ifelse(!is.na(x["poids.moy"]),
-                                     paste("\n\t*  ", x["poids.moy"], " poids moyens par classe de taille (P, M, G), ",
-                                           " par espèce.", sep=""),
-                                     ""),
-                              sep=""),
-                        ""),
-                 "\n\nLes estimations de biomasses dépendent de ces poids.",
-                 sep=""),
-                 icon=ifelse(any(x[-(1:3)] > 0), "warning", "info"))
+    runLog.f(msg=c("Affichage du bilan calculs de poids :"))
+
+    infoLoading.f(msg=paste("Les poids sont renseignés pour ",
+                  sum(x[-1]), "/", x["total"], " observations",
+                  ifelse(sum(x[-1]) > 0,
+                         paste(         # Info complémentaires si des poids estimés...
+                               " et se répartissent comme suit :",
+                               "\n\t*  ", x["obs"], " poids observés.",
+                               "\n\t*  ", x["taille"], " calculs d'après la taille observée.",
+                               ifelse(any(x[-(1:3)] > 0),
+                                      paste("\n\t*  ", x["taille.moy"],
+                                            " calculs d'après des tailles estimées",
+                                            " sur la base des classes de tailles.",
+                                            ifelse(!is.na(x["poids.moy"]),
+                                                   paste("\n\t*  ", x["poids.moy"],
+                                                         " poids moyens par classe de taille (P, M, G), ",
+                                                         " par espèce.", sep=""),
+                                                   ""),
+                                            sep=""),
+                                      ""),
+                               "\n\nLes estimations de biomasses dépendent de ces poids.",
+                               sep=""),
+                         "."),          # ...sinon rien.
+                  sep=""),
+                  icon=ifelse(any(x[-(1:3)] > 0), "warning", "info"))
 }
 
 
@@ -214,6 +225,8 @@ calcPoids.f <- function(Data)
     ##                   "poids" et éventuellement "classe_taille".
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date:  6 déc. 2010, 11:57
+
+    runLog.f(msg=c("Calcul des poids :"))
 
     ## Identification des différents cas :
     casSite <- c("BA"="Med", "BO"="Med", "CB"="Med", "CR"="Med", "STM"="Med", # [!!!] STM provisoire en attendant mieux.
@@ -286,7 +299,7 @@ calcPoids.f <- function(Data)
 
 indicesDiv.f <- function ()
 {
-    print("fonction indicesDiv.f activée")
+    runLog.f(msg=c("Calcul des indices de diversité taxonomique :"))
 
     ## tableau avec genre, famille, etc.
     sp.taxon <- especes[match(colnames(contingence), especes$code_espece, nomatch=NA, incomparables = FALSE),

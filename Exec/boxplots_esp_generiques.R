@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: Boxplot_generique_calc.R
-### Time-stamp: <2011-01-24 16:59:03 yreecht>
+### Time-stamp: <2011-02-14 15:09:40 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -172,14 +172,17 @@ graphTitle.f <- function(metrique, modGraphSel, factGraph, listFact, model=NULL,
                         "valeurs de ",
                         paste(model, " pour ", varNames[metrique, "article"], sep="")),
                  varNames[metrique, "nom"],
-                 ifelse(is.element(type, c("espece", "unitobs")),
+                 ifelse(is.element(type, c("espece", "unitobs", "CL_espece", "unitobs(CL)")),
                         paste(" agrégé",
                               switch(varNames[metrique, "genre"], # Accord de "agrégé".
                                      f="e", fp="es", mp="s", ""), sep=""),
                         ""),
                  switch(type,
                         "espece"=" par espèce et unité d'observation",
+                        "CL_espece"=" par classe de tailles, espèce et unité d'observation",
                         "unitobs"=" par unité d'observation",
+                        "unitobs(CL)"=" par unité d'observation",
+                        "CL_unitobs"=" par classe de tailles et unité d'observation",
                         "biodiv"=" par unité d'observation",
                         ""),
                  switch(type,
@@ -188,7 +191,24 @@ graphTitle.f <- function(metrique, modGraphSel, factGraph, listFact, model=NULL,
                                    "",
                                    paste("\npour le champ '", factGraph, "' = ", modGraphSel, sep=""))
                         },
+                        "CL_espece"={
+                            ifelse(modGraphSel == "", # Facteur de séparation uniquement si défini.
+                                   "",
+                                   paste("\npour le champ '", factGraph, "' = ", modGraphSel, sep=""))
+                        },
                         "unitobs"={
+                            ifelse(modGraphSel[1] == "", # Facteur de séparation uniquement si défini.
+                                   "\npour toutes les espèces",
+                                   paste("\npour les espèces correspondant à '", factGraph, "' = (",
+                                         paste(modGraphSel, collapse=", "), ")", sep=""))
+                        },
+                        "unitobs(CL)"={
+                            ifelse(modGraphSel[1] == "", # Facteur de séparation uniquement si défini.
+                                   "\npour toutes les classes de taille",
+                                   paste("\npour les classes de tailles correspondant à '", factGraph, "' = (",
+                                         paste(modGraphSel, collapse=", "), ")", sep=""))
+                        },
+                        "CL_unitobs"={
                             ifelse(modGraphSel[1] == "", # Facteur de séparation uniquement si défini.
                                    "\npour toutes les espèces",
                                    paste("\npour les espèces correspondant à '", factGraph, "' = (",
@@ -441,7 +461,13 @@ WP2boxplot.f <- function(metrique, factGraph, factGraphSel, listFact, listFactSe
                      modGraphSel        # la modalité courante uniquement.
                  },
                      listFact=listFact,
-                     type="espece", typeGraph="boxplot")
+                     type=switch(tableMetrique, # différents types de graphs en fonction de la table de
+                                        # données.
+                                 "listespunit"={"espece"},
+                                 "unitespta"={"CL_espece"},
+                                 "TableBiodiv"={"unitobs"},
+                                 "espece"),
+                     typeGraph="boxplot")
 
         par(mar=c(9, 5, 8, 1), mgp=c(3.5, 1, 0)) # paramètres graphiques.
 
@@ -452,11 +478,9 @@ WP2boxplot.f <- function(metrique, factGraph, factGraphSel, listFact, listFactSe
                                   type=switch(tableMetrique, # différents types de graphs en fonction de la table de
                                         # données.
                                               "listespunit"={"espece"},
+                                              "unitespta"={"CL_espece"},
                                               "TableBiodiv"={"biodiv"},
                                               "espece"))
-
-        ## Les couleurs pour l'identification des modalités du facteur de second niveau :
-        colors <- colBoxplot.f(terms=attr(terms(exprBP), "term.labels"), data=tmpDataMod)
 
         ## Label axe y :
         ylab <- parse(text=paste("'", Capitalize.f(varNames[metrique, "nom"]), "'",
@@ -466,14 +490,9 @@ WP2boxplot.f <- function(metrique, factGraph, factGraphSel, listFact, listFactSe
                       sep=""))
 
         ## Boxplot !
-        tmpBP <- boxplot(exprBP, data=tmpDataMod,
-                         main=mainTitle, ylab=ylab,  ## Capitalize.f(varNames[metrique, "nom"]),
-                         varwidth = TRUE, las=2,
-                         col=colors,
-                         ylim=c(min(tmpDataMod[ , metrique], na.rm=TRUE),
-                                max(tmpDataMod[ , metrique], na.rm=TRUE) +
-                                  0.1*(max(tmpDataMod[ , metrique], na.rm=TRUE) -
-                                       min(tmpDataMod[ , metrique], na.rm=TRUE))))
+        tmpBP <- boxplotPAMPA.f(exprBP, data=tmpDataMod,
+                                main=mainTitle, ylab=ylab)
+
 
         ## #################### Informations supplémentaires sur les graphiques ####################
 

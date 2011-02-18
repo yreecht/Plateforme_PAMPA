@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: comparaison_distri_generique.R
-### Time-stamp: <2011-01-20 16:03:13 yreecht>
+### Time-stamp: <2011-02-07 14:37:20 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -1162,7 +1162,9 @@ resFileLM.f <- function(objLM, metrique, factAna, modSel, listFact,
                       "Agr-",
                       switch(type,
                              "espece"="espece+unitobs_",
+                             "CL_espece"="CL+espece+unitobs_",
                              "unitobs"="unitobs_",
+                             "CL_unitobs"="CL+unitobs_",
                              ""),
                       switch(type,
                              "espece"={
@@ -1170,12 +1172,26 @@ resFileLM.f <- function(objLM, metrique, factAna, modSel, listFact,
                                         "",
                                         paste(factAna, "(", ifelse(modSel[1] != "", modSel, "toutes"), ")_", sep=""))
                              },
+                             "CL_espece"={
+                                 ifelse(factAna == "",
+                                        "",
+                                        paste(factAna, "(", ifelse(modSel[1] != "",
+                                                                     paste(modSel, collapse="+"),
+                                                                     "toutes"), ")_", sep=""))
+                             },
                              "unitobs"={
                                  ifelse(factAna == "",
                                         "(toutes espèces)_",
                                         paste(factAna, "(", ifelse(modSel[1] != "",
                                                                    paste(modSel, collapse="+"),
                                                                    "toutes"), ")_", sep=""))
+                             },
+                             "CL_unitobs"={
+                                 ifelse(factAna == "",
+                                        "(toutes espèces)_",
+                                        paste(factAna, "(", ifelse(modSel[1] != "",
+                                                                     paste(modSel, collapse="+"),
+                                                                     "toutes"), ")_", sep=""))
                              },
                              ""),
                       ## liste des facteurs de l'analyse
@@ -1273,9 +1289,50 @@ is.temporal.f <- function(facteur)
     return(res)
 }
 
+########################################################################################################################
+compMultiplesAvertissement.f <- function(objLM, Log, resFile)
+{
+    ## Purpose: Afficher un avertissement concernant les différences (dans la
+    ##          fonction de lien).
+    ## ----------------------------------------------------------------------
+    ## Arguments: objLM : objet de classe (G)LM.
+    ##            Log : booléen indiquant la log-transfomation des données.
+    ##            resFile : fichier de sortie.
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date: 31 janv. 2011, 14:11
+
+    cat("\n",
+        switch(modelType.f(objLM=objLM, Log=Log),
+               "LM"={
+                   ""
+               },
+               "LM-log"={
+                   paste("\tAttention : les estimations de différences sont sur les logarithmes :",
+                         "\n\t(log(A) - log(B))", sep="")
+               },
+               "GLM-NB"={
+                   paste("\tAttention : les différences sont estimées dans la fonction de lien (log) :",
+                         "\n\tlog(A) - log(B)", sep="")
+               },
+               "GLM-P"={
+                   paste("\tAttention : les différences sont estimées dans la fonction de lien (log) :",
+                         "\n\tlog(A) - log(B)", sep="")
+               },
+               "GLM-B"={
+                   paste("\tAttention : les différences sont estimées dans la fonction de lien (logit) :",
+                         "", sep="")
+               },
+               "GLM-Ga"={
+                   paste("\tAttention : les différences sont estimées dans la fonction de lien (inverse) :",
+                         "\n\t(1/A) - (1/B)\t=>\t*inversion du signe des différences*", sep="")
+               },
+               ""),
+        file=resFile)
+}
+
 
 ########################################################################################################################
-compMultiplesLM.f <- function(objLM, Data, fact1, fact2, resFile, exclude)
+compMultiplesLM.f <- function(objLM, Data, fact1, fact2, resFile, exclude, Log=FALSE)
 {
     ## Purpose: Calculer et écrire les résultats des comparaisons multiples.
     ## ----------------------------------------------------------------------
@@ -1296,6 +1353,9 @@ compMultiplesLM.f <- function(objLM, Data, fact1, fact2, resFile, exclude)
     cat("\n\n\n---------------------------------------------------------------------------",
         "\nComparaisons multiples :",
         file=resFile)
+
+    ## Avertissement concernant les estimations de différences :
+    compMultiplesAvertissement.f(objLM=objLM, Log=Log, resFile=resFile)
 
     ## Test si un facteur est temporel :
     tempFact <- is.temporal.f(facts)
@@ -1359,7 +1419,7 @@ compMultiplesLM.f <- function(objLM, Data, fact1, fact2, resFile, exclude)
 }
 
 ########################################################################################################################
-compSimplesLM.f <- function(objLM, Data, fact, resFile)
+compSimplesLM.f <- function(objLM, Data, fact, resFile, Log=FALSE)
 {
     ## Purpose: Calculer et écrire les résultats des comparaisons simples.
     ## ----------------------------------------------------------------------
@@ -1374,6 +1434,9 @@ compSimplesLM.f <- function(objLM, Data, fact, resFile)
     cat("\n\n\n---------------------------------------------------------------------------",
         "\nComparaisons des modalités :",
         file=resFile)
+
+    ## Avertissement concernant les estimations de différences :
+    compMultiplesAvertissement.f(objLM=objLM, Log=Log, resFile=resFile)
 
     if (is.temporal.f(fact))
     {
@@ -1558,7 +1621,8 @@ sortiesLM.f <- function(objLM, formule, metrique, factAna, modSel, listFact, Dat
         winSmartPlace.f(WinInfo)
 
         ## compMultiplesLM.f(objLM=objLM, Data=Data, factSpatial="statut_protection", factTemp="an", resFile=resFile)
-        compMultiplesLM.f(objLM=objLM, Data=Data, fact1=listFact[1], fact2=listFact[2], resFile=resFile, exclude=factAna)
+        compMultiplesLM.f(objLM=objLM, Data=Data, fact1=listFact[1], fact2=listFact[2],
+                          resFile=resFile, exclude=factAna, Log=Log)
 
         ## Représentation des interactions :
         mainTitle <- graphTitle.f(metrique=metrique,
@@ -1595,7 +1659,8 @@ sortiesLM.f <- function(objLM, formule, metrique, factAna, modSel, listFact, Dat
     }else{
         if (length(listFact) == 1)
         {
-            compSimplesLM.f(objLM=objLM, Data=Data, fact=listFact, resFile=resFile)
+            compSimplesLM.f(objLM=objLM, Data=Data, fact=listFact,
+                            resFile=resFile, Log=Log)
         }else{}
     }
 
@@ -1773,11 +1838,13 @@ modeleLineaireWP2.esp.f <- function(metrique, factAna, factAnaSel, listFact, lis
 
             res <- calcLM.f(loiChoisie=loiChoisie, formule=formule, metrique=metrique, Data=tmpDataMod)
 
+            ## Écriture des sorties :
             tryCatch(sortiesLM.f(objLM=res, formule=formule, metrique=metrique,
                                  factAna=factAna, modSel=modSel, listFact=listFact,
                                  Data=tmpDataMod, Log=Log),
                      error=errorLog.f)
 
+            ## Estimation des résidus "annormaux" :
             resid.out <- boxplot(residuals(res), plot=FALSE)$out
 
             if (length(resid.out))

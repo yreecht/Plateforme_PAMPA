@@ -4,8 +4,7 @@
 
 gestionMSGerreur.f <- function (nameerror, variable)
 {
-
-    print("fonction gestionMSGerreur.f activée")
+    runLog.f(msg=c("Envoie d'un message d'erreur dans l'interface :"))
 
     ## Message :
     MSG <-
@@ -70,8 +69,7 @@ gestionMSGerreur.f <- function (nameerror, variable)
 
 gestionMSGaide.f <- function (namemsg)
 {
-
-    print("fonction gestionMSGaide.f activée")
+    runLog.f(msg=c("Envoie d'un message d'aide dans l'interface :"))
 
     ## Message :
     MSG <-
@@ -100,7 +98,7 @@ gestionMSGaide.f <- function (namemsg)
 
 gestionMSGinfo.f <- function (namemsg, parametrenum,...)
 {
-    print("fonction gestionMSGinfo.f activée")
+    runLog.f(msg=c("Envoie d'un message d'information dans l'interface :"))
 
     ## Message :
     MSG <-

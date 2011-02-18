@@ -3,11 +3,13 @@ Voirentableau <- function(Montclarray, title="", height=-1, width=-1, nrow=-1, n
     tb <- tktoplevel()
     tclRequire("Tktable")
     tkwm.title(tb, title)
+
     ## Fonctions activées par les boutons de la fenêtre
     FermerWintb <- function()
     {
         tkdestroy(tb)
     }
+
     EnregistrerWintb <- function()
     {
         FichierCSV <- paste(NomDossierTravail, "Tableau_", title, ".csv", sep="")
@@ -16,12 +18,13 @@ Voirentableau <- function(Montclarray, title="", height=-1, width=-1, nrow=-1, n
         tkmessageBox(message="Votre fichier d'information sur le référentiel
                 espèce a été enregistré au format CSV dans le dossier de travail")
     }
+
     ## Déclaration des objets bouton
     Fermer.but <- tkbutton(tb, text="Fermer", command=FermerWintb)
     Enregistrer.but <- tkbutton(tb, text="Enregistrer en CSV", command=EnregistrerWintb)
-    print("tableau")
-    print(ncol)
-    print(nrow)
+    message("tableau")
+    message(ncol)
+    message(nrow)
     ## ICI CONTINUER LA MISE EN FORME
     dataframetb <- data.frame(1:nrow)
 
@@ -33,7 +36,7 @@ Voirentableau <- function(Montclarray, title="", height=-1, width=-1, nrow=-1, n
             ## A FINIR!!!
         }
     }
-    print("data frame réalisé")
+    message("data frame réalisée")
     dim(dataframetb)
     frameOverwintb <- tkframe(tb)
     imgAsLabelwintb <- tklabel(tb, image=imageAMP, bg="white")
@@ -59,8 +62,8 @@ Voirentableau <- function(Montclarray, title="", height=-1, width=-1, nrow=-1, n
 
 VoirPlanEchantillonnage.f <- function()
 {
+    runLog.f(msg=c("Affichage du plan d'échantillonnage :"))
 
-    print("fonction VoirPlanEchantillonnage.f activée")
     myRarrayPE <- read.csv(paste(nameWorkspace, "./FichiersSortie/PlanEchantillonnage.csv", sep=""),
                            sep=",", dec=".", header=TRUE)
     tkinsert(txt.w, "end", paste("\n fichier Plan d'échantillonnage lu :\n ", myRarrayPE))
@@ -87,7 +90,7 @@ VoirInformationsDonneesEspeces.f <- function()
 {
 
     Nbesp <- length(unique(unitesp$code_espece))
-    print(paste(Nbesp, "espèces considérées dans ce jeux de données"))
+    message(paste(Nbesp, "espèces considérées dans ce jeux de données"))
     tclarrayID <- tclArray()
     tclarrayID[[0, 0]] <- "Espece"               # Indexation étrange... [yr: 27/07/2010]
     tclarrayID[[0, 1]] <- "Nb indiv min/unitobs" #
@@ -117,7 +120,7 @@ VoirInformationsDonneesUnitobs.f <- function()
 {
 
     Nbunitobs <- length(unique(unitobs$unite_observation))
-    print(paste(Nbunitobs, "unités d'observations considérées dans ce jeux de données"))
+    message(paste(Nbunitobs, "unités d'observations considérées dans ce jeux de données"))
     tclarrayID <- tclArray()
 
     tclarrayID[[0, 0]] <- "Unité d'observation"    # Indexation étrange... [yr: 27/07/2010]
@@ -129,7 +132,7 @@ VoirInformationsDonneesUnitobs.f <- function()
     nbunitobs <- dim(unique(unitobs))[1]
     pacha <- unitesp[, c("unite_observation", "code_espece", "nombre", "pres_abs")]
     ## mini=tapply(unitesp$nombre, unitesp$code_espece, min, na.rm=TRUE)
-    print(head(pacha))
+    message(head(pacha))
     maxi <- tapply(unitobs$nombre, unitobs$unite_observation, max, na.rm=TRUE)
     for (i in (1:Nbunitobs))
     {
@@ -141,7 +144,7 @@ VoirInformationsDonneesUnitobs.f <- function()
                                      pacha$unite_observation==unique(unitobs$unite_observation)[i]])
         tclarrayID[[i, 4]] <- "autre"
     }
-    print("tableau récapitulatif de unitobs réalisé")
+    message("Tableau récapitulatif de unitobs réalisé")
 
     tableInfodonnees <- Voirentableau(tclarrayID, title="Informations par unitobs",
                                       height=Nbunitobs, width=5, nrow=Nbunitobs, ncol=5)

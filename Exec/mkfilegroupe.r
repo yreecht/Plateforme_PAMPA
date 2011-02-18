@@ -15,7 +15,7 @@
 ################################################################################
 
 unitespta.f <- function(){
-    print("fonction unitespta.f activée")
+    runLog.f(msg=c("Calcul des métriques par unité d'observation, espèce et classe de taille :"))
 
     ## creation des classes de tailles si champ classe taille contient uniquement des NA [!!!] uniquement [???]
     if (any(is.na(obs$classe_taille)))  ## (NA %in% unique(obs$classe_taille)==TRUE) # [!!!]
@@ -34,6 +34,7 @@ unitespta.f <- function(){
             ct <- 1
         }
     }
+
     assign("ct", ct, envir=.GlobalEnv)  # à quoi ça sert au final [???]
 
     if (ct == 1 || !all(is.na(obs$classe_taille)))
@@ -102,7 +103,7 @@ unitespta.f <- function(){
         }
 
         ## ######################################################################
-        ## sommes des biomasses par espece par unitobs et par classes de taille :
+        ## sommes des biomasses par espèce par unitobs et par classes de taille :
         if (!all(is.na(obs$poids)))      # (length(unique(obs$biomasse))>1)
         {
             ## ##################################################
@@ -176,8 +177,9 @@ unitespta.f <- function(){
 
         }else{
             ## alerte que les calculs de biomasse sont impossibles
-            tkmessageBox(message=paste("Calcul de biomasse impossible - ",
-                         "Les tailles ne sont pas renseignées dans les observations", sep=""))
+            infoLoading.f(msg=paste("Calcul de biomasse impossible : ",
+                                    "\nles poids ne sont pas renseignés ou ne peuvent être calculés", sep=""),
+                          icon="warning")
         }
 
         ## poids
@@ -201,14 +203,17 @@ unitespta.f <- function(){
         }
 
         ## ##################################################
-        ## poids moyen
-        unitespta$poids_moyen <- apply(unitespta[ , c("nombre", "poids")], 1,
-                                       function(x)
-                                   {
-                                       return(as.vector(ifelse(is.na(x[2]) || x[1] == 0,
-                                                               as.numeric(NA),
-                                                               x[2]/x[1])))
-                                   })
+        ## poids moyen :
+        if (!all(is.na(unitespta$poids)))
+        {
+            unitespta$poids_moyen <- apply(unitespta[ , c("nombre", "poids")], 1,
+                                           function(x)
+                                       {
+                                           return(as.vector(ifelse(is.na(x[2]) || x[1] == 0,
+                                                                   as.numeric(NA),
+                                                                   x[2]/x[1])))
+                                       })
+        }
 
         ## Presence - absence
         unitespta$pres_abs[unitespta$nombre > 0] <- as.integer(1) # pour avoir la richesse spécifique en 'integer'.1
@@ -308,8 +313,8 @@ unitespta.f <- function(){
         write.csv(unitespta[ , colnames(unitespta) != "unite_observation"],
                   file=paste(nameWorkspace, "/FichiersSortie/UnitobsEspeceClassetailleMetriques.csv", sep=""),
                   row.names = FALSE)
-        print(paste("La table par unite d'observation / espece / classe de taille",
-                    " a ete creee: UnitobsEspeceClassetailleMetriques.csv", sep=""))
+        message(paste("La table par unite d'observation / espèce / classe de taille",
+                    " a été créée: UnitobsEspeceClassetailleMetriques.csv", sep=""))
     }else{
         message("Métriques par classe de taille incalculables")
         assign("unitespta",
@@ -331,8 +336,7 @@ unitespta.f <- function(){
 
 unitesp.f <- function(){
 
-
-    print("fonction unitesp.f activée")
+    runLog.f(msg=c("Calcul des métriques par unité d'observation et espèce :"))
 
     ## ##################################################
     ## somme des abondances
@@ -521,7 +525,7 @@ unitesp.f <- function(){
 
     }else{ # cas LIT
 
-        ## Pourcentage de recouvrement de chaque espece/categorie pour les couvertures biotiques et abiotiques
+        ## Pourcentage de recouvrement de chaque espèce/categorie pour les couvertures biotiques et abiotiques
         s <- tapply(unitesp$nombre, unitesp$unite_observation, sum, na.rm=TRUE)
         unitesp$recouvrement <- as.vector(100 * unitesp$nombre /
                                           s[match(unitesp$unite_observation, rownames(s))]) ## [!!!] ajout 100 * [???]
@@ -561,14 +565,14 @@ unitesp.f <- function(){
 
     ## Ecriture du fichier des unités d'observations par espèce en sortie
     assign("unitesp", unitesp, envir=.GlobalEnv)
-    print("La table par unite d'observation / espece a ete creee : UnitobsEspeceMetriques.csv")
+    message("La table par unite d'observation / espèce a été créée : UnitobsEspeceMetriques.csv")
     write.csv(unitesp, file=paste(NomDossierTravail, "UnitobsEspeceMetriques.csv", sep=""), row.names = FALSE)
 
-    ## table avec la liste des especes presentes dans chaque transect
+    ## table avec la liste des espèces presentes dans chaque transect
     listespunit <- unitesp## [unitesp$pres_abs != 0, ]
     listespunit <- listespunit[order(listespunit$code_espece), ]
     assign("listespunit", listespunit, envir=.GlobalEnv)
-    print("La liste des especes presentes dans chaque transect a ete creee : ListeEspecesUnitobs.csv")
+    message("La liste des espèces présentes dans chaque transect a été créée : ListeEspecesUnitobs.csv")
 
     write.csv(listespunit, file=paste(NomDossierTravail, "ListeEspecesUnitobs.csv", sep=""), row.names = FALSE)
 } # fin unitesp.f()
@@ -582,8 +586,7 @@ unitesp.f <- function(){
 ################################################################################
 
 unit.f <- function(){
-
-    print("fonction unit.f activée")
+    runLog.f(msg=c("Calcul des métriques par unité d'observation :"))
 
     unit <- as.data.frame(as.table(tapply(obs$nombre, obs$unite_observation, sum, na.rm = TRUE))
                           , responseName="nombre")
@@ -744,9 +747,9 @@ unit.f <- function(){
         div_expect <- c(div[[8]], div[[9]], div[[10]])
 
         ## affichage des valeurs attendues
-        print(paste("La valeur theorique de Delta est :" , div_expect[1]))
-        print(paste("La valeur theorique de Delta* est :" , div_expect[2]))
-        print(paste("La valeur theorique de Delta+ est :" , div_expect[3]))
+        message(paste("La valeur theorique de Delta est :" , div_expect[1]))
+        message(paste("La valeur theorique de Delta* est :" , div_expect[2]))
+        message(paste("La valeur theorique de Delta+ est :" , div_expect[3]))
     }
 
     ## on renomme densite en CPUE pour les jeux de données pêche
@@ -759,7 +762,7 @@ unit.f <- function(){
     }
 
     ## message de creation de la table unit
-    print("La table metriques par unite d'observation a ete creee : UnitobsMetriques.csv")
+    message("La table métriques par unite d'observation a ete creee : UnitobsMetriques.csv")
     write.csv(unit, file=paste(NomDossierTravail, "UnitobsMetriques.csv", sep=""), row.names = FALSE)
     ## carte de la CPUE pour les données de pêche NC
     if (FALSE) ##(siteEtudie == "NC") # (is.peche.f() & (siteEtudie == "NC")) # (length(typePeche)>1)
@@ -811,7 +814,7 @@ unit.f <- function(){
 ################################################################################
 
 creationTablesBase.f <- function(){
-    print("fonction creationTablesBase.f activée")
+    runLog.f(msg=c("Création des tables de base (calcul de métriques) :"))
 
     ## ATTENTION A L'ORDRE D'APPEL DES FONCTIONS!!
     if (!is.benthos.f())                 # unique(unitobs$type) != "LIT"
@@ -845,12 +848,26 @@ creationTablesBase.f <- function(){
     ## Infos :
     if (Jeuxdonnescoupe==1)
     {
-        tkmessageBox(message="Les métriques par unités d'observations ont été recalculées sur le jeu de données sélectionnés")
+        infoLoading.f(msg=paste("Les métriques ont été",
+                                " recalculées sur le jeu de données sélectionné.",
+                                sep=""),
+                      icon="info",
+                      font=tkfont.create(weight="bold", size=9))
+
+        infoLoading.f(button=TRUE)
+
         gestionMSGinfo.f("CalculSelectionFait")
     }
     if (Jeuxdonnescoupe==0)
     {
-        tkmessageBox(message="Les métriques par unités d'observations ont été calculées sur l'ensemble du jeu de données importé")
+        infoLoading.f(msg=paste("Les métriques ont été",
+                                " calculées sur l'ensemble du jeu de données importé.",
+                                sep=""),
+                      icon="info",
+                      font=tkfont.create(weight="bold", size=9))
+
+        infoLoading.f(button=TRUE)
+
         gestionMSGinfo.f("CalculTotalFait")
     }
 }
@@ -865,31 +882,21 @@ creationTablesBase.f <- function(){
 ################################################################################
 
 creationTablesCalcul.f <- function(){
-
-    print("fonction creationTablesCalcul.f activée")
-    if (!is.benthos.f())                # unique(unitobs$type) != "LIT"
-    {  #car pas de classes de tailles avec les recouvrements
-
-    }
-    ## si SVR calcul des metriques par rotation
-    if (unique(unitobs$type) == "SVR")
-    {
-
-    }
-
-    TableMetrique <- listespunit
+    runLog.f(msg=c("Création des tables pour des analyses supplémentaires :",
+                   "\t* TableMetrique : métriques par unité d'observation et par espèce.",
+                   "\t* TableBiodiv : métriques par unité d'observation."))
 
     ## Simplification OK [yreecht: 08/10/2010] :
-    TableMetrique <- cbind(TableMetrique,
+    TableMetrique <- cbind(listespunit,
                            ## Colonnes d'unitobs :
-                           unitobs[match(TableMetrique$unite_observation, unitobs$unite_observation),
+                           unitobs[match(listespunit$unite_observation, unitobs$unite_observation),
                                    c("station", "caracteristique_1", "caracteristique_2", "fraction_echantillonnee",
                                      "jour", "mois", "heure", "nebulosite", "direction_vent", "force_vent", "etat_mer",
                                      "courant", "maree", "phase_lunaire", "latitude", "longitude", "avant_apres",
                                      "biotope_2", "habitat1", "habitat2", "habitat3", "visibilite", "prof_min",
                                      "prof_max", "DimObs1", "DimObs2", "nb_plong", "plongeur")],
                            ## Colonnes du référentiel espèces :
-                           especes[match(TableMetrique$code_espece, especes$code_espece),
+                           especes[match(listespunit$code_espece, especes$code_espece),
                                    c("Genre", "Famille", "mobilite", "nocturne", "cryptique", "taillemax", "regim.alim",
                                      ## Interêts types de pêches :
                                      grep(paste("^interet\\.[[:alpha:]]+", siteEtudie, "$", sep=""), # Colonnes
@@ -921,7 +928,7 @@ creationTablesCalcul.f <- function(){
 
     assign("TableBiodiv", TableBiodiv, envir=.GlobalEnv)
     assign("TableMetrique", TableMetrique, envir=.GlobalEnv)
-    print("tableau TableMetrique réalisé")
+    message("tableau TableMetrique réalisé")
 
     if (Jeuxdonnescoupe==0)
     {

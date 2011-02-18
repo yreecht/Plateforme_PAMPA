@@ -1,8 +1,7 @@
 
 ModifierMenuApresImport.f <- function()
 {
-
-    print("fonction ModifierMenuApresImport activée")
+    runLog.f(msg=c("Modification des menus suite au chargement des données :"))
 
     ## Réactivation des menus qui nécessitent le chargement préalable :
     tkentryconfigure(topMenu, 1, state="normal")
@@ -41,7 +40,7 @@ MiseajourTableau.f <- function(tclarray)
 
 ModifierInterfaceApresSelection.f <- function(Critere, Valeur)
 {
-    print("fonction ModifierInterfaceApresSelection activée")
+    runLog.f(msg=c("Modification de l'interface suite à une sélection d'enregistrement :"))
 
     tkinsert(table1, "cols", "end", 1)
     tclarray[[0, 4]] <- "Sélection"
@@ -66,8 +65,7 @@ ModifierInterfaceApresSelection.f <- function(Critere, Valeur)
 
 ModifierInterfaceApresRestore.f <- function(Critere="Aucun", Valeur="NA")
 {
-    print("fonction ModifierInterfaceApresRestore.f activée")
-
+    runLog.f(msg=c("Modification de l'interface après restauration des données originales :"))
 
     tkdelete(table1, "cols", "end", 1)
 

@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: Selection_variables_fonctions.R
-### Time-stamp: <2011-02-07 14:42:20 yreecht>
+### Time-stamp: <2011-02-28 15:35:19 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -69,23 +69,23 @@ champsMetriques.f <- function(nomTable, nextStep)
         switch(nomTable,
                ## Table listespunit (métriques d'observation) :
                listespunit={
-                   return(sort(colnames(listespunit)[sapply(listespunit,
+                   res <- sort(colnames(listespunit)[sapply(listespunit,
                                                             function(x){is.numeric(x) & !all(is.na(x))}) &
                                                      !is.element(colnames(listespunit),
                                                                  c("an",
                                                                    has.no.pres.abs(nextStep, nomTable),
                                                                    ifelse(is.benthos.f(),
                                                                           "nombre",
-                                                                          "")))]))
+                                                                          "")))])
                },
                ## Table unitespta (métriques d'observation par classes de taille) :
                unitespta={
-                   return(sort(colnames(unitespta)[sapply(unitespta,
+                   res <- sort(colnames(unitespta)[sapply(unitespta,
                                                             function(x){is.numeric(x) & !all(is.na(x))}) &
                                                      !is.element(colnames(unitespta),
                                                                  c("an",
                                                                    has.no.pres.abs(nextStep, nomTable),
-                                                                   "longitude", "latitude"))]))
+                                                                   "longitude", "latitude"))])
                },
                ## Table TabbleBiodiv (indices de biodiversité) :
                TableBiodiv={
@@ -94,15 +94,17 @@ champsMetriques.f <- function(nomTable, nextStep)
                                 "SDeltaPlus",
                                 grep("RS.relative", colnames(eval(parse(text=nomTable))), value=TRUE))
 
-                   return(sort(colnames(TableBiodiv)[sapply(TableBiodiv,
+                   res <- sort(colnames(TableBiodiv)[sapply(TableBiodiv,
                                                             function(x){is.numeric(x) & !all(is.na(x))}) &
-                                                     is.element(colnames(TableBiodiv), columns)]))
+                                                     is.element(colnames(TableBiodiv), columns)])
                },
                ## Autres cas :
-               return(sort(colnames(eval(parse(text=nomTable)))[sapply(eval(parse(text=nomTable)),
+               res <- sort(colnames(eval(parse(text=nomTable)))[sapply(eval(parse(text=nomTable)),
                                                                        function(x){is.numeric(x) & !all(is.na(x))}) &
-                                                                colnames(listespunit)!="an"]))
+                                                                colnames(listespunit)!="an"])
                )
+
+        return(res[!is.element(res, c(colnames(especes), colnames(unitobs)))])
     }
 }
 

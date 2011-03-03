@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: fonctions_graphiques.R
-### Time-stamp: <2011-02-11 15:21:34 yreecht>
+### Time-stamp: <2011-02-21 16:11:17 yreecht>
 ###
 ### Author: Yves Reecht
 ###

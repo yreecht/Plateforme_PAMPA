@@ -42,7 +42,46 @@ SelectionUnCritereEsp.f <- function ()
 
     obs <- UnCritereEspDansObs.f()
     assign("obs", obs, envir=.GlobalEnv)
-    creationTablesBase.f()
+
+    ## Réduction des tables de données (au espèces sélectionnées) :
+    if (exists("unitespta", envir=.GlobalEnv))
+    {
+        assign("unitespta",
+               dropLevels.f(unitespta[is.element(unitespta$code_espece, obs$code_espece), ],
+                            which="code_espece"),
+               envir=.GlobalEnv)
+    }else{}
+
+    assign("unitesp",
+           dropLevels.f(unitesp[is.element(unitesp$code_espece, obs$code_espece), ],
+                        which="code_espece"),
+           envir=.GlobalEnv)
+
+    assign("listespunit",
+           dropLevels.f(listespunit[is.element(listespunit$code_espece, obs$code_espece), ],
+                        which="code_espece"),
+           envir=.GlobalEnv)
+
+    assign("contingence",
+           contingence[ , is.element(colnames(contingence), obs$code_espece)],
+           envir=.GlobalEnv)
+
+    ## Recalcul des indices de biodiversité :
+    unit.f()
+
+    ## Information de l'utilisateur :
+    infoLoading.f(msg=paste("Les métriques ont été",
+                  " recalculées sur le jeu de données sélectionné.",
+                  sep=""),
+                  icon="info",
+                  font=tkfont.create(weight="bold", size=9))
+
+    infoLoading.f(button=TRUE)
+
+    gestionMSGinfo.f("CalculSelectionFait")
+
+    ## Recréation des tables de calcul :
+    ## creationTablesBase.f()
     creationTablesCalcul.f()
     ModifierInterfaceApresSelection.f(paste(factesp[1], ":", selectfactesp), dim(obs)[1])
     ## gestionMSGinfo.f("Critereselectionne", dim(obs)[1])
@@ -60,7 +99,48 @@ SelectionUnCritereUnitobs.f <- function ()
 
     obs <- UnCritereUnitobsDansObs.f()
     assign("obs", obs, envir=.GlobalEnv)
-    creationTablesBase.f()
+
+    ## Réduction des tables de données (au espèces sélectionnées) :
+    if (exists("unitespta", envir=.GlobalEnv))
+    {
+        assign("unitespta",
+               dropLevels.f(unitespta[is.element(unitespta$unite_observation, obs$unite_observation), ],
+                            which="unite_observation"),
+               envir=.GlobalEnv)
+    }else{}
+
+    assign("unitesp",
+           dropLevels.f(unitesp[is.element(unitesp$unite_observation, obs$unite_observation), ],
+                        which="unite_observation"),
+           envir=.GlobalEnv)
+
+    assign("listespunit",
+           dropLevels.f(listespunit[is.element(listespunit$unite_observation, obs$unite_observation), ],
+                        which="unite_observation"),
+           envir=.GlobalEnv)
+
+    assign("unit",
+           dropLevels.f(unit[is.element(unit$unitobs, obs$unite_observation), ],
+                        which="unitobs"),
+           envir=.GlobalEnv)
+
+    assign("contingence",
+           contingence[is.element(row.names(contingence), obs$unite_observation), ],
+           envir=.GlobalEnv)
+
+    ## Information de l'utilisateur :
+    infoLoading.f(msg=paste("Les métriques ont été",
+                  " recalculées sur le jeu de données sélectionné.",
+                  sep=""),
+                  icon="info",
+                  font=tkfont.create(weight="bold", size=9))
+
+    infoLoading.f(button=TRUE)
+
+    gestionMSGinfo.f("CalculSelectionFait")
+
+    ## Recréation des tables de calcul :
+    ## creationTablesBase.f()
     creationTablesCalcul.f()
     ModifierInterfaceApresSelection.f(paste(fact[1], ":", selectfactunitobs), dim(obs)[1])
     ## gestionMSGinfo.f("Critereselectionne", dim(obs)[1])

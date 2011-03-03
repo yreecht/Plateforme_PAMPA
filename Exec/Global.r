@@ -8,6 +8,9 @@
 ## Date de modification : Janvier 2011
 ################################################################################
 
+## ** Version **
+options(versionPAMPA = "1.0-alpha-7")
+
 ## Réglage de l'encodage des caractères :
 options(encoding="latin1")
 
@@ -65,9 +68,6 @@ source("./Exec/view.r", encoding="latin1")                 # faite
 source("./Exec/import.r", encoding="latin1")               # faite
 source("./Exec/importdefaut.r", encoding="latin1")         # faite
 
-source("./Exec/interface_fonctions.R", encoding="latin1")  # OK
-source("./Exec/interface.r", encoding="latin1")            # faite
-
 ##################################################
 ## Nouvelle interface de sélection des variables :
 source("./Exec/selection_variables_fonctions.R", encoding="latin1")        # OK
@@ -89,6 +89,10 @@ source("./Exec/modeles_lineaires_unitobs_generiques.R", encoding="latin1") # OK
 ## Barplots sur les fréquences d'occurrence :
 source("./Exec/barplots_occurrence.R", encoding="latin1")                  # OK
 source("./Exec/barplots_occurrence_unitobs.R", encoding="latin1")          # OK
+
+## On lance l'interface :
+source("./Exec/interface_fonctions.R", encoding="latin1")  # OK
+source("./Exec/interface.r", encoding="latin1")            # faite
 
 tkfocus(tm)
 

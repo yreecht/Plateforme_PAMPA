@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: interface_fonctions.R
-### Time-stamp: <2011-02-17 12:24:58 yreecht>
+### Time-stamp: <2011-02-28 15:31:45 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -179,6 +179,7 @@ infoGeneral.f <- function(msg)
         ## Note : objet de fenêtre déjà chargé lors du test !
     }
 
+
     ## nom du cadre :
     frameName <- paste("Frame", round(runif(1, 0, 2000)), sep="")
 
@@ -198,9 +199,9 @@ infoGeneral.f <- function(msg)
 
     tkwait.visibility(LabMsg)
 
-    tkfocus(WinInfoLoading)
     winSmartPlace.f(WinInfoLoading)
     winRaise.f(WinInfoLoading)
+    tkfocus(FrameTmp)
 
 }
 
@@ -294,7 +295,7 @@ infoLoading.f <- function(msg="", icon="info", button=FALSE,
                ## Séparation :
                tklabel(FramePrinc, text="\t"),
                ## Message :
-               tklabel(FramePrinc, text=msg, justify="left", ...), sticky="nw")
+               LabTmp <- tklabel(FramePrinc, text=msg, justify="left", ...), sticky="nw")
 
         ## Ligne vide :
         tkgrid(LabVide)
@@ -314,14 +315,15 @@ infoLoading.f <- function(msg="", icon="info", button=FALSE,
     tkwait.visibility(LabVide)
 
     ## Placement de la fenêtre :
-    tkfocus(WinInfoLoading)
     winSmartPlace.f(win=WinInfoLoading)
     winRaise.f(win=WinInfoLoading)
+    tkfocus(FramePrinc)
 
     if (button)
     {
         tkwait.window(WinInfoLoading)
-    }else{}
+    }else{
+    tkfocus(LabTmp)}
 }
 
 ########################################################################################################################
@@ -357,6 +359,35 @@ loadIcon.f <- function(icon="info")
     ## On retourne un lien vers l'image :
     return(get(icon, envir=.InfoLoading, inherits=FALSE))
 }
+
+########################################################################################################################
+apropos.f <- function()
+{
+    ## Purpose:
+    ## ----------------------------------------------------------------------
+    ## Arguments:
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date: 21 févr. 2011, 15:51
+
+    WinApropos <- tktoplevel()
+
+    tkwm.title(WinApropos, "À propos de la plateforme")
+
+    tkgrid(tklabel(WinApropos,
+                   text=paste("Plateforme PAMPA WP2 : version ", getOption("versionPAMPA"), sep=""),
+                   padx=40, pady=20))
+
+
+
+    tkgrid(tkbutton(WinApropos, text="   OK   ",
+                    command = function(){tkdestroy(WinApropos)}))
+
+    tkgrid(tmp <- tklabel(WinApropos, text=""))
+
+    winSmartPlace.f(WinApropos)
+    winRaise.f(WinApropos)
+}
+
 
 ### Local Variables:
 ### ispell-local-dictionary: "english"

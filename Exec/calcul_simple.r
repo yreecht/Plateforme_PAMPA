@@ -316,10 +316,10 @@ indicesDiv.f <- function ()
 
     ## le jeu de donnees doit comporter au moins 2 genres et 2 unité d'observations sinon la fonction taxa2dist ne
     ## fonctionne pas
-    if (length(unique(sp.taxon$genre))>2)
+    if (length(unique(sp.taxon$genre)) > 2 && length(unique(sp.taxon$famille)) > 2)
     {
         ## calcul des distances taxonomiques entre les especes
-        taxdis <- taxa2dist(sp.taxon, varstep=TRUE)
+        taxdis <- taxa2dist(sp.taxon, varstep=TRUE, check=TRUE)
 
         contingence <- round(contingence)
         ## Function finds indices of taxonomic diversity and distinctiness, which are averaged taxonomic distances among

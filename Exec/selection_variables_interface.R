@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: Selection_variables_interface.R
-### Time-stamp: <2011-02-07 16:59:34 yreecht>
+### Time-stamp: <2011-02-23 15:39:46 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -342,7 +342,7 @@ selectModWindow.f <- function(champ, data, selectmode="multiple", sort=TRUE, pre
        })
 
     ## Affichage/attente :
-    tkfocus(winfac)
+    tkfocus(LB)
     winSmartPlace.f(winfac, xoffset=50, yoffset=-100)
 
     tkwait.window(winfac)

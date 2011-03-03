@@ -242,6 +242,9 @@ tkadd(modelesInferentiels, "command", label="Modèles linéaires métrique /unité d
 
 
 ## Menu deroulant de "Outils"
+tkadd(outils, "command", label="Options graphiques", command = choixOptionsGraphiques.f, state="normal")
+tkadd(outils, "separator")
+
 tkadd(outils, "command", label="Aide", accelerator="CTRL+?", command = test.f, state="disabled")
 tkadd(outils, "command", label="mise à jour", state="disabled", command = test.f)
 ## tkadd(outils, "command", label="Options", state="disabled", command = test.f)
@@ -249,8 +252,33 @@ tkadd(outils, "command", label="Langue", state="disabled", command = test.f)
 tkadd(outils, "command", label="Export de donnees", state="disabled", command = test.f)
 
 ## Menu deroulant de "Infos"
-tkadd(pampainfos, "command", label="A propos de Pampa", command = test.f)
-tkadd(pampainfos, "command", label="Notice utilisateur", command = test.f)
+tkadd(pampainfos, "command", label="Documentation en ligne",
+      command = function()
+  {
+      browseURL("http://projet-pampa.fr/wiki/doku.php/wp2:wp2#documentation")
+  })
+
+tkadd(pampainfos, "command", label="Documentation (locale)",
+      command = function()
+  {
+      shell.exec(dir(paste(basePath, "/Exec/Doc", sep=""),
+                     full.names=TRUE)[grep("^Guide",
+                                           dir(paste(basePath, "/Exec/Doc", sep="")), perl=TRUE)])
+  })
+
+tkadd(pampainfos, "command", label="Nouveautés de la plateforme (locale)",
+      command = function()
+  {
+      shell.exec(dir(paste(basePath, "/Exec/Doc", sep=""),
+                     full.names=TRUE)[grep("^Annexe_Guide",
+                                           dir(paste(basePath, "/Exec/Doc", sep="")), perl=TRUE)])
+  })
+
+
+tkadd(outils, "separator")
+tkadd(pampainfos, "command", label="À propos de la plateforme..", command = apropos.f)
+
+## tkadd(pampainfos, "command", label="Notice utilisateur", command = test.f)
 
 ## [dep] [yr: 11/01/2011]
 tkadd(import, "command", label="Voir le plan d'échantillonnage", accelerator="CTRL+P", state="disabled",

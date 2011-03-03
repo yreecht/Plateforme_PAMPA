@@ -324,7 +324,15 @@ opendefault.f <- function ()
             dminMax <- selectionObs.SVR.f()
         }
 
-        obs <- subset(obs, dmin <= dminMax)
+        ## On ne tient pas compte des observations à une distance > dminMax
+        ## (pas de subset car tendance à faire disparaître des unitobs des analyses) :
+        idxSupr <- obs$dmin > dminMax
+
+        obs$nombre[idxSupr] <- 0
+        obs$poids[idxSupr] <- NA
+        obs$taille[idxSupr] <- NA
+
+        ## obs <- subset(obs, dmin <= dminMax)
     }
 
 

@@ -233,11 +233,18 @@ opendefault.f <- function ()
     pathMaker.f()                       # MàJ des variables "fileNameUnitObs", "fileNameObs", "fileNameRefEsp". Pour les
                                         # cas où les variables fileName1-3 auraient changé.
 
+
+    ## Informations de chargement (initialisation) :
+    infoGeneral.f(msg="      Chargement des données      ",
+                  font=tkfont.create(weight="bold", size=9), foreground="darkred")
+
+    initInnerTkProgressBar.f(initial=0, max=20, width=450)
+    stepInnerProgressBar.f(n=0, msg="Chargement du référentiel d'unités d'observation")
+
+
     message(paste("chargement de ", fileNameUnitObs, fileNameObs, fileNameRefEsp))
 
     tkconfigure(ResumerEspaceTravail, text=paste("Espace de travail : ", nameWorkspace))
-
-    infoGeneral.f(msg="Chargement des données")
 
     environnementdefault.f(nameWorkspace)
     ## après, return fonction dans variables environnement
@@ -250,6 +257,17 @@ opendefault.f <- function ()
          "etat_mer", "courant", "maree", "phase_lunaire", "latitude", "longitude", "statut_protection", "avant_apres",
          "biotope", "biotope_2", "habitat1", "habitat2", "habitat3", "visibilite", "prof_min", "prof_max", "DimObs1",
          "DimObs2", "nb_plong", "plongeur")
+
+    ## Éventuelle reconfiguration de la barre de progression du chargement :
+    switch(as.character(unique(unitobs$type)[1]),
+           "SVR"={},                    # rien à faire.
+           "LIT"={
+               reconfigureInnerProgressBar.f(max=11)
+           },                           # Pour le benthos on ne calcule pas les métriques / classe de taille.
+           {
+               message("\n\nreconfiguration\n\n")
+               reconfigureInnerProgressBar.f(max=12) # Dans tous les autres cas : 8
+           })
 
     levels(unitobs$caracteristique_1) <- c(levels(unitobs$caracteristique_1), "NA") # bon ça corrige l'erreur ci-dessous
                                         # mais est-ce bien nécessaire ? [yr: 23/08/2010]
@@ -291,6 +309,9 @@ opendefault.f <- function ()
 
     assign("unitobs", unitobs, envir=.GlobalEnv)
     assign("siteEtudie", unique(unitobs$AMP), envir=.GlobalEnv)
+
+    ## Chargement des observations :
+    stepInnerProgressBar.f(n=1, msg="Chargement du fichier d'observations")
 
     obs <- read.table(fileNameObs, sep="\t", dec=".", header=TRUE, encoding="latin1")
 
@@ -335,7 +356,6 @@ opendefault.f <- function ()
         ## obs <- subset(obs, dmin <= dminMax)
     }
 
-
     ## remplacement des -999 en NA
     if (as.logical(nrow(obs)))                      # !=0
     {
@@ -363,8 +383,15 @@ opendefault.f <- function ()
                      icon="warning")
     }
 
+    ## Chargement du référentiel espèces :
+    stepInnerProgressBar.f(n=1, msg="Chargement du référentiel espèces")
+
     ## Référentiel espèces :
     lectureFichierEspeces.f()
+
+    #####################################################
+    ## Plan d'échantillonnage (à refaire complètement) :
+    stepInnerProgressBar.f(n=1, msg="Plan d'échantillonnage")
 
     ## ############# Récapitulatif du plan d'échantillonnage ############# # [!!!] : revoir tout ça !
     if (NA %in% unique(unitobs$site) == FALSE) # [!!!]
@@ -404,6 +431,8 @@ opendefault.f <- function ()
                 text=paste("AMP considérée", unique(unitobs$AMP), " type d'observation : ", unique(unitobs$type)))
 
     ## ################# Creation de la table de contingence ##################
+
+    stepInnerProgressBar.f(n=1, msg="Table de contingence")
 
     if (unique(unitobs$type) != "SVR")
     {
@@ -510,8 +539,11 @@ opendefault.f <- function ()
     gestionMSGinfo.f("BasetxtCreate")
     gestionMSGaide.f("SelectionOuTraitement")
     MiseajourTableau.f(tclarray)
+
     ModifierMenuApresImport.f()
+
     creationTablesCalcul.f()
+
     ModifierInterfaceApresSelection.f("Aucun", "NA")
 
     tkgrid.configure(scr, sticky="ns")
@@ -520,6 +552,12 @@ opendefault.f <- function ()
     cl <<- colors()
     ## Fin lignes temporaires
     ## ################################################################################
+
+    ## Fin des informations de chargement (demande de confirmation utilisateur) :
+    stepInnerProgressBar.f(n=0, msg="Fin de chargement !",
+                           font=tkfont.create(weight="bold", size=9), foreground="darkred")
+
+    infoLoading.f(button=TRUE)
 
     pampaProfilingEnd.f()
 } # fin de opendefault.f

@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: Selection_variables_interface.R
-### Time-stamp: <2011-02-23 15:39:46 yreecht>
+### Time-stamp: <2011-03-08 18:11:20 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -1082,6 +1082,10 @@ selectionVariables.f <- function(nextStep)
 
     ## tkfocus(WinSelection)
     winSmartPlace.f(WinSelection)
+
+    ## Update des fenêtres :
+    tcl("update")
+
     ## Tant que l'utilisateur ne ferme pas la fenêtre... :
     repeat
     {

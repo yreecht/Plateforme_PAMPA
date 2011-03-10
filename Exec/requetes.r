@@ -325,17 +325,28 @@ UnCritereEspDansObs.f <- function ()
     critereespref.f()
     obs[, factesp] <- especes[, factesp][match(obs$code_espece, especes$code_espece)]
 
+    levelsTmp <- levels(obs$code_espece)
+
     ## message(head(obs))
     ## ChoixFacteurSelect.f(tableselect=obs[, factesp], monchamp=factesp,
     ##                      Nbselectmax="multiple", ordre=1, mavar="selectfactesp")
     selectfactesp <- selectModWindow.f(factesp, obs, selectmode="extended")
     assign("selectfactesp", selectfactesp, envir=.GlobalEnv)
     ## message(selectfactesp)
+
     obs <- dropLevels.f(subset(obs, is.element(obs[, factesp], selectfactesp)), which="code_espece")
+
+    ## Réintégration des niveaux sélectionnés mais plus présents dans les données :
+    levels(obs$code_espece) <- levelsTmp[is.element(levelsTmp,
+                                                    especes$code_espece[is.element(especes[ , factesp],
+                                                                                   selectfactesp)])]
+
     gestionMSGaide.f("etapeselected")
     ## Jeuxdonnescoupe <- 1
     assign("Jeuxdonnescoupe", 1, envir=.GlobalEnv)
-    return(obs)
+    return(list(facteur=factesp,
+                selection=selectfactesp,
+                obs=obs))
 }
 
 
@@ -354,6 +365,8 @@ UnCritereUnitobsDansObs.f <- function ()
     choixunfacteurUnitobs.f()
     factunitobs <- fact
     obs[, factunitobs] <- unitobs[, factunitobs][match(obs$unite_observation, unitobs$unite_observation)]
+
+    levelsTmp <- levels(obs$unite_observation)
     ## message(head(obs))
     ## ChoixFacteurSelect.f(obs[, factunitobs], factunitobs, "multiple", 1, "selectfactunitobs")
 
@@ -364,7 +377,15 @@ UnCritereUnitobsDansObs.f <- function ()
     obs <- dropLevels.f(subset(obs, is.element(obs[, factunitobs], selectfactunitobs)),
                         which="unite_observation") # Vérifier si c'est correct [!!!]
 
+    ## Réintégration des niveaux sélectionnés mais plus présents dans les données :
+    levels(obs$unite_observation) <-
+        levelsTmp[is.element(levelsTmp,
+                             unitobs$unite_observation[is.element(unitobs[ , factunitobs],
+                                                                  selectfactunitobs)])]
+
     gestionMSGaide.f("etapeselected")
     assign("Jeuxdonnescoupe", 1, envir=.GlobalEnv)
-    return(obs)
+    return(list(facteur=factunitobs,
+                selection=selectfactunitobs,
+                obs=obs))
 }

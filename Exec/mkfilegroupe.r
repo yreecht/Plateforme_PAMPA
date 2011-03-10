@@ -17,6 +17,10 @@
 unitespta.f <- function(){
     runLog.f(msg=c("Calcul des métriques par unité d'observation, espèce et classe de taille :"))
 
+    ## Informations :
+    stepInnerProgressBar.f(n=1, msg="Calcul des métriques par unité d'observation, espèce et classe de taille...")
+
+
     ## creation des classes de tailles si champ classe taille contient uniquement des NA [!!!] uniquement [???]
     if (any(is.na(obs$classe_taille)))  ## (NA %in% unique(obs$classe_taille)==TRUE) # [!!!]
     {
@@ -45,6 +49,7 @@ unitespta.f <- function(){
         ## Nombre d'individus :
         if (unique(unitobs$type) == "SVR")
         {
+            stepInnerProgressBar.f(n=1, msg="Interpolations pour vidéos rotative (étape longue)")
             switch(getOption("PAMPA.SVR.interp"),
                    "extended"={
                        statRotations <- statRotation.extended.f(facteurs=c("unite_observation", "code_espece",
@@ -60,6 +65,8 @@ unitespta.f <- function(){
 
             ## Moyenne pour les vidéos rotatives (habituellement 3 rotation) :
             unitesptaT <- statRotations[["nombresMean"]]
+
+            stepInnerProgressBar.f(n=7, msg="Calcul des métriques par unité d'observation, espèce et classe de taille...")
         }else{
             ## Somme des nombres d'individus :
             unitesptaT <- tapply(obs$nombre,
@@ -69,7 +76,6 @@ unitespta.f <- function(){
             ## Absences considérée comme "vrais zéros" :
             unitesptaT[is.na(unitesptaT)] <- 0
         }
-
 
         unitespta <- as.data.frame(as.table(unitesptaT), responseName="nombre")
         unitespta$unitobs <- unitespta$unite_observation # Pour compatibilité uniquement !!!
@@ -324,6 +330,8 @@ unitespta.f <- function(){
                           "an"=NULL, "statut_protection"=NULL),
                envir=.GlobalEnv)
     }
+
+    stepInnerProgressBar.f(n=2)
 } #fin unitespta.f()
 
 
@@ -337,6 +345,8 @@ unitespta.f <- function(){
 unitesp.f <- function(){
 
     runLog.f(msg=c("Calcul des métriques par unité d'observation et espèce :"))
+
+    stepInnerProgressBar.f(n=1, msg="Calcul des métriques par unité d'observation et espèce...")
 
     ## ##################################################
     ## somme des abondances
@@ -588,6 +598,8 @@ unitesp.f <- function(){
 unit.f <- function(){
     runLog.f(msg=c("Calcul des métriques par unité d'observation :"))
 
+    stepInnerProgressBar.f(n=2, msg="Calcul des métriques par unité d'observation...")
+
     unit <- as.data.frame(as.table(tapply(obs$nombre, obs$unite_observation, sum, na.rm = TRUE))
                           , responseName="nombre")
     colnames(unit)[1] = c("unitobs")
@@ -805,6 +817,8 @@ unit.f <- function(){
     }
     assign("unit", unit, envir=.GlobalEnv)
 
+    stepInnerProgressBar.f(n=1)
+
 } # fin unit.f()
 
 
@@ -866,8 +880,6 @@ creationTablesBase.f <- function(){
                       icon="info",
                       font=tkfont.create(weight="bold", size=9))
 
-        infoLoading.f(button=TRUE)
-
         gestionMSGinfo.f("CalculTotalFait")
     }
 }
@@ -885,6 +897,8 @@ creationTablesCalcul.f <- function(){
     runLog.f(msg=c("Création des tables pour des analyses supplémentaires :",
                    "\t* TableMetrique : métriques par unité d'observation et par espèce.",
                    "\t* TableBiodiv : métriques par unité d'observation."))
+
+    stepInnerProgressBar.f(n=1, msg="Création des tables de calcul supplémentaires...")
 
     ## Simplification OK [yreecht: 08/10/2010] :
     TableMetrique <- cbind(listespunit,
@@ -935,4 +949,11 @@ creationTablesCalcul.f <- function(){
         assign("SAUVTableBiodiv", TableBiodiv, envir=.GlobalEnv)
         assign("SAUVTableMetrique", TableMetrique, envir=.GlobalEnv)
     }else{}
+
+    ## Info :
+    infoLoading.f(msg=paste("Des tables supplémentaires (pour calculs additionnels) ont été créées :",
+                            "\n\t* TableMetriques : métriques / unité d'observation / espèce.",
+                            "\n\t* TableBiodiv : métriques (dont biodiversité) / unité d'observation.",
+                            sep=""),
+                  icon="info")
 }

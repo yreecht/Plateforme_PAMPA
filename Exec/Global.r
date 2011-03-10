@@ -9,7 +9,7 @@
 ################################################################################
 
 ## ** Version **
-options(versionPAMPA = "1.0-alpha-7")
+options(versionPAMPA = "1.0-alpha-8")
 
 ## Réglage de l'encodage des caractères :
 options(encoding="latin1")

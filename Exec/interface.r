@@ -299,8 +299,8 @@ tkadd(topMenu, "cascade", label="Aide", menu=pampainfos) # Renommé [yr: 10/01/20
 
 ## Seul moyen trouvé -- pour l'instant -- afin de détacher le menu "quitter" des autres :
 tkadd(topMenu, "command",
-      label=paste("                                                     ",
-                  "                                                     ",
+      label=paste("                                                   ",
+                  "                                                   ",
                   "                          "), state="disabled")
 
 tkadd(topMenu, "command", label="Quitter", background="#FFFBCF", # Méheeeu, pourquoi ça marche pas cette dernière option [???]

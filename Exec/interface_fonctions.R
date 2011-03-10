@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: interface_fonctions.R
-### Time-stamp: <2011-02-28 15:31:45 yreecht>
+### Time-stamp: <2011-03-09 18:35:02 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -138,7 +138,7 @@ quitConfirm.f <- function(win)
 }
 
 ########################################################################################################################
-infoGeneral.f <- function(msg)
+infoGeneral.f <- function(msg,...)
 {
     ## Purpose: Afficher un cadre général dans la fenêtre d'info.
     ## ----------------------------------------------------------------------
@@ -194,15 +194,14 @@ infoGeneral.f <- function(msg)
            tklabel(WinInfoLoading, text=" \n"))
 
     ## On imprime le message :
-    LabMsg <- tklabel(FrameTmp, text=msg)
+    LabMsg <- tklabel(FrameTmp, text=msg,...)
     tkgrid(LabMsg)
-
-    tkwait.visibility(LabMsg)
 
     winSmartPlace.f(WinInfoLoading)
     winRaise.f(WinInfoLoading)
-    tkfocus(FrameTmp)
 
+    ## Update des fenêtres :
+    tcl("update")
 }
 
 
@@ -227,8 +226,6 @@ infoLoading.f <- function(msg="", icon="info", button=FALSE,
     }else{
         .InfoLoading <- get(".InfoLoading", envir=.GlobalEnv)
     }
-
-    ## browser()
 
     ## Fenêtre graphique :
     if (! exists("WinInfoLoading", envir=.InfoLoading, inherits=FALSE) ||
@@ -307,23 +304,27 @@ infoLoading.f <- function(msg="", icon="info", button=FALSE,
 
         tkgrid(OK.button, columnspan=3)
 
+        tkbind(OK.button, "<Return>", command)
+
         ## Ligne vide :
         tkgrid(LabVide)
     }
 
     ## Forcer l'affichage de la fenêtre avant la suite :
-    tkwait.visibility(LabVide)
+    ## tkwait.visibility(LabVide)
 
     ## Placement de la fenêtre :
     winSmartPlace.f(win=WinInfoLoading)
     winRaise.f(win=WinInfoLoading)
-    tkfocus(FramePrinc)
 
     if (button)
     {
+        tkfocus(OK.button)
         tkwait.window(WinInfoLoading)
     }else{
-    tkfocus(LabTmp)}
+        ## Update des fenêtres :
+        tcl("update")
+    }
 }
 
 ########################################################################################################################
@@ -386,6 +387,198 @@ apropos.f <- function()
 
     winSmartPlace.f(WinApropos)
     winRaise.f(WinApropos)
+}
+
+########################################################################################################################
+initInnerTkProgressBar.f <- function(title="Progression :", min = 0, max = 100,
+                                     initial = 0, width = 300)
+{
+    ## Purpose: Initialisation d'une barre de progression tk sous forme de
+    ##          wiget.
+    ## ----------------------------------------------------------------------
+    ## Arguments: title : Titre de la barre de progression.
+    ##            min : valeur minimum.
+    ##            max : valeur maximum.
+    ##            initial : valeur initiale.
+    ##            width : largeur (pixels) de la barre.
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date:  8 mars 2011, 13:13
+
+    ## Environnement de stockage des infos
+    if (! exists(".InfoLoading", envir=.GlobalEnv))
+    {
+        assign(".InfoLoading", environment(), envir=.GlobalEnv)
+    }else{
+        .InfoLoading <- get(".InfoLoading", envir=.GlobalEnv)
+    }
+
+    ## Fenêtre graphique :
+    if (! exists("WinInfoLoading", envir=.InfoLoading, inherits=FALSE) ||
+         ! as.numeric(tclvalue(tkwinfo("exists",
+                                       ## Assignation simultannée dans l'environnement courant (pour le cas où le test
+                                       ## est FALSE) :
+                                       WinInfoLoading <- get("WinInfoLoading",
+                                                             envir=.InfoLoading,
+                                                             inherits=FALSE)))))
+    {
+        warning("pas de fenêtre pour la progressBar")
+
+    }else{
+        ## Note : objet de fenêtre déjà chargé lors du test !
+
+        ## Frame pour accueillir la progresse barre et ses infos
+        assign("FramePG",
+               FramePG <- tkframe(WinInfoLoading,  borderwidth=2, relief="groove", padx=5, pady=5),
+               envir=.InfoLoading)
+
+        ## Création de la variable d'avancement
+        assign("ProgressVal",
+               ProgressVal <- tclVar(initial),
+               envir=.InfoLoading)
+
+        ## Label avec le pourcentage d'avancement :
+        assign("Lab.Progress",
+               Lab.Progress <- tklabel(FramePG,
+                                       text=paste(format(round(100 * (initial - min) / (max - min)), width=3),
+                                                  " %", sep="")),
+               envir=.InfoLoading)
+
+        ## Label d'info sur l'étape en cours :
+        assign("Lab.StepInfo",
+               Lab.StepInfo <- tklabel(FramePG,
+                                       text="",
+                                       wraplength=width+20),
+               envir=.InfoLoading)
+
+        ## Stockage des min et max :
+        assign("IPG.min", min, envir=.InfoLoading)
+        assign("IPG.max", max, envir=.InfoLoading)
+
+        ## Barre de progression :
+        assign("InnerPG",
+               InnerPG <- tkwidget(FramePG, "ttk::progressbar", variable=ProgressVal,
+                                   length=width, maximum=max - min, mode="determinate"),
+               envir=.InfoLoading)
+
+        ## Placement des éléments :
+        tkgrid(tklabel(FramePG, text=title), columnspan=2, sticky="w")
+        tkgrid(InnerPG, Lab.Progress, sticky="w")
+        tkgrid(Lab.StepInfo, columnspan=2, sticky="w")
+
+        tkgrid(tklabel(WinInfoLoading, text=""), FramePG)
+        tkgrid(tklabel(WinInfoLoading, text=""))
+
+        winSmartPlace.f(WinInfoLoading)
+        winRaise.f(WinInfoLoading)
+
+        ## Update des fenêtres :
+        tcl("update")
+    }
+}
+
+########################################################################################################################
+stepInnerProgressBar.f <- function(n=1, msg=NULL,...)
+{
+    ## Purpose: Incrémentation de l'avancement sur la progressBar.
+    ## ----------------------------------------------------------------------
+    ## Arguments: n : nombre d'incréments.
+    ##            msg : message d'information.
+    ##            ... : arguments supplémentaires pour le message
+    ##                  (font, etc.)
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date:  8 mars 2011, 15:07
+
+    if (exists(".InfoLoading", envir=.GlobalEnv) &&                     # l'environnement d'info existe...
+        exists("WinInfoLoading", envir=.InfoLoading, inherits=FALSE) && # l'objet de fenêtre d'info existe...
+        as.numeric(tclvalue(tkwinfo("exists",                           # ... et la fenêtre existe...
+                                    WinInfoLoading <- get("WinInfoLoading",               #
+                                                          envir=.InfoLoading,             #
+                                                          inherits=FALSE)))) &&           #
+        exists("InnerPG", envir=.InfoLoading) &&                                     # l'objet de ProgressBar existe...
+        as.numeric(tclvalue(tkwinfo("exists", get("InnerPG", envir=.InfoLoading))))) # ...et elle est effectivement sur
+                                        # la fenêtre d'info.
+    {
+        ## Récupération des variables :
+        min <- get("IPG.min", envir=.InfoLoading)
+        max <- get("IPG.max", envir=.InfoLoading)
+
+        ## Récupération des wigets :
+        ProgressVal <- get("ProgressVal", envir=.InfoLoading)
+        Lab.Progress <- get("Lab.Progress", envir=.InfoLoading)
+        Lab.StepInfo <- get("Lab.StepInfo", envir=.InfoLoading)
+
+        ## Progression de la barre :
+        tclvalue(ProgressVal) <- as.numeric(tclvalue(ProgressVal)) + n
+
+        ## Label de progression :
+        tkconfigure(Lab.Progress,
+                    text=paste(format(round(100 * (as.numeric(tclvalue(ProgressVal)) - min) / (max - min)), width=4),
+                               " %", sep=""))
+
+        ## Label d'information sur l'étape en cours (suivante si % d'achevé) :
+        if (! is.null(msg))
+        {
+            tkconfigure(Lab.StepInfo, text=msg,...)
+        }else{}
+
+        tkfocus(get("WinInfoLoading", envir=.InfoLoading))
+
+        winSmartPlace.f(WinInfoLoading)
+        winRaise.f(WinInfoLoading)
+
+        ## Update des fenêtres :
+        tcl("update")
+    }
+}
+
+########################################################################################################################
+reconfigureInnerProgressBar.f <- function(min=NULL, max=NULL, ...)
+{
+    ## Purpose: Reconfiguration d'une barre de progression interne.
+    ## ----------------------------------------------------------------------
+    ## Arguments: ... : options de reconfiguration
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date:  9 mars 2011, 11:26
+
+    if (exists(".InfoLoading", envir=.GlobalEnv) &&
+        exists("InnerPG", envir=.InfoLoading)&& # l'objet de ProgressBar existe...
+        as.numeric(tclvalue(tkwinfo("exists", get("InnerPG", envir=.InfoLoading)))))
+    {
+        ## Changement de maximum :
+        if (! is.null(max) || ! is.null(min))
+        {
+            ## Paramètre de la fonction ou valeur stockée :
+            assign("IPG.max",           # Il faut également stocker la "nouvelle" valeur.
+                   max <- ifelse(is.null(max), get("IPG.max", envir=.InfoLoading), max),
+                   envir=.InfoLoading)
+
+            assign("IPG.min",           # Il faut également stocker la "nouvelle" valeur.
+                   min <- ifelse(is.null(min), get("IPG.min", envir=.InfoLoading), min),
+                   envir=.InfoLoading)
+
+            ## Reconfiguration de la barre :
+            tkconfigure(get("InnerPG", envir=.InfoLoading),
+                        maximum=max - min,
+                        ...)
+            ## Modification du % d'avancement :
+            tkconfigure(get("Lab.Progress", envir=.InfoLoading),
+                        text=paste(format(round(100 *
+                                                (as.numeric(tclvalue(get("ProgressVal", envir=.InfoLoading))) - min) /
+                                                (max - min)), width=4),
+                                   " %", sep=""))
+
+        }else{
+            ## sinon uniquement les changements sont dans ... :
+            if (length(as.list(match.call())) > 1)
+            {
+                tkconfigure(get("InnerPG", envir=.InfoLoading),...)
+            }else{
+                warning("Pas d'options de configuration de la barre de progression !")
+            }
+        }
+    }else{
+        ## On ne fait rien si la barre de preogression n'existe pas.
+    }
 }
 
 

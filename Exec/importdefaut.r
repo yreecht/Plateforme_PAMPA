@@ -233,12 +233,13 @@ opendefault.f <- function ()
     pathMaker.f()                       # MàJ des variables "fileNameUnitObs", "fileNameObs", "fileNameRefEsp". Pour les
                                         # cas où les variables fileName1-3 auraient changé.
 
+    assign("Jeuxdonnescoupe", 0, envir=.GlobalEnv)
 
     ## Informations de chargement (initialisation) :
     infoGeneral.f(msg="      Chargement des données      ",
                   font=tkfont.create(weight="bold", size=9), foreground="darkred")
 
-    initInnerTkProgressBar.f(initial=0, max=20, width=450)
+    initInnerTkProgressBar.f(initial=0, max=24, width=450)
     stepInnerProgressBar.f(n=0, msg="Chargement du référentiel d'unités d'observation")
 
 

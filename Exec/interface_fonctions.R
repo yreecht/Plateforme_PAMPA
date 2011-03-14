@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: interface_fonctions.R
-### Time-stamp: <2011-03-09 18:35:02 yreecht>
+### Time-stamp: <2011-03-10 15:58:47 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -207,7 +207,7 @@ infoGeneral.f <- function(msg,...)
 
 ########################################################################################################################
 infoLoading.f <- function(msg="", icon="info", button=FALSE,
-                          command=function(){tkdestroy(WinInfoLoading)},...)
+                          command=function(){tkdestroy(WinInfoLoading) ; winRaise.f(tm)},...)
 {
     ## Purpose: Afficher les informations sur le chargement des données
     ## ----------------------------------------------------------------------

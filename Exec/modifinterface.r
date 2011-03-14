@@ -21,6 +21,14 @@ ModifierMenuApresImport.f <- function()
     tkconfigure(ResumerSituationUnitobsSelectionnees,
                 text=paste("-> Nombre  d'unités d'observations concernées : ", Nbunitobs))
 
+    tkconfigure(button.DataRestore, state="disabled")
+
+    ## Suppression de la colonne "sélections" si besoin :
+    if (nchar(tclvalue(tclarray[[0, 4]])) > 3)
+    {
+        tkdelete(table1, "cols", "end", 1)
+    }
+
     winRaise.f(tm)
 }
 
@@ -36,14 +44,27 @@ MiseajourTableau.f <- function(tclarray)
     tclarray[[3, 1]] <- sub(paste(nameWorkspace, "/Data/", sep=""), '', fileName3)
     tclarray[[3, 2]] <- dim(especes)[1]
     tclarray[[3, 3]] <- dim(especes)[2]
+
+    tmp <- sapply(1:3,
+                  function(i)
+              {
+                  nchar(tclvalue(tclarray[[i, 1]]))
+              })
+
+    tcl(.Tk.ID(table1), "width", "1", max(tmp)+2)
 }
 
 ModifierInterfaceApresSelection.f <- function(Critere, Valeur)
 {
     runLog.f(msg=c("Modification de l'interface suite à une sélection d'enregistrement :"))
 
-    tkinsert(table1, "cols", "end", 1)
-    tclarray[[0, 4]] <- "Sélection"
+    if (tryCatch(nchar(tclvalue(tclarray[[0, 4]])),
+                 error=function(e){0}) < 3 && Jeuxdonnescoupe)
+    {
+        tkinsert(table1, "cols", "end", 1)
+        tclarray[[0, 4]] <- "Sélection"
+    }
+
     tclarray[[2, 4]] <- dim(obs)[1]
     tkconfigure(MonCritere, text=Critere)
     tkconfigure(MesEnregistrements, text=Valeur)
@@ -69,8 +90,9 @@ ModifierInterfaceApresRestore.f <- function(Critere="Aucun", Valeur="NA")
 
     tkdelete(table1, "cols", "end", 1)
 
-    tclarray[[0, 4]] <- "Sélection"
+    tclarray[[0, 4]] <- ""
     tclarray[[2, 4]] <- dim(obs)[1]
+
     tkconfigure(MonCritere, text=Critere)
     tkconfigure(MesEnregistrements, text=Valeur)
     NbEsp <- length(unique(obs$code_espece))

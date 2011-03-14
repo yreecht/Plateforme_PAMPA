@@ -53,7 +53,8 @@ tkgrid.configure(TitreSuiviOperation, columnspan=1, sticky="w")
 tkgrid.configure(button.widgetOFF, columnspan=2, column=2, sticky="e")
 
 scr <- tkscrollbar(tm, repeatinterval=2, command=function(...)tkyview(txt.w, ...))
-txt.w <- tktext(tm, bg="white", width=90, height=15, yscrollcommand=function(...)tkset(scr, ...))
+txt.w <- tktext(tm, bg="white", width=90, height=15, yscrollcommand=function(...)tkset(scr, ...),
+                wrap="word")
 tkgrid.configure(txt.w, scr)
 tkgrid.configure(txt.w, sticky="nsew", columnspan=3)
 tkgrid.configure(scr, sticky="nsw", column=3)
@@ -73,10 +74,11 @@ gestionMSGaide.f("etapeImport")
 
 var1 <- 0
 var2 <- 0
-ArrayEtatFichier <- c("Type de fichier", "Source", "Nb Enr", "Nb Champs", "Sélections",
+ArrayEtatFichier <- c("Type de fichier", "Source", "Nb Enr", "Nb Champs", "",
                       "Fichier d'unités d'observations", "non sélectionné", "NA", "NA", "NA",
                       "Fichier d'observations ", "non sélectionnés", "NA", "NA", "NA",
                       "Référentiel espèce ", "non sélectionné", "NA", "NA", "NA")
+
 tclarray <- tclArray()
 dim(ArrayEtatFichier) <- c(5, 4)
 for (i in (0:3))                        # [!!!] [yr: 11/01/2011]
@@ -85,9 +87,16 @@ for (i in (0:3))                        # [!!!] [yr: 11/01/2011]
 
 tclRequire("Tktable")
 table1 <-tkwidget(tm, "table", variable=tclarray, rows=4, cols=4, titlerows=1, selectmode="extended",
-                  colwidth=25, background="white")
+                  colwidth=15, background="white")
 tkgrid(table1)
 tkgrid.configure(table1, columnspan=3, sticky="w")
+
+## Largeur des colonnes:
+tcl(.Tk.ID(table1),"width","0","28")
+tcl(.Tk.ID(table1),"width","2","17")
+
+## Options :
+## activate, bbox, border, cget, clear, configure, curselection, curvalue, delete, get, height, hidden, icursor, index, insert, reread, scan, see, selection, set, spans, tag, validate, version, window, width, xview, or yview
 
 ## déclaration et mise à 0 de toutes les variables de sélection dans les menus
 SelectListEsp <- tclVar(0)
@@ -136,6 +145,11 @@ tkadd(arbreRegression, "command", label="3 facteurs", command=arbre3.f)
 
 ## Ajout [yr: 14/10/2010]
 tkadd(traitement, "separator")
+
+tkadd(traitement, "command", label="Représentation par espèce ou  classe de taille d'espèce :",
+      foreground="darkred", background="#dadada",
+      state="normal")
+
 ## Ajout [yr: 11/08/2010]
 tkadd(traitement, "command", label="Boxplots métrique /espèce/unité d'observation...",
       background="#FFFBCF",
@@ -154,6 +168,11 @@ tkadd(traitement, "command", label="Fréquences d'occurrence /espèce/unité d'obse
   })
 ## Ajout [yr: 27/01/2011]
 tkadd(traitement, "separator")
+
+tkadd(traitement, "command", label="Agrégation de plusieurs espèces ou classes de taille par unité d'observation :",
+      foreground="darkred", background="#dadada",
+      state="normal")
+
 ## Ajout [yr: 25/10/2010]
 tkadd(traitement, "command", label="Boxplots métrique /unité d'observation (dont biodiversité)...",
       background="#FFFBCF",
@@ -206,6 +225,15 @@ tkadd(selection, "separator")
 tkadd(selection, "checkbutton", label="Par liste d'espèces (fichier)", variable=SelectListEsp,
       onvalue=1, offvalue=0, command = choixespeces.f, state="disabled")
 
+## Restauration des données :
+tkadd(selection, "separator")
+tkadd(selection, "command", label="Restaurer les données originales",
+      command = function ()
+  {
+      RestaurerDonnees.f()
+      winRaise.f(tm)
+  })
+
 ## Analyses :
 ## Ajout [yr: 25/08/2010] :
 tkadd(analyse, "cascade", label="Modèles inférentiels", menu=modelesInferentiels,
@@ -214,6 +242,10 @@ tkadd(analyse, "cascade", label="Analyses exploratoires", menu=analysesExplo, st
 tkadd(analyse, "separator")
 tkadd(analyse, "cascade", label="Arbre de regression multivariee", menu = arbreRegression)
 
+tkadd(modelesInferentiels, "command", label="Analyse par espèce ou classe de taille d'espèce :",
+      foreground="darkred", background="#dadada",
+      state="normal")
+
 tkadd(modelesInferentiels, "command", label="Modèles linéaires métrique /espèce/unité d'observation...",
       background="#FFFBCF",
       command=function ()
@@ -221,6 +253,13 @@ tkadd(modelesInferentiels, "command", label="Modèles linéaires métrique /espèce/
       selectionVariables.f("modele_lineaire")
       winRaise.f(tm)
   })
+
+tkadd(modelesInferentiels, "separator")
+
+tkadd(modelesInferentiels, "command", label="Agrégation de plusieurs espèces ou classes de taille par unité d'observation :",
+      foreground="darkred", background="#dadada",
+      state="normal")
+
 ## Ajout [yr: 26/10/2010]
 tkadd(modelesInferentiels, "command", label="Modèles linéaires métrique /unité d'observation (dont biodiversité)...",
       background="#FFFBCF",
@@ -322,7 +361,7 @@ frameOverall <- tkframe(tm)
 tkgrid(tklabel(frameOverall, text="Critères de sélection", relief="groove", borderwidth=2, width=135))
 tkgrid.configure(frameOverall, columnspan=5)
 frameUpper <- tkframe(frameOverall, borderwidth=2)
-MonCritere <- tklabel(frameUpper, text="Aucun")
+MonCritere <- tklabel(frameUpper, text="Aucun", wraplength=750)
 tkgrid(MonCritere)
 frameLower <- tkframe(frameOverall, relief="groove", borderwidth=2)
 MesEnregistrements <- tklabel(frameLower, text="NA")
@@ -336,8 +375,11 @@ ResumerSituationUnitobsSelectionnees <- tklabel(frameOverall,
                                                 text="-> Nombre d'unités d'observation concernées : NA")
 tkgrid(ResumerSituationUnitobsSelectionnees)
 tkgrid.configure(ResumerSituationUnitobsSelectionnees, columnspan=3, sticky="w")
+
 button.DataRestore <- tkbutton(tm, text="Restaurer les données", command=RestaurerDonnees.f)
 tkgrid(button.DataRestore)
+
+tkgrid(button.widgetOFF, column=2, row=9, columnspan=2)
 tkconfigure(button.DataRestore, state="disabled")
 
 ## Gestion des évènements dans la fenêtre tm (toplevel)

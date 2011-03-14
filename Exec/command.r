@@ -1,5 +1,7 @@
 RestaurerDonnees.f <- function ()
 {
+    on.exit(winRaise.f(tm))
+
     runLog.f(msg=c("Restauration des données originales :"))
 
     if (Jeuxdonnescoupe==1)
@@ -21,7 +23,8 @@ RestaurerDonnees.f <- function ()
 
         message("données sauvées réinitialisées dans les tables de base")
         ModifierInterfaceApresRestore.f("Aucun", "Aucune")
-        Jeuxdonnescoupe <- 0
+        assign("Jeuxdonnescoupe", 0, envir=.GlobalEnv)
+
         gestionMSGinfo.f("Jeuxdedonnerestore", dim(obs)[1])
         tkmessageBox(message=paste("Jeu de données restauré \n", dim(obs)[1],
                                    "enregistrements dans la table observation"))
@@ -38,6 +41,8 @@ RestaurerDonnees.f <- function ()
 
 SelectionUnCritereEsp.f <- function ()
 {
+    on.exit(winRaise.f(tm))
+
     runLog.f(msg=c("Sélection des enregistrement selon un critère du référentiel espèces :"))
 
     selection <- UnCritereEspDansObs.f()
@@ -46,27 +51,30 @@ SelectionUnCritereEsp.f <- function ()
     infoGeneral.f(msg="Sélection et recalcul selon un critère du référentiel espèces :",
                   font=tkfont.create(weight="bold", size=9), foreground="darkred")
 
+    keptEspeces <- as.character(especes$code_espece[is.element(especes[ , selection[["facteur"]]],
+                                                                     selection[["selection"]])])
+
     ## Réduction des tables de données (au espèces sélectionnées) :
     if (exists("unitespta", envir=.GlobalEnv))
     {
         assign("unitespta",
-               dropLevels.f(unitespta[is.element(unitespta$code_espece, obs$code_espece), , drop=FALSE],
+               dropLevels.f(unitespta[is.element(unitespta$code_espece, keptEspeces), , drop=FALSE],
                             which="code_espece"),
                envir=.GlobalEnv)
     }else{}
 
     assign("unitesp",
-           dropLevels.f(unitesp[is.element(unitesp$code_espece, obs$code_espece), , drop=FALSE],
+           dropLevels.f(unitesp[is.element(unitesp$code_espece, keptEspeces), , drop=FALSE],
                         which="code_espece"),
            envir=.GlobalEnv)
 
     assign("listespunit",
-           dropLevels.f(listespunit[is.element(listespunit$code_espece, obs$code_espece), , drop=FALSE],
+           dropLevels.f(listespunit[is.element(listespunit$code_espece, keptEspeces), , drop=FALSE],
                         which="code_espece"),
            envir=.GlobalEnv)
 
     assign("contingence",
-           contingence[ , is.element(colnames(contingence), obs$code_espece), drop=FALSE],
+           contingence[ , is.element(colnames(contingence), keptEspeces), drop=FALSE],
            envir=.GlobalEnv)
 
     ## Recalcul des indices de biodiversité :
@@ -84,7 +92,7 @@ SelectionUnCritereEsp.f <- function ()
     ## Recréation des tables de calcul :
     ## creationTablesBase.f()
     creationTablesCalcul.f()
-    ModifierInterfaceApresSelection.f(paste(factesp[1], ":", selectfactesp), dim(obs)[1])
+    ModifierInterfaceApresSelection.f(paste(factesp[1], ":", paste(selectfactesp, collapse=", ")), dim(obs)[1])
     ## gestionMSGinfo.f("Critereselectionne", dim(obs)[1])
 
     infoLoading.f(button=TRUE)
@@ -98,6 +106,8 @@ SelectionUnCritereEsp.f <- function ()
 
 SelectionUnCritereUnitobs.f <- function ()
 {
+    on.exit(winRaise.f(tm))
+
     runLog.f(msg=c("Sélection des enregistrement selon un critère du référentiel des unités d'observation :"))
 
     selection <- UnCritereUnitobsDansObs.f()
@@ -159,7 +169,7 @@ SelectionUnCritereUnitobs.f <- function ()
     ## Recréation des tables de calcul :
     ## creationTablesBase.f()
     creationTablesCalcul.f()
-    ModifierInterfaceApresSelection.f(paste(fact[1], ":", selectfactunitobs), dim(obs)[1])
+    ModifierInterfaceApresSelection.f(paste(fact[1], ":", paste(selectfactunitobs, collapse=", ")), dim(obs)[1])
     ## gestionMSGinfo.f("Critereselectionne", dim(obs)[1])
 
     infoLoading.f(button=TRUE)

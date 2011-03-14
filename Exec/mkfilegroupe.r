@@ -355,6 +355,8 @@ unitesp.f <- function(){
     ## Si video rotative, on divise par le nombre de rotation
     if (unique(unitobs$type) == "SVR")
     {
+        stepInnerProgressBar.f(n=1, msg="Interpolations pour vidéos rotative")
+
         switch(getOption("PAMPA.SVR.interp"),
                    "extended"={
                        statRotations <- statRotation.extended.f(facteurs=c("unite_observation", "code_espece"))
@@ -368,6 +370,8 @@ unitesp.f <- function(){
 
         ## Moyenne pour les vidéos rotatives (habituellement 3 rotation) :
         unitespT <- statRotations[["nombresMean"]]
+
+        stepInnerProgressBar.f(n=3, msg="Calcul des métriques par unité d'observation et espèce...")
     }else{
         unitespT <- tapply(obs$nombre,
                            as.list(obs[ , c("unite_observation", "code_espece")]),

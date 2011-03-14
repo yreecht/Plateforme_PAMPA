@@ -305,7 +305,10 @@ affichageMetriques.f <- function ()
     }
     OK.but <-tkbutton(bb, text="OK", command=OnOK)
     tkgrid(OK.but)
+
     tkfocus(bb)
+    winSmartPlace.f(bb)
+
     tkwait.window(bb)
 } # fin affichageMetriques
 
@@ -337,9 +340,11 @@ UnCritereEspDansObs.f <- function ()
     obs <- dropLevels.f(subset(obs, is.element(obs[, factesp], selectfactesp)), which="code_espece")
 
     ## Réintégration des niveaux sélectionnés mais plus présents dans les données :
-    levels(obs$code_espece) <- levelsTmp[is.element(levelsTmp,
-                                                    especes$code_espece[is.element(especes[ , factesp],
-                                                                                   selectfactesp)])]
+    levelsTmp <- levelsTmp[is.element(levelsTmp,
+                                      especes$code_espece[is.element(especes[ , factesp],
+                                                                     selectfactesp)])]
+
+    obs$code_espece <- factor(obs$code_espece, levels=levelsTmp)
 
     gestionMSGaide.f("etapeselected")
     ## Jeuxdonnescoupe <- 1
@@ -378,10 +383,11 @@ UnCritereUnitobsDansObs.f <- function ()
                         which="unite_observation") # Vérifier si c'est correct [!!!]
 
     ## Réintégration des niveaux sélectionnés mais plus présents dans les données :
-    levels(obs$unite_observation) <-
-        levelsTmp[is.element(levelsTmp,
-                             unitobs$unite_observation[is.element(unitobs[ , factunitobs],
-                                                                  selectfactunitobs)])]
+    levelsTmp <- levelsTmp[is.element(levelsTmp,
+                                      unitobs$unite_observation[is.element(unitobs[ , factunitobs],
+                                                                           selectfactunitobs)])]
+
+    obs$unite_observation <- factor(obs$unite_observation, levels=levelsTmp)
 
     gestionMSGaide.f("etapeselected")
     assign("Jeuxdonnescoupe", 1, envir=.GlobalEnv)

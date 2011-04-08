@@ -167,11 +167,12 @@ choixunfacteurUnitobs.f <- function ()
     OnOK <- function ()
     {
         fact <- facts[as.numeric(tkcurselection(tl))+1]
-        assign("fact", fact, envir=.GlobalEnv)
+        assign("fact",
+               fact, envir=.GlobalEnv)
         tkdestroy(aa)
-        unit[, fact] <- unitobs[, fact][match(unit$unitobs, unitobs$unite_observation)] # [???] unitobs ou uobstmp ?
+        ## unit[, fact] <- unitobs[, fact][match(unit$unitobs, unitobs$unite_observation)] # [???] unitobs ou uobstmp ?
                                         # [!!!]
-        assign("unit", unit, envir=.GlobalEnv)
+        # assign("unit", unit, envir=.GlobalEnv)
     }
     OK.but <-tkbutton(aa, text="OK", command=OnOK)
     tkgrid(OK.but)
@@ -326,32 +327,41 @@ UnCritereEspDansObs.f <- function ()
     runLog.f(msg=c("Sélection sur un critère du référentiel espèces :"))
 
     critereespref.f()
-    obs[, factesp] <- especes[, factesp][match(obs$code_espece, especes$code_espece)]
 
-    levelsTmp <- levels(obs$code_espece)
+    if (length(factesp) == 0 || is.null(factesp))
+    {
+        selectfactesp <- NULL
+    }else{
+        obs[, factesp] <- especes[, factesp][match(obs$code_espece, especes$code_espece)]
 
-    ## message(head(obs))
-    ## ChoixFacteurSelect.f(tableselect=obs[, factesp], monchamp=factesp,
-    ##                      Nbselectmax="multiple", ordre=1, mavar="selectfactesp")
-    selectfactesp <- selectModWindow.f(factesp, obs, selectmode="extended")
-    assign("selectfactesp", selectfactesp, envir=.GlobalEnv)
-    ## message(selectfactesp)
+        levelsTmp <- levels(obs$code_espece)
 
-    obs <- dropLevels.f(subset(obs, is.element(obs[, factesp], selectfactesp)), which="code_espece")
+        ## message(head(obs))
+        ## ChoixFacteurSelect.f(tableselect=obs[, factesp], monchamp=factesp,
+        ##                      Nbselectmax="multiple", ordre=1, mavar="selectfactesp")
+        selectfactesp <- selectModWindow.f(factesp, obs, selectmode="extended")
+        assign("selectfactesp", selectfactesp, envir=.GlobalEnv)
+        ## message(selectfactesp)
+    }
 
-    ## Réintégration des niveaux sélectionnés mais plus présents dans les données :
-    levelsTmp <- levelsTmp[is.element(levelsTmp,
-                                      especes$code_espece[is.element(especes[ , factesp],
-                                                                     selectfactesp)])]
+    if (!is.null(selectfactesp))
+    {
+        obs <- dropLevels.f(subset(obs, is.element(obs[, factesp], selectfactesp)), which="code_espece")
 
-    obs$code_espece <- factor(obs$code_espece, levels=levelsTmp)
+        ## Réintégration des niveaux sélectionnés mais plus présents dans les données :
+        levelsTmp <- levelsTmp[is.element(levelsTmp,
+                                          especes$code_espece[is.element(especes[ , factesp],
+                                                                         selectfactesp)])]
 
-    gestionMSGaide.f("etapeselected")
-    ## Jeuxdonnescoupe <- 1
-    assign("Jeuxdonnescoupe", 1, envir=.GlobalEnv)
-    return(list(facteur=factesp,
-                selection=selectfactesp,
-                obs=obs))
+        obs$code_espece <- factor(obs$code_espece, levels=levelsTmp)
+
+        gestionMSGaide.f("etapeselected")
+        ## Jeuxdonnescoupe <- 1
+        assign("Jeuxdonnescoupe", 1, envir=.GlobalEnv)
+        return(list(facteur=factesp,
+                    selection=selectfactesp,
+                    obs=obs))
+    }
 }
 
 
@@ -369,29 +379,38 @@ UnCritereUnitobsDansObs.f <- function ()
 
     choixunfacteurUnitobs.f()
     factunitobs <- fact
-    obs[, factunitobs] <- unitobs[, factunitobs][match(obs$unite_observation, unitobs$unite_observation)]
 
-    levelsTmp <- levels(obs$unite_observation)
-    ## message(head(obs))
-    ## ChoixFacteurSelect.f(obs[, factunitobs], factunitobs, "multiple", 1, "selectfactunitobs")
+    if (length(factunitobs) == 0 || is.null(factunitobs))
+    {
+        selectfactunitobs <- NULL
+    }else{
+        obs[, factunitobs] <- unitobs[, factunitobs][match(obs$unite_observation, unitobs$unite_observation)]
 
-    selectfactunitobs <- selectModWindow.f(factunitobs, obs, selectmode="extended")
-    assign("selectfactunitobs", selectfactunitobs, envir=.GlobalEnv)
-    ## message(selectfactunitobs)
+        levelsTmp <- levels(obs$unite_observation)
+        ## message(head(obs))
+        ## ChoixFacteurSelect.f(obs[, factunitobs], factunitobs, "multiple", 1, "selectfactunitobs")
 
-    obs <- dropLevels.f(subset(obs, is.element(obs[, factunitobs], selectfactunitobs)),
-                        which="unite_observation") # Vérifier si c'est correct [!!!]
+        selectfactunitobs <- selectModWindow.f(factunitobs, obs, selectmode="extended")
+        assign("selectfactunitobs", selectfactunitobs, envir=.GlobalEnv)
+        ## message(selectfactunitobs)
+    }
 
-    ## Réintégration des niveaux sélectionnés mais plus présents dans les données :
-    levelsTmp <- levelsTmp[is.element(levelsTmp,
-                                      unitobs$unite_observation[is.element(unitobs[ , factunitobs],
-                                                                           selectfactunitobs)])]
+    if (!is.null(selectfactunitobs))
+    {
+        obs <- dropLevels.f(subset(obs, is.element(obs[, factunitobs], selectfactunitobs)),
+                            which="unite_observation") # Vérifier si c'est correct [!!!]
 
-    obs$unite_observation <- factor(obs$unite_observation, levels=levelsTmp)
+        ## Réintégration des niveaux sélectionnés mais plus présents dans les données :
+        levelsTmp <- levelsTmp[is.element(levelsTmp,
+                                          unitobs$unite_observation[is.element(unitobs[ , factunitobs],
+                                                                               selectfactunitobs)])]
 
-    gestionMSGaide.f("etapeselected")
-    assign("Jeuxdonnescoupe", 1, envir=.GlobalEnv)
-    return(list(facteur=factunitobs,
-                selection=selectfactunitobs,
-                obs=obs))
+        obs$unite_observation <- factor(obs$unite_observation, levels=levelsTmp)
+
+        gestionMSGaide.f("etapeselected")
+        assign("Jeuxdonnescoupe", 1, envir=.GlobalEnv)
+        return(list(facteur=factunitobs,
+                    selection=selectfactunitobs,
+                    obs=obs))
+    }
 }

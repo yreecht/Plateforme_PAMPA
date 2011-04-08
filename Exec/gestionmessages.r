@@ -76,15 +76,17 @@ gestionMSGaide.f <- function (namemsg)
         switch(namemsg,
                "ZeroEnregistrement"={
                    paste("! votre sélection ne contient plus d'enregistrement",
-                         ", veuillez restaurer ou recharger les données (CTRL + A) !\n", sep="")
+                         ", veuillez restaurer ou recharger les données (CTRL + a) !\n", sep="")
                },
                "etapeImport"={
-                   paste("1 : Choisissez c:/PAMPA comme dossier d'importation et de travail",
-                         "\n ou importez vos fichiers un à un.\n", sep="")
+                   paste("1 : Chargez les \"Dossiers et fichiers par défaut\" (CTRL + a)\n",
+                         "\t ou choisissez les dossier/fichiers un à un (CTRL + n).\n",
+                         "\t (également accessibles par le menu \"Données\")", sep="")
                },
                "SelectionOuTraitement"={
-                   paste("2 : Vous pouvez restreindre votre sélection de données",
-                         "\n ou commencer les traitements standards.\n", sep="")
+                   paste("2 : Vous pouvez restreindre votre sélection de données\n",
+                         "\t (menu \"Sélection et recalcul\")\n",
+                         "\t ou commencer les traitements standards.", sep="")
                },
                "startsansficher"={
                    paste("Si les fichiers par défauts paramétrés dans 'config.r'- ", fileName1, " - ", fileName2, " - ",
@@ -93,7 +95,7 @@ gestionMSGaide.f <- function (namemsg)
                "etapeselected"={
                    paste("3 : Vous pouvez retrouver l'ensemble des observations en",
                          "\n\t* les restaurant : menu \"Sélection et recalcul\" ou bouton en bas à gauche.",
-                         "\n\t* les rechargeant (CTRL+A)",
+                         "\n\t* les rechargeant (CTRL + a)",
                          sep="")
                },
                "message à définir")
@@ -178,7 +180,7 @@ gestionMSGinfo.f <- function (namemsg, parametrenum,...)
                    paste("Aucun type de graphes par espèce pour une métrique n'est sélectionné.\n")
                },
                "Jeuxdedonnerestore"={
-                   paste("Votre jeux de données a été restauré ainsi que les tables de métriques originales",
+                   paste("Votre jeu de données a été restauré ainsi que les tables de métriques originales",
                          " \nAttention, pour restaurer les CSV initiaux, vous devez réimporter les données\n ",
                          parametrenum, " dans la table d'observation.\n", sep="")
                },

@@ -84,35 +84,42 @@ openfile.f <- function()
     }
 
     tt <- tktoplevel(height=50, width=300)
-    tkwm.title(tt, "Import des fichiers de donnees")
+    tkwm.title(tt, "Choix des fichiers de données à importer")
     OK <- tclVar(0)
     button.widget0 <- tkbutton(tt, text="Espace de travail", width=45,
                                command=chercheEspaceTravail.f)
-    button.widget1 <- tkbutton(tt, text="Table de donnees unites d'observation", command=openUnitobs.f)
-    button.widget2 <- tkbutton(tt, text="Table de donnees d'observations", command=openObservations.f)
-    button.widget3 <- tkbutton(tt, text="Referentiel especes", command=openListespeces.f)
+    button.widget1 <- tkbutton(tt, text="Table de données d'unités d'observation", command=openUnitobs.f)
+    button.widget2 <- tkbutton(tt, text="Table de données d'observations", command=openObservations.f)
+    button.widget3 <- tkbutton(tt, text="Référentiel espèces", command=openListespeces.f)
+
     OnOK <- function()  # [imb]
     {
         tkdestroy(tt)
     }
+
     OK.but <-tkbutton(tt, text="Valider", command=OnOK)
+
     tkgrid(button.widget0,
            ResumerEspaceTravail <- tklabel(tt, text=paste("Espace de travail : ", "non sélectionné - par défaut :",
-                                               nameWorkspace)))
+                                               nameWorkspace)),
+           pady=5, padx=5)
 
     tkgrid(button.widget1,
            ResumerSituationFichierUnitesObs <- tklabel(tt, text=paste("Fichier d'unités d'observations : ",
-                                                                      "non sélectionné - par défaut :", fileName1)))
+                                                                      "non sélectionné - par défaut :", fileName1)),
+           pady=5, padx=5)
 
     tkgrid(button.widget2,
            ResumerSituationFichierObs <- tklabel(tt, text=paste("Fichier d'observations : ",
-                                                                "non sélectionné - par défaut :", fileName2)))
+                                                                "non sélectionné - par défaut :", fileName2)),
+           pady=5, padx=5)
 
     tkgrid(button.widget3,
            ResumerSituationReferencielEspece <- tklabel(tt, text=paste("Référentiel espèce : ",
-                                                                       "non sélectionné - par défaut :", fileName3)))
+                                                                       "non sélectionné - par défaut :", fileName3)),
+           pady=5, padx=5)
 
-    tkgrid(OK.but)
+    tkgrid(OK.but, pady=5, padx=5)
     tkgrid.configure(button.widget0, button.widget1, button.widget2, button.widget3, sticky="w")
     tkgrid.configure(OK.but, sticky="we")
 

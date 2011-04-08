@@ -122,7 +122,7 @@ lectureFichierEspeces.f <- function ()
     ## Importation des caracteristiques des especes
     especes <- read.table(fileNameRefEsp, sep="\t", dec=".", quote="", header=TRUE, encoding="latin1")
     names(especes) <- c("code_espece", "GrSIH", "CodeSIH", "IssCaap", "TaxoCode", "CodeFAO", "CodeFB", "Phylum",
-                        "Cath_benthique", "Classe", "Ordre", "Famille", "Genre", "espece", "Identifiant", "ObsNC",
+                        "Cat_benthique", "Classe", "Ordre", "Famille", "Genre", "espece", "Identifiant", "ObsNC",
                         "ObsRUN", "ObsMAY", "ObsSTM", "ObsCB", "ObsBA", "ObsBO", "ObsCR", "taillemax", "L50",
                         "cryptique", "mobilite", "territorial", "nocturne", "comportement.grp", "agreg.saison",
                         "position.col.eau", "strategie.demo", "Type.ponte", "Habitat.Prefere", "Changement.sexe",
@@ -160,10 +160,10 @@ lectureFichierEspeces.f <- function ()
     ## Ajout de cathégories benthiques supplémentaires lues dans un fichier de correspondance :
     correspCatBenthique <- read.csv(paste(basePath, "/Exec/corresp-cat-benth.csv", sep=""), row.names=1)
 
-    especes <- cbind(especes, correspCatBenthique[as.character(especes$Cath_benthique), , drop=FALSE])
+    especes <- cbind(especes, correspCatBenthique[as.character(especes$Cat_benthique), , drop=FALSE])
 
     ## Pour vérif :
-    ## na.omit(especes[as.integer(runif(50,min=1, max=3553)), c("Cath_benthique", "CategB_general", "CategB_groupe")])
+    ## na.omit(especes[as.integer(runif(50,min=1, max=3553)), c("Cat_benthique", "CategB_general", "CategB_groupe")])
 
     ## Suppression de la ligne en NA
     especes <- subset(especes, !is.na(especes$code_espece))
@@ -263,7 +263,7 @@ opendefault.f <- function ()
     switch(as.character(unique(unitobs$type)[1]),
            "SVR"={},                    # rien à faire.
            "LIT"={
-               reconfigureInnerProgressBar.f(max=11)
+               reconfigureInnerProgressBar.f(max=9)
            },                           # Pour le benthos on ne calcule pas les métriques / classe de taille.
            {
                message("\n\nreconfiguration\n\n")
@@ -429,7 +429,8 @@ opendefault.f <- function ()
                 text=paste("Fichier référenciel espèce : ", fileNameRefEsp, " Nb Enr : ",
                            dim(especes)[1], " Nb Champs : ", dim(especes)[2]))
     tkconfigure(ResumerAMPetType,
-                text=paste("AMP considérée", unique(unitobs$AMP), " type d'observation : ", unique(unitobs$type)))
+                text=paste("Aire Marine Protégée : ", unique(unitobs$AMP), " ; type d'observation : ",
+                           unique(unitobs$type), sep=""))
 
     ## ################# Creation de la table de contingence ##################
 
@@ -437,22 +438,22 @@ opendefault.f <- function ()
 
     if (unique(unitobs$type) != "SVR")
     {
-        obsSansCathBenth <- obs
-        obsSansCathBenth$Genre <- especes$Genre[match(obsSansCathBenth$code_espece, especes$code_espece)]
-        if(length(obsSansCathBenth$Genre[obsSansCathBenth$Genre=="ge."])>0)
+        obsSansCatBenth <- obs
+        obsSansCatBenth$Genre <- especes$Genre[match(obsSansCatBenth$code_espece, especes$code_espece)]
+        if(length(obsSansCatBenth$Genre[obsSansCatBenth$Genre=="ge."])>0)
         {
             infoLoading.f(msg=paste("Pour les calculs des indices de diversité, ",
-                                     length(obsSansCathBenth$Genre[obsSansCathBenth$Genre=="ge."]),
+                                     length(obsSansCatBenth$Genre[obsSansCatBenth$Genre=="ge."]),
                                      " observations de la table de contingence pour lesquels le genre ",
                                      " \n\tn'est pas renseigné ('ge.') dans le référentiel espèce ont été supprimées",
                                      sep=""),
                           icon="info")
 
-            obsSansCathBenth <- subset(obsSansCathBenth, obsSansCathBenth$Genre!="ge.")
+            obsSansCatBenth <- subset(obsSansCatBenth, obsSansCatBenth$Genre!="ge.")
 
         }
-        contingence <- tapply(obsSansCathBenth$nombre,
-                              list(obsSansCathBenth$unite_observation, obsSansCathBenth$code_espece), na.rm=TRUE, sum)
+        contingence <- tapply(obsSansCatBenth$nombre,
+                              list(obsSansCatBenth$unite_observation, obsSansCatBenth$code_espece), na.rm=TRUE, sum)
     }else{
         contingenceSVRt <- tapply(obs$nombre,
                                   list(obs$unite_observation, obs$rotation, obs$code_espece), na.rm=TRUE, mean)
@@ -545,7 +546,7 @@ opendefault.f <- function ()
 
     creationTablesCalcul.f()
 
-    ModifierInterfaceApresSelection.f("Aucun", "NA")
+    ModifierInterfaceApresSelection.f("Tout", "NA")
 
     tkgrid.configure(scr, sticky="ns")
 

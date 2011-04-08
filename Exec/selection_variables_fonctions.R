@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: Selection_variables_fonctions.R
-### Time-stamp: <2011-02-28 15:35:19 yreecht>
+### Time-stamp: <2011-03-16 16:08:39 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -143,7 +143,14 @@ champsUnitobs.f <- function(ordered=FALSE, tableMetrique="")
                  },
                  sort(cPrincip[is.element(cPrincip, res)]),
                  "", sort(res[!is.element(res, cPrincip)]))
-    }else{}
+    }else{
+        res <- c(if (tableMetrique == "unitespta")
+                 {
+                     c("classe_taille", "")
+                 }else{
+                     ""
+                 },
+                 res)}
 
     return(res)
 }
@@ -174,7 +181,7 @@ champsRefEspeces.f <- function(site, ordered=FALSE, tableMetrique="", nextStep=N
     }else{
         cPrincip <- c(
                       ## table "especes" :
-                      "code_espece", "Cath_benthique", "Famille", "Genre", "Identifiant",
+                      "code_espece", "Cat_benthique", "Famille", "Genre", "Identifiant",
                       "CategB_general", "CategB_groupe"
                       )
     }
@@ -205,7 +212,15 @@ champsRefEspeces.f <- function(site, ordered=FALSE, tableMetrique="", nextStep=N
                  },
                  sort(cPrincip[is.element(cPrincip, res)]),
                  "", sort(res[!is.element(res, cPrincip)]))
-    }else{}
+    }else{
+        res <- c(if (tableMetrique == "unitespta")
+                 {
+                     c("classe_taille", "")
+                 }else{
+                     ""
+                 },
+                 res)
+    }
 
     return(res)
 }
@@ -232,7 +247,7 @@ champsReferentiels.f <- function(nomTable, nextStep=NA)
                       ## table "unitobs" :
                       "site", "an", "biotope", "statut_protection", "caracteristique_1", "caracteristique_2",
                       ## table "especes" :
-                      "code_espece", "Cath_benthique", "Famille", "Genre", "Identifiant",
+                      "code_espece", "Cat_benthique", "Famille", "Genre", "Identifiant",
                       "CategB_general", "CategB_groupe"
                       )
 

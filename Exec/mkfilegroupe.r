@@ -923,7 +923,7 @@ creationTablesCalcul.f <- function(){
 
     if (is.benthos.f())                 # unique(unitobs$type) == "LIT"
     {
-        TableMetrique$Cath_benthique <- especes$Cath_benthique[match(TableMetrique$code_espece, especes$code_espece)]
+        TableMetrique$Cat_benthique <- especes$Cat_benthique[match(TableMetrique$code_espece, especes$code_espece)]
     }
     if (unique(unitobs$type) == "SVR")  # suppr: "UVC" Ô_ô [???]
     {

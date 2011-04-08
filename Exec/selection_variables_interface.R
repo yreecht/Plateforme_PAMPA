@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: Selection_variables_interface.R
-### Time-stamp: <2011-03-08 18:11:20 yreecht>
+### Time-stamp: <2011-03-18 15:34:08 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -314,7 +314,7 @@ selectModWindow.f <- function(champ, data, selectmode="multiple", sort=TRUE, pre
     tkgrid(LB, SCR.y)
     tkgrid.configure(SCR.y, rowspan=4, sticky="nsw")
     tkgrid(FrameB, columnspan=2, sticky="")
-    tkgrid(B.OK, tklabel(FrameB, text="        "), B.Cancel, sticky="")
+    tkgrid(B.OK, tklabel(FrameB, text="        "), B.Cancel, sticky="", pady=5)
 
     ## Configuration de la liste :
     if (sort)

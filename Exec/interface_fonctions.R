@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: interface_fonctions.R
-### Time-stamp: <2011-03-10 15:58:47 yreecht>
+### Time-stamp: <2011-03-23 15:53:39 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -96,8 +96,12 @@ quitConfirm.f <- function(win)
     ## Boutons :
     OK.but <- tkbutton(WinConfirm, text = "   Oui   ",
                        command = function() tclvalue(Done) <- 1)
+
+    All.but <- tkbutton(WinConfirm, text = " Oui + R ",
+                        command = function() tclvalue(Done) <- 2)
+
     Cancel.but <- tkbutton(WinConfirm, text = "   Non   ",
-                           command = function() tclvalue(Done) <- 2)
+                           command = function() tclvalue(Done) <- 3)
 
     ## Placement des éléments graphiques :
 
@@ -111,14 +115,16 @@ quitConfirm.f <- function(win)
 
     tkgrid(tklabel(WinConfirm, text=" "), row=1, column=4)
 
-    tkgrid(tklabel(WinConfirm, text=" \n"), OK.but, ## tklabel(WinConfirm, text=" \n"),
-           sticky="e", row=3)
-    tkgrid(Cancel.but, sticky="w", row=3, column=3)
+    tkgrid(tklabel(WinConfirm, text=" \n"), row=3)
+    tkgrid(OK.but, row=3, column=1, padx=4)
+    tkgrid(All.but, row=3, column=2, padx=4)
+    tkgrid(Cancel.but, row=3, column=3, padx=4)
 
     ## Configuration :
-    tkbind(WinConfirm, "<Destroy>", function() tclvalue(Done) <- 2)
+    tkbind(WinConfirm, "<Destroy>", function() tclvalue(Done) <- 3)
 
     winSmartPlace.f(WinConfirm)         # placement de la fenêtre.
+    tkfocus(Cancel.but)
 
     ## Attente d'une action de l'utilisateur :
     tkwait.variable(Done)
@@ -131,9 +137,13 @@ quitConfirm.f <- function(win)
     tkdestroy(WinConfirm)
 
     ## Si c'est le souhait de l'utilisateur, destruction de la fenêtre :
-    if (doneVal == "1")
+    if (doneVal == "1" || doneVal == "2")
     {
         tkdestroy(win)
+        if (doneVal == "2")
+        {
+            q()
+        }else{}
     }else{}
 }
 
@@ -196,6 +206,9 @@ infoGeneral.f <- function(msg,...)
     ## On imprime le message :
     LabMsg <- tklabel(FrameTmp, text=msg,...)
     tkgrid(LabMsg)
+
+    ## Finir l'affichage des éléments :
+    tcl("update", "idletasks")
 
     winSmartPlace.f(WinInfoLoading)
     winRaise.f(WinInfoLoading)

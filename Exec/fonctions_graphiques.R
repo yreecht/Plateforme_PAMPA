@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: fonctions_graphiques.R
-### Time-stamp: <2011-02-21 16:11:17 yreecht>
+### Time-stamp: <2011-03-15 11:23:07 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -245,6 +245,24 @@ boxplotPAMPA.f <- function(exprBP, data,...)
     return(tmpBP)
 }
 
+########################################################################################################################
+tkObj.gridInfo.f <- function(tkObj)
+{
+    ## Purpose: Présenter sous une forme plus exploitable les info de
+    ##          placement d'un objet Tcl/Tk.
+    ## ----------------------------------------------------------------------
+    ## Arguments: tkObj : l'objet Tk affiché avec "grid"
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date: 15 mars 2011, 11:19
+
+    return(unlist(lapply(unlist(strsplit(paste(" ", tclvalue(tkgrid.info(tkObj)), sep=""), " -")),
+                         function(x)
+                     {
+                         res <- unlist(strsplit(x, " "))[2]
+                         names(res) <- unlist(strsplit(x, " "))[1]
+                         return(res)
+                     }))[-1])
+}
 
 
 

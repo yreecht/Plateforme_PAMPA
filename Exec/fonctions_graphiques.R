@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: fonctions_graphiques.R
-### Time-stamp: <2011-03-15 11:23:07 yreecht>
+### Time-stamp: <2011-04-12 17:00:24 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -245,26 +245,38 @@ boxplotPAMPA.f <- function(exprBP, data,...)
     return(tmpBP)
 }
 
+
 ########################################################################################################################
-tkObj.gridInfo.f <- function(tkObj)
+strDimRotation.f <- function(x, srt=0, unit="user",...)
 {
-    ## Purpose: Présenter sous une forme plus exploitable les info de
-    ##          placement d'un objet Tcl/Tk.
+    ## Purpose: Calcul des dimensions d'une chaîne de caractère à laquelle
+    ##          on applique une rotation
     ## ----------------------------------------------------------------------
-    ## Arguments: tkObj : l'objet Tk affiché avec "grid"
+    ## Arguments: x : vecteur de classe 'character'.
+    ##            srt : angle de rotation en degrés.
+    ##            unit : unité de sortie.
+    ##            ... : arguments supplémentaires passés à str(height|width).
     ## ----------------------------------------------------------------------
-    ## Author: Yves Reecht, Date: 15 mars 2011, 11:19
+    ## Author: Yves Reecht, Date:  9 févr. 2011, 16:15
 
-    return(unlist(lapply(unlist(strsplit(paste(" ", tclvalue(tkgrid.info(tkObj)), sep=""), " -")),
-                         function(x)
-                     {
-                         res <- unlist(strsplit(x, " "))[2]
-                         names(res) <- unlist(strsplit(x, " "))[1]
-                         return(res)
-                     }))[-1])
+    ## browser()
+
+    ## Dimensions en pouces :
+    W.inches <- strwidth(x, unit="inches",...)
+    H.inches <- strheight(x, unit="inches",...)
+
+    ## Facteur de conversion avec l'unité souhaitée :
+    X.inchesVSunit <- W.inches / strwidth(x, unit=unit,...)
+    Y.inchesVSunit <- H.inches / strheight(x, unit=unit,...)
+
+    ## Calcul des largeurs et hauteurs en rotations :
+    X.calc <- abs(W.inches * cos(srt * base:::pi / 180)) + abs(H.inches * sin(srt * base:::pi / 180))
+    Y.calc <- abs(W.inches * sin(srt * base:::pi / 180)) + abs(H.inches * cos(srt * base:::pi / 180))
+
+    ## Conversion dans l'unité souhaitée :
+    return(list(width = X.calc / X.inchesVSunit,
+                height = Y.calc / Y.inchesVSunit))
 }
-
-
 
 
 

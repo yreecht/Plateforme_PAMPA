@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: Boxplot_generique_calc.R
-### Time-stamp: <2011-02-14 15:09:40 yreecht>
+### Time-stamp: <2011-04-12 16:40:20 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -10,64 +10,6 @@
 ###
 ### Fonctions de traitement des données et des graphiques pour la création de boxplots "à la carte".
 ####################################################################################################
-
-dropLevels.f <- function(df, which=NULL)
-{
-    ## Purpose: Supprimer les 'levels' non utilisés des facteurs d'une
-    ##          data.frame.
-    ## ----------------------------------------------------------------------
-    ## Arguments: df : une data.frame
-    ##            which : indice des colonnes à inclure (toutes par défaut).
-    ## ----------------------------------------------------------------------
-    ## Author: Yves Reecht, Date: 10 août 2010, 13:29
-
-    if (class(df) != "data.frame")
-    {
-        stop("'df' doit être une data.frame")
-    }else{
-        if (is.null(which))
-        {
-            x <- as.data.frame(sapply(df, function(x)
-                                  {
-                                      return(x[ ,drop=TRUE])
-                                  }, simplify=FALSE),
-                               stringsAsFactors=FALSE)
-        }else{                          # Cas où seulement certaines colones sont traitées.
-            x <- df
-
-            x[ , which] <- as.data.frame(sapply(df[ , which, drop=FALSE],
-                                                function(x)
-                                            {
-                                                return(x[ ,drop=TRUE])
-                                            }, simplify=FALSE),
-                                         stringsAsFactors=FALSE)
-        }
-
-        return(x)
-    }
-}
-
-########################################################################################################################
-Capitalize.f <- function(x, words=FALSE)
-{
-    ## Purpose: Mettre en majuscule la première lettre de chaque mot
-    ## ----------------------------------------------------------------------
-    ## Arguments: x : une chaîne de caractères
-    ##            words : tous les mots (TRUE), ou juste le premier.
-    ## ----------------------------------------------------------------------
-    ## Author: Yves Reecht, Date:  9 août 2010, 21:08
-
-    if (words)
-    {
-        s <- strsplit(x, " ")[[1]]
-    }else{
-        s <- x
-    }
-
-    return(paste(toupper(substring(s, 1,1)), substring(s, 2),
-                 sep="", collapse=" "))
-}
-
 
 ########################################################################################################################
 sepBoxplot.f <- function(terms, data)
@@ -232,15 +174,18 @@ graphTitle.f <- function(metrique, modGraphSel, factGraph, listFact, model=NULL,
 ########################################################################################################################
 plotValMoyennes.f <- function(moyennes, objBP)
 {
-    ## Purpose:
+    ## Purpose: Affichage des moyennes sur les boxplots en évitant le
+    ##          recouvrement avec les lignes des boîtes.
     ## ----------------------------------------------------------------------
-    ## Arguments:
+    ## Arguments: moyennes : les valeurs de moyennes.
+    ##            objBP : un objet retourné par la fonction "boxplot".
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 26 oct. 2010, 15:43
 
     ## Propriétés des boîtes à moustaches + points hors boîtes + maximum du graphique :
     pointsOut <- as.list(tapply(objBP$out, objBP$group, function(x)x))
-    pointsOut[as.character(which(!is.element(seq(length.out=ncol(objBP$stats)), as.numeric(names(pointsOut)))))] <- NA
+    pointsOut[as.character(which(!is.element(seq(length.out=ncol(objBP$stats)),
+                                             as.numeric(names(pointsOut)))))] <- NA
 
     x <- rbind(objBP$stats,
                matrix(sapply(pointsOut,
@@ -286,7 +231,8 @@ plotPetitsEffectifs.f <- function(objBP, nbmin=20)
                  ## Affichage d'avertissement pour  > X% du max retiré :
                  if (getOption("P.maxExclu"))
                  {
-                     paste("Enregistrements > ", 100 * getOption("P.GraphPartMax"), "% du maximum retirés\n", sep="")
+                     paste("Enregistrements > ", 100 * getOption("P.GraphPartMax"),
+                           "% du maximum retirés\n", sep="")
                  }else{},
                  paste("petit effectif (< ", nbmin, ")", sep=""))
 
@@ -300,7 +246,8 @@ plotPetitsEffectifs.f <- function(objBP, nbmin=20)
 
         ## Propriétés des boîtes à moustaches + points hors boîtes + maximum du graphique :
         pointsOut <- as.list(tapply(objBP$out, objBP$group, function(x)x))
-        pointsOut[as.character(which(!is.element(seq(length.out=ncol(objBP$stats)), as.numeric(names(pointsOut)))))] <- NA
+        pointsOut[as.character(which(!is.element(seq(length.out=ncol(objBP$stats)),
+                                                 as.numeric(names(pointsOut)))))] <- NA
 
         x <- rbind(min(c(objBP$out, objBP$stats), na.rm=TRUE),
                    objBP$stats,
@@ -355,7 +302,8 @@ plotPetitsEffectifs.f <- function(objBP, nbmin=20)
         if (getOption("P.maxExclu"))
         {
             legend("top",
-                   paste("Enregistrements > ", 100 * getOption("P.GraphPartMax"), "% du maximum retirés\n", sep=""),
+                   paste("Enregistrements > ", 100 * getOption("P.GraphPartMax"),
+                         "% du maximum retirés\n", sep=""),
                    cex =0.9, col="red", text.col="red", merge=FALSE)
         }else{}
     }
@@ -389,7 +337,7 @@ WP2boxplot.f <- function(metrique, factGraph, factGraphSel, listFact, listFactSe
     ## Concaténation
     facteurs <- c(factGraph, unlist(listFact)) # Concaténation des facteurs
 
-    selections <- c(list(factGraphSel), listFactSel) # Concaténation des leurs listes de modalités sélectionnées
+    selections <- c(list(factGraphSel), listFactSel) # Concaténation des leurs listes de modalités sélectionnées.
 
     ## Données pour la série de boxplots :
     tmpData <- subsetToutesTables.f(metrique=metrique, facteurs=facteurs, selections=selections,

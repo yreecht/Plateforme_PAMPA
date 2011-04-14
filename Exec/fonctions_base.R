@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: fonctions_base.R
-### Time-stamp: <2011-02-10 15:10:39 yreecht>
+### Time-stamp: <2011-04-12 17:00:31 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -11,6 +11,65 @@
 ### Fonctions de bases de la plateforme (également utilisé pour définir des fonctions de base
 ### récentes de R lorsqu'elles n'existent pas, par ex si on travaille sur une version ancienne de R)
 ####################################################################################################
+
+########################################################################################################################
+dropLevels.f <- function(df, which=NULL)
+{
+    ## Purpose: Supprimer les 'levels' non utilisés des facteurs d'une
+    ##          data.frame.
+    ## ----------------------------------------------------------------------
+    ## Arguments: df : une data.frame
+    ##            which : indice des colonnes à inclure (toutes par défaut).
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date: 10 août 2010, 13:29
+
+    if (class(df) != "data.frame")
+    {
+        stop("'df' doit être une data.frame")
+    }else{
+        if (is.null(which))
+        {
+            x <- as.data.frame(sapply(df, function(x)
+                                  {
+                                      return(x[ ,drop=TRUE])
+                                  }, simplify=FALSE),
+                               stringsAsFactors=FALSE)
+        }else{                          # Cas où seulement certaines colonnes sont traitées.
+            x <- df
+
+            x[ , which] <- as.data.frame(sapply(df[ , which, drop=FALSE],
+                                                function(x)
+                                            {
+                                                return(x[ ,drop=TRUE])
+                                            }, simplify=FALSE),
+                                         stringsAsFactors=FALSE)
+        }
+
+        return(x)
+    }
+}
+
+
+########################################################################################################################
+Capitalize.f <- function(x, words=FALSE)
+{
+    ## Purpose: Mettre en majuscule la première lettre de chaque mot
+    ## ----------------------------------------------------------------------
+    ## Arguments: x : une chaîne de caractères
+    ##            words : tous les mots (TRUE), ou juste le premier.
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date:  9 août 2010, 21:08
+
+    if (words)
+    {
+        s <- strsplit(x, " ")[[1]]
+    }else{
+        s <- x
+    }
+
+    return(paste(toupper(substring(s, 1,1)), substring(s, 2),
+                 sep="", collapse=" "))
+}
 
 ########################################################################################################################
 if (!exists("grepl"))
@@ -186,37 +245,6 @@ errorLog.f <- function(error, niv=-3)
     message("\n\tIl y a eu une erreur.", "\n\tVoir le fichier log : ", logFileName, "\n")
 }
 
-########################################################################################################################
-strDimRotation.f <- function(x, srt=0, unit="user",...)
-{
-    ## Purpose: Calcul des dimensions d'une chaîne de caractère à laquelle
-    ##          on applique une rotation
-    ## ----------------------------------------------------------------------
-    ## Arguments: x : vecteur de classe 'character'.
-    ##            srt : angle de rotation en degrés.
-    ##            unit : unité de sortie.
-    ##            ... : arguments supplémentaires passés à str(height|width).
-    ## ----------------------------------------------------------------------
-    ## Author: Yves Reecht, Date:  9 févr. 2011, 16:15
-
-    ## browser()
-
-    ## Dimensions en pouces :
-    W.inches <- strwidth(x, unit="inches",...)
-    H.inches <- strheight(x, unit="inches",...)
-
-    ## Facteur de conversion avec l'unité souhaitée :
-    X.inchesVSunit <- W.inches / strwidth(x, unit=unit,...)
-    Y.inchesVSunit <- H.inches / strheight(x, unit=unit,...)
-
-    ## Calcul des largeurs et hauteurs en rotations :
-    X.calc <- abs(W.inches * cos(srt * base:::pi / 180)) + abs(H.inches * sin(srt * base:::pi / 180))
-    Y.calc <- abs(W.inches * sin(srt * base:::pi / 180)) + abs(H.inches * cos(srt * base:::pi / 180))
-
-    ## Conversion dans l'unité souhaitée :
-    return(list(width = X.calc / X.inchesVSunit,
-                height = Y.calc / Y.inchesVSunit))
-}
 
 
 

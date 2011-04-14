@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: interface_fonctions.R
-### Time-stamp: <2011-03-23 15:53:39 yreecht>
+### Time-stamp: <2011-04-12 16:42:55 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -593,6 +593,27 @@ reconfigureInnerProgressBar.f <- function(min=NULL, max=NULL, ...)
         ## On ne fait rien si la barre de preogression n'existe pas.
     }
 }
+
+
+########################################################################################################################
+tkObj.gridInfo.f <- function(tkObj)
+{
+    ## Purpose: Présenter sous une forme plus exploitable les info de
+    ##          placement d'un objet Tcl/Tk.
+    ## ----------------------------------------------------------------------
+    ## Arguments: tkObj : l'objet Tk affiché avec "grid"
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date: 15 mars 2011, 11:19
+
+    return(unlist(lapply(unlist(strsplit(paste(" ", tclvalue(tkgrid.info(tkObj)), sep=""), " -")),
+                         function(x)
+                     {
+                         res <- unlist(strsplit(x, " "))[2]
+                         names(res) <- unlist(strsplit(x, " "))[1]
+                         return(res)
+                     }))[-1])
+}
+
 
 
 ### Local Variables:

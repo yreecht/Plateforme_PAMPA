@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: fonctions_graphiques.R
-### Time-stamp: <2011-01-27 15:40:29 yreecht>
+### Time-stamp: <2011-04-12 17:00:24 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -21,7 +21,8 @@ resFileGraph.f <- function(metrique, factGraph, modSel, listFact,
     ##          créé.
     ## ----------------------------------------------------------------------
     ## Arguments: metrique : nom de la métrique analysée.
-    ##            factGraph : nom du facteur de séprataion des analyses.
+    ##            factGraph : nom du facteur de séprataion des analyses/
+    ##                        de selection d'espèce(s).
     ##            modSel : modalité(s) de factGraph sélectionnée(s).
     ##            listFact : vecteur des noms de facteurs de l'analyse.
     ##            prefix : préfixe du nom de fichier.
@@ -39,7 +40,9 @@ resFileGraph.f <- function(metrique, factGraph, modSel, listFact,
                       "Agr-",
                       switch(type,
                              "espece"="espece+unitobs_",
+                             "CL_espece"="CL+espece+unitobs_",
                              "unitobs"="unitobs_",
+                             "CL_unitobs"="CL+unitobs_",
                              ""),
                       switch(type,
                              "espece"={
@@ -49,7 +52,21 @@ resFileGraph.f <- function(metrique, factGraph, modSel, listFact,
                                                                      paste(modSel, collapse="+"),
                                                                      "toutes"), ")_", sep=""))
                              },
+                             "CL_espece"={
+                                 ifelse(factGraph == "",
+                                        "",
+                                        paste(factGraph, "(", ifelse(modSel[1] != "",
+                                                                     paste(modSel, collapse="+"),
+                                                                     "toutes"), ")_", sep=""))
+                             },
                              "unitobs"={
+                                 ifelse(factGraph == "",
+                                        "(toutes espèces)_",
+                                        paste(factGraph, "(", ifelse(modSel[1] != "",
+                                                                     paste(modSel, collapse="+"),
+                                                                     "toutes"), ")_", sep=""))
+                             },
+                             "CL_unitobs"={
                                  ifelse(factGraph == "",
                                         "(toutes espèces)_",
                                         paste(factGraph, "(", ifelse(modSel[1] != "",
@@ -160,8 +177,106 @@ openDevice.f <- function(noGraph, metrique, factGraph, modSel, listFact, type="e
 }
 
 
+########################################################################################################################
+boxplotPAMPA.f <- function(exprBP, data,...)
+{
+    ## Purpose: Boxplot avec un formatage pour pampa
+    ## ----------------------------------------------------------------------
+    ## Arguments:
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date: 10 févr. 2011, 17:05
+
+    ## Extraction du nom de la métrique :
+    metrique <- deparse(exprBP[[2]])
+
+    ## Les couleurs pour l'identification des modalités du facteur de second niveau :
+    colors <- colBoxplot.f(terms=attr(terms(exprBP), "term.labels"), data=data)
+
+    ## Plot sans affichage pour récupérer l'objet :
+    tmpBP <- boxplot(exprBP, data=data,
+                     varwidth = TRUE, las=2,
+                     col=colors,
+                     ylim=c(min(data[ , metrique], na.rm=TRUE),
+                            max(data[ , metrique], na.rm=TRUE) +
+                            0.1*(max(data[ , metrique], na.rm=TRUE) -
+                                 min(data[ , metrique], na.rm=TRUE))),
+                     plot=FALSE,
+                     ...)
+
+    ## Marge dynamiques :
+    par(mar=c(
+        ifelse((tmp <- 3 +
+                ifelse(isTRUE(getOption("P.graphPDF")), # Coef différent pour les PDFs.
+                       42,
+                       28)*
+                max(strDimRotation.f(tmpBP$names,
+                                     srt=45,
+                                     unit="figure",
+                                     cex=1.0)$height, na.rm=TRUE)) > 11,
+               11,
+               tmp),
+        5, 8, 1))
+
+    ## Plot avec affichage cette fois :
+    tmpBP <- boxplot(exprBP, data=data,
+                     varwidth = TRUE, las=2,
+                     col=colors,
+                     ylim=c(min(data[ , metrique], na.rm=TRUE),
+                            max(data[ , metrique], na.rm=TRUE) +
+                            0.1*(max(data[ , metrique], na.rm=TRUE) -
+                                 min(data[ , metrique], na.rm=TRUE))),
+                     xaxt="n",
+                     ...)
+
+    ## Ajout de l'axe des abscices :
+    axis(side=1, at = seq_along(tmpBP$names), labels = FALSE, tick = TRUE)
+
+    ## Ajout des labels :
+    text(x = seq_along(tmpBP$names),
+         y = par("usr")[3] -
+             ifelse(isTRUE(getOption("P.graphPDF")), # Coef différent pour les PDFs.
+                    0.020,
+                    0.030) *
+             diff(range(par("usr")[3:4])),
+         labels = tmpBP$names,
+         xpd = TRUE, srt = 45, adj = c(1, 1),
+         cex = 1.0)
+
+    return(tmpBP)
+}
 
 
+########################################################################################################################
+strDimRotation.f <- function(x, srt=0, unit="user",...)
+{
+    ## Purpose: Calcul des dimensions d'une chaîne de caractère à laquelle
+    ##          on applique une rotation
+    ## ----------------------------------------------------------------------
+    ## Arguments: x : vecteur de classe 'character'.
+    ##            srt : angle de rotation en degrés.
+    ##            unit : unité de sortie.
+    ##            ... : arguments supplémentaires passés à str(height|width).
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date:  9 févr. 2011, 16:15
+
+    ## browser()
+
+    ## Dimensions en pouces :
+    W.inches <- strwidth(x, unit="inches",...)
+    H.inches <- strheight(x, unit="inches",...)
+
+    ## Facteur de conversion avec l'unité souhaitée :
+    X.inchesVSunit <- W.inches / strwidth(x, unit=unit,...)
+    Y.inchesVSunit <- H.inches / strheight(x, unit=unit,...)
+
+    ## Calcul des largeurs et hauteurs en rotations :
+    X.calc <- abs(W.inches * cos(srt * base:::pi / 180)) + abs(H.inches * sin(srt * base:::pi / 180))
+    Y.calc <- abs(W.inches * sin(srt * base:::pi / 180)) + abs(H.inches * cos(srt * base:::pi / 180))
+
+    ## Conversion dans l'unité souhaitée :
+    return(list(width = X.calc / X.inchesVSunit,
+                height = Y.calc / Y.inchesVSunit))
+}
 
 
 

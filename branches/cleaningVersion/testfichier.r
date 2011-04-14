@@ -2,8 +2,7 @@
 ## essais de rendre générique après avec unitobs et obs
 testfileref.f <- function ()
 {
-
-    print("fonction testfileref.f activée")
+    runLog.f(msg=c("Informations sur le référentiel espèces :"))
 
     tclRequire("Tktable")
     ## Déclaration des objets fenetre, tableau
@@ -69,18 +68,26 @@ testfileref.f <- function ()
                   length(unique(especesPresentes$code_espece))*100, digits=2)
     }
 
-    print(head(dataframeRefEsp))
-    print(dim(tclarrayRefEsp[2]))
-    ## print(head(dataframeRefEsp))
+    ## message(head(dataframeRefEsp))
+    ## message(dim(tclarrayRefEsp[2]))
+    ## message(head(dataframeRefEsp))
 
     ## construction de la fenêtre
     tkwm.title(wintest, paste("Informations sur ", fileName3))
     frameOverwintest <- tkframe(wintest)
-    imgAsLabelwintest <- tklabel(wintest, image=imageAMP, bg="white")
-    tkgrid(imgAsLabelwintest, frameOverwintest, sticky="w")
-    tkgrid(tklabel(frameOverwintest, text=paste("Taux de renseignement des champs de ", fileName3,
-                                     "\npour le jeu de données\n", fileName2), relief="groove", borderwidth=2,
-                   bg="yellow"))
+    imgAsLabelwintest <- tklabel(frameOverwintest, image=imageAMP, bg="white")
+
+
+    tkgrid(frameOverwintest, sticky="ew", columnspan=2)
+
+    tkgrid(imgAsLabelwintest,
+           tklabel(frameOverwintest,
+                   text=paste("Taux de renseignement des champs de ", fileName3,
+                              "\npour le jeu de données\n", fileName2), relief="groove", borderwidth=2,
+                   bg="yellow"),
+           padx=5, sticky="e")
+
+    tkgrid.configure(imgAsLabelwintest, sticky="w")
 
     ## tkgrid.configure(frameOverwintest, columnspan=1, column=1)
     tkgrid(tklabel(wintest, text=paste("Nombre de champs de ", fileName3, " : ", dim(especesPresentes)[2])),
@@ -114,4 +121,5 @@ testfileref.f <- function ()
     tkgrid.configure(tableTestRefEsp, columnspan=2, sticky="w")
     ## barplot(dataframeRefEsp)
     tkfocus(wintest)
+    winSmartPlace.f(wintest)
 }

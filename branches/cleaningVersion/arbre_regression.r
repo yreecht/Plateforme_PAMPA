@@ -93,7 +93,10 @@ arbre1.f <- function ()
 
     OK.but <-tkbutton(bb, text="OK", command=OnOK)
     tkgrid(OK.but)
+
     tkfocus(bb)
+    winSmartPlace.f(bb)
+
     tkwait.window(bb)
 }
 
@@ -153,7 +156,10 @@ arbre2.f <- function ()
 
     OK.but <-tkbutton(bb, text="OK", command=OnOK)
     tkgrid(OK.but)
+
     tkfocus(bb)
+    winSmartPlace.f(bb)
+
     tkwait.window(bb)
 
     ## sélection du deuxième facteur explicatif
@@ -244,7 +250,10 @@ arbre2.f <- function ()
     }
     OK.but <-tkbutton(bb, text="OK", command=OnOK)
     tkgrid(OK.but)
+
     tkfocus(bb)
+    winSmartPlace.f(bb)
+
     tkwait.window(bb)
 }
 
@@ -303,7 +312,10 @@ arbre3.f <- function ()
 
     OK.but <-tkbutton(bb, text="OK", command=OnOK)
     tkgrid(OK.but)
+
     tkfocus(bb)
+    winSmartPlace.f(bb)
+
     tkwait.window(bb)
 
     ## sélection du deuxième facteur explicatif
@@ -343,7 +355,10 @@ arbre3.f <- function ()
     }
     OK.but <-tkbutton(bb, text="OK", command=OnOK)
     tkgrid(OK.but)
+
     tkfocus(bb)
+    winSmartPlace.f(bb)
+
     tkwait.window(bb)
 
     ## sélection du troisième facteur explicatif
@@ -433,7 +448,10 @@ arbre3.f <- function ()
 
     OK.but <-tkbutton(bb, text="OK", command=OnOK)
     tkgrid(OK.but)
+
     tkfocus(bb)
+    winSmartPlace.f(bb)
+
     tkwait.window(bb)
 }
 

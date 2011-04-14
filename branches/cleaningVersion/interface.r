@@ -23,9 +23,9 @@ test.f <- function ()
 tm <- tktoplevel(height=600, width=800, background="#FFFFFF")
 topMenu <- tkmenu(tm)
 tkconfigure(tm, menu=topMenu)
-tkwm.title(tm, "CALCULS INDICATEURS PAMPA")
+tkwm.title(tm, "Calcul d'indicateurs PAMPA WP2")
 tkwm.maxsize(tm, 1000, 768) #taille maximale de la fenetre
-tkwm.minsize(tm, 800, 600) #taille minimale de la fenetre
+tkwm.minsize(tm, 800, 550) #taille minimale de la fenetre
 
 topFrame <- tkframe(tm, relief="groove", borderwidth=2)
 imageAMP <- tclVar()  #crée un objet Tk image pour l'interface
@@ -46,14 +46,12 @@ tkgrid.configure(imgAsLabel, sticky="w", rowspan=3)  #L'image fait trois lignes 
 tkgrid.configure(titreAideContextuelle, columnspan=2, row=1, column=1, sticky="n")
 tkgrid.configure(helpframe, sticky="e", columnspan=2, row=2, column=1, sticky="n")
 TitreSuiviOperation <- tklabel(tm, text="Suivi des opérations")
-button.widgetOFF <- tkbutton(tm, text="Fermer les graphiques", command=graphics.off)
 
-tkgrid(TitreSuiviOperation, button.widgetOFF)
-tkgrid.configure(TitreSuiviOperation, columnspan=1, sticky="w")
-tkgrid.configure(button.widgetOFF, columnspan=2, column=2, sticky="e")
+tkgrid(TitreSuiviOperation, columnspan=1, sticky="w")
 
 scr <- tkscrollbar(tm, repeatinterval=2, command=function(...)tkyview(txt.w, ...))
-txt.w <- tktext(tm, bg="white", width=90, height=15, yscrollcommand=function(...)tkset(scr, ...))
+txt.w <- tktext(tm, bg="white", width=90, height=15, yscrollcommand=function(...)tkset(scr, ...),
+                wrap="word")
 tkgrid.configure(txt.w, scr)
 tkgrid.configure(txt.w, sticky="nsew", columnspan=3)
 tkgrid.configure(scr, sticky="nsw", column=3)
@@ -73,10 +71,11 @@ gestionMSGaide.f("etapeImport")
 
 var1 <- 0
 var2 <- 0
-ArrayEtatFichier <- c("Type de fichier", "Source", "Nb Enr", "Nb Champs", "Sélections",
+ArrayEtatFichier <- c("Type de fichier", "Source", "Nb Enr", "Nb Champs", "",
                       "Fichier d'unités d'observations", "non sélectionné", "NA", "NA", "NA",
-                      "Fichier d'observations ", "non sélectionnés", "NA", "NA", "NA",
+                      "Fichier d'observations ", "non sélectionné", "NA", "NA", "NA",
                       "Référentiel espèce ", "non sélectionné", "NA", "NA", "NA")
+
 tclarray <- tclArray()
 dim(ArrayEtatFichier) <- c(5, 4)
 for (i in (0:3))                        # [!!!] [yr: 11/01/2011]
@@ -85,9 +84,16 @@ for (i in (0:3))                        # [!!!] [yr: 11/01/2011]
 
 tclRequire("Tktable")
 table1 <-tkwidget(tm, "table", variable=tclarray, rows=4, cols=4, titlerows=1, selectmode="extended",
-                  colwidth=25, background="white")
+                  colwidth=15, background="white")
 tkgrid(table1)
 tkgrid.configure(table1, columnspan=3, sticky="w")
+
+## Largeur des colonnes:
+tcl(.Tk.ID(table1),"width","0","28")
+tcl(.Tk.ID(table1),"width","2","17")
+
+## Options :
+## activate, bbox, border, cget, clear, configure, curselection, curvalue, delete, get, height, hidden, icursor, index, insert, reread, scan, see, selection, set, spans, tag, validate, version, window, width, xview, or yview
 
 ## déclaration et mise à 0 de toutes les variables de sélection dans les menus
 SelectListEsp <- tclVar(0)
@@ -136,8 +142,13 @@ tkadd(arbreRegression, "command", label="3 facteurs", command=arbre3.f)
 
 ## Ajout [yr: 14/10/2010]
 tkadd(traitement, "separator")
+
+tkadd(traitement, "command", label="Représentation par espèce ou  classe de taille d'espèce :",
+      foreground="darkred", background="#dadada",
+      state="normal")
+
 ## Ajout [yr: 11/08/2010]
-tkadd(traitement, "command", label="Boxplots métrique /espèce/unité d'observation + Biodiversité...",
+tkadd(traitement, "command", label="Boxplots métrique /espèce/unité d'observation...",
       background="#FFFBCF",
       command=function ()
   {
@@ -154,8 +165,13 @@ tkadd(traitement, "command", label="Fréquences d'occurrence /espèce/unité d'obse
   })
 ## Ajout [yr: 27/01/2011]
 tkadd(traitement, "separator")
+
+tkadd(traitement, "command", label="Agrégation de plusieurs espèces ou classes de taille par unité d'observation :",
+      foreground="darkred", background="#dadada",
+      state="normal")
+
 ## Ajout [yr: 25/10/2010]
-tkadd(traitement, "command", label="Boxplots métrique /unité d'observation...",
+tkadd(traitement, "command", label="Boxplots métrique /unité d'observation (dont biodiversité)...",
       background="#FFFBCF",
       command=function ()
   {
@@ -176,7 +192,11 @@ tkadd(import, "command", label="Choix des dossiers et fichiers de données...",
       accelerator="CTRL+N", command = {openfile.f})
 
 tkadd(import, "command", label="Dossiers et fichiers par defaut", accelerator="CTRL+A",
-      command = opendefault.f)
+      command = function()
+  {
+      eval(source("./Exec/config.r", encoding="latin1"), envir=.GlobalEnv) # rechargement de la configuration.
+      opendefault.f()
+  })
 
 tkadd(import, "separator")
 
@@ -206,6 +226,15 @@ tkadd(selection, "separator")
 tkadd(selection, "checkbutton", label="Par liste d'espèces (fichier)", variable=SelectListEsp,
       onvalue=1, offvalue=0, command = choixespeces.f, state="disabled")
 
+## Restauration des données :
+tkadd(selection, "separator")
+tkadd(selection, "command", label="Restaurer les données originales",
+      command = function ()
+  {
+      RestaurerDonnees.f()
+      winRaise.f(tm)
+  })
+
 ## Analyses :
 ## Ajout [yr: 25/08/2010] :
 tkadd(analyse, "cascade", label="Modèles inférentiels", menu=modelesInferentiels,
@@ -214,48 +243,96 @@ tkadd(analyse, "cascade", label="Analyses exploratoires", menu=analysesExplo, st
 tkadd(analyse, "separator")
 tkadd(analyse, "cascade", label="Arbre de regression multivariee", menu = arbreRegression)
 
-tkadd(modelesInferentiels, "command", label="Modèles linéaires métrique /espèce/unité d'observation + Biodiversité...",
+tkadd(modelesInferentiels, "command", label="Analyse par espèce ou classe de taille d'espèce :",
+      foreground="darkred", background="#dadada",
+      state="normal")
+
+tkadd(modelesInferentiels, "command", label="Modèles linéaires métrique /espèce/unité d'observation...",
       background="#FFFBCF",
       command=function ()
   {
       selectionVariables.f("modele_lineaire")
       winRaise.f(tm)
   })
+
+tkadd(modelesInferentiels, "separator")
+
+tkadd(modelesInferentiels, "command", label="Agrégation de plusieurs espèces ou classes de taille par unité d'observation :",
+      foreground="darkred", background="#dadada",
+      state="normal")
+
 ## Ajout [yr: 26/10/2010]
-tkadd(modelesInferentiels, "command", label="Modèles linéaires métrique /unité d'observation...",
+tkadd(modelesInferentiels, "command", label="Modèles linéaires métrique /unité d'observation (dont biodiversité)...",
       background="#FFFBCF",
       command=function ()
   {
       selectionVariables.f("modele_lineaire.unitobs")
       winRaise.f(tm)
   })
-## Ajout [yr: 13/10/2010]
-tkadd(modelesInferentiels, "command", label="Modèles linéaires sur 'présences/absences'...",
-      background="#FFFBCF",
-      command=function ()
-  {
-      selectionVariables.f("pres_abs")
-      winRaise.f(tm)
-  })
+
+## [sup] parce que ambigüe + dispo dans les autres interfaces
+## ## Ajout [yr: 13/10/2010]
+## tkadd(modelesInferentiels, "command", label="Modèles linéaires sur 'présences/absences'...",
+##       background="#FFFBCF",
+##       command=function ()
+##   {
+##       selectionVariables.f("pres_abs")
+##       winRaise.f(tm)
+##   })
 
 
 ## Menu deroulant de "Outils"
-tkadd(outils, "command", label="Aide", accelerator="CTRL+?", command = test.f, state="disabled")
+tkadd(outils, "command", label="Options graphiques...", command = choixOptionsGraphiques.f, state="normal")
+tkadd(outils, "separator")
+
+tkadd(outils, "command", label="Éditer le fichier de configuration",
+      command=function()
+  {
+      shell.exec(paste(basePath, "/Exec/config.r", sep=""))
+  })
+tkadd(outils, "separator")
+
 tkadd(outils, "command", label="mise à jour", state="disabled", command = test.f)
 ## tkadd(outils, "command", label="Options", state="disabled", command = test.f)
 tkadd(outils, "command", label="Langue", state="disabled", command = test.f)
-tkadd(outils, "command", label="Export de donnees", state="disabled", command = test.f)
+## tkadd(outils, "command", label="Export de donnees", state="disabled", command = test.f)
 
 ## Menu deroulant de "Infos"
-tkadd(pampainfos, "command", label="A propos de Pampa", command = test.f)
-tkadd(pampainfos, "command", label="Notice utilisateur", command = test.f)
+tkadd(pampainfos, "command", label="Documentation en ligne",
+      command = function()
+  {
+      browseURL("http://projet-pampa.fr/wiki/doku.php/wp2:wp2#documentation")
+  })
+
+tkadd(pampainfos, "command", label="Documentation (locale)",
+      command = function()
+  {
+      shell.exec(dir(paste(basePath, "/Exec/Doc", sep=""),
+                     full.names=TRUE)[grep("^Guide",
+                                           dir(paste(basePath, "/Exec/Doc", sep="")), perl=TRUE)])
+  })
+
+tkadd(pampainfos, "command", label="Nouveautés de la plateforme (locale)",
+      command = function()
+  {
+      shell.exec(dir(paste(basePath, "/Exec/Doc", sep=""),
+                     full.names=TRUE)[grep("^Annexe_Guide",
+                                           dir(paste(basePath, "/Exec/Doc", sep="")), perl=TRUE)])
+  })
+
+
+tkadd(pampainfos, "separator")
+tkadd(pampainfos, "command", label="À propos de la plateforme...", command = apropos.f)
+
+## tkadd(pampainfos, "command", label="Notice utilisateur", command = test.f)
 
 ## [dep] [yr: 11/01/2011]
 tkadd(import, "command", label="Voir le plan d'échantillonnage", accelerator="CTRL+P", state="disabled",
       command = VoirPlanEchantillonnage.f)
 tkadd(import, "command", label="Info données par espèces", state="disabled", accelerator="CTRL+E",
       command = VoirInformationsDonneesEspeces.f)
-tkadd(import, "command", label="Info données par unité d'observation", state="disabled", accelerator="CTRL+U",
+tkadd(import, "command", label="Info données par unité d'observation",
+      state="normal", accelerator="CTRL+U",
       command = VoirInformationsDonneesUnitobs.f)
 
 ## Premier niveau de menu
@@ -269,9 +346,10 @@ tkadd(topMenu, "cascade", label="Aide", menu=pampainfos) # Renommé [yr: 10/01/20
 
 ## Seul moyen trouvé -- pour l'instant -- afin de détacher le menu "quitter" des autres :
 tkadd(topMenu, "command",
-      label=paste("                                                     ",
-                  "                                                     ",
-                  "                          "), state="disabled")
+      label=paste("                                                 ",
+                  "                                                 "## ,
+                  ## "                    "
+      ), state="disabled")
 
 tkadd(topMenu, "command", label="Quitter", background="#FFFBCF", # Méheeeu, pourquoi ça marche pas cette dernière option [???]
       ## columnbreak=1,
@@ -282,7 +360,9 @@ tkadd(topMenu, "command", label="Quitter", background="#FFFBCF", # Méheeeu, pour
   })
 
 gestionMSGinfo.f("start")
-print("fonction interface activée")
+
+runLog.f(msg=c("Chargement de l'interface :"))
+
 tkfocus(tm)
 
 ## Frame des sélections
@@ -290,59 +370,80 @@ frameOverall <- tkframe(tm)
 tkgrid(tklabel(frameOverall, text="Critères de sélection", relief="groove", borderwidth=2, width=135))
 tkgrid.configure(frameOverall, columnspan=5)
 frameUpper <- tkframe(frameOverall, borderwidth=2)
-MonCritere <- tklabel(frameUpper, text="Aucun")
+MonCritere <- tklabel(frameUpper, text="Tout", wraplength=750, justify="left")
 tkgrid(MonCritere)
-frameLower <- tkframe(frameOverall, relief="groove", borderwidth=2)
-MesEnregistrements <- tklabel(frameLower, text="NA")
-tkgrid(MesEnregistrements)
-tkgrid(frameUpper, frameLower)
+
+tkgrid(frameUpper)
 tkgrid(frameOverall)
-ResumerSituationEspecesSelectionnees <- tklabel(frameOverall, text="-> Nombre d'espèces concernées : NA")
+
+ResumerSituationEspecesSelectionnees <-
+    tklabel(frameOverall,
+            text="-> Nombre d'espèces dans le fichier d'observation : NA")
+
 tkgrid(ResumerSituationEspecesSelectionnees)
 tkgrid.configure(ResumerSituationEspecesSelectionnees, columnspan=3, sticky="w")
-ResumerSituationUnitobsSelectionnees <- tklabel(frameOverall,
-                                                text="-> Nombre d'unités d'observation concernées : NA")
+
+ResumerSituationUnitobsSelectionnees <-
+    tklabel(frameOverall,
+            text="-> Nombre d'unités d'observation dans le fichier d'observation : NA")
+
 tkgrid(ResumerSituationUnitobsSelectionnees)
 tkgrid.configure(ResumerSituationUnitobsSelectionnees, columnspan=3, sticky="w")
+
+## Restauration des données originales :
 button.DataRestore <- tkbutton(tm, text="Restaurer les données", command=RestaurerDonnees.f)
-tkgrid(button.DataRestore)
+tkgrid(button.DataRestore, pady=5, padx=5, sticky="w")
+
 tkconfigure(button.DataRestore, state="disabled")
 
-## Gestion des évènements dans la fenêtre tm (toplevel)
+## Fermeture de tous les graphiques :
+button.widgetOFF <- tkbutton(tm, text="Fermer les graphiques", command=graphics.off)
 
-tkbind(tm, "<Control-a>", function ()
+tkgrid(button.widgetOFF, column=2,
+       row=tkObj.gridInfo.f(button.DataRestore)["row"], # même ligne que la restauration des données
+       columnspan=2, sticky="e", pady=5, padx=5)
+
+####################################################################################################
+## Gestion des évènements dans la fenêtre tm (toplevel) => raccourcis claviers :
+tkbind(tm, "<Control-a>",
+       function()
    {
+       eval(source("./Exec/config.r", encoding="latin1"), envir=.GlobalEnv) # rechargement de la configuration.
        opendefault.f()
    })
-tkbind(tm, "<Control-A>", function ()
+tkbind(tm, "<Control-A>", function()
    {
+       eval(source("./Exec/config.r", encoding="latin1"), envir=.GlobalEnv) # rechargement de la configuration.
        opendefault.f()
    })
-tkbind(tm, "<Control-n>", function ()
-   {
-       openfile.f()
-   })
-tkbind(tm, "<Control-N>", function ()
-   {openfile.f()})
+
+tkbind(tm, "<Control-n>", openfile.f)
+tkbind(tm, "<Control-N>", openfile.f)
+
 tkbind(tm, "<Control-r>", testfileref.f)
 tkbind(tm, "<Control-R>", testfileref.f)
+
 ## tkbind(tm, "<Control-F1>", aide.f)
 ## tkbind(tm, "<Control-?>", aide.f)
 tkbind(tm, "<Control-p>", VoirPlanEchantillonnage.f)
 tkbind(tm, "<Control-P>", VoirPlanEchantillonnage.f)
+
 tkbind(tm, "<Control-e>", VoirInformationsDonneesEspeces.f)
 tkbind(tm, "<Control-E>", VoirInformationsDonneesEspeces.f)
+
 tkbind(tm, "<Control-u>", VoirInformationsDonneesUnitobs.f)
 tkbind(tm, "<Control-U>", VoirInformationsDonneesUnitobs.f)
+
 tkbind(tm, "<Control-o>", test.f)
 tkbind(tm, "<Control-O>", test.f)
+
 tkbind(tm, "<Control-q>", function()
    {
-       tkdestroy(tm)
+       quitConfirm.f(tm)
    })
 tkbind(tm, "<Control-Q>", function()
    {
-       tkdestroy(tm)
+       quitConfirm.f(tm)
    })
 
 ## Placement de la fenêtre :

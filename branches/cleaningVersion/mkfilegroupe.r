@@ -15,7 +15,11 @@
 ################################################################################
 
 unitespta.f <- function(){
-    print("fonction unitespta.f activée")
+    runLog.f(msg=c("Calcul des métriques par unité d'observation, espèce et classe de taille :"))
+
+    ## Informations :
+    stepInnerProgressBar.f(n=1, msg="Calcul des métriques par unité d'observation, espèce et classe de taille...")
+
 
     ## creation des classes de tailles si champ classe taille contient uniquement des NA [!!!] uniquement [???]
     if (any(is.na(obs$classe_taille)))  ## (NA %in% unique(obs$classe_taille)==TRUE) # [!!!]
@@ -34,6 +38,7 @@ unitespta.f <- function(){
             ct <- 1
         }
     }
+
     assign("ct", ct, envir=.GlobalEnv)  # à quoi ça sert au final [???]
 
     if (ct == 1 || !all(is.na(obs$classe_taille)))
@@ -44,6 +49,7 @@ unitespta.f <- function(){
         ## Nombre d'individus :
         if (unique(unitobs$type) == "SVR")
         {
+            stepInnerProgressBar.f(n=1, msg="Interpolations pour vidéos rotative (étape longue)")
             switch(getOption("PAMPA.SVR.interp"),
                    "extended"={
                        statRotations <- statRotation.extended.f(facteurs=c("unite_observation", "code_espece",
@@ -59,6 +65,8 @@ unitespta.f <- function(){
 
             ## Moyenne pour les vidéos rotatives (habituellement 3 rotation) :
             unitesptaT <- statRotations[["nombresMean"]]
+
+            stepInnerProgressBar.f(n=7, msg="Calcul des métriques par unité d'observation, espèce et classe de taille...")
         }else{
             ## Somme des nombres d'individus :
             unitesptaT <- tapply(obs$nombre,
@@ -68,7 +76,6 @@ unitespta.f <- function(){
             ## Absences considérée comme "vrais zéros" :
             unitesptaT[is.na(unitesptaT)] <- 0
         }
-
 
         unitespta <- as.data.frame(as.table(unitesptaT), responseName="nombre")
         unitespta$unitobs <- unitespta$unite_observation # Pour compatibilité uniquement !!!
@@ -102,7 +109,7 @@ unitespta.f <- function(){
         }
 
         ## ######################################################################
-        ## sommes des biomasses par espece par unitobs et par classes de taille :
+        ## sommes des biomasses par espèce par unitobs et par classes de taille :
         if (!all(is.na(obs$poids)))      # (length(unique(obs$biomasse))>1)
         {
             ## ##################################################
@@ -161,6 +168,11 @@ unitespta.f <- function(){
                     (pi * (as.vector(tapply(obs$dmin,
                                             as.list(obs[ , c("unite_observation", "code_espece")]),
                                             max, na.rm=TRUE)))^2) # Recyclé 3X.
+
+                unitespta$biomasseMax <- unitespta$biomasseMax /
+                    (pi * (as.vector(tapply(obs$dmin,
+                                            as.list(obs[ , c("unite_observation", "code_espece")]),
+                                            max, na.rm=TRUE)))^2) # Recyclé 3X.
             }else{
                 ## on divise la biomasse par dimObs1*dimObs2
                 unitespta$biomasse <- as.numeric(unitespta$biomasse) /
@@ -171,8 +183,9 @@ unitespta.f <- function(){
 
         }else{
             ## alerte que les calculs de biomasse sont impossibles
-            tkmessageBox(message=paste("Calcul de biomasse impossible - ",
-                         "Les tailles ne sont pas renseignées dans les observations", sep=""))
+            infoLoading.f(msg=paste("Calcul de biomasse impossible : ",
+                                    "\nles poids ne sont pas renseignés ou ne peuvent être calculés", sep=""),
+                          icon="warning")
         }
 
         ## poids
@@ -196,14 +209,17 @@ unitespta.f <- function(){
         }
 
         ## ##################################################
-        ## poids moyen
-        unitespta$poids_moyen <- apply(unitespta[ , c("nombre", "poids")], 1,
-                                       function(x)
-                                   {
-                                       return(as.vector(ifelse(is.na(x[2]) || x[1] == 0,
-                                                               as.numeric(NA),
-                                                               x[2]/x[1])))
-                                   })
+        ## poids moyen :
+        if (!all(is.na(unitespta$poids)))
+        {
+            unitespta$poids_moyen <- apply(unitespta[ , c("nombre", "poids")], 1,
+                                           function(x)
+                                       {
+                                           return(as.vector(ifelse(is.na(x[2]) || x[1] == 0,
+                                                                   as.numeric(NA),
+                                                                   x[2]/x[1])))
+                                       })
+        }
 
         ## Presence - absence
         unitespta$pres_abs[unitespta$nombre > 0] <- as.integer(1) # pour avoir la richesse spécifique en 'integer'.1
@@ -234,6 +250,15 @@ unitespta.f <- function(){
 
             ## Vrais zéros :
             unitespta$densiteMax[unitespta$nombreMax == 0 & !is.na(unitespta$nombreMax)] <- 0
+
+            ## SD Densité :
+            unitespta$densiteSD <- unitespta$nombreSD /
+                (pi * (as.vector(tapply(obs$dmin,
+                                        as.list(obs[ , c("unite_observation", "code_espece")]),
+                                        max, na.rm=TRUE)))^2)
+
+            ## Vrais zéros :
+            unitespta$densiteSD[unitespta$nombreSD == 0 & !is.na(unitespta$nombreSD)] <- 0
         }
 
         ## ajout des champs "an", "site", "statut_protection", "biotope", "latitude", "longitude" :
@@ -294,8 +319,8 @@ unitespta.f <- function(){
         write.csv(unitespta[ , colnames(unitespta) != "unite_observation"],
                   file=paste(nameWorkspace, "/FichiersSortie/UnitobsEspeceClassetailleMetriques.csv", sep=""),
                   row.names = FALSE)
-        print(paste("La table par unite d'observation / espece / classe de taille",
-                    " a ete creee: UnitobsEspeceClassetailleMetriques.csv", sep=""))
+        message(paste("La table par unite d'observation / espèce / classe de taille",
+                    " a été créée: UnitobsEspeceClassetailleMetriques.csv", sep=""))
     }else{
         message("Métriques par classe de taille incalculables")
         assign("unitespta",
@@ -305,6 +330,8 @@ unitespta.f <- function(){
                           "an"=NULL, "statut_protection"=NULL),
                envir=.GlobalEnv)
     }
+
+    stepInnerProgressBar.f(n=2)
 } #fin unitespta.f()
 
 
@@ -317,8 +344,9 @@ unitespta.f <- function(){
 
 unitesp.f <- function(){
 
+    runLog.f(msg=c("Calcul des métriques par unité d'observation et espèce :"))
 
-    print("fonction unitesp.f activée")
+    stepInnerProgressBar.f(n=1, msg="Calcul des métriques par unité d'observation et espèce...")
 
     ## ##################################################
     ## somme des abondances
@@ -327,6 +355,8 @@ unitesp.f <- function(){
     ## Si video rotative, on divise par le nombre de rotation
     if (unique(unitobs$type) == "SVR")
     {
+        stepInnerProgressBar.f(n=1, msg="Interpolations pour vidéos rotative")
+
         switch(getOption("PAMPA.SVR.interp"),
                    "extended"={
                        statRotations <- statRotation.extended.f(facteurs=c("unite_observation", "code_espece"))
@@ -340,6 +370,8 @@ unitesp.f <- function(){
 
         ## Moyenne pour les vidéos rotatives (habituellement 3 rotation) :
         unitespT <- statRotations[["nombresMean"]]
+
+        stepInnerProgressBar.f(n=3, msg="Calcul des métriques par unité d'observation et espèce...")
     }else{
         unitespT <- tapply(obs$nombre,
                            as.list(obs[ , c("unite_observation", "code_espece")]),
@@ -385,9 +417,7 @@ unitesp.f <- function(){
                                                  function(x)
                                              {
                                                  if (all(is.na(x))) {return(NA)}else{return(sum(x, na.rm=TRUE))}
-                                             }))##  /
-            ## (unitobs$DimObs1[match(unitesp$unite_observation, unitobs$unite_observation)] *
-            ##  unitobs$DimObs2[match(unitesp$unite_observation, unitobs$unite_observation)])
+                                             }))
 
 
 
@@ -435,6 +465,11 @@ unitesp.f <- function(){
                     (pi * (as.vector(tapply(obs$dmin,
                                             as.list(obs[ , c("unite_observation", "code_espece")]),
                                             max, na.rm=TRUE)))^2)
+
+                unitesp$biomasseMax <- unitesp$biomasseMax /
+                    (pi * (as.vector(tapply(obs$dmin,
+                                            as.list(obs[ , c("unite_observation", "code_espece")]),
+                                            max, na.rm=TRUE)))^2)
             }else{
                 ## on divise la biomasse par dimObs1*dimObs2
                 unitesp$biomasse <- as.numeric(unitesp$biomasse) /
@@ -472,7 +507,8 @@ unitesp.f <- function(){
             unitesp$densite <- unitesp$nombre /
                 (unitobs$DimObs1[match(unitesp$unite_observation, unitobs$unite_observation)] *
                  unitobs$DimObs2[match(unitesp$unite_observation, unitobs$unite_observation)])
-        }else{
+
+        }else{                          # Videos rotatives :
             unitesp$densite <- unitesp$nombre /
                 (pi * (as.vector(tapply(obs$dmin,
                                         list(obs$unite_observation, obs$code_espece),
@@ -487,6 +523,14 @@ unitesp.f <- function(){
             ## Vrais zéros :
             unitesp$densiteMax[unitesp$nombreMax == 0 & !is.na(unitesp$nombreMax)] <- 0
 
+            ## SD Densité :
+            unitesp$densiteSD <- unitesp$nombreSD /
+                (pi * (as.vector(tapply(obs$dmin,
+                                        as.list(obs[ , c("unite_observation", "code_espece")]),
+                                        max, na.rm=TRUE)))^2)
+
+            ## Vrais zéros :
+            unitesp$densiteSD[unitesp$nombreSD == 0 & !is.na(unitesp$nombreSD)] <- 0
         }
 
         ## Ajout des vrais zéros :
@@ -495,7 +539,7 @@ unitesp.f <- function(){
 
     }else{ # cas LIT
 
-        ## Pourcentage de recouvrement de chaque espece/categorie pour les couvertures biotiques et abiotiques
+        ## Pourcentage de recouvrement de chaque espèce/categorie pour les couvertures biotiques et abiotiques
         s <- tapply(unitesp$nombre, unitesp$unite_observation, sum, na.rm=TRUE)
         unitesp$recouvrement <- as.vector(100 * unitesp$nombre /
                                           s[match(unitesp$unite_observation, rownames(s))]) ## [!!!] ajout 100 * [???]
@@ -535,14 +579,14 @@ unitesp.f <- function(){
 
     ## Ecriture du fichier des unités d'observations par espèce en sortie
     assign("unitesp", unitesp, envir=.GlobalEnv)
-    print("La table par unite d'observation / espece a ete creee : UnitobsEspeceMetriques.csv")
+    message("La table par unite d'observation / espèce a été créée : UnitobsEspeceMetriques.csv")
     write.csv(unitesp, file=paste(NomDossierTravail, "UnitobsEspeceMetriques.csv", sep=""), row.names = FALSE)
 
-    ## table avec la liste des especes presentes dans chaque transect
+    ## table avec la liste des espèces presentes dans chaque transect
     listespunit <- unitesp## [unitesp$pres_abs != 0, ]
     listespunit <- listespunit[order(listespunit$code_espece), ]
     assign("listespunit", listespunit, envir=.GlobalEnv)
-    print("La liste des especes presentes dans chaque transect a ete creee : ListeEspecesUnitobs.csv")
+    message("La liste des espèces présentes dans chaque transect a été créée : ListeEspecesUnitobs.csv")
 
     write.csv(listespunit, file=paste(NomDossierTravail, "ListeEspecesUnitobs.csv", sep=""), row.names = FALSE)
 } # fin unitesp.f()
@@ -556,8 +600,9 @@ unitesp.f <- function(){
 ################################################################################
 
 unit.f <- function(){
+    runLog.f(msg=c("Calcul des métriques par unité d'observation :"))
 
-    print("fonction unit.f activée")
+    stepInnerProgressBar.f(n=2, msg="Calcul des métriques par unité d'observation...")
 
     unit <- as.data.frame(as.table(tapply(obs$nombre, obs$unite_observation, sum, na.rm = TRUE))
                           , responseName="nombre")
@@ -609,7 +654,7 @@ unit.f <- function(){
         }
 
         ## Ajout des vrais zéros de densité :
-        unitesp$densite[unitesp$nombre == 0 & !is.na(unitesp$nombre)] <- 0
+        unit$densite[unit$nombre == 0 & !is.na(unit$nombre)] <- 0
 
         ## ##################################################
         ## calcul richesse specifique
@@ -718,9 +763,9 @@ unit.f <- function(){
         div_expect <- c(div[[8]], div[[9]], div[[10]])
 
         ## affichage des valeurs attendues
-        print(paste("La valeur theorique de Delta est :" , div_expect[1]))
-        print(paste("La valeur theorique de Delta* est :" , div_expect[2]))
-        print(paste("La valeur theorique de Delta+ est :" , div_expect[3]))
+        message(paste("La valeur theorique de Delta est :" , div_expect[1]))
+        message(paste("La valeur theorique de Delta* est :" , div_expect[2]))
+        message(paste("La valeur theorique de Delta+ est :" , div_expect[3]))
     }
 
     ## on renomme densite en CPUE pour les jeux de données pêche
@@ -733,21 +778,41 @@ unit.f <- function(){
     }
 
     ## message de creation de la table unit
-    print("La table metriques par unite d'observation a ete creee : UnitobsMetriques.csv")
+    message("La table métriques par unite d'observation a ete creee : UnitobsMetriques.csv")
     write.csv(unit, file=paste(NomDossierTravail, "UnitobsMetriques.csv", sep=""), row.names = FALSE)
     ## carte de la CPUE pour les données de pêche NC
-    if (FALSE) # (is.peche.f() & (siteEtudie == "NC")) # (length(typePeche)>1)
+    if (FALSE) ##(siteEtudie == "NC") # (is.peche.f() & (siteEtudie == "NC")) # (length(typePeche)>1)
     {
         x11(width=50, height=30, pointsize=10)
-        MapNC <- read.shape("./shapefiles/NewCaledonia_v7.shp", dbf.data = TRUE, verbose=TRUE, repair=FALSE)
-        plot(MapNC, xlim=c(166, 167), ylim=c(-23, -22), fg="lightyellow", xaxs="i", yaxs="i", axes=TRUE)
-        unit$latitude <- as.vector(unit$latitude , "numeric")
-        unit$longitude <- as.vector(unit$longitude , "numeric")
+        ## MapNC <- read.shape("./shapefiles/NewCaledonia_v7.shp", dbf.data = TRUE, verbose=TRUE, repair=FALSE)
+        MapNC <- readShapePoly("./shapefiles/NewCaledonia_v7.shp", verbose=TRUE, repair=FALSE, delete_null_obj=TRUE)
+
         unitSymbols <- subset(unit, longitude>0)
-        symbols(unitSymbols$longitude, unitSymbols$latitude, unitSymbols$densite, add=TRUE, # Nommer les arguments [yr: 30/07/2010]
-                fg=colours()[seq(10, (nrow(unitSymbols)*10), by=10)], lwd=3) #
+
+        plot(MapNC,
+             xlim=range(unitSymbols$longitude) + c(-0.3, 0.3) * diff(range(unitSymbols$longitude, na.rm=TRUE)),
+             ylim=range(unitSymbols$latitude) + c(-0.3, 0.3) * diff(range(unitSymbols$latitude, na.rm=TRUE)),
+             fg="black", xaxs="i", yaxs="i", axes=TRUE)
+
+        symbols(x=unitSymbols$longitude,
+                y=unitSymbols$latitude,
+                circles=## 0.001 + 0.01 * (
+                        max(unitSymbols$densite, na.rm=TRUE) / 2 +
+                        unitSymbols$densite, ##  -
+                          ##               min(unitSymbols$densite, na.rm=TRUE)) /
+                          ## diff(range(unitSymbols$densite, na.rm=TRUE)),
+                inches=0.15,
+                add=TRUE, # Nommer les arguments [yr: 30/07/2010]
+                fg=rainbow(nlevels(
+                   unique(unitobs$site[match(unitSymbols$unitobs,
+                                             unitobs$unite_observation), drop=TRUE])))[as.numeric(
+                                                                         unitobs$site[match(unitSymbols$unitobs,
+                                                                                            unitobs$unite_observation),
+                                                                                      drop=TRUE])],
+                lwd=1)
         ## title(main=paste("CPUE", typePeche))
     }
+
     if (is.benthos.f())                 # unique(unitobs$type) == "LIT"
     {
         unit$richesse_specifique <- as.integer(tapply(unitesp$pres_abs, unitesp$unite_observation,
@@ -755,6 +820,8 @@ unit.f <- function(){
         unit$richesse_specifique[is.na(unit$richesse_specifique)] <- as.integer(0) # pour conserver des entiers.
     }
     assign("unit", unit, envir=.GlobalEnv)
+
+    stepInnerProgressBar.f(n=1)
 
 } # fin unit.f()
 
@@ -765,7 +832,7 @@ unit.f <- function(){
 ################################################################################
 
 creationTablesBase.f <- function(){
-    print("fonction creationTablesBase.f activée")
+    runLog.f(msg=c("Création des tables de base (calcul de métriques) :"))
 
     ## ATTENTION A L'ORDRE D'APPEL DES FONCTIONS!!
     if (!is.benthos.f())                 # unique(unitobs$type) != "LIT"
@@ -799,12 +866,24 @@ creationTablesBase.f <- function(){
     ## Infos :
     if (Jeuxdonnescoupe==1)
     {
-        tkmessageBox(message="Les métriques par unités d'observations ont été recalculées sur le jeu de données sélectionnés")
+        infoLoading.f(msg=paste("Les métriques ont été",
+                                " recalculées sur le jeu de données sélectionné.",
+                                sep=""),
+                      icon="info",
+                      font=tkfont.create(weight="bold", size=9))
+
+        infoLoading.f(button=TRUE)
+
         gestionMSGinfo.f("CalculSelectionFait")
     }
     if (Jeuxdonnescoupe==0)
     {
-        tkmessageBox(message="Les métriques par unités d'observations ont été calculées sur l'ensemble du jeu de données importé")
+        infoLoading.f(msg=paste("Les métriques ont été",
+                                " calculées sur l'ensemble du jeu de données importé.",
+                                sep=""),
+                      icon="info",
+                      font=tkfont.create(weight="bold", size=9))
+
         gestionMSGinfo.f("CalculTotalFait")
     }
 }
@@ -819,31 +898,23 @@ creationTablesBase.f <- function(){
 ################################################################################
 
 creationTablesCalcul.f <- function(){
+    runLog.f(msg=c("Création des tables pour des analyses supplémentaires :",
+                   "\t* TableMetrique : métriques par unité d'observation et par espèce.",
+                   "\t* TableBiodiv : métriques par unité d'observation."))
 
-    print("fonction creationTablesCalcul.f activée")
-    if (!is.benthos.f())                # unique(unitobs$type) != "LIT"
-    {  #car pas de classes de tailles avec les recouvrements
-
-    }
-    ## si SVR calcul des metriques par rotation
-    if (unique(unitobs$type) == "SVR")
-    {
-
-    }
-
-    TableMetrique <- listespunit
+    stepInnerProgressBar.f(n=1, msg="Création des tables de calcul supplémentaires...")
 
     ## Simplification OK [yreecht: 08/10/2010] :
-    TableMetrique <- cbind(TableMetrique,
+    TableMetrique <- cbind(listespunit,
                            ## Colonnes d'unitobs :
-                           unitobs[match(TableMetrique$unite_observation, unitobs$unite_observation),
+                           unitobs[match(listespunit$unite_observation, unitobs$unite_observation),
                                    c("station", "caracteristique_1", "caracteristique_2", "fraction_echantillonnee",
                                      "jour", "mois", "heure", "nebulosite", "direction_vent", "force_vent", "etat_mer",
                                      "courant", "maree", "phase_lunaire", "latitude", "longitude", "avant_apres",
                                      "biotope_2", "habitat1", "habitat2", "habitat3", "visibilite", "prof_min",
                                      "prof_max", "DimObs1", "DimObs2", "nb_plong", "plongeur")],
                            ## Colonnes du référentiel espèces :
-                           especes[match(TableMetrique$code_espece, especes$code_espece),
+                           especes[match(listespunit$code_espece, especes$code_espece),
                                    c("Genre", "Famille", "mobilite", "nocturne", "cryptique", "taillemax", "regim.alim",
                                      ## Interêts types de pêches :
                                      grep(paste("^interet\\.[[:alpha:]]+", siteEtudie, "$", sep=""), # Colonnes
@@ -852,7 +923,7 @@ creationTablesCalcul.f <- function(){
 
     if (is.benthos.f())                 # unique(unitobs$type) == "LIT"
     {
-        TableMetrique$Cath_benthique <- especes$Cath_benthique[match(TableMetrique$code_espece, especes$code_espece)]
+        TableMetrique$Cat_benthique <- especes$Cat_benthique[match(TableMetrique$code_espece, especes$code_espece)]
     }
     if (unique(unitobs$type) == "SVR")  # suppr: "UVC" Ô_ô [???]
     {
@@ -875,11 +946,18 @@ creationTablesCalcul.f <- function(){
 
     assign("TableBiodiv", TableBiodiv, envir=.GlobalEnv)
     assign("TableMetrique", TableMetrique, envir=.GlobalEnv)
-    print("tableau TableMetrique réalisé")
+    message("tableau TableMetrique réalisé")
 
     if (Jeuxdonnescoupe==0)
     {
         assign("SAUVTableBiodiv", TableBiodiv, envir=.GlobalEnv)
         assign("SAUVTableMetrique", TableMetrique, envir=.GlobalEnv)
     }else{}
+
+    ## Info :
+    infoLoading.f(msg=paste("Des tables supplémentaires (pour calculs additionnels) ont été créées :",
+                            "\n\t* TableMetriques : métriques / unité d'observation / espèce.",
+                            "\n\t* TableBiodiv : métriques (dont biodiversité) / unité d'observation.",
+                            sep=""),
+                  icon="info")
 }

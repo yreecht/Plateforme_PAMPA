@@ -117,11 +117,12 @@ selectionObs.SVR.f <- function()
 lectureFichierEspeces.f <- function ()
 {
     ## rm(especes)
-    print("fonction lectureFichierEspeces activée")
+    runLog.f(msg=c("Chargement du référentiel espèces :"))
+
     ## Importation des caracteristiques des especes
     especes <- read.table(fileNameRefEsp, sep="\t", dec=".", quote="", header=TRUE, encoding="latin1")
     names(especes) <- c("code_espece", "GrSIH", "CodeSIH", "IssCaap", "TaxoCode", "CodeFAO", "CodeFB", "Phylum",
-                        "Cath_benthique", "Classe", "Ordre", "Famille", "Genre", "espece", "Identifiant", "ObsNC",
+                        "Cat_benthique", "Classe", "Ordre", "Famille", "Genre", "espece", "Identifiant", "ObsNC",
                         "ObsRUN", "ObsMAY", "ObsSTM", "ObsCB", "ObsBA", "ObsBO", "ObsCR", "taillemax", "L50",
                         "cryptique", "mobilite", "territorial", "nocturne", "comportement.grp", "agreg.saison",
                         "position.col.eau", "strategie.demo", "Type.ponte", "Habitat.Prefere", "Changement.sexe",
@@ -159,10 +160,10 @@ lectureFichierEspeces.f <- function ()
     ## Ajout de cathégories benthiques supplémentaires lues dans un fichier de correspondance :
     correspCatBenthique <- read.csv(paste(basePath, "/Exec/corresp-cat-benth.csv", sep=""), row.names=1)
 
-    especes <- cbind(especes, correspCatBenthique[as.character(especes$Cath_benthique), , drop=FALSE])
+    especes <- cbind(especes, correspCatBenthique[as.character(especes$Cat_benthique), , drop=FALSE])
 
     ## Pour vérif :
-    ## na.omit(especes[as.integer(runif(50,min=1, max=3553)), c("Cath_benthique", "CategB_general", "CategB_groupe")])
+    ## na.omit(especes[as.integer(runif(50,min=1, max=3553)), c("Cat_benthique", "CategB_general", "CategB_groupe")])
 
     ## Suppression de la ligne en NA
     especes <- subset(especes, !is.na(especes$code_espece))
@@ -193,8 +194,8 @@ lectureFichierEspeces.f <- function ()
 ## Creation de l'environnement par defaut
 environnementdefault.f <- function (nameWorkspace)
 {
+    runLog.f(msg=c("Vérification de l'environnement de travail :"))
 
-    print("fonction environnementdefault activée")
     if (!missing(nameWorkspace))
     {
         if (file.access(nameWorkspace, mode = 0)== 0)
@@ -216,33 +217,58 @@ environnementdefault.f <- function (nameWorkspace)
     }else{
         gestionMSGerreur.f("noWorkspace")
     }
-    print(nameWorkspace)
+    ## message(nameWorkspace)
     return(nameWorkspace)
 }
 
 ## Choix par defauts de C:/PAMPA
 opendefault.f <- function ()
 {
+
     pampaProfilingStart.f()
 
-    print("fonction opendefault activée !!")
+    runLog.f(msg=c("--------------------------------------------------------------------------------",
+                   "Nouveau chargement des données :"))
+
     pathMaker.f()                       # MàJ des variables "fileNameUnitObs", "fileNameObs", "fileNameRefEsp". Pour les
                                         # cas où les variables fileName1-3 auraient changé.
 
-    print(paste("chargement de ", fileNameUnitObs, fileNameObs, fileNameRefEsp))
+    assign("Jeuxdonnescoupe", 0, envir=.GlobalEnv)
+
+    ## Informations de chargement (initialisation) :
+    infoGeneral.f(msg="      Chargement des données      ",
+                  font=tkfont.create(weight="bold", size=9), foreground="darkred")
+
+    initInnerTkProgressBar.f(initial=0, max=24, width=450)
+    stepInnerProgressBar.f(n=0, msg="Chargement du référentiel d'unités d'observation")
+
+
+    message(paste("chargement de ", fileNameUnitObs, fileNameObs, fileNameRefEsp))
 
     tkconfigure(ResumerEspaceTravail, text=paste("Espace de travail : ", nameWorkspace))
+
     environnementdefault.f(nameWorkspace)
     ## après, return fonction dans variables environnement
     tkinsert(txt.w, "end", paste("\n", "Patientez, chargement des données en cours ...\n", sep=""))
     ## ################################################################################
-    print(fileNameUnitObs)
+    message(fileNameUnitObs)
     unitobs <- read.table(fileNameUnitObs, sep="\t", dec=".", header=TRUE, encoding="latin1")
     names(unitobs) <- c("AMP", "unite_observation", "type", "site", "station", "caracteristique_1", "caracteristique_2",
          "fraction_echantillonnee", "jour", "mois", "an", "heure", "nebulosite", "direction_vent", "force_vent",
          "etat_mer", "courant", "maree", "phase_lunaire", "latitude", "longitude", "statut_protection", "avant_apres",
          "biotope", "biotope_2", "habitat1", "habitat2", "habitat3", "visibilite", "prof_min", "prof_max", "DimObs1",
          "DimObs2", "nb_plong", "plongeur")
+
+    ## Éventuelle reconfiguration de la barre de progression du chargement :
+    switch(as.character(unique(unitobs$type)[1]),
+           "SVR"={},                    # rien à faire.
+           "LIT"={
+               reconfigureInnerProgressBar.f(max=9)
+           },                           # Pour le benthos on ne calcule pas les métriques / classe de taille.
+           {
+               message("\n\nreconfiguration\n\n")
+               reconfigureInnerProgressBar.f(max=12) # Dans tous les autres cas : 8
+           })
 
     levels(unitobs$caracteristique_1) <- c(levels(unitobs$caracteristique_1), "NA") # bon ça corrige l'erreur ci-dessous
                                         # mais est-ce bien nécessaire ? [yr: 23/08/2010]
@@ -285,6 +311,9 @@ opendefault.f <- function ()
     assign("unitobs", unitobs, envir=.GlobalEnv)
     assign("siteEtudie", unique(unitobs$AMP), envir=.GlobalEnv)
 
+    ## Chargement des observations :
+    stepInnerProgressBar.f(n=1, msg="Chargement du fichier d'observations")
+
     obs <- read.table(fileNameObs, sep="\t", dec=".", header=TRUE, encoding="latin1")
 
     if (unique(unitobs$type) != "SVR")
@@ -317,9 +346,16 @@ opendefault.f <- function ()
             dminMax <- selectionObs.SVR.f()
         }
 
-        obs <- subset(obs, dmin <= dminMax)
-    }
+        ## On ne tient pas compte des observations à une distance > dminMax
+        ## (pas de subset car tendance à faire disparaître des unitobs des analyses) :
+        idxSupr <- obs$dmin > dminMax
 
+        obs$nombre[idxSupr] <- 0
+        obs$poids[idxSupr] <- NA
+        obs$taille[idxSupr] <- NA
+
+        ## obs <- subset(obs, dmin <= dminMax)
+    }
 
     ## remplacement des -999 en NA
     if (as.logical(nrow(obs)))                      # !=0
@@ -336,18 +372,27 @@ opendefault.f <- function ()
                                         # comme ça !
     {
         ## cas ou obs contient des unites d'obs absentes dans unitobs
-        print("erreur, la Table obs contient des unites d'obs absentes dans la table unitobs ")
+        warning("La table observations contient des unités d'observation absentes dans la table unitobs.")
 
-        tkmessageBox(message=paste("Attention, la Table obs contient ",
-                     sum(!is.element(obs$unite_observation, unitobs$unite_observation)),
-                     " (sur ",
-                     nrow(obs),
-                     ") unités d'observation absentes dans la table unitobs ", sep=""),
+        ## Ajout du message pour le chargement :
+        infoLoading.f(msg=paste("Attention, la Table obs contient ",
+                                sum(!is.element(obs$unite_observation, unitobs$unite_observation)),
+                                " (sur ",
+                                nrow(obs),
+                                ") enregistrements avec des unités d'observation absentes dans la table unitobs ",
+                                sep=""),
                      icon="warning")
     }
 
+    ## Chargement du référentiel espèces :
+    stepInnerProgressBar.f(n=1, msg="Chargement du référentiel espèces")
+
     ## Référentiel espèces :
     lectureFichierEspeces.f()
+
+    #####################################################
+    ## Plan d'échantillonnage (à refaire complètement) :
+    stepInnerProgressBar.f(n=1, msg="Plan d'échantillonnage")
 
     ## ############# Récapitulatif du plan d'échantillonnage ############# # [!!!] : revoir tout ça !
     if (NA %in% unique(unitobs$site) == FALSE) # [!!!]
@@ -368,7 +413,7 @@ opendefault.f <- function ()
     ## PlanEchantillonnage = with(unitobs, table(an, type, site, biotope, statut_protection, avant_apres, exclude = NA))
     recap <- as.data.frame(PlanEchantillonnage)
     write.csv(recap, file=paste(NomDossierTravail, "PlanEchantillonnage.csv", sep=""), row.names=FALSE)
-    print("Recapitulatif du plan d'echantillonnage cree : PlanEchantillonnage.csv")
+    message("Récapitulatif du plan d'échantillonnage créé : PlanEchantillonnage.csv")
     ## rm(PlanEchantillonnage)
 
     ## ################
@@ -384,25 +429,31 @@ opendefault.f <- function ()
                 text=paste("Fichier référenciel espèce : ", fileNameRefEsp, " Nb Enr : ",
                            dim(especes)[1], " Nb Champs : ", dim(especes)[2]))
     tkconfigure(ResumerAMPetType,
-                text=paste("AMP considérée", unique(unitobs$AMP), " type d'observation : ", unique(unitobs$type)))
+                text=paste("Aire Marine Protégée : ", unique(unitobs$AMP), " ; type d'observation : ",
+                           unique(unitobs$type), sep=""))
 
     ## ################# Creation de la table de contingence ##################
 
+    stepInnerProgressBar.f(n=1, msg="Table de contingence")
+
     if (unique(unitobs$type) != "SVR")
     {
-        obsSansCathBenth <- obs
-        obsSansCathBenth$Genre <- especes$Genre[match(obsSansCathBenth$code_espece, especes$code_espece)]
-        if(length(obsSansCathBenth$Genre[obsSansCathBenth$Genre=="ge."])>0)
+        obsSansCatBenth <- obs
+        obsSansCatBenth$Genre <- especes$Genre[match(obsSansCatBenth$code_espece, especes$code_espece)]
+        if(length(obsSansCatBenth$Genre[obsSansCatBenth$Genre=="ge."])>0)
         {
-            tkmessageBox(message=paste("Pour les calculs des indices de diversité, ",
-                         length(obsSansCathBenth$Genre[obsSansCathBenth$Genre=="ge."]),
-                         "observations de la table de contingence pour lesquels le genre \n
-        n'est pas renseigné ('ge.') dans le référentiel espèce ont été supprimées"), icon="info")
-            obsSansCathBenth <- subset(obsSansCathBenth, obsSansCathBenth$Genre!="ge.")
+            infoLoading.f(msg=paste("Pour les calculs des indices de diversité, ",
+                                     length(obsSansCatBenth$Genre[obsSansCatBenth$Genre=="ge."]),
+                                     " observations de la table de contingence pour lesquels le genre ",
+                                     " \n\tn'est pas renseigné ('ge.') dans le référentiel espèce ont été supprimées",
+                                     sep=""),
+                          icon="info")
+
+            obsSansCatBenth <- subset(obsSansCatBenth, obsSansCatBenth$Genre!="ge.")
 
         }
-        contingence <- tapply(obsSansCathBenth$nombre,
-                              list(obsSansCathBenth$unite_observation, obsSansCathBenth$code_espece), na.rm=TRUE, sum)
+        contingence <- tapply(obsSansCatBenth$nombre,
+                              list(obsSansCatBenth$unite_observation, obsSansCatBenth$code_espece), na.rm=TRUE, sum)
     }else{
         contingenceSVRt <- tapply(obs$nombre,
                                   list(obs$unite_observation, obs$rotation, obs$code_espece), na.rm=TRUE, mean)
@@ -446,28 +497,34 @@ opendefault.f <- function ()
     if (exists("contingence", envir=.GlobalEnv, frame, mode="any", inherits=TRUE))
     {
         write.csv(contingence, file=paste(NomDossierTravail, "ContingenceUnitObsEspeces.csv", sep=""))
-        print("Table de contingence unite d'observations/especes creee : ContingenceUnitObsEspeces.csv")
+        message("Table de contingence unités d'observations/espèces créée : ContingenceUnitObsEspeces.csv")
     }
+
     if (!exists("contingence", envir=.GlobalEnv, frame, mode="any", inherits=TRUE))
     {
-        ReturnVal <- tkmessageBox(title="Table de contingence", message="La table de contingence n'a pas ete calculee",
-                                  icon <- "warning", type="ok")
-        print("La table de contingence n'a pas ete calculee")
+        infoLoading.f(msg="La table de contingence n'a pas été calculée",
+                      icon="warning")
+
+        warning("La table de contingence n'a pas été calculée")
     }
 
     ## Conversion des dates (tester si meilleur endroit pour faire ça) [yr: 17/08/2010] :
 
 
     ## Verification du type d'observation
-    paste("Type d'observation =", unique(unitobs$type), sep=" ")
+    paste("Type d'observation =", unique(unitobs$type), sep=" ") # [inc] broken !
     if (length(unique(unitobs$type)) > 1)
     {
         tkmessageBox(message="Choisissez le ou les types d'observations que vous souhaitez analyser",
                      icon="warning", type="ok")
-        print("choix du type de jeux de données activé")
+
+        message("Choix du type de jeux de données activé")
+
         ChoixFacteurSelect.f(unitobs$type, "type", "multiple", 1, "selectType")
-        print("choix du type de jeux de données activé, sélection sur :")
-        print(selectType)
+
+        message("Choix du type de jeux de données activé, sélection sur :")
+        message(selectType)
+
         obs$type <- unitobs$type[match(obs$unite_observation, unitobs$unite_observation)]
         obs <- subset(obs$type, obs$type == selectType)
         unitobs <- subset(unitobs$type, unitobs$type == selectType)
@@ -484,9 +541,12 @@ opendefault.f <- function ()
     gestionMSGinfo.f("BasetxtCreate")
     gestionMSGaide.f("SelectionOuTraitement")
     MiseajourTableau.f(tclarray)
+
     ModifierMenuApresImport.f()
+
     creationTablesCalcul.f()
-    ModifierInterfaceApresSelection.f("Aucun", "NA")
+
+    ModifierInterfaceApresSelection.f("Tout", "NA")
 
     tkgrid.configure(scr, sticky="ns")
 
@@ -494,6 +554,12 @@ opendefault.f <- function ()
     cl <<- colors()
     ## Fin lignes temporaires
     ## ################################################################################
+
+    ## Fin des informations de chargement (demande de confirmation utilisateur) :
+    stepInnerProgressBar.f(n=0, msg="Fin de chargement !",
+                           font=tkfont.create(weight="bold", size=9), foreground="darkred")
+
+    infoLoading.f(button=TRUE)
 
     pampaProfilingEnd.f()
 } # fin de opendefault.f

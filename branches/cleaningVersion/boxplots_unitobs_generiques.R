@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: boxplots_ttesp_generic.R
-### Time-stamp: <2011-01-27 15:53:38 yreecht>
+### Time-stamp: <2011-02-10 17:30:03 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -74,9 +74,18 @@ WP2boxplot.unitobs.f <- function(metrique, factGraph, factGraphSel, listFact, li
     selections <- c(list(factGraphSel), listFactSel) # Concaténation des leurs listes de modalités sélectionnées
 
     ## Données pour la série de boxplots :
-    tmpData <- subsetToutesTables.f(metrique=metrique, facteurs=facteurs,
-                                    selections=selections, tableMetrique=tableMetrique,
-                                    exclude = NULL, add=c("unite_observation", "code_espece"))
+    if (tableMetrique == "TableBiodiv")
+    {
+        ## Pour les indices de biodiversité, il faut travailler sur les nombres... :
+        tmpData <- subsetToutesTables.f(metrique="nombre", facteurs=facteurs,
+                                        selections=selections, tableMetrique="listespunit",
+                                        exclude = NULL, add=c("unite_observation", "code_espece"))
+    }else{
+        ## ...sinon sur la métrique choisie :
+        tmpData <- subsetToutesTables.f(metrique=metrique, facteurs=facteurs,
+                                        selections=selections, tableMetrique=tableMetrique,
+                                        exclude = NULL, add=c("unite_observation", "code_espece"))
+    }
 
     ## Formule du boxplot
     exprBP <- eval(parse(text=paste(metrique, "~", paste(listFact, collapse=" + "))))
@@ -102,10 +111,24 @@ WP2boxplot.unitobs.f <- function(metrique, factGraph, factGraphSel, listFact, li
                                                        facteurs=c("unite_observation", "classe_taille"),
                                                        listFact=listFact))
     }else{
-        tmpData <- na.omit(agregationTableParCritere.f(Data=tmpData,
-                                                       metrique=metrique,
-                                                       facteurs=c("unite_observation"),
-                                                       listFact=listFact))
+        if (tableMetrique == "TableBiodiv")
+        {
+            ## Calcul des indices de biodiversité sur sélection d'espèces :
+            tmp <- calcBiodiv.f(Data=tmpData,
+                                unitobs = "unite_observation", code.especes = "code_espece",
+                                nombres = "nombre",
+                                indices=metrique)
+
+            ## On rajoute les anciennes colonnes :
+            tmpData <- cbind(tmp,
+                             tmpData[match(tmp$unite_observation, tmpData$unite_observation),
+                                     !is.element(colnames(tmpData), colnames(tmp))])
+        }else{
+            tmpData <- na.omit(agregationTableParCritere.f(Data=tmpData,
+                                                           metrique=metrique,
+                                                           facteurs=c("unite_observation"),
+                                                           listFact=listFact))
+        }
     }
 
     ## Sauvegarde temporaire des données utilisées pour les graphiques (attention : écrasée à chaque nouvelle série de
@@ -136,7 +159,10 @@ WP2boxplot.unitobs.f <- function(metrique, factGraph, factGraphSel, listFact, li
                      factGraph=factGraph,
                      modSel=iFactGraphSel,
                      listFact=listFact,
-                     type="unitobs", typeGraph="boxplot")
+                     type=ifelse(tableMetrique == "unitespta" && factGraph != "classe_taille",
+                                 "CL_unitobs",
+                                 "unitobs"),
+                     typeGraph="boxplot")
 
         par(mar=c(9, 5, 8, 1), mgp=c(3.5, 1, 0)) # paramètres graphiques.
 
@@ -145,10 +171,11 @@ WP2boxplot.unitobs.f <- function(metrique, factGraph, factGraphSel, listFact, li
                                   modGraphSel=iFactGraphSel,
                                   factGraph=factGraph,
                                   listFact=listFact,
-                                  type="unitobs")
-
-        ## Les couleurs pour l'identification des modalités du facteur de second niveau :
-        colors <- colBoxplot.f(terms=attr(terms(exprBP), "term.labels"), data=tmpData)
+                                  type=ifelse(tableMetrique == "unitespta" && factGraph != "classe_taille",
+                                              "CL_unitobs",
+                                              ifelse(tableMetrique == "unitespta",
+                                                     "unitobs(CL)",
+                                                     "unitobs")))
 
         ## Label axe y :
         ylab <- parse(text=paste("'", Capitalize.f(varNames[metrique, "nom"]), "'",
@@ -158,14 +185,9 @@ WP2boxplot.unitobs.f <- function(metrique, factGraph, factGraphSel, listFact, li
                       sep=""))
 
         ## Boxplot !
-        tmpBP <- boxplot(exprBP, data=tmpData,
-                         main=mainTitle, ylab=ylab,  ## Capitalize.f(varNames[metrique, "nom"]),
-                         varwidth = TRUE, las=2,
-                         col=colors,
-                         ylim=c(min(tmpData[ , metrique], na.rm=TRUE),
-                                max(tmpData[ , metrique], na.rm=TRUE) +
-                                  0.1*(max(tmpData[ , metrique], na.rm=TRUE) -
-                                       min(tmpData[ , metrique], na.rm=TRUE))))
+        tmpBP <- boxplotPAMPA.f(exprBP, data=tmpData,
+                                main=mainTitle, ylab=ylab)  ## Capitalize.f(varNames[metrique, "nom"]),
+
 
         ## #################### Informations supplémentaires sur les graphiques ####################
 

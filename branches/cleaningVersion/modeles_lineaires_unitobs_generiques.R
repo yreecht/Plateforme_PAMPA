@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: modeles_lineaires_unitobs_generiques.R
-### Time-stamp: <2010-12-22 17:07:31 yreecht>
+### Time-stamp: <2011-02-07 15:28:25 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -41,9 +41,18 @@ modeleLineaireWP2.unitobs.f <- function(metrique, factAna, factAnaSel, listFact,
     selections <- c(list(factAnaSel), listFactSel) # Concaténation des leurs listes de modalités sélectionnées
 
     ## Données pour la série d'analyses :
-    tmpData <- subsetToutesTables.f(metrique=metrique, facteurs=facteurs, selections=selections,
-                                    tableMetrique=tableMetrique, exclude = NULL,
-                                    add=c("unite_observation", "code_espece"))
+    if (tableMetrique == "TableBiodiv")
+    {
+        ## Pour les indices de biodiversité, il faut travailler sur les nombres... :
+        tmpData <- subsetToutesTables.f(metrique="nombre", facteurs=facteurs,
+                                        selections=selections, tableMetrique="listespunit",
+                                        exclude = NULL, add=c("unite_observation", "code_espece"))
+    }else{
+        ## ...sinon sur la métrique choisie :
+        tmpData <- subsetToutesTables.f(metrique=metrique, facteurs=facteurs, selections=selections,
+                                        tableMetrique=tableMetrique, exclude = NULL,
+                                        add=c("unite_observation", "code_espece"))
+    }
 
     ## Identification des différents lots d'analyses à faire:
     if (factAna == "")                # Pas de facteur de séparation des graphiques.
@@ -70,10 +79,27 @@ modeleLineaireWP2.unitobs.f <- function(metrique, factAna, factAnaSel, listFact,
                                                        facteurs=c("unite_observation", "classe_taille"),
                                                        listFact=listFact))
     }else{
-        tmpData <- na.omit(agregationTableParCritere.f(Data=tmpData,
-                                                       metrique=metrique,
-                                                       facteurs=c("unite_observation"),
-                                                       listFact=listFact))
+        if (tableMetrique == "TableBiodiv")
+        {
+            ## Calcul des indices de biodiversité sur sélection d'espèces :
+            tmp <- calcBiodiv.f(Data=tmpData,
+                                unitobs = "unite_observation", code.especes = "code_espece",
+                                nombres = "nombre",
+                                indices=metrique)
+
+            ## On rajoute les anciennes colonnes :
+            tmpData <- cbind(tmp,
+                             tmpData[match(tmp$unite_observation, tmpData$unite_observation),
+                                     !is.element(colnames(tmpData), colnames(tmp))])
+
+            ## On garde le strict minimum :
+            tmpData <- tmpData[ , is.element(colnames(tmpData), c(metrique, facteurs))]
+        }else{
+            tmpData <- na.omit(agregationTableParCritere.f(Data=tmpData,
+                                                           metrique=metrique,
+                                                           facteurs=c("unite_observation"),
+                                                           listFact=listFact))
+        }
     }
 
     ## Sauvegarde temporaire des données utilisées pour les analyses (attention : écrasée à chaque nouvelle série de
@@ -111,7 +137,10 @@ modeleLineaireWP2.unitobs.f <- function(metrique, factAna, factAnaSel, listFact,
 
         tryCatch(sortiesLM.f(objLM=res, formule=formule, metrique=metrique,
                              factAna=factAna, modSel=iFactGraphSel, listFact=listFact,
-                             Data=tmpData, Log=Log, type="unitobs"),
+                             Data=tmpData, Log=Log,
+                             type=ifelse(tableMetrique == "unitespta" && factAna != "classe_taille",
+                                         "CL_unitobs",
+                                         "unitobs")),
                  error=errorLog.f)
 
         resid.out <- boxplot(residuals(res), plot=FALSE)$out

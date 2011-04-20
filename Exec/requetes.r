@@ -11,11 +11,17 @@ critereespref.f <- function ()
 
     aa <- tktoplevel()
     tkwm.title(aa, "Selection du facteur du référentiel des espèces")
-    scr <- tkscrollbar(aa, repeatinterval=5, command=function(...)tkyview(tl, ...))
-    tl <- tklistbox(aa, height=20, width=50, selectmode="single",
-                    yscrollcommand=function(...)tkset(scr, ...), background="white")
 
+    ## Ascenceur :
+    scr <- tkscrollbar(aa, repeatinterval=5, command=function(...)tkyview(tl, ...))
+
+    tl <- tklistbox(aa, height=20, width=50, selectmode="single",
+                    yscrollcommand=function(...)tkset(scr, ...),
+                    background="white")
+
+    ## Placement des éléments :
     tkgrid(tklabel(aa, text="Liste des facteurs du référentiel des espèces"))
+
     tkgrid(tl, scr)
     tkgrid.configure(scr, rowspan=4, sticky="nsw")
 
@@ -30,24 +36,19 @@ critereespref.f <- function ()
     ## ici, on liste les AMP qui ne correspondent pas au jeu de données :
     listeSite <- c("RUN" , "MAY" , "BA" , "BO" , "CB" , "CR" , "STM" , "NC")
     listeSiteExclus <- subset(listeSite, listeSite!=SiteEtudie)
-    ## grep(pattern=paste("^", SiteEtudie, "$", sep=""), x=listeSite, value=TRUE, invert=TRUE)
-    message("les sites exclus sont :")
-    message(listeSiteExclus)
-    ## on retire les champs contenant les lettres des sites exclus
+
+    ## On retire les champs contenant les lettres des sites exclus :
     for (k in (seq(along=listeSiteExclus)))
     { # On peut faire plus simple [yr: 03/08/2010]
-        message(listeSiteExclus[k])
-        facts <- facts[ ! grepl(listeSiteExclus[k], facts)] # ajouter que le motif doit être en fin de chaîne
-                                        # [yr: 03/08/2010]
-        ## message(facts)
+        facts <- facts[ ! grepl(paste(listeSiteExclus[k], "$", sep=""),
+                                facts)]
     }
 
-    ## a <- length(facts)                 # écriture inutile [yr: 26/07/2010]
-    for (i in seq(along=facts))         # remplace 1:a [yr: 30/09/2010]
+    ## Ajout des facteur dans la liste :
+    for (i in seq(along=facts))
     {
         tkinsert(tl, "end", facts[i])
     }
-    ## tkselection.set(tl, 0)
 
     OnOK <- function ()
     {
@@ -55,13 +56,17 @@ critereespref.f <- function ()
         assign("factesp", factesp, envir=.GlobalEnv)
         tkdestroy(aa)
     }
-    OK.but <-tkbutton(aa, text="OK", command=OnOK)
-    tkgrid(OK.but)
+
+    OK.but <- tkbutton(aa, text="OK", command=OnOK)
+
+    tkgrid(OK.but, pady=5)
+
     tkfocus(aa)
     winSmartPlace.f(aa)
 
     tkwait.window(aa)
-    ## rm(a)
+
+    ## [!!!] [inc] On peut faire mieux, notamment pour les annulations.
 } # fin critereespref.f
 
 ################################################################################
@@ -73,11 +78,9 @@ critereespref.f <- function ()
 
 ChoixFacteurSelect.f <- function (tableselect, monchamp, Nbselectmax, ordre, mavar)
 {
-
-    ## message("fonction ChoixFacteurSelect activée")
-
     winfac <- tktoplevel(width = 80)
     tkwm.title(winfac, paste("Selection des valeurs de ", monchamp, sep=""))
+
     scr <- tkscrollbar(winfac, repeatinterval=5, command=function(...)tkyview(tl, ...))
 
     if (Nbselectmax=="single"||Nbselectmax=="multiple") # [???] à quoi ça sert de faire ça, puisque la fonction ne gère
@@ -87,8 +90,8 @@ ChoixFacteurSelect.f <- function (tableselect, monchamp, Nbselectmax, ordre, mav
                         yscrollcommand=function(...)tkset(scr, ...), background="white")
     }
     tkgrid(tklabel(winfac, text=paste("Liste des valeurs de ", monchamp,
-                           " presents\n Plusieurs sélections POSSIBLES\n\nATTENTION :",
-                           " première valeur sélectionnée par défaut", sep="")))
+                           " presents\n Plusieurs sélections POSSIBLES", sep="")))
+
     tkgrid(tl, scr)
     tkgrid.configure(scr, rowspan=4, sticky="nsw")
 
@@ -97,14 +100,11 @@ ChoixFacteurSelect.f <- function (tableselect, monchamp, Nbselectmax, ordre, mav
         maliste <- sort(as.character(unique(tableselect)))
     }
 
-    a <- length(maliste)
-
-    for (i in (1:a))
+    ## On remplit la liste de choix :
+    for (i in seq(along=maliste))
     {
         tkinsert(tl, "end", maliste[i])
     }
-    ## tkselection.set(tl, 0)
-
 
     OnOK <- function ()
     {
@@ -113,8 +113,10 @@ ChoixFacteurSelect.f <- function (tableselect, monchamp, Nbselectmax, ordre, mav
         ## return(selectfact)
         assign(mavar, selectfact, envir=.GlobalEnv)
     }
+
     OK.but <-tkbutton(winfac, text="OK", command=OnOK)
-    tkgrid(OK.but)
+    tkgrid(OK.but, pady=5)
+
     tkfocus(winfac)
     winSmartPlace.f(winfac)
 
@@ -142,9 +144,13 @@ choixunfacteurUnitobs.f <- function ()
 
     aa <- tktoplevel()
     tkwm.title(aa, "Selection du facteur de groupement des unites d'observation")
-    scr <- tkscrollbar(aa, repeatinterval=5, command=function(...)tkyview(tl, ...))
+
+    scr <- tkscrollbar(aa, repeatinterval=5,
+                       command=function(...)tkyview(tl, ...))
+
     tl <- tklistbox(aa, height=20, selectmode="single",
-                    yscrollcommand=function(...)tkset(scr, ...), background="white")
+                    yscrollcommand=function(...)tkset(scr, ...),
+                    background="white")
 
     tkgrid(tklabel(aa, text="Liste des facteurs de groupement"))
     tkgrid(tl, scr)
@@ -158,11 +164,11 @@ choixunfacteurUnitobs.f <- function ()
 
     facts <- sort(names(uobstmp))
 
+    ## On remplit la liste de choix :
     for (i in (seq(along=facts)))
     {
         tkinsert(tl, "end", facts[i])
     }
-    ## tkselection.set(tl, 0)
 
     OnOK <- function ()
     {
@@ -170,12 +176,12 @@ choixunfacteurUnitobs.f <- function ()
         assign("fact",
                fact, envir=.GlobalEnv)
         tkdestroy(aa)
-        ## unit[, fact] <- unitobs[, fact][match(unit$unitobs, unitobs$unite_observation)] # [???] unitobs ou uobstmp ?
-                                        # [!!!]
-        # assign("unit", unit, envir=.GlobalEnv)
     }
+
     OK.but <-tkbutton(aa, text="OK", command=OnOK)
-    tkgrid(OK.but)
+
+    tkgrid(OK.but, pady=5)
+
     tkfocus(aa)
     winSmartPlace.f(aa)
 
@@ -222,7 +228,7 @@ choixespeces.f <- function()
 
     contingence[is.na(contingence)] <- 0
     ## Suppression des especes qui ne sont jamais vues
-    ## Sinon problemes pour les calculs d'indices de diversite.
+    ## Sinon problemes pour les calculs d'indices de diversité.
     a <- which(apply(contingence, 2, sum, na.rm=TRUE) == 0)
 
     if (length(a) != 0)
@@ -240,7 +246,6 @@ choixespeces.f <- function()
     rm(b)
     assign("contingence", contingence, envir=.GlobalEnv)
 
-    message("Table de contingence unités d'observation/espèces créée : ContingenceUnitObsEspeces.csv")
     write.csv(contingence, file=paste(nameWorkspace, "/FichiersSortie/ContingenceUnitObsEspeces.csv", sep=""))
 
     ## on recrée les tables de base
@@ -268,20 +273,26 @@ affichageMetriques.f <- function ()
 {
     bb <- tktoplevel(width = 80)
     tkwm.title(bb, "Selection de la metrique à analyser")
-    scr <- tkscrollbar(bb, repeatinterval=5, command=function(...)tkyview(tl, ...))
+
+    scr <- tkscrollbar(bb, repeatinterval=5,
+                       command=function(...)tkyview(tl, ...))
+
     tl <- tklistbox(bb, height=20, width=30, selectmode="single",
-                    yscrollcommand=function(...)tkset(scr, ...), background="white")
+                    yscrollcommand=function(...)tkset(scr, ...),
+                    background="white")
 
     tkgrid(tklabel(bb, text="Liste des metriques"))
+
     tkgrid(tl, scr)
     tkgrid.configure(scr, rowspan=4, sticky="nsw")
+
     met <- sort(names(unit[2:9]))
-    a <- length(met)
+
     ## création de la liste des métriques différentes de 0 ou NA
     listeMetriquesOK <-"pas de metrique"
 
     j <- 1
-    for (i in (1:a))
+    for (i in seq(along=met))
     {
         if (sum(unit[, met[i]], na.rm=TRUE) != 0) # ((sum(unit[, met[i]], na.rm=TRUE)==0)==FALSE) [!!!]
         {
@@ -290,8 +301,7 @@ affichageMetriques.f <- function ()
         }
     }
 
-    b <- length(listeMetriquesOK)
-    for (i in (1:b))
+    for (i in seq(along=met))
     {
         tkinsert(tl, "end", listeMetriquesOK[i])
     }
@@ -304,8 +314,9 @@ affichageMetriques.f <- function ()
         assign("me", me, envir=.GlobalEnv)
         tkdestroy(bb)
     }
+
     OK.but <-tkbutton(bb, text="OK", command=OnOK)
-    tkgrid(OK.but)
+    tkgrid(OK.but, pady=5)
 
     tkfocus(bb)
     winSmartPlace.f(bb)
@@ -336,12 +347,8 @@ UnCritereEspDansObs.f <- function ()
 
         levelsTmp <- levels(obs$code_espece)
 
-        ## message(head(obs))
-        ## ChoixFacteurSelect.f(tableselect=obs[, factesp], monchamp=factesp,
-        ##                      Nbselectmax="multiple", ordre=1, mavar="selectfactesp")
         selectfactesp <- selectModWindow.f(factesp, obs, selectmode="extended")
         assign("selectfactesp", selectfactesp, envir=.GlobalEnv)
-        ## message(selectfactesp)
     }
 
     if (!is.null(selectfactesp))
@@ -356,8 +363,10 @@ UnCritereEspDansObs.f <- function ()
         obs$code_espece <- factor(obs$code_espece, levels=levelsTmp)
 
         gestionMSGaide.f("etapeselected")
-        ## Jeuxdonnescoupe <- 1
+
+        ## On définit globalement que l'on travaille sur une sélection :
         assign("Jeuxdonnescoupe", 1, envir=.GlobalEnv)
+
         return(list(facteur=factesp,
                     selection=selectfactesp,
                     obs=obs))
@@ -387,12 +396,9 @@ UnCritereUnitobsDansObs.f <- function ()
         obs[, factunitobs] <- unitobs[, factunitobs][match(obs$unite_observation, unitobs$unite_observation)]
 
         levelsTmp <- levels(obs$unite_observation)
-        ## message(head(obs))
-        ## ChoixFacteurSelect.f(obs[, factunitobs], factunitobs, "multiple", 1, "selectfactunitobs")
 
         selectfactunitobs <- selectModWindow.f(factunitobs, obs, selectmode="extended")
         assign("selectfactunitobs", selectfactunitobs, envir=.GlobalEnv)
-        ## message(selectfactunitobs)
     }
 
     if (!is.null(selectfactunitobs))
@@ -408,7 +414,10 @@ UnCritereUnitobsDansObs.f <- function ()
         obs$unite_observation <- factor(obs$unite_observation, levels=levelsTmp)
 
         gestionMSGaide.f("etapeselected")
+
+        ## On définit globalement que l'on travaille sur une sélection :
         assign("Jeuxdonnescoupe", 1, envir=.GlobalEnv)
+
         return(list(facteur=factunitobs,
                     selection=selectfactunitobs,
                     obs=obs))

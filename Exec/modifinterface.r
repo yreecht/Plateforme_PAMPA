@@ -4,18 +4,18 @@ ModifierMenuApresImport.f <- function()
     runLog.f(msg=c("Modification des menus suite au chargement des données :"))
 
     ## Réactivation des menus qui nécessitent le chargement préalable :
-    tkentryconfigure(topMenu, 1, state="normal")
-    tkentryconfigure(topMenu, 2, state="normal")
-    tkentryconfigure(topMenu, 3, state="normal")
-    tkentryconfigure(topMenu, 4, state="normal")
-    tkentryconfigure(topMenu, 5, state="normal")
+    tkconfigure(MB.selection, state="normal")
+    tkconfigure(MB.traitement, state="normal")
+    tkconfigure(MB.analyse, state="normal")
 
     ## Réactivation des entrées du menu "Données" qui nécessitent le chargement préalable :
     tkentryconfigure(import, 3, state="normal")
     tkentryconfigure(import, 6, state="normal")
     ## tkentryconfigure(import, 7, state="normal")
 
+    ## Désactivation du bouton et du menu de restauration des données originales :
     tkconfigure(button.DataRestore, state="disabled")
+    tkentryconfigure(selection, 5, state="disabled")
 
     ## Suppression de la colonne "sélections" si besoin :
     if (nchar(tclvalue(tclarray[[0, 4]])) > 3)
@@ -27,6 +27,59 @@ ModifierMenuApresImport.f <- function()
 
     winRaise.f(tm)
 }
+
+########################################################################################################################
+ColAutoWidth.f <- function(TK.table)
+{
+    ## Purpose: Largeur automatique des colonnes du tableau
+    ## ----------------------------------------------------------------------
+    ## Arguments: TK.table : un widget tableau tcl.
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date: 18 avr. 2011, 16:40
+
+    ## Dimensions du tableau (à partir de 0 => +1) :
+
+    ## if (!is.null(tclarray))
+    ## {
+    ##     Info.tmp <- unlist(strsplit(tclvalue(tcl("array", "names", TK.table)),
+    ##                                 " ", fixed=TRUE))
+    ##     ##  # à voir aussi.
+
+    ##     Info.tmp <- Info.tmp[grep("^[[:digit:]]+,[[:digit:]]+$", Info.tmp)]
+
+    ##     dim.array <- apply(sapply(Info.tmp,
+    ##                               function(x)
+    ##                           {
+    ##                               unlist(strsplit(x, ","))
+    ##                           }),           # => 1ère ligne : indices de lignes
+    ##                                     #    2nd  ligne : indices de colonnes.
+    ##                        1,
+    ##                        function(y)                   # Extraction des max.
+    ##                    {
+    ##                        max(as.numeric(y))
+    ##                    })
+    ## }else{
+        dim.array <- as.numeric(unlist(strsplit(tclvalue(tcl(.Tk.ID(TK.table),
+                                                             "index", "bottomright")),
+                                                ",")))
+    ## }
+
+    ## Redimensionnement des colonnes :
+    invisible(sapply(0:dim.array[2],
+                     function(j)
+                 {
+                     tmp <- sapply(0:dim.array[1],
+                                   function(i, j)
+                               {
+                                   nchar(tclvalue(tcl(TK.table,
+                                                      "get",
+                                                      paste(i, ",", j, sep=""))))
+                               }, j)
+
+                     tcl(.Tk.ID(TK.table), "width", j, max(tmp) + 1)
+                 }))
+}
+
 
 MiseajourTableau.f <- function(tclarray)
 {
@@ -41,13 +94,7 @@ MiseajourTableau.f <- function(tclarray)
     tclarray[["3,2"]] <- dim(especes)[1]
     tclarray[["3,3"]] <- dim(especes)[2]
 
-    tmp <- sapply(1:3,
-                  function(i)
-              {
-                  nchar(tclvalue(tclarray[[i, 1]]))
-              })
-
-    tcl(.Tk.ID(table1), "width", "1", max(tmp)+2)
+    ColAutoWidth.f(table1)
 }
 
 ModifierInterfaceApresSelection.f <- function(Critere, Valeur)
@@ -94,9 +141,10 @@ ModifierInterfaceApresSelection.f <- function(Critere, Valeur)
                                     " (peut différer du nombre retenu !) : ", " : "),
                              length(unique(obs$unite_observation)), sep=""))
 
-    if (Jeuxdonnescoupe==1)
+    if (Jeuxdonnescoupe==1) # Ré-activation du bouton et du menu de restauration des données originales.
     {
         tkconfigure(button.DataRestore, state="normal")
+        tkentryconfigure(selection, 5, state="normal")
     }
 
     eval(winRaise.f(tm), envir=.GlobalEnv)
@@ -125,8 +173,9 @@ ModifierInterfaceApresRestore.f <- function(Critere="Aucun", Valeur="NA")
                              " dans le fichier d'observations : ",
                              length(unique(obs$unite_observation)), sep=""))
 
-    ## Désactivation du bouton de restauration des données originales :
+    ## Désactivation du bouton et du menu de restauration des données originales :
     tkconfigure(button.DataRestore, state="disabled")
+    tkentryconfigure(selection, 5, state="disabled")
 
     winRaise.f(tm)
 }

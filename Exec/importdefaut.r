@@ -217,7 +217,7 @@ environnementdefault.f <- function (nameWorkspace)
     }else{
         gestionMSGerreur.f("noWorkspace")
     }
-    ## message(nameWorkspace)
+
     return(nameWorkspace)
 }
 
@@ -243,15 +243,14 @@ opendefault.f <- function ()
     stepInnerProgressBar.f(n=0, msg="Chargement du référentiel d'unités d'observation")
 
 
-    message(paste("chargement de ", fileNameUnitObs, fileNameObs, fileNameRefEsp))
-
     tkconfigure(ResumerEspaceTravail, text=paste("Espace de travail : ", nameWorkspace))
 
     environnementdefault.f(nameWorkspace)
     ## après, return fonction dans variables environnement
     tkinsert(txt.w, "end", paste("\n", "Patientez, chargement des données en cours ...\n", sep=""))
+
     ## ################################################################################
-    message(fileNameUnitObs)
+
     unitobs <- read.table(fileNameUnitObs, sep="\t", dec=".", header=TRUE, encoding="latin1")
     names(unitobs) <- c("AMP", "unite_observation", "type", "site", "station", "caracteristique_1", "caracteristique_2",
          "fraction_echantillonnee", "jour", "mois", "an", "heure", "nebulosite", "direction_vent", "force_vent",
@@ -266,7 +265,6 @@ opendefault.f <- function ()
                reconfigureInnerProgressBar.f(max=9)
            },                           # Pour le benthos on ne calcule pas les métriques / classe de taille.
            {
-               message("\n\nreconfiguration\n\n")
                reconfigureInnerProgressBar.f(max=12) # Dans tous les autres cas : 8
            })
 
@@ -413,21 +411,13 @@ opendefault.f <- function ()
     ## PlanEchantillonnage = with(unitobs, table(an, type, site, biotope, statut_protection, avant_apres, exclude = NA))
     recap <- as.data.frame(PlanEchantillonnage)
     write.csv(recap, file=paste(NomDossierTravail, "PlanEchantillonnage.csv", sep=""), row.names=FALSE)
-    message("Récapitulatif du plan d'échantillonnage créé : PlanEchantillonnage.csv")
+
     ## rm(PlanEchantillonnage)
 
     ## ################
     assign("obs", obs, envir=.GlobalEnv)
 
-    tkconfigure(ResumerSituationFichierUnitesObs,
-                text=paste("Fichier d'unités d'observations : ", fileNameUnitObs, " Nb Enr : ",
-                           dim(unitobs)[1], " Nb Champs : ", dim(unitobs)[2]))
-    tkconfigure(ResumerSituationFichierObs,
-                text=paste("Fichier d'observations : ", fileNameObs, " Nb Enr : ",
-                           dim(obs)[1], " Nb Champs : ", dim(obs)[2]))
-    tkconfigure(ResumerSituationReferencielEspece,
-                text=paste("Fichier référenciel espèce : ", fileNameRefEsp, " Nb Enr : ",
-                           dim(especes)[1], " Nb Champs : ", dim(especes)[2]))
+    ## Information sur l'AMP sélectionnée et le type d'observations analysées :
     tkconfigure(ResumerAMPetType,
                 text=paste("Aire Marine Protégée : ", unique(unitobs$AMP), " ; type d'observation : ",
                            unique(unitobs$type), sep=""))
@@ -497,7 +487,6 @@ opendefault.f <- function ()
     if (exists("contingence", envir=.GlobalEnv, frame, mode="any", inherits=TRUE))
     {
         write.csv(contingence, file=paste(NomDossierTravail, "ContingenceUnitObsEspeces.csv", sep=""))
-        message("Table de contingence unités d'observations/espèces créée : ContingenceUnitObsEspeces.csv")
     }
 
     if (!exists("contingence", envir=.GlobalEnv, frame, mode="any", inherits=TRUE))

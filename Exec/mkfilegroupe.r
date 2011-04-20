@@ -319,8 +319,6 @@ unitespta.f <- function(){
         write.csv(unitespta[ , colnames(unitespta) != "unite_observation"],
                   file=paste(nameWorkspace, "/FichiersSortie/UnitobsEspeceClassetailleMetriques.csv", sep=""),
                   row.names = FALSE)
-        message(paste("La table par unite d'observation / espèce / classe de taille",
-                    " a été créée: UnitobsEspeceClassetailleMetriques.csv", sep=""))
     }else{
         message("Métriques par classe de taille incalculables")
         assign("unitespta",
@@ -579,14 +577,13 @@ unitesp.f <- function(){
 
     ## Ecriture du fichier des unités d'observations par espèce en sortie
     assign("unitesp", unitesp, envir=.GlobalEnv)
-    message("La table par unite d'observation / espèce a été créée : UnitobsEspeceMetriques.csv")
+
     write.csv(unitesp, file=paste(NomDossierTravail, "UnitobsEspeceMetriques.csv", sep=""), row.names = FALSE)
 
     ## table avec la liste des espèces presentes dans chaque transect
     listespunit <- unitesp## [unitesp$pres_abs != 0, ]
     listespunit <- listespunit[order(listespunit$code_espece), ]
     assign("listespunit", listespunit, envir=.GlobalEnv)
-    message("La liste des espèces présentes dans chaque transect a été créée : ListeEspecesUnitobs.csv")
 
     write.csv(listespunit, file=paste(NomDossierTravail, "ListeEspecesUnitobs.csv", sep=""), row.names = FALSE)
 } # fin unitesp.f()
@@ -777,8 +774,6 @@ unit.f <- function(){
         unit$biomasse <- NULL
     }
 
-    ## message de creation de la table unit
-    message("La table métriques par unite d'observation a ete creee : UnitobsMetriques.csv")
     write.csv(unit, file=paste(NomDossierTravail, "UnitobsMetriques.csv", sep=""), row.names = FALSE)
     ## carte de la CPUE pour les données de pêche NC
     if (FALSE) ##(siteEtudie == "NC") # (is.peche.f() & (siteEtudie == "NC")) # (length(typePeche)>1)
@@ -946,8 +941,8 @@ creationTablesCalcul.f <- function(){
 
     assign("TableBiodiv", TableBiodiv, envir=.GlobalEnv)
     assign("TableMetrique", TableMetrique, envir=.GlobalEnv)
-    message("tableau TableMetrique réalisé")
 
+    ## Si on ne travaille pas sur une sélection... :
     if (Jeuxdonnescoupe==0)
     {
         assign("SAUVTableBiodiv", TableBiodiv, envir=.GlobalEnv)

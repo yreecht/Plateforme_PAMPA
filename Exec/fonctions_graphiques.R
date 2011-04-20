@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: fonctions_graphiques.R
-### Time-stamp: <2011-04-12 17:00:24 yreecht>
+### Time-stamp: <2011-04-18 16:19:46 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -124,8 +124,8 @@ openDevice.f <- function(noGraph, metrique, factGraph, modSel, listFact, type="e
 
 
                  ## Si plusieurs graphiques par page :
-                if (getOption("P.plusieursGraphPage") && length(modSel) > 1 &
-                    !is.element(type, c("unitobs")))
+                if (getOption("P.plusieursGraphPage") && length(modSel) > 1 & # Regrouper dans une fonction de test
+                    !is.element(type, c("unitobs")))                          # (mutualiser le code). [!!!]
                 {
                     png(pngFileName, width=90*15, height=55*15, pointsize=14)
                     par(mfrow=c(getOption("P.nrowGraph"), getOption("P.ncolGraph")))
@@ -135,15 +135,18 @@ openDevice.f <- function(noGraph, metrique, factGraph, modSel, listFact, type="e
             }else{}
 
         }else{
-            if (getOption("P.plusieursGraphPage"))     # Plusieurs graphs par page...
+            if (getOption("P.plusieursGraphPage") && # Plusieurs graphs par page...
+                    length(modSel) > 1 &&            # ...plus d'un facteur sélectionné...
+                    !is.element(type, c("unitobs"))) # ...et pas d'agrégation.
             {
                 if ((noGraph %% # ...et page remplie.
                      (getOption("P.nrowGraph") * getOption("P.ncolGraph"))) == 1)
                 {
-                    print(paste("Fenêtre", noGraph))
+                    ## [!!!] Limiter aux cas nécessaires... (cf. plus haut).
                     X11(width=60, height=35, pointsize=10)
                     par(mfrow=c(getOption("P.nrowGraph"), getOption("P.ncolGraph")))
-                }else{}
+                }else{                  # Pas plusieurs graphs par page.
+                }
             }else{                      # Pas plusieurs graphs par page.
                 X11(width=50, height=20, pointsize=10)
             }
@@ -168,7 +171,9 @@ openDevice.f <- function(noGraph, metrique, factGraph, modSel, listFact, type="e
                 width=20, height=12, pointsize=14)
 
             ## Si plusieurs graphiques par page :
-            if (getOption("P.plusieursGraphPage"))
+            if (getOption("P.plusieursGraphPage") &&
+                length(modSel) > 1 &&            # Plus d'un facteur sélectionné.
+                !is.element(type, c("unitobs"))) # Pas d'agrégation.
             {
                 par(mfrow=c(getOption("P.nrowGraph"), getOption("P.ncolGraph")))
             }else{}

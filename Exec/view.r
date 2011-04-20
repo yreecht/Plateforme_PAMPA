@@ -158,7 +158,6 @@ VoirInformationsDonneesUnitobs.f <- function()
 
     mini <- tapply(unitesp$nombre, unitesp$code_espece, min, na.rm=TRUE)
 
-    message(head(pacha))
     maxi <- tapply(unitesp$nombre, unitesp$unite_observation, max, na.rm=TRUE)
 
     for (i in (1:Nbunitobs))
@@ -171,7 +170,6 @@ VoirInformationsDonneesUnitobs.f <- function()
                                      pacha$unite_observation==unique(unitobs$unite_observation)[i]])
         tclarrayID[[i, 4]] <- "autre"
     }
-    message("Tableau récapitulatif de unitobs réalisé")
 
     tableInfodonnees <- Voirentableau(tclarrayID, title="Informations par unitobs",
                                       height=Nbunitobs, width=5, nrow=Nbunitobs, ncol=5)

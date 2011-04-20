@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: Boxplot_generique_calc.R
-### Time-stamp: <2011-04-12 16:40:20 yreecht>
+### Time-stamp: <2011-04-19 11:37:20 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -25,7 +25,6 @@ sepBoxplot.f <- function(terms, data)
 
     if (length(terms) < 2)
     {
-        ## message("Séparateurs inutiles pour moins de deux facteurs")
     }else{
         n <- length(terms)
         ## Positions :
@@ -55,7 +54,6 @@ colBoxplot.f <- function(terms, data)
 
     if (length(terms) < 2)
     {
-        ## message("Couleurs inutiles pour moins de deux facteurs")
         return(NULL)
     }else{
         n <- length(terms)
@@ -84,7 +82,6 @@ legendBoxplot.f <- function(terms, data)
     ## Author: Yves Reecht, Date: 10 août 2010, 16:42
     if (length(terms) < 2)
     {
-        ## message("Légende des couleurs inutile pour moins de deux facteurs")
     }else{
         n <- length(terms)
 

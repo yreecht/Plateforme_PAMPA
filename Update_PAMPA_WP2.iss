@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "PAMPA WP2"
-#define MyAppVersion "1.0-alpha-11"
+#define MyAppVersion "1.0-alpha-12"
 #define MyAppPublisher "Ifremer"
 #define MyAppURL "http://wwz.ifremer.fr/pampa/"
 #define MyAppExeName "PAMPA WP2.bat"
@@ -85,8 +85,8 @@ Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{app}\{uninstalle
 Name: "{commondesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon; WorkingDir: {#InstallDir}; IconFilename: "{app}\img\Pampa.ico"
 Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: quicklaunchicon; WorkingDir: {#InstallDir}; IconFilename: "{app}\img\Pampa.ico"
 
-Name: "{group}\Documentation\Guide Utilisateur"; Filename: "{app}\Doc\GuideCalculsIndicateurs-WP2-Meth4-042010-modif.pdf";
-Name: "{group}\Documentation\Nouveautés de la plateforme PAMPA WP2"; Filename: "{app}\Doc\Annexe_GuideCalculsIndicateurs-WP2-Meth4-092010.pdf";
+Name: "{group}\Documentation\Guide Utilisateur"; Filename: "{app}\Doc\Guide_plateforme_WP2_Meth4-042011.pdf";
+;; Name: "{group}\Documentation\Nouveautés de la plateforme PAMPA WP2"; Filename: "{app}\Doc\Annexe_GuideCalculsIndicateurs-WP2-Meth4-092010.pdf";
 Name: "{group}\Créer un rapport de bug"; Filename: "{app}\Doc\Rapport_bug_PAMPA-WP2.dot";
 
 [Run]

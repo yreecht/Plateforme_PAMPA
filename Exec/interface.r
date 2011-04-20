@@ -106,6 +106,16 @@ tkadd(import, "command", label="Test du référentiel (espèces concernées)", under
 tkadd(import, "command", label="Champs de 'TableMetrique' et TableBiodiv", underline=0, accelerator="CTRL+M",
       state="disabled")
 
+tkadd(import, "command", label="Voir le plan d'échantillonnage", accelerator="CTRL+P", state="disabled",
+      command = VoirPlanEchantillonnage.f)
+
+tkadd(import, "command", label="Info données par espèces", state="disabled", accelerator="CTRL+E",
+      command = VoirInformationsDonneesEspeces.f)
+
+tkadd(import, "command", label="Info données par unité d'observation",
+      state="normal", accelerator="CTRL+U",
+      command = VoirInformationsDonneesUnitobs.f)
+
 ########################################
 ## Sélection et recalcul :
 
@@ -295,14 +305,6 @@ tkadd(pampainfos, "command", label="Documentation (locale)",
 tkadd(pampainfos, "separator")
 tkadd(pampainfos, "command", label="À propos de la plateforme...", command = apropos.f)
 
-
-tkadd(import, "command", label="Voir le plan d'échantillonnage", accelerator="CTRL+P", state="disabled",
-      command = VoirPlanEchantillonnage.f)
-tkadd(import, "command", label="Info données par espèces", state="disabled", accelerator="CTRL+E",
-      command = VoirInformationsDonneesEspeces.f)
-tkadd(import, "command", label="Info données par unité d'observation",
-      state="normal", accelerator="CTRL+U",
-      command = VoirInformationsDonneesUnitobs.f)
 
 ########################################################################################################################
 ## Ajhout des autres éléments :

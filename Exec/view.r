@@ -1,8 +1,16 @@
+########################################################################################################################
 Voirentableau <- function(Montclarray, title="", height=-1, width=-1, nrow=-1, ncol=-1)
 {
-    tb <- tktoplevel()
     tclRequire("Tktable")
+
+    tb <- tktoplevel()
     tkwm.title(tb, title)
+
+    tkbind(tb, "<Destroy>",
+           function()
+       {
+           winRaise.f(tm)
+       })
 
     ## Fonctions activées par les boutons de la fenêtre
     FermerWintb <- function()
@@ -42,16 +50,17 @@ Voirentableau <- function(Montclarray, title="", height=-1, width=-1, nrow=-1, n
     frameOverwintb <- tkframe(tb)
     imgAsLabelwintb <- tklabel(frameOverwintb, image=imageAMP, bg="white")
 
+    xscr <-tkscrollbar(tb, orient="horizontal", command=function(...)tkxview(tabletb,...))
+    yscrtb <- tkscrollbar(tb, repeatinterval=3, command=function(...)tkyview(tabletb,...))
+
     tabletb <- tkwidget(tb, "table", rows=nrow, cols=ncol, titlerows=1, titlecols=0,
                         height=height+1, width=width+1, colwidth=23,
                         xscrollcommand=function(...) tkset(xscr,...),
                         yscrollcommand=function(...) tkset(yscrtb,...))
 
-    xscr <-tkscrollbar(tb, orient="horizontal", command=function(...)tkxview(tabletb,...))
-    yscrtb <- tkscrollbar(tb, repeatinterval=3, command=function(...)tkyview(tabletb,...))
-
-    tkbind(tabletb, "<MouseWheel>", function(...) tkyview(tabletb,...))
-    tkbind(yscrtb, "<MouseWheel>", function(...) tkyview(tabletb,...))
+    ## ## Ne fonctionne pas [!!!] :
+    ## tkbind(tabletb, "<MouseWheel>", function(...) tkyview(tabletb,...))
+    ## tkbind(yscrtb, "<MouseWheel>", function(...) tkyview(tabletb,...))
 
     ## Placement des éléments :
     tkgrid(frameOverwintb, sticky="ew", columnspan=3)
@@ -81,6 +90,7 @@ Voirentableau <- function(Montclarray, title="", height=-1, width=-1, nrow=-1, n
     return (tabletb)
 }
 
+########################################################################################################################
 VoirPlanEchantillonnage.f <- function()
 {
     runLog.f(msg=c("Affichage du plan d'échantillonnage :"))
@@ -88,11 +98,13 @@ VoirPlanEchantillonnage.f <- function()
     myRarrayPE <- read.csv(paste(nameWorkspace, "./FichiersSortie/PlanEchantillonnage.csv", sep=""),
                            sep=",", dec=".", header=TRUE)
     tkinsert(txt.w, "end", paste("\n fichier Plan d'échantillonnage lu :\n ", myRarrayPE))
+
     tclarrayPE <- tclArray()
     ## tclarrayPE[[0, ]] <- c("Année", "Type", "Fréquence")
     tclarrayPE[[0, 0]] <- "Année"
     tclarrayPE[[0, 1]] <- "Type"
     tclarrayPE[[0, 2]] <- "Fréquence"
+
     for (i in (1:dim(myRarrayPE)[1]))
     {
         for (j in (0:2))
@@ -100,6 +112,7 @@ VoirPlanEchantillonnage.f <- function()
             tclarrayPE[[i, j]] <- myRarrayPE[i, j+1]
         }
     }
+
     pe <- tktoplevel()
     tkwm.title(pe, "Plan d'échantillonnage")
     tablePlanEch <- tkwidget(pe, "table", variable=tclarrayPE, rows=dim(myRarrayPE)[1]+1, cols=3, titlerows=1,
@@ -107,6 +120,7 @@ VoirPlanEchantillonnage.f <- function()
     tkpack(tablePlanEch)
 }
 
+########################################################################################################################
 VoirInformationsDonneesEspeces.f <- function()
 {
 
@@ -123,7 +137,7 @@ VoirInformationsDonneesEspeces.f <- function()
     maxi <- tapply(unitesp$nombre, unitesp$code_espece, max, na.rm=TRUE)
 
     nbunitobs <- nrow(unique(unitobs))
-    pacha <- unitesp[, c("unite_observation", "code_espece", "nombre", "pres_abs")]
+    pacha <- unitesp[, c("unite_observation", "code_espece", "nombre", "pres_abs"), drop=FALSE]
 
     for (i in (1:Nbesp))
     {
@@ -136,43 +150,46 @@ VoirInformationsDonneesEspeces.f <- function()
                         length(pacha$unite_observation[pacha$code_espece==unique(unitesp$code_espece)[i]]) * 100,
                         digits=2), "%")
     }
+
     tableInfodonnees <- Voirentableau(tclarrayID, title="Informations par espèce",
-                                      height=Nbesp, width=4, nrow=Nbesp, ncol=4)
+                                      height=Nbesp, width=4, nrow=Nbesp + 1, ncol=4)
 }#fin VoirInformationsDonneesEspeces
 
+########################################################################################################################
 VoirInformationsDonneesUnitobs.f <- function()
 {
 
-    Nbunitobs <- length(unique(unitobs$unite_observation))
+    Nbunitobs <- nlevels(obs$unite_observation) ## length(unique(unitobs$unite_observation))
     message(paste(Nbunitobs, "unités d'observations considérées dans ce jeux de données"))
     tclarrayID <- tclArray()
 
-    tclarrayID[[0, 0]] <- "Unité d'observation"    # Indexation étrange... [yr: 27/07/2010]
+    tclarrayID[[0, 0]] <- "Unité d'observation"    #
     tclarrayID[[0, 1]] <- "Site"                   #
     tclarrayID[[0, 2]] <- "Biotope"                #
-    tclarrayID[[0, 3]] <- "Nb espèce/unitobs"      #
-    tclarrayID[[0, 4]] <- "Nb indiv max/unitobs"   #
+    tclarrayID[[0, 3]] <- "Nb espèce"              #
+    tclarrayID[[0, 4]] <- "Nb indiv max/espèce"    #
 
-    nbunitobs <- dim(unique(unitobs))[1]
-    pacha <- unitesp[, c("unite_observation", "code_espece", "nombre", "pres_abs")]
+    pacha <- unitesp[ , c("unite_observation", "code_espece", "nombre", "pres_abs"), drop=FALSE]
 
-    mini <- tapply(unitesp$nombre, unitesp$code_espece, min, na.rm=TRUE)
+    mini <- tapply(unitesp$nombre, unitesp$unite_observation, min, na.rm=TRUE) # [!!!]
 
-    maxi <- tapply(unitesp$nombre, unitesp$unite_observation, max, na.rm=TRUE)
+    maxi <- tapply(unitesp$nombre, unitesp$unite_observation, max, na.rm=TRUE) # [!!!]
 
     for (i in (1:Nbunitobs))
     {
-        tclarrayID[[i, 0]] <- as.character(unique(unitobs$unite_observation)[i])                     # Indexation étrange... [yr: 27/07/2010]
-        tclarrayID[[i, 1]] <- as.character(unitobs$site[unique(unitobs$unite_observation)[i]])       #
-        tclarrayID[[i, 2]] <- as.character(unitobs$biotope[unique(unitobs$unite_observation)[i]])    #
+        tclarrayID[[i, 0]] <- levels(obs$unite_observation)[i]
+        tclarrayID[[i, 1]] <- as.character(unitobs$site[unitobs$unite_observation ==
+                                                        levels(obs$unite_observation)[i]])
+        tclarrayID[[i, 2]] <- as.character(unitobs$biotope[unitobs$unite_observation ==
+                                                        levels(obs$unite_observation)[i]])    #
         tclarrayID[[i, 3]] <-                                                                        #
-            length(pacha$code_espece[pacha$pres_abs==1 &
-                                     pacha$unite_observation==unique(unitobs$unite_observation)[i]])
-        tclarrayID[[i, 4]] <- "autre"
+            length(pacha$code_espece[pacha$pres_abs == 1 &
+                                     pacha$unite_observation == levels(obs$unite_observation)[i]])
+        tclarrayID[[i, 4]] <- maxi[i]
     }
 
     tableInfodonnees <- Voirentableau(tclarrayID, title="Informations par unitobs",
-                                      height=Nbunitobs, width=5, nrow=Nbunitobs, ncol=5)
+                                      height=Nbunitobs, width=5, nrow=Nbunitobs + 1, ncol=5)
 }
 
 

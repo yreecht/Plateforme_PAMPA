@@ -23,7 +23,8 @@ critereespref.f <- function ()
     tkgrid(tklabel(aa, text="Liste des facteurs du référentiel des espèces"))
 
     tkgrid(tl, scr)
-    tkgrid.configure(scr, rowspan=4, sticky="nsw")
+    tkgrid.configure(scr, rowspan=4, sticky="ensw")
+    tkgrid.configure(tl, rowspan=4, sticky="ensw")
 
     ## Réduction aux facteurs contenant de l'information : [yr: 30/09/2010]
     esptmp <- especes[is.element(especes$code_espece, obs$code_espece), ] # sélection des lignes correspondant aux
@@ -61,8 +62,8 @@ critereespref.f <- function ()
 
     tkgrid(OK.but, pady=5)
 
-    tkfocus(aa)
     winSmartPlace.f(aa)
+    tkfocus(tl)
 
     tkwait.window(aa)
 
@@ -93,7 +94,8 @@ ChoixFacteurSelect.f <- function (tableselect, monchamp, Nbselectmax, ordre, mav
                            " presents\n Plusieurs sélections POSSIBLES", sep="")))
 
     tkgrid(tl, scr)
-    tkgrid.configure(scr, rowspan=4, sticky="nsw")
+    tkgrid.configure(scr, rowspan=4, sticky="ensw")
+    tkgrid.configure(tl, rowspan=4, sticky="ensw")
 
     if (ordre==1)
     {
@@ -148,13 +150,14 @@ choixunfacteurUnitobs.f <- function ()
     scr <- tkscrollbar(aa, repeatinterval=5,
                        command=function(...)tkyview(tl, ...))
 
-    tl <- tklistbox(aa, height=20, selectmode="single",
+    tl <- tklistbox(aa, height=20, width=50, selectmode="single",
                     yscrollcommand=function(...)tkset(scr, ...),
                     background="white")
 
     tkgrid(tklabel(aa, text="Liste des facteurs de groupement"))
     tkgrid(tl, scr)
-    tkgrid.configure(scr, rowspan=4, sticky="nsw")
+    tkgrid.configure(scr, rowspan=4, sticky="ensw")
+    tkgrid.configure(tl, rowspan=4, sticky="ensw")
 
     ## Réduction aux facteurs contenant de l'information : [yr: 30/09/2010]
     uobstmp <- unitobs[is.element(unitobs$unite_observation, obs$unite_observation), ] # sélection des lignes
@@ -182,8 +185,8 @@ choixunfacteurUnitobs.f <- function ()
 
     tkgrid(OK.but, pady=5)
 
-    tkfocus(aa)
     winSmartPlace.f(aa)
+    tkfocus(tl)
 
     tkwait.window(aa)
 } # fin choixunfacteurUnitobs

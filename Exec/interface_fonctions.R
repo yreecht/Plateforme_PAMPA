@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: interface_fonctions.R
-### Time-stamp: <2011-04-19 11:31:34 yreecht>
+### Time-stamp: <2011-04-20 15:48:51 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -122,6 +122,8 @@ quitConfirm.f <- function(win)
 
     ## Configuration :
     tkbind(WinConfirm, "<Destroy>", function() tclvalue(Done) <- 3)
+
+    tcl("update")
 
     winSmartPlace.f(WinConfirm)         # placement de la fenêtre.
     tkfocus(Cancel.but)

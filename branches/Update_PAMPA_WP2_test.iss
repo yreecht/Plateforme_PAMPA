@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "PAMPA WP2"
-#define MyAppVersion "1.0-alpha-11"
+#define MyAppVersion "1.0-alpha-12_test"
 #define MyAppPublisher "Ifremer"
 #define MyAppURL "http://wwz.ifremer.fr/pampa/"
 #define MyAppExeName "PAMPA WP2.bat"
@@ -29,8 +29,8 @@ OutputBaseFilename=setup-update_PAMPA_WP2-{#MyAppVersion}
 ; SetupIconFile=Y:\tmp\1284538187_bluefish-icon.ico
 Compression=lzma
 SolidCompression=yes
-WizardImageFile=.\Img\pampa2L.bmp
-WizardSmallImageFile=.\Img\pampa2.bmp
+WizardImageFile=..\Img\pampa2L.bmp
+WizardSmallImageFile=..\Img\pampa2.bmp
 
 [Languages]
 Name: "french"; MessagesFile: "compiler:Languages\French.isl"
@@ -40,42 +40,42 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked; OnlyBelowVersion: 0,6.1
 
 [Files]
-Source: ".\Exec\PAMPA WP2.bat"; DestDir: "{app}"; Flags: ignoreversion
-Source: ".\Exec\img\*"; DestDir: "{app}\img"; Flags: ignoreversion
-Source: ".\Exec\Doc\*"; DestDir: "{app}\Doc"; Flags: ignoreversion
+Source: ".\tests\PAMPA WP2.bat"; DestDir: "{app}"; Flags: ignoreversion
+Source: ".\tests\img\*"; DestDir: "{app}\img"; Flags: ignoreversion
+Source: ".\tests\Doc\*"; DestDir: "{app}\Doc"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
-Source: ".\Exec\config.r"; DestDir: "{app}"; Flags: uninsneveruninstall onlyifdoesntexist
-Source: "Exec\arbre_regression.r"; DestDir: "{app}"
-Source: "Exec\barplots_occurrence.R"; DestDir: "{app}"
-Source: "Exec\barplots_occurrence_unitobs.R"; DestDir: "{app}"
-Source: "Exec/fonctions_graphiques.R"; DestDir: "{app}"
-Source: "Exec\boxplots_esp_generiques.R"; DestDir: "{app}"
-Source: "Exec\boxplots_unitobs_generiques.R"; DestDir: "{app}"
-Source: "Exec\calcul_simple.r"; DestDir: "{app}"
-Source: "Exec\command.r"; DestDir: "{app}"
-Source: "Exec\corresp-cat-benth.csv"; DestDir: "{app}"
-Source: "Exec\fonctions_base.R"; DestDir: "{app}"
-Source: "Exec\gestionmessages.r"; DestDir: "{app}"
-Source: "Exec\Global.r"; DestDir: "{app}"
-Source: "Exec\import.r"; DestDir: "{app}"
-Source: "Exec\importdefaut.r"; DestDir: "{app}"
-Source: "Exec\interface.r"; DestDir: "{app}"
-Source: "Exec\interface_fonctions.R"; DestDir: "{app}"
-Source: "Exec\load_packages.R"; DestDir: "{app}"
-Source: "Exec\mkfilegroupe.r"; DestDir: "{app}"
-Source: "Exec\modeles_lineaires_esp_generiques.R"; DestDir: "{app}"
-Source: "Exec\modeles_lineaires_unitobs_generiques.R"; DestDir: "{app}"
-Source: "Exec\modeles_lineaires_interface.R"; DestDir: "{app}"
-Source: "Exec\modifinterface.r"; DestDir: "{app}"
-Source: "Exec\NomsVariables.csv"; DestDir: "{app}"
-Source: "Exec\PAMPA WP2.bat"; DestDir: "{app}"
-Source: "Exec\requetes.r"; DestDir: "{app}"
-Source: "Exec\Rprofile.site"; DestDir: "{app}"
-Source: "Exec\selection_variables_fonctions.R"; DestDir: "{app}"
-Source: "Exec\selection_variables_interface.R"; DestDir: "{app}"
-Source: "Exec\testfichier.r"; DestDir: "{app}"
-Source: "Exec\view.r"; DestDir: "{app}"
-Source: "Exec\nombres_SVR.R"; DestDir: "{app}"
+Source: ".\tests\config.r"; DestDir: "{app}"; Flags: uninsneveruninstall onlyifdoesntexist
+Source: "tests\arbre_regression.r"; DestDir: "{app}"
+Source: "tests\barplots_occurrence.R"; DestDir: "{app}"
+Source: "tests\barplots_occurrence_unitobs.R"; DestDir: "{app}"
+Source: "tests/fonctions_graphiques.R"; DestDir: "{app}"
+Source: "tests\boxplots_esp_generiques.R"; DestDir: "{app}"
+Source: "tests\boxplots_unitobs_generiques.R"; DestDir: "{app}"
+Source: "tests\calcul_simple.r"; DestDir: "{app}"
+Source: "tests\command.r"; DestDir: "{app}"
+Source: "tests\corresp-cat-benth.csv"; DestDir: "{app}"
+Source: "tests\fonctions_base.R"; DestDir: "{app}"
+Source: "tests\gestionmessages.r"; DestDir: "{app}"
+Source: "tests\Global.r"; DestDir: "{app}"
+Source: "tests\import.r"; DestDir: "{app}"
+Source: "tests\importdefaut.r"; DestDir: "{app}"
+Source: "tests\interface.r"; DestDir: "{app}"
+Source: "tests\interface_fonctions.R"; DestDir: "{app}"
+Source: "tests\load_packages.R"; DestDir: "{app}"
+Source: "tests\mkfilegroupe.r"; DestDir: "{app}"
+Source: "tests\modeles_lineaires_esp_generiques.R"; DestDir: "{app}"
+Source: "tests\modeles_lineaires_unitobs_generiques.R"; DestDir: "{app}"
+Source: "tests\modeles_lineaires_interface.R"; DestDir: "{app}"
+Source: "tests\modifinterface.r"; DestDir: "{app}"
+Source: "tests\NomsVariables.csv"; DestDir: "{app}"
+Source: "tests\PAMPA WP2.bat"; DestDir: "{app}"
+Source: "tests\requetes.r"; DestDir: "{app}"
+Source: "tests\Rprofile.site"; DestDir: "{app}"
+Source: "tests\selection_variables_fonctions.R"; DestDir: "{app}"
+Source: "tests\selection_variables_interface.R"; DestDir: "{app}"
+Source: "tests\testfichier.r"; DestDir: "{app}"
+Source: "tests\view.r"; DestDir: "{app}"
+Source: "tests\nombres_SVR.R"; DestDir: "{app}"
 
 
 [Icons]
@@ -85,8 +85,8 @@ Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{app}\{uninstalle
 Name: "{commondesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon; WorkingDir: {#InstallDir}; IconFilename: "{app}\img\Pampa.ico"
 Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: quicklaunchicon; WorkingDir: {#InstallDir}; IconFilename: "{app}\img\Pampa.ico"
 
-Name: "{group}\Documentation\Guide Utilisateur"; Filename: "{app}\Doc\GuideCalculsIndicateurs-WP2-Meth4-042010-modif.pdf";
-Name: "{group}\Documentation\Nouveautés de la plateforme PAMPA WP2"; Filename: "{app}\Doc\Annexe_GuideCalculsIndicateurs-WP2-Meth4-092010.pdf";
+Name: "{group}\Documentation\Guide Utilisateur"; Filename: "{app}\Doc\Guide_plateforme_WP2_Meth4-042011.pdf";
+;; Name: "{group}\Documentation\Nouveautés de la plateforme PAMPA WP2"; Filename: "{app}\Doc\Annexe_GuideCalculsIndicateurs-WP2-Meth4-092010.pdf";
 Name: "{group}\Créer un rapport de bug"; Filename: "{app}\Doc\Rapport_bug_PAMPA-WP2.dot";
 
 [Run]

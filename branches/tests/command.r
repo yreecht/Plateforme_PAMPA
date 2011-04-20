@@ -28,7 +28,6 @@ RestaurerDonnees.f <- function ()
         gestionMSGinfo.f("Jeuxdedonnerestore", dim(obs)[1])
         tkmessageBox(message=paste("Jeu de données restauré \n", dim(obs)[1],
                                    "enregistrements dans la table observation"))
-        message("Jeu de données restauré")
     }
 }
 

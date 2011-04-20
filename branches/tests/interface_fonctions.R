@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: interface_fonctions.R
-### Time-stamp: <2011-04-12 16:42:55 yreecht>
+### Time-stamp: <2011-04-19 11:31:34 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -173,7 +173,6 @@ infoGeneral.f <- function(msg,...)
                                                              envir=.InfoLoading,
                                                              inherits=FALSE)))))
     {
-        message("Création de fenêtre")
 
         ## Création de la fenêtre :
         assign("WinInfoLoading",
@@ -249,7 +248,7 @@ infoLoading.f <- function(msg="", icon="info", button=FALSE,
                                                              envir=.InfoLoading,
                                                              inherits=FALSE)))))
     {
-        message("Création de fenêtre")
+
         ## Création de la fenêtre :
         assign("WinInfoLoading",
                WinInfoLoading <- tktoplevel(), # Assignation simultannée dans l'environnement courant.

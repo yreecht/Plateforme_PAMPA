@@ -9,11 +9,13 @@ openfile.f <- function()
 
         if (!nchar(nameWorkspace))
         {
-            ## tkmessageBox(message="Aucun espace de travail n'a ete selectionné!")
+            ## Rien !
         }else{
             assign("nameWorkspace", nameWorkspace, envir=.GlobalEnv)
             ## setwd(nameWorkspace)
-            tkconfigure(ResumerEspaceTravail, text=paste("Espace de travail : ", nameWorkspace))
+            tkconfigure(ResumerEspaceTravail,
+                        text=nameWorkspace,
+                        foreground="darkred")
             tkinsert(helpframe, "end", "\n Choisissez maintenant votre fichier d'unités d'observations")
         }
     }
@@ -30,14 +32,14 @@ openfile.f <- function()
 
         if (!nchar(nameUnitobs))
         {
-            ## tkmessageBox(message="Aucun fichier n'a ete selectionne!")
+            ## Rien !
         }else{
-            message(nameUnitobs)
+            tkconfigure(ResumerSituationFichierUnitesObs,
+                        text=nameUnitobs,
+                        foreground="darkred")
 
-            tkconfigure(ResumerSituationFichierUnitesObs, text=paste("Fichier d'unités d'observations : ", nameUnitobs))
             tkinsert(helpframe, "end", "\n Choisissez maintenant votre fichier d'observations")
-            ## nameUnitobs
-            ## assign("fileNameUnitObs", paste(nameWorkspace, "/Data/", nameUnitobs, sep=""), envir=.GlobalEnv)
+
             assign("fileName1", nameUnitobs, envir=.GlobalEnv)
         }
     }
@@ -53,13 +55,15 @@ openfile.f <- function()
 
         if (!nchar(namefileObs))
         {
-            ## tkmessageBox(message="Aucun fichier n'a ete selectionne!")
+            ## Rien !
         }else{
-            message(namefileObs)
-            ## assign("fileNameObs", paste(nameWorkspace, "/Data/", namefileObs, sep=""), envir=.GlobalEnv)
             assign("fileName2", namefileObs, envir=.GlobalEnv)
+
             ## ici du coup, on peut y mettre un choix ou reconnaitre le référenciel automatiquement
-            tkconfigure(ResumerSituationFichierObs, text=paste("Fichier d'observations : ", namefileObs))
+            tkconfigure(ResumerSituationFichierObs,
+                        text=namefileObs,
+                        foreground="darkred")
+
             tkinsert(helpframe, "end", "\n Sélectionnez votre référenciel espèce")
         }
     }
@@ -75,22 +79,34 @@ openfile.f <- function()
 
         if (!nchar(namefileRef))
         {
-            ## tkmessageBox(message="Aucun fichier n'a ete selectionne!")
+            ## Rien !
         }else{
-            message(namefileRef)
-            tkconfigure(ResumerSituationReferencielEspece, text=paste("Fichier référenciel espèce : ", namefileRef))
+            tkconfigure(ResumerSituationReferencielEspece,
+                        text=namefileRef, foreground="darkred")
+
             assign("fileName3", namefileRef, envir=.GlobalEnv)
         }
     }
 
     tt <- tktoplevel(height=50, width=300)
     tkwm.title(tt, "Choix des fichiers de données à importer")
+
     OK <- tclVar(0)
-    button.widget0 <- tkbutton(tt, text="Espace de travail", width=45,
-                               command=chercheEspaceTravail.f)
-    button.widget1 <- tkbutton(tt, text="Table de données d'unités d'observation", command=openUnitobs.f)
-    button.widget2 <- tkbutton(tt, text="Table de données d'observations", command=openObservations.f)
-    button.widget3 <- tkbutton(tt, text="Référentiel espèces", command=openListespeces.f)
+    button.widget0 <- tkbutton(tt, text="Espace de travail", ## width=45,
+                               command=chercheEspaceTravail.f,
+                               justify="left")
+
+    button.widget1 <- tkbutton(tt, text="Table de données d'unités d'observation",
+                               command=openUnitobs.f,
+                               justify="left")
+
+    button.widget2 <- tkbutton(tt, text="Table de données d'observations",
+                               command=openObservations.f,
+                               justify="left")
+
+    button.widget3 <- tkbutton(tt, text="Référentiel espèces",
+                               command=openListespeces.f,
+                               justify="left")
 
     OnOK <- function()  # [imb]
     {
@@ -100,32 +116,31 @@ openfile.f <- function()
     OK.but <-tkbutton(tt, text="Valider", command=OnOK)
 
     tkgrid(button.widget0,
-           ResumerEspaceTravail <- tklabel(tt, text=paste("Espace de travail : ", "non sélectionné - par défaut :",
+           ResumerEspaceTravail <- tklabel(tt, text=paste("non sélectionné - par défaut :",
                                                nameWorkspace)),
-           pady=5, padx=5)
+           pady=3, padx=5, sticky="w")
 
     tkgrid(button.widget1,
-           ResumerSituationFichierUnitesObs <- tklabel(tt, text=paste("Fichier d'unités d'observations : ",
-                                                                      "non sélectionné - par défaut :", fileName1)),
-           pady=5, padx=5)
+           ResumerSituationFichierUnitesObs <- tklabel(tt, text=paste("non sélectionné - par défaut :", fileName1)),
+           pady=3, padx=5, sticky="w")
 
     tkgrid(button.widget2,
-           ResumerSituationFichierObs <- tklabel(tt, text=paste("Fichier d'observations : ",
-                                                                "non sélectionné - par défaut :", fileName2)),
-           pady=5, padx=5)
+           ResumerSituationFichierObs <- tklabel(tt, text=paste("non sélectionné - par défaut :", fileName2)),
+           pady=3, padx=5, sticky="w")
 
     tkgrid(button.widget3,
-           ResumerSituationReferencielEspece <- tklabel(tt, text=paste("Référentiel espèce : ",
-                                                                       "non sélectionné - par défaut :", fileName3)),
-           pady=5, padx=5)
+           ResumerSituationReferencielEspece <- tklabel(tt, text=paste("non sélectionné - par défaut :", fileName3)),
+           pady=3, padx=5, sticky="w")
 
     tkgrid(OK.but, pady=5, padx=5)
-    tkgrid.configure(button.widget0, button.widget1, button.widget2, button.widget3, sticky="w")
-    tkgrid.configure(OK.but, sticky="we")
+
+    tkgrid.configure(button.widget0, button.widget1, button.widget2, button.widget3, sticky="ew")
+    tkgrid.configure(OK.but, sticky="we", columnspan=2)
 
     tkfocus(tt)
     winSmartPlace.f(tt)
     tkwait.window(tt)
+
     ## Changement des variables globales
     pathMaker.f()
 

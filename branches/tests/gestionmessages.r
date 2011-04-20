@@ -164,10 +164,6 @@ gestionMSGinfo.f <- function (namemsg, parametrenum,...)
                    paste("Vous avez réduit  les observations au statut ", statut, " et ", parametrenum,
                          " enregistrements\n")
                },
-               "CatBenthselectionne"={
-                   paste("Vous avez réduit  les observations à la catégorie benthique ", selectcb,
-                         " et ", parametrenum, " enregistrements\n", sep="")
-               },
                "InfoRefSpeEnregistre"={
                    paste("Votre fichier d'information sur le référentiel espèce a été enregistré",
                          " au format CSV\n dans le dossier de travail sous le nom", parametrenum, ".\n")

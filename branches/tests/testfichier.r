@@ -68,10 +68,6 @@ testfileref.f <- function ()
                   length(unique(especesPresentes$code_espece))*100, digits=2)
     }
 
-    ## message(head(dataframeRefEsp))
-    ## message(dim(tclarrayRefEsp[2]))
-    ## message(head(dataframeRefEsp))
-
     ## construction de la fenêtre
     tkwm.title(wintest, paste("Informations sur ", fileName3))
     frameOverwintest <- tkframe(wintest)

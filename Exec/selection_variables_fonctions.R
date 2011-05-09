@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: Selection_variables_fonctions.R
-### Time-stamp: <2011-03-16 16:08:39 yreecht>
+### Time-stamp: <2011-05-09 15:45:08 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -126,7 +126,8 @@ champsUnitobs.f <- function(ordered=FALSE, tableMetrique="")
     ## Champs principaux :
     cPrincip <- c(
                   ## table "unitobs" :
-                  "site", "an", "biotope", "statut_protection", "caracteristique_1", "caracteristique_2"
+                  "site", "an", "annee.campagne", "biotope", "statut_protection", "caracteristique_1",
+                  "caracteristique_2"
                   )
 
     ## Champs non-vides de la table 'unitobs' :
@@ -245,7 +246,8 @@ champsReferentiels.f <- function(nomTable, nextStep=NA)
         ## Champs principaux :
         cPrincip <- c(
                       ## table "unitobs" :
-                      "site", "an", "biotope", "statut_protection", "caracteristique_1", "caracteristique_2",
+                      "site", "an", "annee.campagne", "biotope", "statut_protection", "caracteristique_1",
+                      "caracteristique_2",
                       ## table "especes" :
                       "code_espece", "Cat_benthique", "Famille", "Genre", "Identifiant",
                       "CategB_general", "CategB_groupe"

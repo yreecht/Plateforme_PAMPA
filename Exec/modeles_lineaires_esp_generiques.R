@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: comparaison_distri_generique.R
-### Time-stamp: <2011-02-07 14:37:20 yreecht>
+### Time-stamp: <2011-05-09 15:16:54 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -1264,11 +1264,12 @@ valPreditesLM.f <- function(objLM, Data, listFact, resFile)
 }
 
 ########################################################################################################################
-is.temporal.f <- function(facteur)
+is.temporal.f <- function(facteur, table)
 {
     ## Purpose: test si un facteur est temporel ou non
     ## ----------------------------------------------------------------------
     ## Arguments: facteur : le nom (chaîne de caractères) du facteur.
+    ##            table : la table dans laquelle se trouve le champs.
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date:  4 oct. 2010, 10:01
 
@@ -1279,8 +1280,12 @@ is.temporal.f <- function(facteur)
                          an={           # An est toujours censé être temporel.
                              TRUE
                          },
+                         annee.campagne={           # Vérifié en amont.
+                             TRUE
+                         },
                          caracteristique_2={ # Dépend du format.
-                             ifelse(all(grepl("^[cC][[:digit:]]{4}$", unitobs$caracteristique_2), na.rm=TRUE),
+                             ifelse(all(grepl("^[cC]?[[:digit:]]{4}$",
+                                              as.character(table[ , "caracteristique_2"])), na.rm=TRUE),
                                     TRUE,
                                     FALSE)
                          },
@@ -1358,7 +1363,7 @@ compMultiplesLM.f <- function(objLM, Data, fact1, fact2, resFile, exclude, Log=F
     compMultiplesAvertissement.f(objLM=objLM, Log=Log, resFile=resFile)
 
     ## Test si un facteur est temporel :
-    tempFact <- is.temporal.f(facts)
+    tempFact <- is.temporal.f(facts, unitobs)
 
     ## Calculs des matrices de différences :
     for (i in seq(along=facts))
@@ -1438,7 +1443,7 @@ compSimplesLM.f <- function(objLM, Data, fact, resFile, Log=FALSE)
     ## Avertissement concernant les estimations de différences :
     compMultiplesAvertissement.f(objLM=objLM, Log=Log, resFile=resFile)
 
-    if (is.temporal.f(fact))
+    if (is.temporal.f(fact, unitobs))
     {
         ## Suite en-tête :
         cat(paste("\n\n\tFacteur '", varNames[fact, "nom"], "' (temporel) :\n", sep=""),

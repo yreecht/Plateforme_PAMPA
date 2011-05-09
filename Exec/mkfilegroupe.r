@@ -903,7 +903,9 @@ creationTablesCalcul.f <- function(){
     TableMetrique <- cbind(listespunit,
                            ## Colonnes d'unitobs :
                            unitobs[match(listespunit$unite_observation, unitobs$unite_observation),
-                                   c("station", "caracteristique_1", "caracteristique_2", "fraction_echantillonnee",
+                                   c("station", "caracteristique_1",
+                                     ifelse(is.null(unitobs$caracteristique_2), "annee.campagne", "caracteristique_2"),
+                                     "fraction_echantillonnee",
                                      "jour", "mois", "heure", "nebulosite", "direction_vent", "force_vent", "etat_mer",
                                      "courant", "maree", "phase_lunaire", "latitude", "longitude", "avant_apres",
                                      "biotope_2", "habitat1", "habitat2", "habitat3", "visibilite", "prof_min",
@@ -932,7 +934,9 @@ creationTablesCalcul.f <- function(){
     TableBiodiv <- cbind(TableBiodiv,
                          ## Colonnes d'unitobs :
                          unitobs[match(TableBiodiv$unite_observation, unitobs$unite_observation),
-                                 c("station", "caracteristique_1", "caracteristique_2", "fraction_echantillonnee",
+                                 c("station", "caracteristique_1",
+                                   ifelse(is.null(unitobs$caracteristique_2), "annee.campagne", "caracteristique_2"),
+                                   "fraction_echantillonnee",
                                    "jour", "mois", "heure", "nebulosite", "direction_vent", "force_vent", "etat_mer",
                                    "courant", "maree", "phase_lunaire", "avant_apres", "biotope_2", "habitat1",
                                    "habitat2", "habitat3", "visibilite", "prof_min", "prof_max", "DimObs1", "DimObs2",

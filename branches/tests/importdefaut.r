@@ -278,6 +278,12 @@ opendefault.f <- function ()
     ##     levels(unitobs$statut_protection) <- sort(levels(unitobs$statut_protection), decreasing=TRUE)
     ## }else{}
 
+    ## Si caracteristique_2 est au format année de campagne, renommer la colonne :
+    if (is.temporal.f("caracteristique_2", unitobs))
+    {
+        colnames(unitobs)[colnames(unitobs) == "caracteristique_2"] <- "annee.campagne"
+    }
+
     if (unique(unitobs$type)[1]=="PecRec")
     {
         x.lt <- as.POSIXlt(as.character(unitobs$heure), format="%Hh%M")
@@ -504,21 +510,30 @@ opendefault.f <- function ()
     paste("Type d'observation =", unique(unitobs$type), sep=" ") # [inc] broken !
     if (length(unique(unitobs$type)) > 1)
     {
-        tkmessageBox(message="Choisissez le ou les types d'observations que vous souhaitez analyser",
+        tkmessageBox(message=paste("Un seul type d'observation à la fois peut être analysé :\n\n",
+                                   "Choisissez le type d'observation que vous souhaitez analyser.", sep=""),
                      icon="warning", type="ok")
 
         message("Choix du type de jeux de données activé")
 
-        ChoixFacteurSelect.f(unitobs$type, "type", "multiple", 1, "selectType")
+        ChoixFacteurSelect.f(unitobs$type, "type", "single", 1, "selectType")
 
         message("Choix du type de jeux de données activé, sélection sur :")
         message(selectType)
 
-        obs$type <- unitobs$type[match(obs$unite_observation, unitobs$unite_observation)]
-        obs <- subset(obs$type, obs$type == selectType)
-        unitobs <- subset(unitobs$type, unitobs$type == selectType)
+        obs$type <- unitobs$type[match(obs$unite_observation, unitobs$unite_observation), drop=TRUE]
+
+        obs <- dropLevels.f(subset(obs, obs$type == selectType))
+        unitobs <- dropLevels.f(subset(unitobs, unitobs$type == selectType))
+
         assign("obs", obs, envir=.GlobalEnv)
         assign("unitobs", unitobs, envir=.GlobalEnv)
+
+        ## Reconfiguration des infos sur l'AMP sélectionnée et le type d'observations analysées :
+        tkconfigure(ResumerAMPetType,
+                    text=paste("Aire Marine Protégée : ", unique(unitobs$AMP), " ; type d'observation : ",
+                    unique(unitobs$type), sep=""))
+
     }
 
     ## Creation des tables de base :

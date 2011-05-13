@@ -214,9 +214,9 @@ tkadd(analyse, "cascade", label="Modèles inférentiels", menu=modelesInferentiels
 ## ...modèles exploratoires (à faire) :
 tkadd(analyse, "cascade", label="Analyses exploratoires", menu=analysesExplo, state="disabled")
 
-## ...MRT (à refondre) :
-tkadd(analyse, "separator")
-tkadd(analyse, "cascade", label="Arbre de regression multivariee", menu = arbreRegression)
+## ## ...MRT (à refondre) :
+## tkadd(analyse, "separator")
+## tkadd(analyse, "cascade", label="Arbre de regression multivariee", menu = arbreRegression)
 
 ## Modèles inférentiels :
 
@@ -231,6 +231,16 @@ tkadd(modelesInferentiels, "command", label="Modèles linéaires métrique /espèce/
       command=function ()
   {
       selectionVariables.f("modele_lineaire")
+      winRaise.f(tm)
+  })
+
+## MRT espèces :
+tkadd(modelesInferentiels, "command", label=paste("Arbres de régression multivariée,",
+                                      " métrique / espèces / unité d'observation...", sep=""),
+      background="#FFFBCF",
+      command=function ()
+  {
+      selectionVariables.f("MRT.esp")
       winRaise.f(tm)
   })
 
@@ -250,11 +260,16 @@ tkadd(modelesInferentiels, "command", label="Modèles linéaires métrique /unité d
       winRaise.f(tm)
   })
 
+## MRT unitobs :
+tkadd(modelesInferentiels, "command", label=paste("Arbres de régression multivariée,",
+                                      " métrique /unité d'observation (dont biodiversité)...", sep=""),
+      background="#FFFBCF",
+      command=function ()
+  {
+      selectionVariables.f("MRT.unitobs")
+      winRaise.f(tm)
+  })
 
-## Arbres de regression :
-tkadd(arbreRegression, "command", label="1 facteur", command=arbre1.f)
-tkadd(arbreRegression, "command", label="2 facteurs", command=arbre2.f)
-tkadd(arbreRegression, "command", label="3 facteurs", command=arbre3.f)
 
 ########################################
 ## Menu deroulant des outils :

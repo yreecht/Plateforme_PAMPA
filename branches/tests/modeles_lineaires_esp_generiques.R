@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: comparaison_distri_generique.R
-### Time-stamp: <2011-05-09 15:16:54 yreecht>
+### Time-stamp: <2011-05-12 16:41:53 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -1846,7 +1846,10 @@ modeleLineaireWP2.esp.f <- function(metrique, factAna, factAnaSel, listFact, lis
             ## Écriture des sorties :
             tryCatch(sortiesLM.f(objLM=res, formule=formule, metrique=metrique,
                                  factAna=factAna, modSel=modSel, listFact=listFact,
-                                 Data=tmpDataMod, Log=Log),
+                                 Data=tmpDataMod, Log=Log,
+                                 type=ifelse(tableMetrique == "unitespta",
+                                             "CL_espece",
+                                             "espece")),
                      error=errorLog.f)
 
             ## Estimation des résidus "annormaux" :
@@ -1870,7 +1873,10 @@ modeleLineaireWP2.esp.f <- function(metrique, factAna, factAnaSel, listFact, lis
 
                     tryCatch(sortiesLM.f(objLM=res.red, formule=formule, metrique=metrique,
                                          factAna=factAna, modSel=modSel, listFact=listFact,
-                                         Data=tmpDataMod, Log=Log, sufixe="(red)"),
+                                         Data=tmpDataMod, Log=Log, sufixe="(red)",
+                                         type=ifelse(tableMetrique == "unitespta",
+                                                     "CL_espece",
+                                                     "espece")),
                              error=errorLog.f)
                 }else{}
 

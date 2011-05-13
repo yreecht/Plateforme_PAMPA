@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: Selection_variables_fonctions.R
-### Time-stamp: <2011-05-09 15:45:08 yreecht>
+### Time-stamp: <2011-05-12 16:46:42 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -176,7 +176,7 @@ champsRefEspeces.f <- function(site, ordered=FALSE, tableMetrique="", nextStep=N
 
     ## Champs principaux (externaliser par la suite) :
     if (is.element(tableMetrique, c("listespunit", "TableOccurrences", "unitespta")) &&
-        is.element(nextStep, c("boxplot.esp", "modele_lineaire", "freq_occurrence")))
+        is.element(nextStep, c("boxplot.esp", "modele_lineaire", "freq_occurrence", "MRT.esp")))
     {
         cPrincip <- c("code_espece", "espece")
     }else{

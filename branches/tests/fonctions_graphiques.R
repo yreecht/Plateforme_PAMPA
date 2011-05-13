@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: fonctions_graphiques.R
-### Time-stamp: <2011-04-18 16:19:46 yreecht>
+### Time-stamp: <2011-05-11 16:56:50 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -90,7 +90,8 @@ resFileGraph.f <- function(metrique, factGraph, modSel, listFact,
 
 
 ########################################################################################################################
-openDevice.f <- function(noGraph, metrique, factGraph, modSel, listFact, type="espece", typeGraph="boxplot")
+openDevice.f <- function(noGraph, metrique, factGraph, modSel, listFact, type="espece", typeGraph="boxplot",
+                         large=FALSE)
 {
     ## Purpose: Ouvrir les périphériques graphiques avec les bonnes options
     ## ----------------------------------------------------------------------
@@ -101,6 +102,7 @@ openDevice.f <- function(noGraph, metrique, factGraph, modSel, listFact, type="e
     ##            listFact : liste du (des) facteur(s) de regroupement.
     ##            type : type de données (traitement conditionnel).
     ##            typeGraph : type de graphique.
+    ##            large : pour des traitements particuliers (e.g. MRT)
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 12 août 2010, 14:54
 
@@ -127,10 +129,14 @@ openDevice.f <- function(noGraph, metrique, factGraph, modSel, listFact, type="e
                 if (getOption("P.plusieursGraphPage") && length(modSel) > 1 & # Regrouper dans une fonction de test
                     !is.element(type, c("unitobs")))                          # (mutualiser le code). [!!!]
                 {
-                    png(pngFileName, width=90*15, height=55*15, pointsize=14)
+                    png(pngFileName,
+                        width=ifelse(large, 120, 90) * 15,
+                        height=ifelse(large, 75, 55) * 15,
+                        pointsize=14)
                     par(mfrow=c(getOption("P.nrowGraph"), getOption("P.ncolGraph")))
                 }else{
-                    png(pngFileName, width=75*15, height=40*15, pointsize=14)
+                    png(pngFileName, width=ifelse(large, 100, 75) * 15,
+                        height=ifelse(large, 55, 40) * 15, pointsize=14)
                 }
             }else{}
 
@@ -143,12 +149,14 @@ openDevice.f <- function(noGraph, metrique, factGraph, modSel, listFact, type="e
                      (getOption("P.nrowGraph") * getOption("P.ncolGraph"))) == 1)
                 {
                     ## [!!!] Limiter aux cas nécessaires... (cf. plus haut).
-                    X11(width=60, height=35, pointsize=10)
+                    X11(width=ifelse(large, 80, 60),
+                        height=ifelse(large, 45, 35), pointsize=10)
                     par(mfrow=c(getOption("P.nrowGraph"), getOption("P.ncolGraph")))
                 }else{                  # Pas plusieurs graphs par page.
                 }
             }else{                      # Pas plusieurs graphs par page.
-                X11(width=50, height=20, pointsize=10)
+                X11(width=ifelse(large, 70, 50),
+                    height=ifelse(large, 30, 20), pointsize=10)
             }
         }
     }else{ ## Sorties graphiques en pdf :
@@ -168,7 +176,7 @@ openDevice.f <- function(noGraph, metrique, factGraph, modSel, listFact, type="e
             }
             ## Ouverture de fichier :
             pdf(pdfFileName, encoding="ISOLatin1", family="URWHelvetica", onefile=onefile,
-                width=20, height=12, pointsize=14)
+                width=ifelse(large, 30, 20), height=ifelse(large, 20, 12), pointsize=14)
 
             ## Si plusieurs graphiques par page :
             if (getOption("P.plusieursGraphPage") &&

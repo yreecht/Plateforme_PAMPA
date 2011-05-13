@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: modeles_lineaires_unitobs_generiques.R
-### Time-stamp: <2011-02-07 15:28:25 yreecht>
+### Time-stamp: <2011-05-12 13:47:22 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -133,8 +133,7 @@ modeleLineaireWP2.unitobs.f <- function(metrique, factAna, factAnaSel, listFact,
 
         res <- calcLM.f(loiChoisie=loiChoisie, formule=formule, metrique=metrique, Data=tmpData)
 
-        resLM <<- res
-
+        ## Écriture des résultats formatés dans un fichier :
         tryCatch(sortiesLM.f(objLM=res, formule=formule, metrique=metrique,
                              factAna=factAna, modSel=iFactGraphSel, listFact=listFact,
                              Data=tmpData, Log=Log,

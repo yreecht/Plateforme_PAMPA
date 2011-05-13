@@ -48,7 +48,7 @@ if (any(! existVar))                    # Si au moins une des variables n'est pa
         file.edit(paste(basePath, "/Exec/config.r", sep=""), title="Éditez \"config.r\" (zone éditable uniquement)")
     }else{}
 
-    stop("Configuration incorrecte : relancez la plateforme une fois la configuration effectuée.")
+    ## stop("Configuration incorrecte : relancez la plateforme une fois la configuration effectuée.")
 
 }else{}
 

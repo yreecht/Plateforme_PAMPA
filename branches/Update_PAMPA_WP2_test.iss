@@ -45,7 +45,6 @@ Source: ".\tests\img\*"; DestDir: "{app}\img"; Flags: ignoreversion
 Source: ".\tests\Doc\*"; DestDir: "{app}\Doc"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 Source: ".\tests\config.r"; DestDir: "{app}"; Flags: uninsneveruninstall onlyifdoesntexist
-Source: "tests\arbre_regression.r"; DestDir: "{app}"
 Source: "tests\barplots_occurrence.R"; DestDir: "{app}"
 Source: "tests\barplots_occurrence_unitobs.R"; DestDir: "{app}"
 Source: "tests/fonctions_graphiques.R"; DestDir: "{app}"
@@ -76,6 +75,8 @@ Source: "tests\selection_variables_interface.R"; DestDir: "{app}"
 Source: "tests\testfichier.r"; DestDir: "{app}"
 Source: "tests\view.r"; DestDir: "{app}"
 Source: "tests\nombres_SVR.R"; DestDir: "{app}"
+Source: "tests\arbres_regression_unitobs_generiques.R"; DestDir: "{app}"
+Source: "tests\arbres_regression_esp_generiques.R"; DestDir: "{app}"
 
 
 [Icons]

@@ -9,7 +9,7 @@
 ################################################################################
 
 ## ** Version **
-options(versionPAMPA = "1.0-2")
+options(versionPAMPA = "1.0-3_test")
 
 ## Réglage de l'encodage des caractères :
 options(encoding="latin1")
@@ -55,8 +55,6 @@ source("./Exec/nombres_SVR.R", encoding="latin1")          # OK
 source("./Exec/mkfilegroupe.r", encoding="latin1")         # faite
 
 source("./Exec/calcul_simple.r", encoding="latin1")        # faite
-source("./Exec/arbre_regression.r", encoding="latin1")     # faite
-
 
 source("./Exec/requetes.r", encoding="latin1")             # faite
 source("./Exec/modifinterface.r", encoding="latin1")       # faite
@@ -84,11 +82,24 @@ source("./Exec/boxplots_unitobs_generiques.R", encoding="latin1")          # OK
 source("./Exec/modeles_lineaires_interface.R", encoding="latin1")          # OK
 source("./Exec/modeles_lineaires_esp_generiques.R", encoding="latin1")     # OK
 source("./Exec/modeles_lineaires_unitobs_generiques.R", encoding="latin1") # OK
+source("./Exec/arbres_regression_unitobs_generiques.R", encoding="latin1") # En cours..
+source("./Exec/arbres_regression_esp_generiques.R", encoding="latin1")     # En cours..
 
 ##################################################
 ## Barplots sur les fréquences d'occurrence :
 source("./Exec/barplots_occurrence.R", encoding="latin1")                  # OK
 source("./Exec/barplots_occurrence_unitobs.R", encoding="latin1")          # OK
+
+
+########################################################################################################################
+## Configuration :
+
+## Initialisation des options graphiques (nouveau système) :
+if (is.null(getOption("GraphPAMPA")))
+    {
+        initialiseGraphOptions.f()
+    }
+
 
 ## On lance l'interface :
 source("./Exec/interface_fonctions.R", encoding="latin1")  # OK

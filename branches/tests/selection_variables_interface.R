@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: Selection_variables_interface.R
-### Time-stamp: <2011-03-18 15:34:08 yreecht>
+### Time-stamp: <2011-05-12 13:46:28 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -381,7 +381,7 @@ selectModalites.f <- function(factor, tableMetrique, env, nextStep, level=0)
     metrique <- tclvalue(get("MetriqueChoisie" , envir=env))
 
     ## Pour les indices de biodiversité recalculés, il faut utiliser "listespunit" et une métrique adaptée.
-    if (is.element(nextStep, c("boxplot.unitobs", "modele_lineaire.unitobs")) &&
+    if (is.element(nextStep, c("boxplot.unitobs", "modele_lineaire.unitobs", "MRT.unitobs")) &&
         tableMetrique == "TableBiodiv")
     {
         tableMetrique <- "listespunit"
@@ -443,7 +443,7 @@ verifVariables.f <- function(metrique, factGraph, factGraphSel, listFact, listFa
     }else{}
 
     ## Pour les indices de biodiversité recalculés, il faut utiliser "listespunit" et une métrique adaptée.
-    if (is.element(nextStep, c("boxplot.unitobs", "modele_lineaire.unitobs")) &&
+    if (is.element(nextStep, c("boxplot.unitobs", "modele_lineaire.unitobs", "MRT.unitobs")) &&
         tableMetrique == "TableBiodiv")
     {
         tableMetrique <- "listespunit"
@@ -494,14 +494,15 @@ verifVariables.f <- function(metrique, factGraph, factGraphSel, listFact, listFa
     }else{}
 
     ## Fréquences d'occurrence :
-    if (nextStep == "freq_occurrence" && length(listFact[unlist(listFact) != ""]) > 2)
+    if (is.element(nextStep, c("freq_occurrence", "freq_occurrence.unitobs")) &&
+        length(listFact[unlist(listFact) != ""]) > 2)
     {
         tkmessageBox(message="Utilisez 2 facteurs de regroupement au plus", icon="warning")
         return(0)
     }else{}
 
     ## Agrégé toutes espèces :
-    if (is.element(nextStep, c("boxplot.unitobs", "modele_lineaire.unitobs")))
+    if (is.element(nextStep, c("boxplot.unitobs", "modele_lineaire.unitobs", "MRT.unitobs")))
     {
         if (is.null(agregationTableParCritere.f(Data=subsetToutesTables.f(metrique=metrique,
                                                                           facteurs=facts,
@@ -529,7 +530,7 @@ verifVariables.f <- function(metrique, factGraph, factGraphSel, listFact, listFa
 
     ## ####################################################################################################
     ## Spécifique aux modèles linéaires :
-    if (is.element(nextStep, c("modele_lineaire")))
+    if (is.element(nextStep, c("modele_lineaire", "modele_lineaire.unitobs")))
     {
         data <- subsetToutesTables.f(metrique=metrique, facteurs=facts, selections=selections,
                                      tableMetrique=tableMetrique, add=NULL)
@@ -812,40 +813,54 @@ titreSelVar.f <- function(type, nextStep)
                              freq_occurrence="fréquences d'occurrences",
                              freq_occurrence.unitobs="fréquences d'occurrences",
                              boxplot.unitobs="boxplots (métrique agrégée/unité d'observation)",
-                             modele_lineaire.unitobs="modèles linéaires (métrique/unité d'observation)"),
+                             modele_lineaire.unitobs="modèles linéaires (métrique/unité d'observation)",
+                             MRT.unitobs="Arbres de régression (métrique/unité d'observation)",
+                             MRT.esp="Arbres de régression (métrique/espèce/unité d'observation)"),
                   ## Texte pour le choix métrique :
                   metrique=c(boxplot.esp="Métrique (/espèce/unité d'observation) à représenter : ",
-                             modele_lineaire="Métrique expliquée : ",
+                             modele_lineaire="Métrique expliquée (/espèce/unité d'observation) : ",
                              freq_occurrence="Métrique calculée : \"fréquence d'occurrence\"",
                              freq_occurrence.unitobs="Métrique calculée : \"fréquence d'occurrence\"",
                              boxplot.unitobs="Métrique (agrégée / unité d'observation) à représenter",
-                             modele_lineaire.unitobs="Métrique expliquée : "),
+                             modele_lineaire.unitobs="Métrique expliquée (agrégée / unité d'observation) : ",
+                             MRT.unitobs="Métrique expliquée (agrégée / unité d'observation) :",
+                             MRT.esp="Métrique expliquée (/espèce/unité d'observation) : "),
                   ## Texte pour le choix d'un facteur de séparation :
                   factSep=c(boxplot.esp="Créer un graphique par facteur...  (optionnel, 'code_espece' conseillé)" ,
                             modele_lineaire="Séparer les analyses par facteur...  (optionnel)",
-                            freq_occurrence="Séparer les graphiques/analyses par facteur...  (optionnel, 'code_espece' conseillé)",
+                            freq_occurrence="Séparer les graphiques par facteur...  (optionnel, 'code_espece' conseillé)",
                             freq_occurrence.unitobs="Sélection d'espèce(s) selon un critère...  (optionnel)",
                             boxplot.unitobs="Sélection d'espèce(s) selon un critère...  (optionnel)",
-                            modele_lineaire.unitobs="Sélection d'espèce(s) selon un critère...  (optionnel)"),
+                            modele_lineaire.unitobs="Sélection d'espèce(s) selon un critère...  (optionnel)",
+                            MRT.unitobs="Sélection d'espèce(s) selon un critère...  (optionnel)",
+                            MRT.esp="Séparer les graphiques/analyses par facteur...  (optionnel, 'code_espece' conseillé)"),
                   ## Texte pour le choix du(des) facteur(s) explicatif(s) :
                   facteurs=c(boxplot.esp="Choix du (des) facteur(s) de regroupement (sur un même graphique)" ,
                              modele_lineaire="Choix du(des) facteur(s) explicatif(s)",
                              freq_occurrence="Choix du(des) facteur(s) explicatif(s)/de regroupement",
                              freq_occurrence.unitobs="Choix du(des) facteur(s) explicatif(s)/de regroupement",
                              boxplot.unitobs="Choix du (des) facteur(s) de regroupement (sur un même graphique)",
-                             modele_lineaire.unitobs="Choix du(des) facteur(s) explicatif(s)"),
+                             modele_lineaire.unitobs="Choix du(des) facteur(s) explicatif(s)",
+                             MRT.unitobs="Choix du(des) facteur(s) explicatif(s) (l'ordre n'a pas d'influence)",
+                             MRT.esp="Choix du(des) facteur(s) explicatif(s) (l'ordre n'a pas d'influence)"),
+                  ## Niveau d'agrégation pour table / espèce :
                   tabListesp=c(boxplot.esp=".../ unité d'observation / espèce" ,
                                modele_lineaire=".../ unité d'observation / espèce",
                                freq_occurrence=".../ unité d'observation / espèce",
                                freq_occurrence.unitobs=".../ unité d'observation",
                                boxplot.unitobs=".../ unité d'observation",
-                               modele_lineaire.unitobs=".../ unité d'observation"),
-                  tabListespCT=c(boxplot.esp=".../ unité d'observation / espèce / classes de taille" ,
+                               modele_lineaire.unitobs=".../ unité d'observation",
+                               MRT.unitobs=".../ unité d'observation",
+                               MRT.esp=".../ unité d'observation / espèce"),
+                  ## Niveau d'agrégation pour table / classe de taille :
+                  tabListespCT=c(boxplot.esp=".../ unité d'observation / espèce / classes de taille",
                                  modele_lineaire=".../ unité d'observation / espèce / classes de taille",
                                  freq_occurrence=".../ unité d'observation / espèce / classes de taille",
                                  freq_occurrence.unitobs=".../ unité d'observation / classes de taille",
                                  boxplot.unitobs=".../ unité d'observation / classes de taille",
-                                 modele_lineaire.unitobs=".../ unité d'observation / classes de taille")
+                                 modele_lineaire.unitobs=".../ unité d'observation / classes de taille",
+                                 MRT.unitobs=".../ unité d'observation / classes de taille",
+                                 MRT.esp=".../ unité d'observation / espèce / classes de taille")
                   ## =c(boxplot= , modele_lineaire=),
                   )
 
@@ -862,7 +877,10 @@ selectionVariables.f <- function(nextStep)
     ##            statistique,...)
     ## ----------------------------------------------------------------------
     ## Arguments: nextStep : étape suivante (chaîne de caractères parmi
-    ##                       "boxplot.esp", "modele_lineaire",...
+    ##                       "boxplot.esp", "modele_lineaire",
+    ##                       "freq_occurrence", "freq_occurrence.unitobs",
+    ##                       "boxplot.unitobs", "modele_lineaire.unitobs",
+    ##                       "MRT.unitobs", "MRT.esp",...
     ##                       [appelé à s'étoffer])
     ## Note : les arguments de cette fonction peuvent changer à l'avenir
     ##        (ajouts)
@@ -880,16 +898,18 @@ selectionVariables.f <- function(nextStep)
     nextStepMetriqueFixe <- c("freq_occurrence", "freq_occurrence.unitobs")
 
     ## Étapes "graphiques" (besoin d'options graphiques) :
-    nextStepGraph <- c("boxplot.esp", "freq_occurrence", "boxplot.unitobs", "freq_occurrence.unitobs")
+    nextStepGraph <- c("boxplot.esp", "freq_occurrence", "boxplot.unitobs", "freq_occurrence.unitobs",
+                       "MRT.unitobs", "MRT.esp")
 
-    ## Étapes sans classes de taille :
+    ## Étapes sans possibilité d'agrégation par classes de taille :
     nextStepSansCT <- c("")
 
     ## Étapes avec agrégation par unitobs :
-    nextStepUnitobs <- c("boxplot.unitobs", "modele_lineaire.unitobs", "freq_occurrence", "freq_occurrence.unitobs")
+    nextStepUnitobs <- c("boxplot.unitobs", "modele_lineaire.unitobs", "freq_occurrence", "freq_occurrence.unitobs",
+                         "MRT.unitobs")
 
-    ## Étapes avec biodiversité :
-    nextStepBiodiv <- c("boxplot.unitobs", "modele_lineaire.unitobs")
+    ## Étapes avec biodiversité (généralement pour les métriques agrégées par unité d'observation) :
+    nextStepBiodiv <- c("boxplot.unitobs", "modele_lineaire.unitobs", "MRT.unitobs")
 
     ## Le même traitement des variables peut être appliqué pour différents "nextStep" :
     casStep <- c("modele_lineaire"="modele_lineaire",
@@ -897,7 +917,9 @@ selectionVariables.f <- function(nextStep)
                  "freq_occurrence"="freq_occurrence",
                  "freq_occurrence.unitobs"="freq_occurrence.unitobs",
                  "boxplot.unitobs"="boxplot.unitobs",
-                 "modele_lineaire.unitobs"="modele_lineaire.unitobs")
+                 "modele_lineaire.unitobs"="modele_lineaire.unitobs",
+                 "MRT.unitobs"="MRT.unitobs",
+                 "MRT.esp"="MRT.esp")
 
     ## Liste des métriques :
     metriques <- champsMetriques.f("listespunit", nextStep)
@@ -905,7 +927,7 @@ selectionVariables.f <- function(nextStep)
     TableMetrique <- tclVar("listespunit")  # Table des métriques.
     MetriqueChoisie <- tclVar("")           # Métrique choisie
 
-    FacteurGraph <- tclVar("")              # Facteur de séparation des graphiques
+    FacteurGraph <- tclVar("")              # Facteur de séparation des graphiques/sélection d'espèces.
     FacteurGraph.old <- ""                  # Stockage de l'encien facteur (pour réinitialiser les modalités
                                         # sélectionnées si besoin).
     FactGraphTbl <- tclVar("refesp")        # Table (ref espèce ou unitobs) à laquel il appartient
@@ -1015,8 +1037,7 @@ selectionVariables.f <- function(nextStep)
     {
         ## Choix de la métrique :
 
-        if (!is.benthos.f() && !is.element(nextStep, nextStepSansCT)) # Table pas pertinente pour benthos + pas
-                                        # implémenté pour l'instant pour les métriques aggrégées par unitobs.
+        if (!is.benthos.f() && !is.element(nextStep, nextStepSansCT)) # Table pas pertinente pour benthos
         {
             tkgrid(RB.unitespta, sticky="w")
             if (nrow(unitespta) == 0)           # désactivation si pas de classe de taille dispo.
@@ -1141,6 +1162,20 @@ selectionVariables.f <- function(nextStep)
                                                     listFact=sapply(listFacteurs, tclvalue), listFactSel=listFactSel,
                                                     tableMetrique=tclvalue(TableMetrique))
                    },
+                   MRT.unitobs={
+                       WP2MRT.unitobs.f(metrique=tclvalue(MetriqueChoisie),
+                                        factGraph=tclvalue(FacteurGraph), factGraphSel=factGraphSel,
+                                        listFact=sapply(listFacteurs, tclvalue), listFactSel=listFactSel,
+                                        tableMetrique=tclvalue(TableMetrique))
+                   },
+                   MRT.esp={
+
+                       ## tkmessageBox(message="BoxPlots")
+                       WP2MRT.esp.f(metrique=tclvalue(MetriqueChoisie),
+                                    factGraph=tclvalue(FacteurGraph), factGraphSel=factGraphSel,
+                                    listFact=sapply(listFacteurs, tclvalue), listFactSel=listFactSel,
+                                    tableMetrique=tclvalue(TableMetrique))
+                   },
                    tkmessageBox(message=paste("Aucune action (option '", nextStep, "' pas implémentée).", sep=""),
                                 icon="warning"))
 
@@ -1155,15 +1190,6 @@ selectionVariables.f <- function(nextStep)
 
     tkdestroy(WinSelection)             # destruction de la fenêtre.
 }
-
-########################################################################################################################
-## Configuration (à bouger après réorganisation) :
-
-## Initialisation des options graphiques (nouveau système) :
-if (is.null(getOption("GraphPAMPA")))
-    {
-        initialiseGraphOptions.f()
-    }
 
 
 

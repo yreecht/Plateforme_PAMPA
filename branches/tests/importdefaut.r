@@ -272,11 +272,11 @@ opendefault.f <- function ()
                                         # mais est-ce bien nécessaire ? [yr: 23/08/2010]
     unitobs$caracteristique_1[is.na(unitobs$caracteristique_1)] <- "NA" # [!!!] Erreur !
 
-    ## ## Réorganisation des niveaux du facteur "statut_protection" pour avoir les bonnes couleurs dans les graphiques :
-    ## if (all(is.element(levels(unitobs$statut_protection), c("RE", "PP", "HR"))))
-    ## {
-    ##     levels(unitobs$statut_protection) <- sort(levels(unitobs$statut_protection), decreasing=TRUE)
-    ## }else{}
+    ## Si les unités d'observation sont ne sont pas des facteurs :
+    if (!is.factor(unitobs$unite_observation))
+    {
+        unitobs$unite_observation <- factor(as.character(unitobs$unite_observation))
+    }
 
     ## Si caracteristique_2 est au format année de campagne, renommer la colonne :
     if (is.temporal.f("caracteristique_2", unitobs))
@@ -320,7 +320,7 @@ opendefault.f <- function ()
 
     obs <- read.table(fileNameObs, sep="\t", dec=".", header=TRUE, encoding="latin1")
 
-    if (unique(unitobs$type) != "SVR")
+    if (unique(unitobs$type)[1] != "SVR")
     {
         colnames(obs) <- c("unite_observation", "secteur", "code_espece", "sexe", "taille", "classe_taille", "poids",
                            "nombre", "dmin", "dmax")
@@ -370,8 +370,12 @@ opendefault.f <- function ()
     ## nombre : numeric -> factor (nécessaire pour une bonne prise en compte dans les analyses stat) :
     obs$nombre <- as.integer(obs$nombre)
 
-    ## if (is.na(unique(obs$unite_observation[-unique(unitobs$unite_observation)]))==FALSE) # [!!!]
-                                        # cause erreur + complètement tordu
+    ## Si les unités d'observation sont ne sont pas des facteurs :
+    if (!is.factor(obs$unite_observation))
+    {
+        obs$unite_observation <- factor(as.character(obs$unite_observation))
+    }
+
     if (!all(is.element(obs$unite_observation, unitobs$unite_observation))) # Ça devrait être mieux
                                         # comme ça !
     {
@@ -399,26 +403,15 @@ opendefault.f <- function ()
     stepInnerProgressBar.f(n=1, msg="Plan d'échantillonnage")
 
     ## ############# Récapitulatif du plan d'échantillonnage ############# # [!!!] : revoir tout ça !
-    if (NA %in% unique(unitobs$site) == FALSE) # [!!!]
-    {
-        PlanEchantillonnage <- with(unitobs, table(an, caracteristique_1, biotope, statut_protection, exclude = NA))
-    }else{
-        if (NA %in% unique(unitobs$biotope) == FALSE) # [!!!]
-        {
-            PlanEchantillonnage <- with(unitobs, table(an, habitat3, statut_protection, exclude = NA))
-        }else{
-            PlanEchantillonnage <- with(unitobs, table(an, site, statut_protection, exclude = NA))
-        }
-    }
+    PlanEchantillonnage <- with(dropLevels.f(unitobs[is.element(unitobs$unite_observation,
+                                                                levels(obs$unite_observation)), ]),
+                                table(an, statut_protection, exclude = NA))
 
-    PlanEchantillonnage <- with(unitobs, table(an, type, exclude = NA)) # [!!!] Et ça sert à quoi ce qu'il y a juste
-                                        # avant ?
-    ## A l'ajout de avant_apres, table de sortie vide ! trop de parametres ?
-    ## PlanEchantillonnage = with(unitobs, table(an, type, site, biotope, statut_protection, avant_apres, exclude = NA))
-    recap <- as.data.frame(PlanEchantillonnage)
-    write.csv(recap, file=paste(NomDossierTravail, "PlanEchantillonnage.csv", sep=""), row.names=FALSE)
+    attr(PlanEchantillonnage, "class") <- "array" # Pour un affichage en "tableau".
 
-    ## rm(PlanEchantillonnage)
+    write.csv(PlanEchantillonnage,
+              file=paste(NomDossierTravail, "PlanEchantillonnage_basique.csv", sep=""), row.names=TRUE)
+
 
     ## ################
     assign("obs", obs, envir=.GlobalEnv)
@@ -432,7 +425,7 @@ opendefault.f <- function ()
 
     stepInnerProgressBar.f(n=1, msg="Table de contingence")
 
-    if (unique(unitobs$type) != "SVR")
+    if (unique(unitobs$type)[1] != "SVR")
     {
         obsSansCatBenth <- obs
         obsSansCatBenth$Genre <- especes$Genre[match(obsSansCatBenth$code_espece, especes$code_espece)]
@@ -453,9 +446,12 @@ opendefault.f <- function ()
     }else{
         contingenceSVRt <- tapply(obs$nombre,
                                   list(obs$unite_observation, obs$rotation, obs$code_espece), na.rm=TRUE, mean)
+
         contingenceSVRt[is.na(contingenceSVRt)] <- 0
+
         contingenceSVR <- as.data.frame(matrix(NA, dim(contingenceSVRt)[1] * dim(contingenceSVRt)[2] *
                                                dim(contingenceSVRt)[3], 4))
+
         colnames(contingenceSVR) = c("unitobs", "rotation", "code_espece", "abondance")
         contingenceSVR$abondance <- as.vector(contingenceSVRt)
         contingenceSVR$unitobs <- rep(dimnames(contingenceSVRt)[[1]],
@@ -515,8 +511,10 @@ opendefault.f <- function ()
                      icon="warning", type="ok")
 
         message("Choix du type de jeux de données activé")
+        ## browser()
 
-        ChoixFacteurSelect.f(unitobs$type, "type", "single", 1, "selectType")
+        while (is.null(selectType <- ChoixFacteurSelect.f(unitobs$type, "type", "single", 1)))
+        {}
 
         message("Choix du type de jeux de données activé, sélection sur :")
         message(selectType)

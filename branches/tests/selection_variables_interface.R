@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: Selection_variables_interface.R
-### Time-stamp: <2011-05-12 13:46:28 yreecht>
+### Time-stamp: <2011-05-25 15:19:07 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -112,7 +112,7 @@ choixOptionsGraphiques.f <- function()
     FrameBT <- tkframe(WinOpt)
     B.OK <- tkbutton(FrameBT, text="  OK  ",
                      command=function(){tclvalue(Done) <- 1})
-    B.Cancel <- tkbutton(FrameBT, text=" Cancel ",
+    B.Cancel <- tkbutton(FrameBT, text=" Annuler ",
                          command=function(){tclvalue(Done) <- 2})
     B.Reinit <- tkbutton(FrameBT, text=" Réinitialiser ",
                          command=function()
@@ -278,7 +278,7 @@ selectModWindow.f <- function(champ, data, selectmode="multiple", sort=TRUE, pre
                     ## assign("tmptk", tkcurselection(LB), envir=.GlobalEnv)
                     tkdestroy(winfac)
                 })
-    B.Cancel <- tkbutton(FrameB, text=" Cancel ", command=function()
+    B.Cancel <- tkbutton(FrameB, text=" Annuler ", command=function()
                      {
                          assign("selection", NULL, parent.env(environment()))
                          tkdestroy(winfac)
@@ -412,7 +412,8 @@ selectModalites.f <- function(factor, tableMetrique, env, nextStep, level=0)
 
 
 ########################################################################################################################
-verifVariables.f <- function(metrique, factGraph, factGraphSel, listFact, listFactSel, tableMetrique, nextStep)
+verifVariables.f <- function(metrique, factGraph, factGraphSel, listFact, listFactSel, tableMetrique, nextStep,
+                             ParentWin=NULL)
 {
     ## Purpose: Vérification du choix des métrique et facteur(s) et retourne
     ##          un statut (éventuellement accompagné d'un avertissement)
@@ -425,6 +426,7 @@ verifVariables.f <- function(metrique, factGraph, factGraphSel, listFact, listFa
     ##                          dernier(s)
     ##            tableMetrique : nom de la table des métriques.
     ##            nextStep : nom de l'étape suivante.
+    ##            ParentWin : Fenêtre parente.
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date:  6 août 2010, 15:07
 
@@ -435,11 +437,14 @@ verifVariables.f <- function(metrique, factGraph, factGraphSel, listFact, listFa
     selections <- c(list(factGraphSel), listFactSel) # listes des leurs modalités sélectionnées.
     selections <- selections[idxFacts]               #
 
+    return.val <- 2
+
     ## Métrique pas sélectionnée :
     if (metrique == "")
     {
-        tkmessageBox(message="Vous devez sélectionner une métrique", icon="warning")
-        return(0)
+        infoLoading.f(msg="Vous devez sélectionner une métrique", icon="error", titleType="check")
+
+        return.val <- 0
     }else{}
 
     ## Pour les indices de biodiversité recalculés, il faut utiliser "listespunit" et une métrique adaptée.
@@ -455,18 +460,22 @@ verifVariables.f <- function(metrique, factGraph, factGraphSel, listFact, listFa
     if (length(facts) > length(unique(facts)))
     {
         n <- length(facts) - length(unique(facts))
-        tkmessageBox(message=paste("Il y a ",
-                     ifelse(n == 1, "un", "des"), " facteur", ifelse(n == 1, "", "s"),
-                     " dupliqué", ifelse(n == 1, "", "s"), sep=""),
-                     icon="warning")
-        return(0)
+
+        infoLoading.f(msg=paste("Il y a ",
+                                ifelse(n == 1, "un", "des"),
+                                " facteur",
+                                ifelse(n == 1, "", "s"),
+                                " dupliqué", ifelse(n == 1, "", "s"), sep=""),
+                      icon="error", titleType="check")
+
+        return.val <- 0
     }else{}
 
     ## Pas de facteur de regroupement sélectionné :
     if (length(listFact[unlist(listFact) != ""]) == 0)
     {
-        tkmessageBox(message="pas de facteur de regroupement sélectionné !", icon="warning")
-        return(0)
+        infoLoading.f(msg="pas de facteur de regroupement sélectionné !", icon="error", titleType="check")
+        return.val <- 0
     }else{}
 
     ## Champs vides :
@@ -476,33 +485,48 @@ verifVariables.f <- function(metrique, factGraph, factGraphSel, listFact, listFa
 
     if (sum(champsVide) > 0)
     {
-        tkmessageBox(message=paste("Champ '",
-                     sapply(which(champsVide),
-                            function(i){varNames[names(champsVide)[i], "nom"]}),
-                     "' vide", sep="", collapse="\n"),
-                     icon="warning")
-        return(0)
+        infoLoading.f(msg=paste("Champ '",
+                                sapply(which(champsVide),
+                                       function(i){varNames[names(champsVide)[i], "nom"]}),
+                                "' vide", sep="", collapse="\n"),
+                      icon="error", titleType="check")
+        return.val <- 0
     }else{}
 
     ## Métrique par classe de taille mais facteur "classe_taille" pas retenu :
     if (tableMetrique == "unitespta" & !is.element("classe_taille", facts))
     {
-        tkmessageBox(message=paste("Attention : représentation d'une métrique par classes de taille\n",
-                                   "mais 'classe_taille' n'est pas utilisée comme facteur"),
-                     icon="warning")
-        return(1)
+        infoLoading.f(msg=paste("Attention : représentation d'une métrique par classes de taille\n",
+                                "mais 'classe_taille' n'est pas utilisée comme facteur"),
+                      icon="warning", titleType="check")
+
+        return.val <- ifelse(return.val, 1, 0)
     }else{}
 
-    ## Fréquences d'occurrence :
+    ## Métrique par espèce mais facteur 'espece' ou 'code_espece' non retenu :
+    if (is.element(nextStep, c("boxplot.esp", "modele_lineaire",
+                               "freq_occurrence", "MRT.esp")) &
+        !any(is.element(c("espece", "code_espece"), facts)))
+    {
+        infoLoading.f(msg=paste("Attention : représentation d'une métrique par espèce\n",
+                                "mais 'espece' ou 'code_espece' n'est pas utilisé comme facteur"),
+                      icon="warning", titleType="check")
+
+        return.val <- ifelse(return.val, 1, 0)
+    }else{}
+
+
+    ## Fréquences d'occurrence... pas plus de deux facteurs de regroupement :
     if (is.element(nextStep, c("freq_occurrence", "freq_occurrence.unitobs")) &&
         length(listFact[unlist(listFact) != ""]) > 2)
     {
-        tkmessageBox(message="Utilisez 2 facteurs de regroupement au plus", icon="warning")
-        return(0)
+        infoLoading.f(msg="Utilisez 2 facteurs de regroupement au plus", icon="error", titleType="check")
+        return.val <- 0
     }else{}
 
-    ## Agrégé toutes espèces :
-    if (is.element(nextStep, c("boxplot.unitobs", "modele_lineaire.unitobs", "MRT.unitobs")))
+    ## Agrégé toutes espèces... vérification de la pertinence des facteurs :
+    if (is.element(nextStep, c("boxplot.unitobs", "modele_lineaire.unitobs", "MRT.unitobs")) &&
+        return.val)                     # Inutile si déjà des erreurs (risque de plantage).
     {
         if (is.null(agregationTableParCritere.f(Data=subsetToutesTables.f(metrique=metrique,
                                                                           facteurs=facts,
@@ -519,12 +543,12 @@ verifVariables.f <- function(metrique, factGraph, factGraphSel, listFact, listFa
                                                          },
                                                 listFact=listFact[unlist(listFact) != ""])))
         {
-            tkmessageBox(message=paste("Un des facteurs de regroupement est une sous-catégorie",
+            infoLoading.f(msg=paste("Un des facteurs de regroupement est une sous-catégorie",
+                                    "\nd'un des facteurs d'agrégation (e.g. espèce -> Famille).",
+                                    "\n\nLes données ne peuvent être agrégées !", sep=""),
+                          icon="error")
 
-                         "\nd'un des facteurs d'agrégation (e.g. espèce -> Famille).",
-                                       "\n\nLes données ne peuvent être agrégées !", sep=""),
-                     icon="warning")
-            return(0)
+            return.val <- 0
         }else{}
     }
 
@@ -545,35 +569,49 @@ verifVariables.f <- function(metrique, factGraph, factGraphSel, listFact, listFa
                                                                                                c(metrique, factGraph)), drop=FALSE],
                                                                            function(x)length(unique(x))) == 1]
 
-            tkmessageBox(message=paste("Il n'y a qu'une seule modalité dans le(s) facteur(s) : \n\t- '",
-                                       paste(fact1level, collapse="'\n\t- '"),
-                                   "'\nAnalyse impossible !", sep=""),
-                     icon="warning")
-            return(0)
+            infoLoading.f(msg=paste("Il n'y a qu'une seule modalité dans le(s) facteur(s) : \n\t- '",
+                                    paste(fact1level, collapse="'\n\t- '"),
+                                    "'\nAnalyse impossible !", sep=""),
+                          icon="error")
+
+            return.val <- 0
         }else{}
 
         ## Bloquer les analyses à plus de 3 facteurs :
         if (length(listFact[unlist(listFact) != ""]) > 3)
         {
-            tkmessageBox(message=paste("Vous avez sélectionné trop de facteurs de regroupement : ",
-                                       "\nLes résultats seraient inexploitables !",
-                                       "\n\nVeuillez sélectionner *au plus* trois facteurs de regroupement",
-                                       sep=""),
-                     icon="error")
-            return(0)
+            infoLoading.f(msg==paste("Vous avez sélectionné trop de facteurs de regroupement : ",
+                                     "\nLes résultats seraient inexploitables !",
+                                     "\n\nVeuillez sélectionner *au plus* trois facteurs de regroupement",
+                                     sep=""),
+                          icon="error")
+
+            return.val <- 0
         }else{
             if (length(listFact[unlist(listFact) != ""]) >= 3) # On garde la possibilité d'augmenter le seuil de refus
                                         # des analyses, ci-dessus, sans modifier celui-ci.
             {
-                tkmessageBox(message=paste("Attention :",
-                                           "\n\nÀ partir de trois facteurs de regroupement, les résultats deviennent ",
-                                           "\ndifficiles à interpréter. Préférez des analyses à un ou deux facteur(s).",
-                                           sep=""),
-                     icon="warning")
-                return(1)
+                infoLoading.f(msg=paste("Attention :",
+                                        "\n\nÀ partir de trois facteurs de regroupement, les résultats deviennent ",
+                                        "\ndifficiles à interpréter. Préférez des analyses à un ou deux facteur(s).",
+                                        sep=""),
+                              icon="warning")
+
+                return.val <- ifelse(return.val, 1, 0)
             }else{}
         }
     }else{}
+
+    if (return.val < 2)                 # erreur ou warning...
+    {
+        ## Bouton OK + attente de confirmation.
+        infoLoading.f(button = TRUE,
+                      WinRaise=ParentWin)
+
+        return(return.val)
+    }else{                              # ...sinon :
+        return(1)                       # tout est OK.
+    }
 }
 
 
@@ -590,7 +628,10 @@ updateMetrique.f <- function(nomTable, env)
     ## Author: Yves Reecht, Date: 11 août 2010, 17:15
 
     ## Facteurs de regroupements :
-    listFacteurs <- get("listFacteurs", envir=env)
+    if (exists("listFacteurs", envir=env, inherits=FALSE))
+    {
+        listFacteurs <- get("listFacteurs", envir=env)
+    }else{}
 
     ## Traitements spécifiques au choix d'une table de métrique.
     switch(nomTable,
@@ -600,9 +641,9 @@ updateMetrique.f <- function(nomTable, env)
                evalq(tkconfigure(CB.metrique, value=champsMetriques.f("listespunit", nextStep)), envir=env)
                evalq(if (!is.element(tclvalue(MetriqueChoisie), champsMetriques.f("listespunit", nextStep)))
                  {
-                     tclvalue(MetriqueChoisie) <- "" # réinitialisation
-                     tkconfigure(RB.factGraphRefesp, state="normal") # réactivation du référentiel
-                                        # espèces.
+                     tclvalue(MetriqueChoisie) <- ""                           # réinitialisation
+                     tryCatch(tkconfigure(RB.factGraphRefesp, state="normal"), # réactivation du référentiel
+                              error=function(e){return(NULL)})                 # espèces... si possible !
                  }, envir=env)
 
            },
@@ -611,9 +652,9 @@ updateMetrique.f <- function(nomTable, env)
                evalq(tkconfigure(CB.metrique, value=champsMetriques.f("unitespta", nextStep)), envir=env)
                evalq(if (!is.element(tclvalue(MetriqueChoisie), champsMetriques.f("unitespta", nextStep)))
                  {
-                     tclvalue(MetriqueChoisie) <- "" # réinitialisation
-                     tkconfigure(RB.factGraphRefesp, state="normal") # réactivation du référentiel
-                                        # espèces.
+                     tclvalue(MetriqueChoisie) <- ""                           # réinitialisation
+                     tryCatch(tkconfigure(RB.factGraphRefesp, state="normal"), # réactivation du référentiel
+                              error=function(e){return(NULL)})                 # espèces... si possible !
                  }, envir=env)
            },
            ## Si table TabbleBiodiv (indices de biodiversité) :
@@ -627,8 +668,9 @@ updateMetrique.f <- function(nomTable, env)
                if (is.element(evalq(nextStep, envir=env), c("boxplot.esp", "modele_lineaire")))
                {                        # ... si l'on travaille uniquement sur *toutes les espèces* !
                    evalq(tclvalue(FactGraphTbl) <- "unitobs", envir=env)
-                   evalq(tkconfigure(RB.factGraphRefesp, state="disabled"), envir=env) # désactivation du référentiel
-                                        # espèces.
+                   tryCatch(evalq(tkconfigure(RB.factGraphRefesp, state="disabled"), envir=env), # désactivation du
+                                        # référentiel espèces
+                            error=function(e){return(NULL)})                 # ... si possible !
                }else{}                  #Rien !
 
            },
@@ -637,24 +679,27 @@ updateMetrique.f <- function(nomTable, env)
            evalq(tkconfigure(CB.metrique, value=""), envir=env)
            )
 
-    ## Traitements communs :
-    evalq(updateFactGraph.f(nomTable=tclvalue(FactGraphTbl), env=env), envir=env) # mise à jour de la
+    if (exists("listFacteurs", envir=env, inherits=FALSE))
+    {
+        ## Traitements communs :
+        evalq(updateFactGraph.f(nomTable=tclvalue(FactGraphTbl), env=env), envir=env) # mise à jour de la
                                         # combobox de choix du facteur de séparation des graphiques.
 
-    ## Mise à jour des facteurs de regroupements pertinents :
-    eval(parse(text=
-               eval(substitute(paste("tkconfigure(CB.fact", level,
-                                     ", value=champsReferentiels.f(nomTable=tclvalue(TableMetrique),",
-                                     " nextStep=nextStep))", sep=""),
-                               list(level=1:length(listFacteurs))))), envir=env)
+        ## Mise à jour des facteurs de regroupements pertinents :
+        eval(parse(text=
+                   eval(substitute(paste("tkconfigure(CB.fact", level,
+                                         ", value=champsReferentiels.f(nomTable=tclvalue(TableMetrique),",
+                                         " nextStep=nextStep))", sep=""),
+                                   list(level=1:length(listFacteurs))))), envir=env)
 
-    eval(parse(text=
-               eval(substitute(paste("if (!is.element(tclvalue(listFacteurs[[", level,
-                                     "]]), champsReferentiels.f(nomTable=tclvalue(TableMetrique),",
-                                     " nextStep=nextStep)))",
-                                     "{ tclvalue(listFacteurs[[", level, "]]) <- '' ; ",
-                                     "updateFact.f(level=", level,", env=env)}", sep=""),
-                               list(level=1:length(listFacteurs))))), envir=env)
+        eval(parse(text=
+                   eval(substitute(paste("if (!is.element(tclvalue(listFacteurs[[", level,
+                                         "]]), champsReferentiels.f(nomTable=tclvalue(TableMetrique),",
+                                         " nextStep=nextStep)))",
+                                         "{ tclvalue(listFacteurs[[", level, "]]) <- '' ; ",
+                                         "updateFact.f(level=", level,", env=env)}", sep=""),
+                                   list(level=1:length(listFacteurs))))), envir=env)
+    }else{}
 }
 
 
@@ -817,14 +862,14 @@ titreSelVar.f <- function(type, nextStep)
                              MRT.unitobs="Arbres de régression (métrique/unité d'observation)",
                              MRT.esp="Arbres de régression (métrique/espèce/unité d'observation)"),
                   ## Texte pour le choix métrique :
-                  metrique=c(boxplot.esp="Métrique (/espèce/unité d'observation) à représenter : ",
-                             modele_lineaire="Métrique expliquée (/espèce/unité d'observation) : ",
-                             freq_occurrence="Métrique calculée : \"fréquence d'occurrence\"",
-                             freq_occurrence.unitobs="Métrique calculée : \"fréquence d'occurrence\"",
-                             boxplot.unitobs="Métrique (agrégée / unité d'observation) à représenter",
-                             modele_lineaire.unitobs="Métrique expliquée (agrégée / unité d'observation) : ",
-                             MRT.unitobs="Métrique expliquée (agrégée / unité d'observation) :",
-                             MRT.esp="Métrique expliquée (/espèce/unité d'observation) : "),
+                  metrique=c(boxplot.esp="Métrique à représenter : ",
+                             modele_lineaire="Métrique expliquée : ",
+                             freq_occurrence="Métrique calculée : \"fréquence d'occurrence\" (/espèce ; sur unités d'observations)",
+                             freq_occurrence.unitobs="Métrique calculée : \"fréquence d'occurrence\" (/groupe d'espèce ; sur unités d'observations)",
+                             boxplot.unitobs="Métrique à représenter",
+                             modele_lineaire.unitobs="Métrique expliquée : ",
+                             MRT.unitobs="Métrique expliquée :",
+                             MRT.esp="Métrique expliquée : "),
                   ## Texte pour le choix d'un facteur de séparation :
                   factSep=c(boxplot.esp="Créer un graphique par facteur...  (optionnel, 'code_espece' conseillé)" ,
                             modele_lineaire="Séparer les analyses par facteur...  (optionnel)",
@@ -925,7 +970,7 @@ selectionVariables.f <- function(nextStep)
     metriques <- champsMetriques.f("listespunit", nextStep)
 
     TableMetrique <- tclVar("listespunit")  # Table des métriques.
-    MetriqueChoisie <- tclVar("")           # Métrique choisie
+    MetriqueChoisie <- tclVar("")           # Métrique choisieb
 
     FacteurGraph <- tclVar("")              # Facteur de séparation des graphiques/sélection d'espèces.
     FacteurGraph.old <- ""                  # Stockage de l'encien facteur (pour réinitialiser les modalités
@@ -1031,7 +1076,7 @@ selectionVariables.f <- function(nextStep)
     ## Positionnement des éléments :
 
     tkgrid(tklabel(WinSelection, text=" "))
-    tkgrid(tklabel(FrameMetrique, text=titreSelVar.f(type="metrique", nextStep)), sticky="we")
+    tkgrid(tklabel(FrameMetrique, text=titreSelVar.f(type="metrique", nextStep)), sticky="w")
 
     if (! is.element(nextStep, nextStepMetriqueFixe)) # Uniquement si choix de métrique possible.
     {
@@ -1049,7 +1094,8 @@ selectionVariables.f <- function(nextStep)
 
         if (is.element(nextStep, c(nextStepBiodiv)))
         {
-            tkgrid(RB.listespunit, sticky="w")
+            tkgrid(RB.listespunit
+                   , sticky="w")
             tkgrid(RB.TableBiodiv, CB.metrique, tklabel(FrameMetrique, text=" \n"), sticky="w")
         }else{
             tkgrid(RB.listespunit, CB.metrique, tklabel(FrameMetrique, text=" \n"), sticky="w")
@@ -1119,7 +1165,8 @@ selectionVariables.f <- function(nextStep)
                                                factGraph=tclvalue(FacteurGraph), factGraphSel=factGraphSel,
                                                listFact=sapply(listFacteurs, tclvalue), listFactSel=listFactSel,
                                                tableMetrique=tclvalue(TableMetrique),
-                                               nextStep=nextStep)
+                                               nextStep=nextStep,
+                                               ParentWin=WinSelection)
 
             if (tclvalue(Done) != "1") {next()} # traitement en fonction du statut : itération
                                         # suivante si les variables ne sont pas bonnes.

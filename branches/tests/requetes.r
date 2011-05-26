@@ -2,12 +2,14 @@
 ## Nom     : critereespref.f
 ## Objet   : choix d'un Facteur dans le référentiel espèce par l'utilisateur
 ## Input   : especes
-## Output  : champs sélectionné
+## Output  : champ sélectionné
 ################################################################################
 
 critereespref.f <- function ()
 {
     runLog.f(msg=c("Choix d'un Facteur dans le référentiel espèces :"))
+
+    Done <- tclVar("0")                 # Variable de statut d'exécussion.
 
     aa <- tktoplevel()
     tkwm.title(aa, "Selection du facteur du référentiel des espèces")
@@ -51,33 +53,55 @@ critereespref.f <- function ()
         tkinsert(tl, "end", facts[i])
     }
 
-    OnOK <- function ()
-    {
-        factesp <- facts[as.numeric(tkcurselection(tl))+1]
-        assign("factesp", factesp, envir=.GlobalEnv)
-        tkdestroy(aa)
-    }
+    ## Frame pour les boutons :
+    F.button <- tkframe(aa)
 
-    OK.but <- tkbutton(aa, text="OK", command=OnOK)
+    ## Bouton OK :
+    B.OK <- tkbutton(F.button, text="  OK  ",
+                       command=function()
+                   {
+                       assign("factesp",
+                              facts[as.numeric(tkcurselection(tl))+1],
+                              parent.env(environment()))
 
-    tkgrid(OK.but, pady=5)
+                       tclvalue(Done) <- 1
+                   })
+
+    ## Bouton d'annulation :
+    B.Cancel <- tkbutton(F.button, text=" Annuler ",
+                         command=function(){tclvalue(Done) <- 2})
+
+    tkgrid(B.OK, tklabel(F.button, text="\t"), B.Cancel, padx=10)
+    tkgrid(F.button, pady=5, ## sticky="we",
+           columnspan=2)
+
+    tkbind(aa, "<Destroy>", function(){tclvalue(Done) <- 2})
 
     winSmartPlace.f(aa)
     tkfocus(tl)
 
-    tkwait.window(aa)
+    ## Attente d'une action de l'utilisateur :
+    tkwait.variable(Done)
 
-    ## [!!!] [inc] On peut faire mieux, notamment pour les annulations.
+    ## On retourne la sélection :
+    if (tclvalue(Done) == 1)
+    {
+        tkdestroy(aa)
+        return(factesp)
+    }else{
+        tkdestroy(aa)
+        return(NULL)
+    }
 } # fin critereespref.f
 
 ################################################################################
 ## Nom     : ChoixFacteurSelect.f
 ## Objet   : choix d'un Facteur de sélection par l'utilisateur
-## Input   : table, nom de table, nom de champs, un nombre de sélection ("single" ou "multiple"
-## Output  : valeur(s) du champs sélectionné
+## Input   : table, nom de table, nom de champ, un nombre de sélection ("single" ou "multiple"
+## Output  : valeur(s) du champ sélectionné
 ################################################################################
 
-ChoixFacteurSelect.f <- function (tableselect, monchamp, Nbselectmax, ordre, mavar)
+ChoixFacteurSelect.f <- function (tableselect, monchamp, Nbselectmax, ordre)
 {
     winfac <- tktoplevel(width = 80)
     tkwm.title(winfac, paste("Selection des valeurs de ", monchamp, sep=""))
@@ -110,19 +134,27 @@ ChoixFacteurSelect.f <- function (tableselect, monchamp, Nbselectmax, ordre, mav
 
     OnOK <- function ()
     {
-        selectfact <- (maliste[as.numeric(tkcurselection(tl))+1])
+        assign("selectfact",
+               eval(maliste[as.numeric(tkcurselection(tl))+1], envir=parent.env(environment())),
+               envir=parent.env(environment()))
+
         tkdestroy(winfac)
-        ## return(selectfact)
-        assign(mavar, selectfact, envir=.GlobalEnv)
     }
 
     OK.but <-tkbutton(winfac, text="OK", command=OnOK)
     tkgrid(OK.but, pady=5)
 
-    tkfocus(winfac)
     winSmartPlace.f(winfac)
+    tkfocus(tl)
 
     tkwait.window(winfac)
+
+    if (exists("selectfact") && length(selectfact))
+    {
+        return(selectfact)
+    }else{
+        return(NULL)
+    }
 
     ## !améliorations possibles
     ## a utiliser si concaténation de monchamp et matable
@@ -143,6 +175,8 @@ ChoixFacteurSelect.f <- function (tableselect, monchamp, Nbselectmax, ordre, mav
 choixunfacteurUnitobs.f <- function ()
 {
     runLog.f(msg=c("Choix d'un Facteur dans le référentiel des unités d'observation :"))
+
+    Done <- tclVar("0")                 # Variable de statut d'exécussion.
 
     aa <- tktoplevel()
     tkwm.title(aa, "Selection du facteur de groupement des unites d'observation")
@@ -173,22 +207,45 @@ choixunfacteurUnitobs.f <- function ()
         tkinsert(tl, "end", facts[i])
     }
 
-    OnOK <- function ()
-    {
-        fact <- facts[as.numeric(tkcurselection(tl))+1]
-        assign("fact",
-               fact, envir=.GlobalEnv)
-        tkdestroy(aa)
-    }
+    ## Frame pour les boutons :
+    F.button <- tkframe(aa)
 
-    OK.but <-tkbutton(aa, text="OK", command=OnOK)
+    ## Bouton OK :
+    B.OK <- tkbutton(F.button, text="  OK  ",
+                       command=function()
+                   {
+                       assign("factunitobs",
+                              facts[as.numeric(tkcurselection(tl))+1],
+                              parent.env(environment()))
 
-    tkgrid(OK.but, pady=5)
+                       tclvalue(Done) <- 1
+                   })
+
+    ## Bouton d'annulation :
+    B.Cancel <- tkbutton(F.button, text=" Annuler ",
+                         command=function(){tclvalue(Done) <- 2})
+
+    tkgrid(B.OK, tklabel(F.button, text="\t"), B.Cancel, padx=10)
+    tkgrid(F.button, pady=5, ## sticky="we",
+           columnspan=2)
+
+    tkbind(aa, "<Destroy>", function(){tclvalue(Done) <- 2})
 
     winSmartPlace.f(aa)
     tkfocus(tl)
 
-    tkwait.window(aa)
+    ## Attente d'une action de l'utilisateur :
+    tkwait.variable(Done)
+
+    ## On retourne la sélection :
+    if (tclvalue(Done) == 1)
+    {
+        tkdestroy(aa)
+        return(factunitobs)
+    }else{
+        tkdestroy(aa)
+        return(NULL)
+    }
 } # fin choixunfacteurUnitobs
 
 ################################################################################
@@ -261,86 +318,18 @@ choixespeces.f <- function()
 } # fin choixespeces.f()
 
 
-
-################################################################################
-## Nom    : affichageMetriques.f
-## Objet  : affichage des métriques analysables par ANOVA
-## Input  : table "unit"
-## Output : liste de métriques différentes de 0 ou NA
-################################################################################
-
-## ! ce fichier est à améliorer afin de sélectionner les paramètres les plus pertinents en premier,
-## ! et de ne pas laisser la possibilité de "choix impossibles"
-
-affichageMetriques.f <- function ()
-{
-    bb <- tktoplevel(width = 80)
-    tkwm.title(bb, "Selection de la metrique à analyser")
-
-    scr <- tkscrollbar(bb, repeatinterval=5,
-                       command=function(...)tkyview(tl, ...))
-
-    tl <- tklistbox(bb, height=20, width=30, selectmode="single",
-                    yscrollcommand=function(...)tkset(scr, ...),
-                    background="white")
-
-    tkgrid(tklabel(bb, text="Liste des metriques"))
-
-    tkgrid(tl, scr)
-    tkgrid.configure(scr, rowspan=4, sticky="nsw")
-
-    met <- sort(names(unit[2:9]))
-
-    ## création de la liste des métriques différentes de 0 ou NA
-    listeMetriquesOK <-"pas de metrique"
-
-    j <- 1
-    for (i in seq(along=met))
-    {
-        if (sum(unit[, met[i]], na.rm=TRUE) != 0) # ((sum(unit[, met[i]], na.rm=TRUE)==0)==FALSE) [!!!]
-        {
-            listeMetriquesOK[j] <- met[i]
-            j <- j+1
-        }
-    }
-
-    for (i in seq(along=met))
-    {
-        tkinsert(tl, "end", listeMetriquesOK[i])
-    }
-
-    tkselection.set(tl, 0)
-
-    OnOK <- function ()
-    {
-        me <- listeMetriquesOK[as.numeric(tkcurselection(tl))+1]
-        assign("me", me, envir=.GlobalEnv)
-        tkdestroy(bb)
-    }
-
-    OK.but <-tkbutton(bb, text="OK", command=OnOK)
-    tkgrid(OK.but, pady=5)
-
-    tkfocus(bb)
-    winSmartPlace.f(bb)
-
-    tkwait.window(bb)
-} # fin affichageMetriques
-
-
-
 ################################################################################
 ## Nom    : UnCritereEspDansObs.f
 ## Objet  : Restreindre le fichier obs à uniquement un critere du referentiel spécifique
 ## Input  : table "obs"
-## Output : table obs pour une valeur d'un champs du referentiel spécifique
+## Output : table obs pour une valeur d'un champ du referentiel spécifique
 ################################################################################
 
 UnCritereEspDansObs.f <- function ()
 {
     runLog.f(msg=c("Sélection sur un critère du référentiel espèces :"))
 
-    critereespref.f()
+    factesp <- critereespref.f()
 
     if (length(factesp) == 0 || is.null(factesp))
     {
@@ -382,15 +371,14 @@ UnCritereEspDansObs.f <- function ()
 ## Nom    : UnCritereUnitobsDansObs.f
 ## Objet  : Restreindre le fichier obs à uniquement un critere du referentiel spécifique
 ## Input  : table "obs"
-## Output : table obs pour une valeur d'un champs du referentiel spécifique
+## Output : table obs pour une valeur d'un champ du referentiel spécifique
 ################################################################################
 
 UnCritereUnitobsDansObs.f <- function ()
 {
     runLog.f(msg=c("Sélection sur un critère du référentiel des unités d'observation :"))
 
-    choixunfacteurUnitobs.f()
-    factunitobs <- fact
+    factunitobs <- choixunfacteurUnitobs.f()
 
     if (length(factunitobs) == 0 || is.null(factunitobs))
     {

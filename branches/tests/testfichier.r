@@ -13,6 +13,7 @@ testfileref.f <- function ()
     FermerWinTest <- function ()
     {
         tkdestroy(wintest)
+        winRaise.f(tm)
     }
 
     EnregistrerWinTest <- function ()
@@ -31,8 +32,23 @@ testfileref.f <- function ()
     ## Sélection des valeurs de la table espèces correspondant au jeux de données
     matable <- "obs"
     objtable <- eval(parse(text=matable))
-    ChampPresence <- paste("Obs", SiteEtudie, sep="")
-    especesPresentes <- subset(especes, especes[, ChampPresence]=="oui")
+
+    espSite <- paste("Obs", SiteEtudie, sep="")
+
+    especes.select <- dropLevels.f(subset(especes,
+                                            is.element(code_espece, levels(obs$code_espece))))
+
+    ## Externaliser la définition des sites par la suite...
+    listeSite <- c("RUN" , "MAY" , "BA" , "BO" , "CB" , "CR" , "STM" , "NC")
+
+    ## Noms des sites dont on doit exclure les colonnes :
+    sitesExclus <- listeSite[ ! grepl(pattern=paste("^", SiteEtudie, "$", sep=""), x=listeSite)]
+
+    ## champs ne correspondant pas au motif "(Site1|Site2|...)$" :
+    champsSite <- colnames(especes.select)[! grepl(paste("(", paste(sitesExclus, collapse="|"), ")$", sep=""),
+                                                   colnames(especes.select))]
+
+    especes.select <- especes.select[ , champsSite]
 
     ## construction de l'objet dataframe
     dataframeRefEsp <- as.data.frame(names(especes))
@@ -43,29 +59,27 @@ testfileref.f <- function ()
     colnames(dataframeRefEsp)[3]="%_renseignement"
 
     ## construction de l'objet tableau
-    tclarrayRefEsp[[0, 0]] <- "nb"
+    tclarrayRefEsp[[0, 0]] <- "Champ #"
     tclarrayRefEsp[[0, 1]] <- "Nom"
-    tclarrayRefEsp[[0, 2]] <- "nb valeurs"
-    tclarrayRefEsp[[0, 3]] <- "Tx renseignement"
+    tclarrayRefEsp[[0, 2]] <- "Nb de valeurs"
+    tclarrayRefEsp[[0, 3]] <- "% renseigné"
 
-    for (nbChamp in (1:dim(especesPresentes)[2]))
+    for (nbChamp in (1:dim(especes.select)[2]))
     {
         ## Remplissage du tableau
         tclarrayRefEsp[[nbChamp, 0]] <- nbChamp
-        tclarrayRefEsp[[nbChamp, 1]] <- names(especes[nbChamp])
-        tclarrayRefEsp[[nbChamp, 2]] <- length(unique(especes[, nbChamp][match(obs$code_espece, especes$code_espece)],
-                                                      na.rm=TRUE))
+        tclarrayRefEsp[[nbChamp, 1]] <- names(especes.select)[nbChamp]
+        tclarrayRefEsp[[nbChamp, 2]] <- sum(!is.na(especes.select[, nbChamp]))
 
         tclarrayRefEsp[[nbChamp, 3]] <-
-            paste(round(length(unique(especesPresentes$code_espece[!is.na(especesPresentes[, nbChamp])])) /
-                        length(unique(especesPresentes$code_espece))*100, digits=2), "%")
+            paste(round(sum(!is.na(especes.select[ , nbChamp])) /
+                        nrow(especes.select) * 100, digits=2), "%")
 
         ## Remplissage du dataframe pour l'enregistrement
-        dataframeRefEsp[nbChamp, 2] <- length(unique(especes[, nbChamp][match(obs$code_espece, especes$code_espece)],
-                                                     na.rm=TRUE))
+        dataframeRefEsp[nbChamp, 2] <- sum(!is.na(especes.select[, nbChamp]))
         dataframeRefEsp[nbChamp, 3] <-
-            round(length(unique(especesPresentes$code_espece[!is.na(especesPresentes[, nbChamp])])) /
-                  length(unique(especesPresentes$code_espece))*100, digits=2)
+            paste(round(sum(!is.na(especes.select[ , nbChamp])) /
+                        nrow(especes.select) * 100, digits=2), "%")
     }
 
     ## construction de la fenêtre
@@ -79,37 +93,40 @@ testfileref.f <- function ()
     tkgrid(imgAsLabelwintest,
            tklabel(frameOverwintest,
                    text=paste("Taux de renseignement des champs de ", fileName3,
-                              "\npour le jeu de données\n", fileName2), relief="groove", borderwidth=2,
-                   bg="yellow"),
+                              "\npour le jeu de données (tient compte des sélections)\n", fileName2), relief="groove", borderwidth=2,
+                   bg="yellow", justify="left"),
            padx=5, sticky="e")
 
     tkgrid.configure(imgAsLabelwintest, sticky="w")
 
     ## tkgrid.configure(frameOverwintest, columnspan=1, column=1)
-    tkgrid(tklabel(wintest, text=paste("Nombre de champs de ", fileName3, " : ", dim(especesPresentes)[2])),
+    tkgrid(tklabel(wintest, text=paste("Nombre de champs de ", fileName3, " : ", dim(especes.select)[2])),
            Enregistrer.but)
 
     tkgrid(tklabel(wintest,
-                   text=paste("Nombre d'espèces référencées pour ", SiteEtudie, " : ", dim(especesPresentes)[1])))
+                   text=paste("Nombre d'espèces référencées pour ", SiteEtudie, " : ",
+                   nrow(subset(especes, especes[, espSite]=="oui")))))
 
     tkgrid(tklabel(wintest,
                    text=paste("Nombre d'espèces du jeux de données ", fileName2, " : ",
                    length(unique(obs$code_espece)))), Fermer.but)
 
     tkgrid(tklabel(wintest,
-                   text=paste("\nInformations sur les ", length(unique(obs$code_espece)),
-                   "espèces \nDU JEU DE DONNEES \n\nVous pouvez copier-coller ce tableau dans Excel")))
+                   text=paste(## "\nInformations sur les ", length(unique(obs$code_espece)),
+                              ## "espèces \nDU JEU DE DONNEES ",
+                              "\n\nVous pouvez copier-coller ce tableau dans Excel", sep="")))
 
-    tableTestRefEsp <- tkwidget(wintest, "table", variable=tclarrayRefEsp, rows=dim(especesPresentes)[2]+1, cols=4,
+    tableTestRefEsp <- tkwidget(wintest, "table",
+                                variable=tclarrayRefEsp, rows=ncol(especes.select) + 1, cols=4,
                                 colwidth=27, titlerows=1, titlecols=1, selectmode="extended", background="white",
-                                xscrollcommand=function(...) {tkset(xscr, ...)}, yscrollcommand=function(...)
-                                tkset(yscrtb, ...))
+                                xscrollcommand=function(...) {tkset(xscr, ...)},
+                                yscrollcommand=function(...) {tkset(yscrtb, ...)})
 
     xscr <-tkscrollbar(wintest, orient="horizontal", command=function(...)tkxview(tableTestRefEsp, ...))
     yscrtb <- tkscrollbar(wintest, command=function(...)tkyview(tableTestRefEsp, ...))
     tkgrid(tableTestRefEsp, yscrtb, columnspan=3)
-    tkgrid.configure(yscrtb, sticky="nse")
-    tkgrid(xscr, sticky="new")
+    tkgrid.configure(yscrtb, sticky="nsw")
+    tkgrid(xscr, sticky="new", columnspan=3)
 
     tkconfigure(tableTestRefEsp, variable=tclarrayRefEsp, background="white", selectmode="extended",
                 rowseparator="\"\n\"", colseparator="\"\t\"")

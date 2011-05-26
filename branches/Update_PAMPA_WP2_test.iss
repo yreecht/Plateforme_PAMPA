@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "PAMPA WP2"
-#define MyAppVersion "1.0-3_test"
+#define MyAppVersion "1.0-4_test"
 #define MyAppPublisher "Ifremer"
 #define MyAppURL "http://wwz.ifremer.fr/pampa/"
 #define MyAppExeName "PAMPA WP2.bat"
@@ -77,6 +77,7 @@ Source: "tests\view.r"; DestDir: "{app}"
 Source: "tests\nombres_SVR.R"; DestDir: "{app}"
 Source: "tests\arbres_regression_unitobs_generiques.R"; DestDir: "{app}"
 Source: "tests\arbres_regression_esp_generiques.R"; DestDir: "{app}"
+Source: "tests\demo_cartes.R"; DestDir: "{app}"
 
 
 [Icons]

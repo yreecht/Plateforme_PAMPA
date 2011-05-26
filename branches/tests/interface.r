@@ -103,8 +103,8 @@ tkadd(import, "command", label="Test du référentiel (espèces concernées)", under
 ## tkadd(import, "command", label="Test des données importées", underline=0,
 ##       accelerator="CTRL+T", state="disabled")  ## [sup] [yr: 13/01/2011]
 
-tkadd(import, "command", label="Champs de 'TableMetrique' et TableBiodiv", underline=0, accelerator="CTRL+M",
-      state="disabled")
+## tkadd(import, "command", label="Champs de 'TableMetrique' et TableBiodiv", underline=0, accelerator="CTRL+M",
+##       state="disabled")
 
 tkadd(import, "command", label="Voir le plan d'échantillonnage", accelerator="CTRL+P", state="disabled",
       command = VoirPlanEchantillonnage.f)
@@ -113,20 +113,20 @@ tkadd(import, "command", label="Info données par espèces", state="disabled", acc
       command = VoirInformationsDonneesEspeces.f)
 
 tkadd(import, "command", label="Info données par unité d'observation",
-      state="normal", accelerator="CTRL+U",
+      state="disabled", accelerator="CTRL+U",
       command = VoirInformationsDonneesUnitobs.f)
 
 ########################################
 ## Sélection et recalcul :
 
-tkadd(selection, "command", label="Selon un champs du référentiel espèce...",
+tkadd(selection, "command", label="Selon un champ du référentiel espèce...",
       command = function ()
   {
       SelectionUnCritereEsp.f()
       winRaise.f(tm)
   })
 
-tkadd(selection, "command", label="Selon un champs des unités d'observation...",
+tkadd(selection, "command", label="Selon un champ des unités d'observation...",
       command = function ()
   {
       SelectionUnCritereUnitobs.f()
@@ -201,6 +201,18 @@ tkadd(traitement, "command", label="Fréquences d'occurrence /unité d'observation
       selectionVariables.f("freq_occurrence.unitobs")
       winRaise.f(tm)
   })
+
+## Démo cartes NC :
+## if (siteEtudie == "NC")
+## {
+##     tkadd(traitement, "command", label="Carte de métrique /unité d'observation (démonstration)...",
+##           background="#FFFBCF",
+##           command=function ()
+##       {
+##           selectionVariablesCarte.f()
+##           winRaise.f(tm)
+##       })
+## }else{}
 
 ########################################
 ## Analyses :
@@ -284,8 +296,20 @@ tkadd(outils, "command", label="Éditer le fichier de configuration",
   })
 tkadd(outils, "separator")
 
-tkadd(outils, "command", label="mise à jour", state="disabled", command = test.f)
-tkadd(outils, "command", label="Langue", state="disabled", command = test.f)
+tkadd(outils, "command", label="Créer un rapport de bug", state="normal",
+      command = function()
+  {
+      shell.exec(paste(basePath, "/Exec/Doc/Rapport_bug_PAMPA-WP2.dot", sep=""))
+  })
+tkadd(outils, "separator")
+
+tkadd(outils, "command", label="mise à jour (site de téléchargement)", state="normal",
+      command = function()
+  {
+      browseURL("http://projet-pampa.fr/wiki/doku.php/wp2:telechargement")
+  })
+
+## tkadd(outils, "command", label="Langue", state="disabled", command = test.f)
 
 ## tkadd(outils, "command", label="Export de donnees", state="disabled", command = test.f)
 
@@ -306,6 +330,12 @@ tkadd(pampainfos, "command", label="Documentation (locale)",
       shell.exec(dir(paste(basePath, "/Exec/Doc", sep=""),
                      full.names=TRUE)[grep("^Guide",
                                            dir(paste(basePath, "/Exec/Doc", sep="")), perl=TRUE)])
+  })
+
+tkadd(pampainfos, "command", label="Forum d'entraide",
+      command = function()
+  {
+      browseURL("http://projet-pampa.fr/forum/viewforum.php?id=2")
   })
 
 ## tkadd(pampainfos, "command", label="Nouveautés de la plateforme (locale)",

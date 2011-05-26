@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: comparaison_distri_generique.R
-### Time-stamp: <2011-05-12 16:41:53 yreecht>
+### Time-stamp: <2011-05-23 10:31:22 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -1269,7 +1269,7 @@ is.temporal.f <- function(facteur, table)
     ## Purpose: test si un facteur est temporel ou non
     ## ----------------------------------------------------------------------
     ## Arguments: facteur : le nom (chaîne de caractères) du facteur.
-    ##            table : la table dans laquelle se trouve le champs.
+    ##            table : la table dans laquelle se trouve le champ.
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date:  4 oct. 2010, 10:01
 

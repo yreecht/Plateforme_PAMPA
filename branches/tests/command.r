@@ -57,7 +57,7 @@ SelectionUnCritereEsp.f <- function ()
                                                                    selection[["selection"]])])
 
         ## Réduction des tables de données (au espèces sélectionnées) :
-        if (exists("unitespta", envir=.GlobalEnv))
+        if (exists("unitespta", envir=.GlobalEnv) && nrow(unitespta))
         {
             assign("unitespta",
                    dropLevels.f(unitespta[is.element(unitespta$code_espece, keptEspeces), , drop=FALSE],
@@ -92,9 +92,9 @@ SelectionUnCritereEsp.f <- function ()
         gestionMSGinfo.f("CalculSelectionFait")
 
         ## Recréation des tables de calcul :
-        ## creationTablesBase.f()
         creationTablesCalcul.f()
-        ModifierInterfaceApresSelection.f(paste(factesp[1], ":", paste(selectfactesp, collapse=", ")), dim(obs)[1])
+        ModifierInterfaceApresSelection.f(paste(selection[["facteur"]], ":",
+                                                paste(selection[["selection"]], collapse=", ")), dim(obs)[1])
         ## gestionMSGinfo.f("Critereselectionne", dim(obs)[1])
 
         infoLoading.f(button=TRUE)
@@ -176,9 +176,11 @@ SelectionUnCritereUnitobs.f <- function ()
         gestionMSGinfo.f("CalculSelectionFait")
 
         ## Recréation des tables de calcul :
-        ## creationTablesBase.f()
         creationTablesCalcul.f()
-        ModifierInterfaceApresSelection.f(paste(fact[1], ":", paste(selectfactunitobs, collapse=", ")), dim(obs)[1])
+
+        ModifierInterfaceApresSelection.f(paste(selection[["facteur"]], ":",
+                                                paste(selection[["selection"]], collapse=", ")), dim(obs)[1])
+
         ## gestionMSGinfo.f("Critereselectionne", dim(obs)[1])
 
         infoLoading.f(button=TRUE)

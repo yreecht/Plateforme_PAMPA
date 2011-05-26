@@ -9,7 +9,7 @@
 ################################################################################
 
 ## ** Version **
-options(versionPAMPA = "1.0-3_test")
+options(versionPAMPA = "1.0-4")
 
 ## Réglage de l'encodage des caractères :
 options(encoding="latin1")
@@ -33,10 +33,8 @@ nameWorkspace <- basePath
 ## ! -> un fichier avec les différents modes de calcul des classes de taille (cf WP2/CalculClassesDeTaille.doc)
 
 ## !amélioration des commentaires : en entête de chaque fichier, un plan du contenu
-## !améliorer les messages d'alerte, en mettre dés qu'il y a des saisies et après contrôle de saisie
 ## !création automatique des dossiers et appel de l'ensemble des fichiers une fois l'espace de travail choisi
 
-## ! difficulté possible : appel de fonctions graphiques dans les fonctions de calcul pour extraire les fonctions graph...
 ## ! les tests de variables "par valeur" (classetaille, nom d'amp...) ne doivent pas être dans les fonctions génériques
 
 ## ######################### Chargement des librairies ############################
@@ -77,13 +75,15 @@ source("./Exec/fonctions_graphiques.R", encoding="latin1")                 # OK
 source("./Exec/boxplots_esp_generiques.R", encoding="latin1")              # OK
 source("./Exec/boxplots_unitobs_generiques.R", encoding="latin1")          # OK
 
+source("./Exec/demo_cartes.R", encoding="latin1")          # OK
+
 ##################################################
 ## Analyses statistiques :
 source("./Exec/modeles_lineaires_interface.R", encoding="latin1")          # OK
 source("./Exec/modeles_lineaires_esp_generiques.R", encoding="latin1")     # OK
 source("./Exec/modeles_lineaires_unitobs_generiques.R", encoding="latin1") # OK
-source("./Exec/arbres_regression_unitobs_generiques.R", encoding="latin1") # En cours..
-source("./Exec/arbres_regression_esp_generiques.R", encoding="latin1")     # En cours..
+source("./Exec/arbres_regression_unitobs_generiques.R", encoding="latin1") # OK
+source("./Exec/arbres_regression_esp_generiques.R", encoding="latin1")     # OK
 
 ##################################################
 ## Barplots sur les fréquences d'occurrence :

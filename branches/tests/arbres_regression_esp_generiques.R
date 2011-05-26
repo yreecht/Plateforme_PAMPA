@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: arbres_regression_esp_generiques.R
-### Time-stamp: <2011-05-12 16:32:42 yreecht>
+### Time-stamp: <2011-05-17 14:50:40 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -10,14 +10,6 @@
 ###
 ### Fonctions de création de boxplots pour les métriques agrégées / espèce / unité d'observation.
 ####################################################################################################
-f <- function()
-{
-  ## Purpose:
-  ## ----------------------------------------------------------------------
-  ## Arguments:
-  ## ----------------------------------------------------------------------
-  ## Author: Yves Reecht, Date: 12 mai 2011, 15:17
-}
 
 ########################################################################################################################
 print.rpart.fr <- function (x, minlength = 0, spaces = 2, cp, digits = getOption("digits"),
@@ -69,8 +61,8 @@ print.rpart.fr <- function (x, minlength = 0, spaces = 2, cp, digits = getOption
         cat("n=", n[1], " (", naprint(omit), ")\n\n", sep = "")
     else cat("n=", n[1], "\n\n")
     if (x$method == "class")
-        cat(" noeud), division, n, perte, yval, (yprob)\n")
-    else cat(" noeud), division, n, déviance, yval\n")
+        cat(" noeud), partition, n, perte, yval, (yprob)\n")
+    else cat(" noeud), partition, n, déviance, yval\n")
     cat("\t\t\t\t* indique un noeud terminal\n\n")
     cat(z, sep = "\n")
     return(invisible(x))
@@ -155,7 +147,7 @@ summary.rpart.fr <- function (object, cp = 0, digits = getOption("digits"), file
                     cuts[i] <- paste("<", format(signif(x$splits[i, 4],
                                                         digits = digits)))
                 }else{
-                    cuts[i] <- paste("divisé en ",
+                    cuts[i] <- paste("partitionné en ",
                                      paste(c("G", "-", "D")[x$csplit[x$splits[i, 4], 1:temp[i]]],
                                            collapse = "", sep = ""),
                                      collapse = "")
@@ -220,7 +212,7 @@ summary.rpart.fr <- function (object, cp = 0, digits = getOption("digits"), file
                     cat("\n")
                 }
             }
-            cat("  Division initial:\n")
+            cat("  Partition initiale :\n")
             j <- seq(index[i], length = 1 + ff$ncompete[i])
             if (all(nchar(cuts[j]) < 25))
             {
@@ -236,7 +228,7 @@ summary.rpart.fr <- function (object, cp = 0, digits = getOption("digits"), file
 
             if (ff$nsurrogate[i] > 0)
             {
-                cat("  Division alternative:\n")
+                cat("  Partition alternative :\n")
                 j <- seq(1 + index[i] + ff$ncompete[i], length = ff$nsurrogate[i])
                 agree <- x$splits[j, 3]
                 if (all(nchar(cuts[j]) < 25))

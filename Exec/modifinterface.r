@@ -10,12 +10,34 @@ ModifierMenuApresImport.f <- function()
 
     ## Réactivation des entrées du menu "Données" qui nécessitent le chargement préalable :
     tkentryconfigure(import, 3, state="normal")
+    tkentryconfigure(import, 4, state="normal")
+    tkentryconfigure(import, 5, state="normal")
     tkentryconfigure(import, 6, state="normal")
-    ## tkentryconfigure(import, 7, state="normal")
 
     ## Désactivation du bouton et du menu de restauration des données originales :
     tkconfigure(button.DataRestore, state="disabled")
     tkentryconfigure(selection, 5, state="disabled")
+
+    if (siteEtudie == "NC")
+    {
+        if (! grepl("^Carte", tclvalue(tkentrycget(traitement, "8", "-label"))))
+        {
+            tkadd(traitement, "command", label="Carte de métrique /unité d'observation (démonstration)...",
+                  background="#FFFBCF",
+                  command=function ()
+              {
+                  selectionVariablesCarte.f()
+                  winRaise.f(tm)
+              })
+        }else{
+            tkentryconfigure(traitement, 8, state="normal")
+        }
+    }else{
+        if (grepl("^Carte", tclvalue(tkentrycget(traitement, "8", "-label"))))
+        {
+            tkdelete(traitement, "8", "8")
+        }else{}
+    }
 
     ## Suppression de la colonne "sélections" si besoin :
     if (nchar(tclvalue(tclarray[[0, 4]])) > 3)
@@ -39,30 +61,9 @@ ColAutoWidth.f <- function(TK.table)
 
     ## Dimensions du tableau (à partir de 0 => +1) :
 
-    ## if (!is.null(tclarray))
-    ## {
-    ##     Info.tmp <- unlist(strsplit(tclvalue(tcl("array", "names", TK.table)),
-    ##                                 " ", fixed=TRUE))
-    ##     ##  # à voir aussi.
-
-    ##     Info.tmp <- Info.tmp[grep("^[[:digit:]]+,[[:digit:]]+$", Info.tmp)]
-
-    ##     dim.array <- apply(sapply(Info.tmp,
-    ##                               function(x)
-    ##                           {
-    ##                               unlist(strsplit(x, ","))
-    ##                           }),           # => 1ère ligne : indices de lignes
-    ##                                     #    2nd  ligne : indices de colonnes.
-    ##                        1,
-    ##                        function(y)                   # Extraction des max.
-    ##                    {
-    ##                        max(as.numeric(y))
-    ##                    })
-    ## }else{
-        dim.array <- as.numeric(unlist(strsplit(tclvalue(tcl(.Tk.ID(TK.table),
-                                                             "index", "bottomright")),
-                                                ",")))
-    ## }
+    dim.array <- as.numeric(unlist(strsplit(tclvalue(tcl(.Tk.ID(TK.table),
+                                                         "index", "bottomright")),
+                                            ",")))
 
     ## Redimensionnement des colonnes :
     invisible(sapply(0:dim.array[2],
@@ -71,16 +72,50 @@ ColAutoWidth.f <- function(TK.table)
                      tmp <- sapply(0:dim.array[1],
                                    function(i, j)
                                {
-                                   nchar(tclvalue(tcl(TK.table,
-                                                      "get",
-                                                      paste(i, ",", j, sep=""))))
+                                   max(sapply(strsplit(tclvalue(tcl(TK.table,
+                                                                    "get",
+                                                                    paste(i, ",", j, sep=""))),
+                                                       split="\n|\r", perl=TRUE),
+                                              nchar))
                                }, j)
 
-                     tcl(.Tk.ID(TK.table), "width", j, max(tmp) + 1)
+                     tcl(.Tk.ID(TK.table), "width", j, max(c(tmp, 3)) + 3)
                  }))
 }
 
+########################################################################################################################
+RowAutoEight.f <- function(TK.table)
+{
+    ## Purpose: Hauteur automatique des lignes du tableau
+    ## ----------------------------------------------------------------------
+    ## Arguments: TK.table : un widget tableau tcl.
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date: 18 avr. 2011, 16:40
 
+    ## Dimensions du tableau (à partir de 0 => +1) :
+
+    dim.array <- as.numeric(unlist(strsplit(tclvalue(tcl(.Tk.ID(TK.table),
+                                                         "index", "bottomright")),
+                                            ",")))
+
+    ## Redimensionnement des colonnes :
+    invisible(sapply(0:dim.array[1],
+                     function(i)
+                 {
+                     tmp <- sapply(0:dim.array[2],
+                                   function(j, i)
+                               {
+                                   sum(unlist(strsplit(tclvalue(tcl(TK.table,
+                                                                    "get",
+                                                                    paste(i, ",", j, sep=""))),
+                                                       split="\n|\r", perl=TRUE)) != "")
+                               }, i=i)
+
+                     tcl(.Tk.ID(TK.table), "height", i, max(c(tmp, 1)))
+                 }))
+}
+
+########################################################################################################################
 MiseajourTableau.f <- function(tclarray)
 {
     ##  ############# Mise à jour des valeurs dans le tableau #############

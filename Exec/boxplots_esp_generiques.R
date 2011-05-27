@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: Boxplot_generique_calc.R
-### Time-stamp: <2011-04-19 11:37:20 yreecht>
+### Time-stamp: <2011-05-11 16:17:58 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -283,15 +283,6 @@ plotPetitsEffectifs.f <- function(objBP, nbmin=20)
                                                 -0.04 * ampli)),
                                 pch=24, col = "red3", bg = "gold", cex=1.2)
 
-                         ## text(x=i, y=x[ifelse(ord[xi][i] == 1, 1, ord[xi][i] + 1), i],
-                         ##      "PE", col="red",
-                         ##      adj=c(0.5,
-                         ##            ifelse(ord[xi][i] == 1, # Ajustement vertical si en bas.
-                         ##                   -0.1,
-                         ##                   ifelse(ord[xi][i] == nrow(xprop), #... si tout en haut.
-                         ##                          1.4,
-                         ##                          1.4))), # ...autrement.
-                         ##      cex=0.9)
                      }))
 
     }else{
@@ -424,7 +415,6 @@ WP2boxplot.f <- function(metrique, factGraph, factGraphSel, listFact, listFactSe
                                         # données.
                                               "listespunit"={"espece"},
                                               "unitespta"={"CL_espece"},
-                                              "TableBiodiv"={"biodiv"},
                                               "espece"))
 
         ## Label axe y :

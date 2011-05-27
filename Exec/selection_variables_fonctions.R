@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: Selection_variables_fonctions.R
-### Time-stamp: <2011-05-09 15:45:08 yreecht>
+### Time-stamp: <2011-05-23 10:34:16 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -118,7 +118,7 @@ champsUnitobs.f <- function(ordered=FALSE, tableMetrique="")
     ## Arguments: ordered : faire apparaître les champs principaux en
     ##                      premiers ? (booléen, optionnel)
     ##            tableMetrique : nom de la table de métriques (pour pouvoir
-    ##                            ajouter le champs classe de taille, même
+    ##                            ajouter le champ classe de taille, même
     ##                            si ne fait pas partie de cette table).
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date:  3 août 2010, 11:12
@@ -168,7 +168,7 @@ champsRefEspeces.f <- function(site, ordered=FALSE, tableMetrique="", nextStep=N
     ##            ordered : faire apparaître les champs principaux en
     ##                      premiers ? (booléen, optionnel)
     ##            tableMetrique : nom de la table de métriques (pour pouvoir
-    ##                            ajouter le champs classe de taille, même
+    ##                            ajouter le champ classe de taille, même
     ##                            si ne fait pas partie de cette table).
     ##            nextStep : étape suivante.
     ## ----------------------------------------------------------------------
@@ -176,7 +176,7 @@ champsRefEspeces.f <- function(site, ordered=FALSE, tableMetrique="", nextStep=N
 
     ## Champs principaux (externaliser par la suite) :
     if (is.element(tableMetrique, c("listespunit", "TableOccurrences", "unitespta")) &&
-        is.element(nextStep, c("boxplot.esp", "modele_lineaire", "freq_occurrence")))
+        is.element(nextStep, c("boxplot.esp", "modele_lineaire", "freq_occurrence", "MRT.esp")))
     {
         cPrincip <- c("code_espece", "espece")
     }else{
@@ -314,7 +314,7 @@ subsetToutesTables.f <- function(metrique, facteurs, selections, tableMetrique="
     ##            tableMetrique : le nom de la table des métriques.
     ##            exclude : niveau de facteur à ne pas prendre en compte pour
     ##                      le subset.
-    ##            add : champs (de la table de métrique) à ajouter aux
+    ##            add : champ(s) (de la table de métrique) à ajouter aux
     ##                  données.
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date:  6 août 2010, 16:46
@@ -460,7 +460,7 @@ agregationTableParCritere.f <- function(Data, metrique, facteurs, listFact=NULL)
                      "densiteMax"="sum",
                      "biomasseMax"="sum")
 
-    ## Ajout du champs nombre pour le calcul des moyennes pondérées s'il est absent :
+    ## Ajout du champ nombre pour le calcul des moyennes pondérées s'il est absent :
     if ((casMetrique[metrique] == "w.mean" || casMetrique[metrique] == "w.mean.prop"))
     {
         if (is.element("classe_taille", colnames(Data)))
@@ -483,7 +483,7 @@ agregationTableParCritere.f <- function(Data, metrique, facteurs, listFact=NULL)
         }
     }else{}
 
-    ## Ajout du champs biomasse pour les proportions de biomasses par classe de taille :
+    ## Ajout du champ biomasse pour les proportions de biomasses par classe de taille :
     if (casMetrique[metrique] == "w.mean.prop.bio")
     {
         Data <- merge(Data,
@@ -504,7 +504,7 @@ agregationTableParCritere.f <- function(Data, metrique, facteurs, listFact=NULL)
                       as.data.frame(as.table(biomTot), responseName="biomasse.tot"))
     }
 
-    ## Ajout du champs colonie pour le calcul des moyennes pondérées s'il est absent :
+    ## Ajout du champ colonie pour le calcul des moyennes pondérées s'il est absent :
     if (casMetrique[metrique] == "w.mean.colonies" && ! is.element("colonie", colnames(Data)))
     {
         Data$colonie <- listespunit$colonie[match(apply(Data[ , c("code_espece", "unite_observation")],

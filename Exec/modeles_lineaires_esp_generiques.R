@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: comparaison_distri_generique.R
-### Time-stamp: <2011-05-09 15:16:54 yreecht>
+### Time-stamp: <2011-05-23 10:31:22 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -1269,7 +1269,7 @@ is.temporal.f <- function(facteur, table)
     ## Purpose: test si un facteur est temporel ou non
     ## ----------------------------------------------------------------------
     ## Arguments: facteur : le nom (chaîne de caractères) du facteur.
-    ##            table : la table dans laquelle se trouve le champs.
+    ##            table : la table dans laquelle se trouve le champ.
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date:  4 oct. 2010, 10:01
 
@@ -1846,7 +1846,10 @@ modeleLineaireWP2.esp.f <- function(metrique, factAna, factAnaSel, listFact, lis
             ## Écriture des sorties :
             tryCatch(sortiesLM.f(objLM=res, formule=formule, metrique=metrique,
                                  factAna=factAna, modSel=modSel, listFact=listFact,
-                                 Data=tmpDataMod, Log=Log),
+                                 Data=tmpDataMod, Log=Log,
+                                 type=ifelse(tableMetrique == "unitespta",
+                                             "CL_espece",
+                                             "espece")),
                      error=errorLog.f)
 
             ## Estimation des résidus "annormaux" :
@@ -1870,7 +1873,10 @@ modeleLineaireWP2.esp.f <- function(metrique, factAna, factAnaSel, listFact, lis
 
                     tryCatch(sortiesLM.f(objLM=res.red, formule=formule, metrique=metrique,
                                          factAna=factAna, modSel=modSel, listFact=listFact,
-                                         Data=tmpDataMod, Log=Log, sufixe="(red)"),
+                                         Data=tmpDataMod, Log=Log, sufixe="(red)",
+                                         type=ifelse(tableMetrique == "unitespta",
+                                                     "CL_espece",
+                                                     "espece")),
                              error=errorLog.f)
                 }else{}
 

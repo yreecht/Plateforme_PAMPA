@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: boxplots_ttesp_generic.R
-### Time-stamp: <2011-02-10 17:30:03 yreecht>
+### Time-stamp: <2011-05-10 14:27:21 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -50,7 +50,7 @@ WP2boxplot.unitobs.f <- function(metrique, factGraph, factGraphSel, listFact, li
     ## Purpose: Produire les boxplots en tenant compte des options graphiques
     ## ----------------------------------------------------------------------
     ## Arguments: metrique : la métrique choisie.
-    ##            factGraph : le facteur de séparation des graphiques.
+    ##            factGraph : le facteur sélection des espèces.
     ##            factGraphSel : la sélection de modalités pour ce dernier
     ##            listFact : liste du (des) facteur(s) de regroupement
     ##            listFactSel : liste des modalités sélectionnées pour ce(s)

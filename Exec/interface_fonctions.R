@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: interface_fonctions.R
-### Time-stamp: <2011-04-20 15:48:51 yreecht>
+### Time-stamp: <2011-05-13 15:44:59 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -221,14 +221,22 @@ infoGeneral.f <- function(msg,...)
 
 ########################################################################################################################
 infoLoading.f <- function(msg="", icon="info", button=FALSE,
-                          command=function(){tkdestroy(WinInfoLoading) ; winRaise.f(tm)},...)
+                          WinRaise=tm,
+                          command=function()
+                      {
+                          tkdestroy(WinInfoLoading)
+                          winRaise.f(if(is.null(WinRaise)) tm else WinRaise)
+                      }, titleType="load",...)
 {
     ## Purpose: Afficher les informations sur le chargement des données
     ## ----------------------------------------------------------------------
     ## Arguments: msg : message à afficher.
     ##            icon : icone à afficher à gauche du text.
     ##            button : afficher le boutton "OK".
+    ##            WinRaise : fenêtre à remettre au premier plan à la
+    ##                       fermeture.
     ##            command : commande associée au bouton.
+    ##            titleType : identifiant d'un type de titre de fenêtre.
     ##            ... : paramètres supplémentaires pour le texte.
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 11 févr. 2011, 15:24
@@ -257,7 +265,11 @@ infoLoading.f <- function(msg="", icon="info", button=FALSE,
                envir=.InfoLoading)
 
         ## Titre de fenêtre :
-        tkwm.title(WinInfoLoading, "Infos de chargement")
+        tkwm.title(WinInfoLoading,
+                   switch(titleType,
+                          "load"="Infos de chargement",
+                          "check"="Vérification des sélections",
+                          "Infos de chargement"))
 
         ## Il faudra refaire le cadre principal d'info de chargement :
         assign("makeGlobalFrame", TRUE, envir=.InfoLoading)
@@ -339,6 +351,8 @@ infoLoading.f <- function(msg="", icon="info", button=FALSE,
         ## Update des fenêtres :
         tcl("update")
     }
+
+    return(invisible(WinInfoLoading))
 }
 
 ########################################################################################################################

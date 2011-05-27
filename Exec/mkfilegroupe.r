@@ -648,7 +648,7 @@ unit.f <- function(){
         {
             ## Ajout des vrais zéros :
             unit$biomasse[is.na(unit$biomasse) & unit$nombre == 0] <- 0
-        }
+        }else{}
 
         ## Ajout des vrais zéros de densité :
         unit$densite[unit$nombre == 0 & !is.na(unit$nombre)] <- 0
@@ -775,38 +775,6 @@ unit.f <- function(){
     }
 
     write.csv(unit, file=paste(NomDossierTravail, "UnitobsMetriques.csv", sep=""), row.names = FALSE)
-    ## carte de la CPUE pour les données de pêche NC
-    if (FALSE) ##(siteEtudie == "NC") # (is.peche.f() & (siteEtudie == "NC")) # (length(typePeche)>1)
-    {
-        x11(width=50, height=30, pointsize=10)
-        ## MapNC <- read.shape("./shapefiles/NewCaledonia_v7.shp", dbf.data = TRUE, verbose=TRUE, repair=FALSE)
-        MapNC <- readShapePoly("./shapefiles/NewCaledonia_v7.shp", verbose=TRUE, repair=FALSE, delete_null_obj=TRUE)
-
-        unitSymbols <- subset(unit, longitude>0)
-
-        plot(MapNC,
-             xlim=range(unitSymbols$longitude) + c(-0.3, 0.3) * diff(range(unitSymbols$longitude, na.rm=TRUE)),
-             ylim=range(unitSymbols$latitude) + c(-0.3, 0.3) * diff(range(unitSymbols$latitude, na.rm=TRUE)),
-             fg="black", xaxs="i", yaxs="i", axes=TRUE)
-
-        symbols(x=unitSymbols$longitude,
-                y=unitSymbols$latitude,
-                circles=## 0.001 + 0.01 * (
-                        max(unitSymbols$densite, na.rm=TRUE) / 2 +
-                        unitSymbols$densite, ##  -
-                          ##               min(unitSymbols$densite, na.rm=TRUE)) /
-                          ## diff(range(unitSymbols$densite, na.rm=TRUE)),
-                inches=0.15,
-                add=TRUE, # Nommer les arguments [yr: 30/07/2010]
-                fg=rainbow(nlevels(
-                   unique(unitobs$site[match(unitSymbols$unitobs,
-                                             unitobs$unite_observation), drop=TRUE])))[as.numeric(
-                                                                         unitobs$site[match(unitSymbols$unitobs,
-                                                                                            unitobs$unite_observation),
-                                                                                      drop=TRUE])],
-                lwd=1)
-        ## title(main=paste("CPUE", typePeche))
-    }
 
     if (is.benthos.f())                 # unique(unitobs$type) == "LIT"
     {
@@ -886,7 +854,7 @@ creationTablesBase.f <- function(){
 ################################################################################
 ## Nom    : creationTablesCalcul.f()
 ## Objet  : Génération d'une table globale basée sur obs a partir de listespunit
-## rajoute des champs sélectionnés dans unitosb et especes
+## rajoute des champs sélectionnés dans unitobs et especes
 ##          dans le cas de la vidéo
 ##          dans le cas du benthos
 ##          dans les cas autre que benthos

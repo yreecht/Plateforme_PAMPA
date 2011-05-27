@@ -10,7 +10,7 @@ gestionMSGerreur.f <- function (nameerror, variable)
     MSG <-
         switch(nameerror,
                "recouvrementsansLIT"={
-                   paste("Le champs obs$type n'est pas 'LIT', vous ne pouvez pas calculer",
+                   paste("Le champ obs$type n'est pas 'LIT', vous ne pouvez pas calculer",
                          " un % de recouvrement avec des espèces non benthiques\n", sep="")
                },
                "noWorkspace"={

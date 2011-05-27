@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "PAMPA WP2"
-#define MyAppVersion "1.0-2"
+#define MyAppVersion "1.0-4"
 #define MyAppPublisher "Ifremer"
 #define MyAppURL "http://wwz.ifremer.fr/pampa/"
 #define MyAppExeName "PAMPA WP2.bat"
@@ -45,7 +45,6 @@ Source: ".\Exec\img\*"; DestDir: "{app}\img"; Flags: ignoreversion
 Source: ".\Exec\Doc\*"; DestDir: "{app}\Doc"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 Source: ".\Exec\config.r"; DestDir: "{app}"; Flags: uninsneveruninstall onlyifdoesntexist
-Source: "Exec\arbre_regression.r"; DestDir: "{app}"
 Source: "Exec\barplots_occurrence.R"; DestDir: "{app}"
 Source: "Exec\barplots_occurrence_unitobs.R"; DestDir: "{app}"
 Source: "Exec/fonctions_graphiques.R"; DestDir: "{app}"
@@ -76,7 +75,9 @@ Source: "Exec\selection_variables_interface.R"; DestDir: "{app}"
 Source: "Exec\testfichier.r"; DestDir: "{app}"
 Source: "Exec\view.r"; DestDir: "{app}"
 Source: "Exec\nombres_SVR.R"; DestDir: "{app}"
-
+Source: "Exec\arbres_regression_unitobs_generiques.R"; DestDir: "{app}"
+Source: "Exec\arbres_regression_esp_generiques.R"; DestDir: "{app}"
+Source: "Exec\demo_cartes.R"; DestDir: "{app}"
 
 [Icons]
 ;; IconFilename: "{app}\img\Pampa.ico" pour définir l'icone d'un raccourci.
@@ -94,40 +95,4 @@ Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChang
 
 [Dirs]
 Name: "{#InstallDir}\Data"; Flags: uninsneveruninstall; Tasks: ; Languages:
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

@@ -1,5 +1,5 @@
 ########################################################################################################################
-Voirentableau <- function(Montclarray, title="", height=-1, width=-1, nrow=-1, ncol=-1)
+Voirentableau <- function(Montclarray, title="", height=-1, width=-1, nrow=-1, ncol=-1, infos=title)
 {
     tclRequire("Tktable")
 
@@ -63,20 +63,21 @@ Voirentableau <- function(Montclarray, title="", height=-1, width=-1, nrow=-1, n
     ## tkbind(yscrtb, "<MouseWheel>", function(...) tkyview(tabletb,...))
 
     ## Placement des éléments :
-    tkgrid(frameOverwintb, sticky="ew", columnspan=3)
+    tkgrid(frameOverwintb, sticky="ew", columnspan=4)
     tkgrid(imgAsLabelwintb,
-           tklabel(frameOverwintb, text="\t\t"),
-           LB.titre <- tklabel(frameOverwintb, text=title, relief="groove", borderwidth=2, bg="yellow"),
-           padx=5, pady=5, sticky="w")
+           tklabel(frameOverwintb, text=""),
+           LB.titre <- tklabel(frameOverwintb, text=infos, relief="groove",
+                               borderwidth=2, bg="yellow", justify="left"),
+           padx=5, pady=5, sticky="nw")
 
-    tkgrid.configure(LB.titre, sticky="ew")
+    tkgrid.configure(LB.titre, sticky="new")
 
     tkgrid(tklabel(tb, text=paste("\n***", "\nVous pouvez copier-coller ce tableau dans Excel")))
 
     tkgrid(Enregistrer.but, Fermer.but, pady=5, padx=5)
 
-    tkgrid(tabletb, yscrtb, columnspan=3)
-    tkgrid.configure(yscrtb, sticky="nsw")
+    tkgrid(tabletb, yscrtb, columnspan=3, sticky="nsew")
+    tkgrid.configure(yscrtb, sticky="nse")
     tkgrid(xscr, sticky="new", columnspan=2)
 
     tkconfigure(tabletb, variable=Montclarray, background="white", selectmode="extended", rowseparator="\"\n\"",
@@ -85,6 +86,11 @@ Voirentableau <- function(Montclarray, title="", height=-1, width=-1, nrow=-1, n
 
     tkgrid.configure(tabletb, columnspan=2, sticky="w")
 
+    tcl("update")
+    ColAutoWidth.f(tabletb)
+    RowAutoEight.f(tabletb)
+
+    tcl("update")
     winSmartPlace.f(tb, xoffset=-30)
 
     return (tabletb)
@@ -95,29 +101,49 @@ VoirPlanEchantillonnage.f <- function()
 {
     runLog.f(msg=c("Affichage du plan d'échantillonnage :"))
 
-    myRarrayPE <- read.csv(paste(nameWorkspace, "./FichiersSortie/PlanEchantillonnage.csv", sep=""),
-                           sep=",", dec=".", header=TRUE)
+    myRarrayPE <- read.csv(paste(NomDossierTravail,
+                                 "PlanEchantillonnage_basique.csv", sep=""),
+                           row.names=1)
+
     tkinsert(txt.w, "end", paste("\n fichier Plan d'échantillonnage lu :\n ", myRarrayPE))
 
     tclarrayPE <- tclArray()
     ## tclarrayPE[[0, ]] <- c("Année", "Type", "Fréquence")
-    tclarrayPE[[0, 0]] <- "Année"
-    tclarrayPE[[0, 1]] <- "Type"
-    tclarrayPE[[0, 2]] <- "Fréquence"
 
-    for (i in (1:dim(myRarrayPE)[1]))
+    tclarrayPE[[0, 0]] <- paste("\tStatut de protection ",
+                                "\n  Année\t\t\t", sep="")
+
+    ## Remplissage du tableau tcl :
+    for (i in (1:nrow(myRarrayPE)))
     {
-        for (j in (0:2))
+        tclarrayPE[[i, 0]] <- row.names(myRarrayPE)[i]
+
+        for (j in (1:ncol(myRarrayPE)))
         {
-            tclarrayPE[[i, j]] <- myRarrayPE[i, j+1]
+            if (i == 1)
+            {
+                tclarrayPE[[0, j]] <- colnames(myRarrayPE)[j]
+            }else{}
+
+            tclarrayPE[[i, j]] <- as.character(myRarrayPE[i, j])
         }
     }
 
     pe <- tktoplevel()
     tkwm.title(pe, "Plan d'échantillonnage")
-    tablePlanEch <- tkwidget(pe, "table", variable=tclarrayPE, rows=dim(myRarrayPE)[1]+1, cols=3, titlerows=1,
+    tablePlanEch <- tkwidget(pe, "table", variable=tclarrayPE, rows=dim(myRarrayPE)[1]+1, cols=3,
+                             titlerows=1, titlecol=1,
                              selectmode="extended", colwidth=30, background="white")
+
+
     tkpack(tablePlanEch)
+    tcl("update")
+
+    RowAutoEight.f(tablePlanEch)
+    ColAutoWidth.f(tablePlanEch)
+
+    tcl("update")
+    winSmartPlace.f(pe)
 }
 
 ########################################################################################################################
@@ -128,10 +154,10 @@ VoirInformationsDonneesEspeces.f <- function()
     message(paste(Nbesp, "espèces considérées dans ce jeux de données"))
 
     tclarrayID <- tclArray()
-    tclarrayID[[0, 0]] <- "Espece"               # Indexation étrange... [yr: 27/07/2010]
-    tclarrayID[[0, 1]] <- "Nb indiv min/unitobs" #
+    tclarrayID[[0, 0]] <- "Espèce"               # Indexation étrange... [yr: 27/07/2010]
+    tclarrayID[[0, 1]] <- "Nb indiv min/unitobs" # -> non, habituelle pour tclarrays !
     tclarrayID[[0, 2]] <- "Nb indiv max/unitobs" #
-    tclarrayID[[0, 3]] <- "Frequence espece"     #
+    tclarrayID[[0, 3]] <- "Fréquence d'occurrence"     #
 
     mini <- tapply(unitesp$nombre, unitesp$code_espece, min, na.rm=TRUE)
     maxi <- tapply(unitesp$nombre, unitesp$code_espece, max, na.rm=TRUE)
@@ -151,7 +177,20 @@ VoirInformationsDonneesEspeces.f <- function()
                         digits=2), "%")
     }
 
-    tableInfodonnees <- Voirentableau(tclarrayID, title="Informations par espèce",
+    ## Pour informations sur le nombre d'espèces :
+    tmp <- unique(cbind(pacha[ , "code_espece"],
+                        especes[match(pacha$code_espece, especes$code_espece),
+                                c("Phylum", "espece")]))
+
+    tableInfodonnees <- Voirentableau(tclarrayID,
+                                      title="Informations par espèce",
+                                      infos=paste("Informations par espèce :",
+                                                  " \n\n\t* nombre de catégories observées = ", nrow(tmp),
+                                                  " \n\t* nombre de catégories taxinomiques (biotiques) observées = ",
+                                                  sum(!is.na(tmp$Phylum)),
+                                                  " \n\t* nombre d'espèces observées = ",
+                                                  sum(!is.na(tmp$espece) & tmp$espece != "sp."),
+                                                  " \n\nCes informations tiennent compte des sélections en cours.", sep=""),
                                       height=Nbesp, width=4, nrow=Nbesp + 1, ncol=4)
 }#fin VoirInformationsDonneesEspeces
 
@@ -183,12 +222,16 @@ VoirInformationsDonneesUnitobs.f <- function()
         tclarrayID[[i, 2]] <- as.character(unitobs$biotope[unitobs$unite_observation ==
                                                         levels(obs$unite_observation)[i]])    #
         tclarrayID[[i, 3]] <-                                                                        #
-            length(pacha$code_espece[pacha$pres_abs == 1 &
+            length(pacha$code_espece[pacha$pres_abs==1 &
                                      pacha$unite_observation == levels(obs$unite_observation)[i]])
         tclarrayID[[i, 4]] <- maxi[i]
     }
 
-    tableInfodonnees <- Voirentableau(tclarrayID, title="Informations par unitobs",
+    tableInfodonnees <- Voirentableau(tclarrayID,
+                                      title="Informations par unitobs",
+                                      infos=paste("Informations par unité d'observation :",
+                                                  "\n\n! tiennent compte des sélections en cours.",
+                                                  sep=""),
                                       height=Nbunitobs, width=5, nrow=Nbunitobs + 1, ncol=5)
 }
 

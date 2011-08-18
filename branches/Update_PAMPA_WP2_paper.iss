@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "PAMPA WP2"
-#define MyAppVersion "1.0-4_test"
+#define MyAppVersion "1.0-5_paper"
 #define MyAppPublisher "Ifremer"
 #define MyAppURL "http://wwz.ifremer.fr/pampa/"
 #define MyAppExeName "PAMPA WP2.bat"
@@ -40,44 +40,45 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked; OnlyBelowVersion: 0,6.1
 
 [Files]
-Source: ".\tests\PAMPA WP2.bat"; DestDir: "{app}"; Flags: ignoreversion
-Source: ".\tests\img\*"; DestDir: "{app}\img"; Flags: ignoreversion
-Source: ".\tests\Doc\*"; DestDir: "{app}\Doc"; Flags: ignoreversion
+Source: ".\paper\PAMPA WP2.bat"; DestDir: "{app}"; Flags: ignoreversion
+Source: ".\paper\img\*"; DestDir: "{app}\img"; Flags: ignoreversion
+Source: ".\paper\Doc\*"; DestDir: "{app}\Doc"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
-Source: ".\tests\config.r"; DestDir: "{app}"; Flags: uninsneveruninstall onlyifdoesntexist
-Source: "tests\barplots_occurrence.R"; DestDir: "{app}"
-Source: "tests\barplots_occurrence_unitobs.R"; DestDir: "{app}"
-Source: "tests/fonctions_graphiques.R"; DestDir: "{app}"
-Source: "tests\boxplots_esp_generiques.R"; DestDir: "{app}"
-Source: "tests\boxplots_unitobs_generiques.R"; DestDir: "{app}"
-Source: "tests\calcul_simple.r"; DestDir: "{app}"
-Source: "tests\command.r"; DestDir: "{app}"
-Source: "tests\corresp-cat-benth.csv"; DestDir: "{app}"
-Source: "tests\fonctions_base.R"; DestDir: "{app}"
-Source: "tests\gestionmessages.r"; DestDir: "{app}"
-Source: "tests\Global.r"; DestDir: "{app}"
-Source: "tests\import.r"; DestDir: "{app}"
-Source: "tests\importdefaut.r"; DestDir: "{app}"
-Source: "tests\interface.r"; DestDir: "{app}"
-Source: "tests\interface_fonctions.R"; DestDir: "{app}"
-Source: "tests\load_packages.R"; DestDir: "{app}"
-Source: "tests\mkfilegroupe.r"; DestDir: "{app}"
-Source: "tests\modeles_lineaires_esp_generiques.R"; DestDir: "{app}"
-Source: "tests\modeles_lineaires_unitobs_generiques.R"; DestDir: "{app}"
-Source: "tests\modeles_lineaires_interface.R"; DestDir: "{app}"
-Source: "tests\modifinterface.r"; DestDir: "{app}"
-Source: "tests\NomsVariables.csv"; DestDir: "{app}"
-Source: "tests\PAMPA WP2.bat"; DestDir: "{app}"
-Source: "tests\requetes.r"; DestDir: "{app}"
-Source: "tests\Rprofile.site"; DestDir: "{app}"
-Source: "tests\selection_variables_fonctions.R"; DestDir: "{app}"
-Source: "tests\selection_variables_interface.R"; DestDir: "{app}"
-Source: "tests\testfichier.r"; DestDir: "{app}"
-Source: "tests\view.r"; DestDir: "{app}"
-Source: "tests\nombres_SVR.R"; DestDir: "{app}"
-Source: "tests\arbres_regression_unitobs_generiques.R"; DestDir: "{app}"
-Source: "tests\arbres_regression_esp_generiques.R"; DestDir: "{app}"
-Source: "tests\demo_cartes.R"; DestDir: "{app}"
+Source: ".\paper\config.r"; DestDir: "{app}"; Flags: uninsneveruninstall onlyifdoesntexist
+Source: "paper\barplots_occurrence.R"; DestDir: "{app}"
+Source: "paper\barplots_occurrence_unitobs.R"; DestDir: "{app}"
+Source: "paper\fonctions_graphiques.R"; DestDir: "{app}"
+Source: "paper\boxplots_esp_generiques.R"; DestDir: "{app}"
+Source: "paper\boxplots_unitobs_generiques.R"; DestDir: "{app}"
+Source: "paper\calcul_simple.r"; DestDir: "{app}"
+Source: "paper\command.r"; DestDir: "{app}"
+Source: "paper\corresp-cat-benth.csv"; DestDir: "{app}"
+Source: "paper\fonctions_base.R"; DestDir: "{app}"
+Source: "paper\gestionmessages.r"; DestDir: "{app}"
+Source: "paper\Global.r"; DestDir: "{app}"
+Source: "paper\import.r"; DestDir: "{app}"
+Source: "paper\importdefaut.r"; DestDir: "{app}"
+Source: "paper\interface.r"; DestDir: "{app}"
+Source: "paper\interface_fonctions.R"; DestDir: "{app}"
+Source: "paper\load_packages.R"; DestDir: "{app}"
+Source: "paper\mkfilegroupe.r"; DestDir: "{app}"
+Source: "paper\modeles_lineaires_esp_generiques.R"; DestDir: "{app}"
+Source: "paper\modeles_lineaires_unitobs_generiques.R"; DestDir: "{app}"
+Source: "paper\modeles_lineaires_interface.R"; DestDir: "{app}"
+Source: "paper\modifinterface.r"; DestDir: "{app}"
+Source: "paper\NomsVariables.csv"; DestDir: "{app}"
+Source: "paper\NomsVariables_en.csv"; DestDir: "{app}"
+Source: "paper\PAMPA WP2.bat"; DestDir: "{app}"
+Source: "paper\requetes.r"; DestDir: "{app}"
+Source: "paper\Rprofile.site"; DestDir: "{app}"
+Source: "paper\selection_variables_fonctions.R"; DestDir: "{app}"
+Source: "paper\selection_variables_interface.R"; DestDir: "{app}"
+Source: "paper\testfichier.r"; DestDir: "{app}"
+Source: "paper\view.r"; DestDir: "{app}"
+Source: "paper\nombres_SVR.R"; DestDir: "{app}"
+Source: "paper\arbres_regression_unitobs_generiques.R"; DestDir: "{app}"
+Source: "paper\arbres_regression_esp_generiques.R"; DestDir: "{app}"
+Source: "paper\demo_cartes.R"; DestDir: "{app}"
 
 
 [Icons]

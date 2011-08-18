@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: boxplots_ttesp_generic.R
-### Time-stamp: <2011-05-10 14:27:21 yreecht>
+### Time-stamp: <2011-06-23 10:25:14 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -142,27 +142,27 @@ WP2boxplot.unitobs.f <- function(metrique, factGraph, factGraphSel, listFact, li
                 " : Graphique non créé !\n")
     }else{
 
-        ## Suppression des valeurs supérieures à X% du maximum (pour plus de lisibilité) :
-        if (getOption("P.maxExclu"))
-        {
-            tmpData <- tmpData[which(tmpData[, metrique] <=
-                                        getOption("P.GraphPartMax") * max(tmpData[, metrique],
-                                                                          na.rm=TRUE)), ]
-        }else{}
+        ## ## Suppression des valeurs supérieures à X% du maximum (pour plus de lisibilité) :
+        ## if (getOption("P.maxExclu"))
+        ## {
+        ##     tmpData <- tmpData[which(tmpData[, metrique] <=
+        ##                                 getOption("P.GraphPartMax") * max(tmpData[, metrique],
+        ##                                                                   na.rm=TRUE)), ]
+        ## }else{}
 
         ## Suppression des 'levels' non utilisés :
         tmpData <- dropLevels.f(tmpData)
 
         ## Ouverture et configuration du périphérique graphique :
-        openDevice.f(noGraph=1,
-                     metrique=metrique,
-                     factGraph=factGraph,
-                     modSel=iFactGraphSel,
-                     listFact=listFact,
-                     type=ifelse(tableMetrique == "unitespta" && factGraph != "classe_taille",
-                                 "CL_unitobs",
-                                 "unitobs"),
-                     typeGraph="boxplot")
+        wmfFile <- openDevice.f(noGraph=1,
+                                metrique=metrique,
+                                factGraph=factGraph,
+                                modSel=iFactGraphSel,
+                                listFact=listFact,
+                                type=ifelse(tableMetrique == "unitespta" && factGraph != "classe_taille",
+                                            "CL_unitobs",
+                                            "unitobs"),
+                                typeGraph="boxplot")
 
         par(mar=c(9, 5, 8, 1), mgp=c(3.5, 1, 0)) # paramètres graphiques.
 
@@ -221,7 +221,10 @@ WP2boxplot.unitobs.f <- function(metrique, factGraph, factGraphSel, listFact, li
         ## ... points :
         if (getOption("P.pointMoyenne"))
         {
-            points(Moyenne, pch=19, col=getOption("P.pointMoyenneCol"))
+            points(Moyenne,
+                   pch=getOption("P.pointMoyennePch"),
+                   col=getOption("P.pointMoyenneCol"), lwd=2.5,
+                   cex=getOption("P.pointMoyenneCex"))
         }else{}
 
         ## ... valeurs :
@@ -230,8 +233,11 @@ WP2boxplot.unitobs.f <- function(metrique, factGraph, factGraphSel, listFact, li
             plotValMoyennes.f(moyennes=Moyenne, objBP=tmpBP)
         }else{}
 
-        ## Avertissement pour les petits effectifs :
-        plotPetitsEffectifs.f(objBP=tmpBP, nbmin=5)
+        if (isTRUE(getOption("P.warnings")))
+        {
+            ## Avertissement pour les petits effectifs :
+            plotPetitsEffectifs.f(objBP=tmpBP, nbmin=5)
+        }else{}
 
         ## Nombres d'observations :
         if (getOption("P.NbObs"))
@@ -240,9 +246,10 @@ WP2boxplot.unitobs.f <- function(metrique, factGraph, factGraphSel, listFact, li
 
             ## Nombres sur l'axe supérieur :
             axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)),
-                 col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5)
+                 col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5,
+                 mgp=c(2, 0.5, 0))
 
-            legend("topleft", "Nombre d'enregistrements par boite à moustache",
+            legend("topleft", "Number of replicates",
                    cex =0.9, col=getOption("P.NbObsCol"), text.col="orange", merge=FALSE)
         }else{}
 
@@ -252,7 +259,13 @@ WP2boxplot.unitobs.f <- function(metrique, factGraph, factGraphSel, listFact, li
     if (getOption("P.graphPDF") || isTRUE(getOption("P.graphPNG")))
     {
         dev.off()
-    }else{}
+    }else{
+        if (.Platform$OS.type == "windows" && isTRUE(getOption("P.graphWMF")))
+        {
+            ## Sauvegarde en wmf si pertinent et souhaité :
+            savePlot(wmfFile, type="wmf", device=dev.cur())
+        }else{}
+    }
 
     pampaProfilingEnd.f()
 }

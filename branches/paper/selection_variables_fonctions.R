@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: Selection_variables_fonctions.R
-### Time-stamp: <2011-05-23 10:34:16 yreecht>
+### Time-stamp: <2011-08-09 19:58:29 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -609,7 +609,7 @@ agregationTableParCritere.f <- function(Data, metrique, facteurs, listFact=NULL)
     reslong <- as.data.frame(as.table(res), responseName=metrique)
     reslong <- reslong[ , c(tail(colnames(reslong), 1), head(colnames(reslong), -1))] # métrique en première.
 
-    ## Agrégartion et ajout des facteurs supplémentaires :
+    ## Agrégation et ajout des facteurs supplémentaires :
     if (!is.null(listFact))
     {
         reslong <- cbind(reslong,
@@ -630,6 +630,20 @@ agregationTableParCritere.f <- function(Data, metrique, facteurs, listFact=NULL)
                                    })
                             }))
     }else{}
+
+
+    ## Rétablir l'ordre initial des nivaux de facteurs :
+    reslong <- as.data.frame(sapply(colnames(reslong),
+                                    function(x)
+                                {
+                                    if (is.factor(reslong[ , x]))
+                                    {
+                                        return(factor(reslong[ , x], levels=levels(Data[ , x])))
+                                    }else{
+                                        return(reslong[ , x])
+                                    }
+                                }, simplify=FALSE))
+
 
     ## Fermeture de la fenêtre d'information
     close.info.f(WinInfo)
@@ -692,8 +706,8 @@ calcBiodiv.f <- function(Data, unitobs="unite_observation", code.especes="code_e
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 29 oct. 2010, 08:58
 
-    ## Suppréssion de tout ce qui n'a pas de genre (peut être du non biotique) :
-    Data <- Data[especes$Genre[match(Data$code_espece, especes$code_espece)] != "ge.", ]
+    ## Supression de tout ce qui n'a pas de genre (peut être du non biotique) :
+    Data <- Data[especes$espece[match(Data$code_espece, especes$code_espece)] != "sp.", ]
 
     ## Suppression des niveaux de facteur inutilisés :
     Data <- dropLevels.f(df=Data)

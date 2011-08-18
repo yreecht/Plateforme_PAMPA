@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: nombres_SVR.R
-### Time-stamp: <2010-12-09 10:59:23 yreecht>
+### Time-stamp: <2011-08-09 18:31:08 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -78,6 +78,19 @@ statRotation.basic.f <- function(facteurs)
 
     ## Nombre de rotations valides :
     nombresRotations <- apply(rotations, 1, sum, na.rm=TRUE)
+
+    if (!is.element("classe_taille", facteurs))
+    {
+        ## Pour les calculs agrégés par unitobs :
+        tmpNombresSVR <- apply(nombresR,
+                               which(names(dimnames(nombresR)) != "code_espece"),
+                               sum, na.rm=TRUE)
+
+        tmpNombresSVR[!rotations] <- NA
+
+        assign(".NombresSVR", tmpNombresSVR, envir=.GlobalEnv)
+        assign(".Rotations", rotations, envir=.GlobalEnv)
+    }else{}
 
     ## Retour des résultats sous forme de liste :
     return(list(nombresMean=nombresMean, nombresMax=nombresMax, nombresSD=nombresSD,

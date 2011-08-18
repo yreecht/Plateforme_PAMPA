@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: comparaison_distri_generique.R
-### Time-stamp: <2011-05-23 10:31:22 yreecht>
+### Time-stamp: <2011-08-09 15:36:37 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -1573,6 +1573,14 @@ sortiesLM.f <- function(objLM, formule, metrique, factAna, modSel, listFact, Dat
 
     options(width=120)
 
+    ## Fonction de création de fenêtre :
+    if (.Platform$OS.type == "windows")
+    {
+        winFUN <- "windows"
+    }else{
+        winFUN <- "X11"
+    }
+
     ## Ajout d'une constante si des zéros dans la métrique + transformation 'log' :
     if (sum(Data[ , metrique] == 0, na.rm=TRUE) & Log)
     {
@@ -1588,7 +1596,7 @@ sortiesLM.f <- function(objLM, formule, metrique, factAna, modSel, listFact, Dat
     ## Chemin et nom de fichier :
     resFile <- resFileLM.f(objLM=objLM, metrique=metrique, factAna=factAna, modSel=modSel, listFact=listFact,
                            Log=Log, sufixe=sufixe, type=type)
-    on.exit(close(resFile), add=TRUE)
+    on.exit(tryCatch(close(resFile), error=function(e){}), add=TRUE)
 
 
     ## Informations et statistiques globales sur le modèle :
@@ -1617,11 +1625,13 @@ sortiesLM.f <- function(objLM, formule, metrique, factAna, modSel, listFact, Dat
                tklabel(WinInfo, text="\nComparaisons multiples en cours...\n"),
                tklabel(WinInfo, text="\t "),
                sticky="w")
+
         tkgrid(tklabel(WinInfo, text="\t "),
                tklabel(WinInfo,
                        text=paste("Veuillez pattienter, ceci peut prendre",
                        " un peu de temps (cette fenêtre se fermera automatiquement)\n", sep="")),
                sticky="w")
+
         tkfocus(WinInfo)
         winSmartPlace.f(WinInfo)
 
@@ -1634,31 +1644,41 @@ sortiesLM.f <- function(objLM, formule, metrique, factAna, modSel, listFact, Dat
                                   modGraphSel=modSel, factGraph=factAna,
                                   listFact=listFact, model="Graphique d'intéractions",
                                   type=type)
-        X11()
-        par(mar=c(5, 4, 5, 2) + 0.1)
+
+        eval(call(winFUN, pointsize=ifelse(isTRUE(getOption("P.graphPaper")), 14, 12)))
+        par(mar=c(5, 4,
+                  ifelse(isTRUE(getOption("P.graphPaper")), 2, 5),
+                  2) + 0.1)
         with(Data,
              if (Log)                   # Les sens de variations peuvent changer en log (sur les moyennes) =>
                                         # besoin d'un graphique adapté :
-             {
-                 eval(parse(text=paste("interaction.plot(", listFact[1], ", ", listFact[2],
-                                       ", log(", metrique, "), ylab=\"",
-                                       paste("log(", Capitalize.f(varNames[metrique, "nom"]), ") moyen", sep=""),
-                                       "\", main=\"", mainTitle, "\", cex.main=0.9)", sep="")))
+         {
+             eval(parse(text=paste("interaction.plot(", listFact[1], ", ", listFact[2],
+                        ", log(", metrique, "), ylab=\"",
+                        paste("mean log(", Capitalize.f(varNames[metrique, "nom"]), ")", sep=""),
+                        "\", xlab=\"", Capitalize.f(varNames[listFact[1], "nom"]),
+                        "\", main=\"",
+                        ifelse(isTRUE(getOption("P.graphPaper")), "", mainTitle),
+                        "\", trace.label=\"", Capitalize.f(varNames[listFact[2], "nom"]),
+                        "\", cex.main=0.9)", sep="")))
 
-              }else{
-                 eval(parse(text=paste("interaction.plot(", listFact[1], ", ", listFact[2],
-                                       ", ", metrique, ", ylab=\"",
-                                       paste(Capitalize.f(varNames[metrique, "nom"]),
-                                             " moyen",
-                                             switch(varNames[metrique, "genre"],
-                                                    "f"="ne",
-                                                    "fp"="nes",
-                                                    "mp"="s",
-                                                    ""), # "moyen", moyens,
+         }else{
+             eval(parse(text=paste("interaction.plot(", listFact[1], ", ", listFact[2],
+                        ", ", metrique, ", ylab=\"",
+                        paste("mean ", Capitalize.f(varNames[metrique, "nom"]),
+                              "",
+                              switch(varNames[metrique, "genre"],
+                                     "f"="ne",
+                                     "fp"="nes",
+                                     "mp"="s",
+                                     ""), # "moyen", moyens,
                                         # "moyenne" ou "moyennes" selon le genre.
-                                             sep=""),
-                                       "\", main=\"", mainTitle, "\", cex.main=0.9)", sep="")))
-             })
+                              sep=""),
+                        "\", xlab=\"", Capitalize.f(varNames[listFact[1], "nom"]),
+                        "\", main=\"", ifelse(isTRUE(getOption("P.graphPaper")), "", mainTitle),
+                        "\", trace.label=\"", Capitalize.f(varNames[listFact[2], "nom"]),
+                        "\", cex.main=0.9)", sep="")))
+         })
 
         tkdestroy(WinInfo)
     }else{
@@ -1674,7 +1694,7 @@ sortiesLM.f <- function(objLM, formule, metrique, factAna, modSel, listFact, Dat
                              listFact=listFact, model=modelType.f(objLM=objLM, Log=Log),
                              type=type)
 
-    X11(width=45, height=35)
+    eval(call(winFUN, width=45, height=35))
     par(mfrow=c(2, 2), oma=c(0, 0, 4.7, 0))
     hist(objLM$residuals, xlab="valeur des résidus ", ylab= "Fréquence ", main=NULL)
     mtext("Distribution des résidus", side=3, cex=0.8)

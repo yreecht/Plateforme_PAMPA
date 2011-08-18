@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: demo_cartes.R
-### Time-stamp: <2011-05-26 15:14:41 yreecht>
+### Time-stamp: <2011-07-29 14:00:52 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -153,7 +153,7 @@ boxplotCarte.f <- function(metrique, tableMetrique)
                              c("longitude", "latitude", "unite_observation")])
 
     ## fond de carte NC :
-    MapNC <- readShapePoly(paste(basePath, "/shapefiles/NewCaledonia_v7.shp", sep=""),
+    MapNC <- readShapePoly(paste(basePath, "/shapefiles/NewCaledonia_v7", sep=""),
                            verbose=TRUE, repair=FALSE, delete_null_obj=TRUE)
 
     ## Périphérique graphique :
@@ -186,7 +186,7 @@ boxplotCarte.f <- function(metrique, tableMetrique)
     {
         subplot(boxplot(y[[i]] ~ x[[i]],
                         ylim=c(0, max(tmpData[ , metrique], na.rm=TRUE)),
-                        col=rev(heat.colors(nlevels(tmpData$statut_protection))),
+                        col=.ColorPalette(nlevels(tmpData$statut_protection)),
                         main=paste("\n\n", names(x)[i]), sep=""),
                 X[i], Y[i], size=c(0.5, 0.5), ## type="plt",
                 pars=list(bg="white", fg="black", cex=0.6, xpd=NA, mgp=c(1.5, 0.5, 0),

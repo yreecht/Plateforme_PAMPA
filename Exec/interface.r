@@ -290,7 +290,7 @@ tkadd(outils, "separator")
 tkadd(outils, "command", label="mise à jour (site de téléchargement)", state="normal",
       command = function()
   {
-      browseURL("http://projet-pampa.fr/wiki/doku.php/wp2:telechargement")
+      browseURL("http://www.projet-pampa.fr/wiki/doku.php/wp2:telechargement")
   })
 
 ## tkadd(outils, "command", label="Langue", state="disabled", command = test.f)
@@ -305,7 +305,7 @@ tkadd(outils, "command", label="mise à jour (site de téléchargement)", state="no
 tkadd(pampainfos, "command", label="Documentation en ligne",
       command = function()
   {
-      browseURL("http://projet-pampa.fr/wiki/doku.php/wp2:wp2#documentation")
+      browseURL("http://www.projet-pampa.fr/wiki/doku.php/wp2:wp2#documentation")
   })
 
 tkadd(pampainfos, "command", label="Documentation (locale)",
@@ -319,7 +319,7 @@ tkadd(pampainfos, "command", label="Documentation (locale)",
 tkadd(pampainfos, "command", label="Forum d'entraide",
       command = function()
   {
-      browseURL("http://projet-pampa.fr/forum/viewforum.php?id=2")
+      browseURL("http://www.projet-pampa.fr/forum/viewforum.php?id=2")
   })
 
 ## tkadd(pampainfos, "command", label="Nouveautés de la plateforme (locale)",

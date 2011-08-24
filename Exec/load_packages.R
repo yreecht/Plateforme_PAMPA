@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: test_load_packages.R
-### Time-stamp: <2011-05-25 16:58:31 yreecht>
+### Time-stamp: <2011-08-23 10:43:05 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -60,7 +60,8 @@ loadPackages.f <- function()
 
     ## Packages nécessaires au bon fonctionnement de la plateforme PAMPA WP2 :
     requiredPack <- c("tcltk", "tkrplot", "vegan", "MASS",
-                      "mvpart", "multcomp", "gamlss", "maps", "maptools", "Hmisc")
+                      "mvpart", "multcomp", "gamlss", "maps", "maptools", ## "Hmisc"
+                      "TeachingDemos")
 
     ## Packages installés :
     installedPack <- installed.packages()[ , "Package"]

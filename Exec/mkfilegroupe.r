@@ -316,9 +316,26 @@ unitespta.f <- function(){
         }
 
         assign("unitespta", unitespta, envir=.GlobalEnv)
-        write.csv(unitespta[ , colnames(unitespta) != "unite_observation"],
-                  file=paste(nameWorkspace, "/FichiersSortie/UnitobsEspeceClassetailleMetriques.csv", sep=""),
-                  row.names = FALSE)
+
+        ## Certaines métriques (densités) sont ramenées à /100m² :
+        if (any(is.element(colnames(unitespta),
+                           colTmp <- c("densite", "densiteMax", "densiteSD",
+                                       "biomasse", "biomassMax", "biomasseSD"))))
+        {
+            unitespta[ , is.element(colnames(unitespta),
+                                    colTmp)] <- sweep(unitespta[ , is.element(colnames(unitespta),
+                                                                              colTmp)],
+                                                      2, 100, "*")
+        }else{}
+
+        ## Sauvegarde dans un fichier :
+        write.csv2(merge(merge(unitespta,
+                               unitobs[ , c("unite_observation", paste("habitat", 1:3, sep=""))],
+                               by=c("unite_observation")),
+                         especes[ , c("code_espece", "Famille", "Genre", "espece")],
+                         by="code_espece"),
+                   file=paste(nameWorkspace, "/FichiersSortie/UnitobsEspeceClassetailleMetriques.csv", sep=""),
+                   row.names = FALSE)
     }else{
         message("Métriques par classe de taille incalculables")
         assign("unitespta",
@@ -578,14 +595,31 @@ unitesp.f <- function(){
     ## Ecriture du fichier des unités d'observations par espèce en sortie
     assign("unitesp", unitesp, envir=.GlobalEnv)
 
-    write.csv(unitesp, file=paste(NomDossierTravail, "UnitobsEspeceMetriques.csv", sep=""), row.names = FALSE)
+    ## Certaines métriques (densités) sont ramenées à /100m² :
+    if (any(is.element(colnames(unitesp),
+                       colTmp <- c("densite", "densiteMax", "densiteSD",
+                                   "biomasse", "biomassMax", "biomasseSD"))))
+    {
+        unitesp[ , is.element(colnames(unitesp),
+                              colTmp)] <- sweep(unitesp[ , is.element(colnames(unitesp),
+                                                                      colTmp)],
+                                          2, 100, "*")
+    }else{}
+
+    ## Sauvegarde dans un fichier :
+    write.csv2(merge(merge(unitesp,
+                           unitobs[ , c("unite_observation", paste("habitat", 1:3, sep=""))],
+                           by=c("unite_observation")),
+                     especes[ , c("code_espece", "Famille", "Genre", "espece")],
+                     by="code_espece"),
+               file=paste(NomDossierTravail, "UnitobsEspeceMetriques.csv", sep=""), row.names = FALSE)
 
     ## table avec la liste des espèces presentes dans chaque transect
     listespunit <- unitesp## [unitesp$pres_abs != 0, ]
     listespunit <- listespunit[order(listespunit$code_espece), ]
     assign("listespunit", listespunit, envir=.GlobalEnv)
 
-    write.csv(listespunit, file=paste(NomDossierTravail, "ListeEspecesUnitobs.csv", sep=""), row.names = FALSE)
+    ## write.csv2(listespunit, file=paste(NomDossierTravail, "ListeEspecesUnitobs.csv", sep=""), row.names = FALSE)
 } # fin unitesp.f()
 
 
@@ -636,11 +670,48 @@ unit.f <- function(){
             unit$densite[is.na(unit$densite)] <- 0 # [!!!] vérifier si c'est correct [yr: 17/08/2010]
         }else{
             ## calcul densite d'abondance
-            unit$nombre <- unit$nombre / 3
-            unit$nombre[is.na(unit$nombre)] <- 0 # as.integer() pour conserver des entiers ?
-            unit$densite <- unit$nombre / (pi * 25)          # [!!!][???] Pourquoi la distance d'observation est fixe
-                                                             # [!!!][???] dans ce cas-ci (5m) alors qu'elle est
-            unit$biomasse <- unit$biomasse / (pi * 25)       # [!!!][???] "dynamique" dans unitesp.f() ?
+            ## Moyennes :
+            unit$nombre <- apply(.NombresSVR,
+                                 1,
+                                 function(x,...){ifelse(all(is.na(x)), NA, mean(x,...))}, na.rm=TRUE)
+
+            ## Maxima :
+            unit$nombreMax <- apply(.NombresSVR,
+                                    1,
+                                    function(x,...){ifelse(all(is.na(x)), NA, max(x,...))}, na.rm=TRUE)
+
+            ## Déviation standard :
+            unit$nombreSD <- apply(.NombresSVR,
+                                   1,
+                                   function(x,...){ifelse(all(is.na(x)), NA, sd(x,...))}, na.rm=TRUE)
+
+            ## Nombre de rotations valides :
+            nombresRotations <- apply(.Rotations, 1, sum, na.rm=TRUE)
+
+            ## Densité :
+            unit$densite <- unit$nombre  /
+                (pi * (as.vector(tapply(obs$dmin,
+                                        obs[ , c("unite_observation")],
+                                        max, na.rm=TRUE)))^2)
+
+            ## Densité max :
+            unit$densiteMax <- unit$nombreMax  /
+                (pi * (as.vector(tapply(obs$dmin,
+                                        obs[ , c("unite_observation")],
+                                        max, na.rm=TRUE)))^2)
+
+            ## Vrais zéros :
+            unit$densiteMax[unit$nombreMax == 0 & !is.na(unit$nombreMax)] <- 0
+
+            ## SD Densité :
+            unit$densiteSD <- unit$nombreSD /
+                (pi * (as.vector(tapply(obs$dmin,
+                                        obs[ , c("unite_observation")],
+                                        max, na.rm=TRUE)))^2)
+
+            ## Vrais zéros :
+            unit$densiteSD[unit$nombreSD == 0 & !is.na(unit$nombreSD)] <- 0
+
         }
 
         ## Certains NAs correspondent à des vrai zéros :
@@ -654,86 +725,14 @@ unit.f <- function(){
         unit$densite[unit$nombre == 0 & !is.na(unit$nombre)] <- 0
 
         ## ##################################################
-        ## calcul richesse specifique
-        unit$richesse_specifique <- as.integer(tapply(unitesp$pres_abs,
-                                                      unitesp$unite_observation, sum, na.rm=TRUE)) # changé pour avoir
-                                                        # des entiers.
-        unit$richesse_specifique[is.na(unit$richesse_specifique)] <- as.integer(0) # pour conserver des entiers  # [!!!] vérifier si c'est correct
-                                        # [yr: 17/08/2010]
+        ##  Indices de diversité :
 
-        ## calcul de l'indice de Simpson
-        ## le calcul se fait sur les $nombre il n'y a donc aucune espece exclue pour le calcul de ces metriques
-        unitespT <- tapply(obs$nombre, list(obs$unite_observation, obs$code_espece), sum, na.rm = TRUE)
-        unitespT[is.na(unitespT)] <- 0 # as.integer() pour conserver des entiers ?
-        ot <- apply(unitespT, 1, sum, na.rm = TRUE)
-        a <- sweep(unitespT, 1, ot, FUN="/")
-        sim <- a^2
-        sim[is.nan(sim)] <- 0
-        sim <- apply(sim, 1, sum, na.rm = TRUE)
-        sim <- as.data.frame(sim)
-        sim$sim <- as.numeric(sim$sim)
-        unit$simpson <- NA                                          # inutile
-        unit$simpson <- sim$sim[match(unit$unitobs, rownames(sim))] # inutile
-        unit$simpson[is.na(unit$simpson)] <- 0
-        unit$l.simpson <- 1 - unit$simpson
-        rm(sim)
+        tmp <- calcBiodiv.f(Data=listespunit, unitobs = "unite_observation",
+                            code.especes = "code_espece", nombres = "nombre", indices = "all")
 
-        ## calcul de l'indice de Shannon
-        sha <- a*log(a) # en base e
-        sha[is.nan(sha)] <- 0
-        sha <- apply(sha, 1, na.rm = TRUE, sum)
-        sha <- as.data.frame(sha)
-        sha$sha <- as.numeric(sha$sha)
-        unit$shannon <- NA
-        unit$shannon <- -sha$sha[match(unit$unitobs, rownames(sha))]
-        unit$shannon[is.na(unit$shannon)] <- 0
-        rm(a, sha)
-
-        ## calcul de l'indice de Pielou
-        unit$pielou <- unit$shannon / log(unit$richesse_specifique)
-        unit$pielou[is.na(unit$pielou)] <- 0
-
-        ## calcul de l'indice de Hill
-        unit$hill <- (1-unit$simpson) / exp(unit$shannon)
-        unit$hill[is.na(unit$hill)] <- 0
-
-        ## suppression de l'indice de shannon (non pertinent)
-        unit$shannon <- NULL
-
-        ## richesse specifique relative :  ## Remplacer par un "switch" ou même une construction plus
-                                        # générique (e.g. construction et évaluation d'une expression dépendant du site
-                                        # étudié) [yreecht: 22/07/2010] OK [yr: 08/10/2010]
-
-        ## Phylum(s) présent(s) dans le jeux de données :
-        phylums <- as.character(unique(na.omit(especes$Phylum[match(obs$code_espece, especes$code_espece)])))
-
-        ## RS relative par rapp. au nombre d'espèces du site :
-        unit$RS.relative.site <- (unit$richesse_specifique /
-                                  nrow(subset(especes,
-                                              eval(parse(text=paste("Obs", siteEtudie, sep=""))) == "oui"))) * 100
-
-        ## RS relative par rapp. au nombre d'espèces du site et du(des) phylum(s) concerné(s) (jeu de données) :
-        unit$RS.relative.site.phylum <- (unit$richesse_specifique /
-                                         nrow(subset(especes,
-                                                     eval(parse(text=paste("Obs", siteEtudie, sep=""))) == "oui" &
-                                                     is.element(Phylum, phylums)))) * 100
-
-        ## RS relative par rapp. au nombre d'espèces des données :
-        unit$RS.relative.donnees <- (unit$richesse_specifique /
-                                     nrow(subset(especes,
-                                                 is.element(code_espece, obs$code_espece)))) * 100
-
-        ## ## RS relative par rapp. au nombre d'espèces des données :
-        ## Inutile : "RS.relative.donnees" est par définition limitée au phylums présents
-
-        ## RS relative par rapp. au nombre d'espèces au niveau régional (OM ou méditerrannée) :
-        unit$RS.relative.region <- (unit$richesse_specifique /
-                                            nrow(especes)) * 100
-
-        ## RS relative par rapp. au nombre d'espèces au niveau régional (OM ou méditerrannée) et
-        ## du(des) phylum(s) concerné(s) (jeu de données) :
-        unit$RS.relative.region.phylum <- (unit$richesse_specifique /
-                                            nrow(subset(especes, is.element(Phylum, phylums)))) * 100
+        unit <- merge(unit, tmp[ , colnames(tmp) != "nombre"], by.x="unitobs", by.y="unite_observation")
+    }else{
+        ## Benthos :
 
     }
 
@@ -744,27 +743,6 @@ unit.f <- function(){
 
     assign("unit", unit, envir=.GlobalEnv)
 
-    ## calculs des indices de diversite taxonomique
-    indicesDiv.f()
-
-    ## le jeu de donnees doit comporter au moins 2 genres et 2 unite d'observations sinon taxa2dist ne fonctionne pas
-    if (length(unique(sp.taxon$genre))>2)
-    {
-        ## formation d'un nouveau tableau avec les valeurs des differents indices
-        ## pour les unites d'observation ayant les indices calcules
-        unit$Delta <- ind_div$Delta[match(unit$unitobs, rownames(ind_div))]
-        unit$DeltaEtoile <- ind_div$DeltaEtoile[match(unit$unitobs, rownames(ind_div))]
-        unit$LambdaPlus <- ind_div$LambdaPlus[match(unit$unitobs, rownames(ind_div))]
-        unit$DeltaPlus <- ind_div$DeltaPlus[match(unit$unitobs, rownames(ind_div))]
-        unit$SDeltaPlus <- ind_div$SDeltaPlus[match(unit$unitobs, rownames(ind_div))]
-        div_expect <- c(div[[8]], div[[9]], div[[10]])
-
-        ## affichage des valeurs attendues
-        message(paste("La valeur theorique de Delta est :" , div_expect[1]))
-        message(paste("La valeur theorique de Delta* est :" , div_expect[2]))
-        message(paste("La valeur theorique de Delta+ est :" , div_expect[3]))
-    }
-
     ## on renomme densite en CPUE pour les jeux de données pêche
     if (is.peche.f())                   # length(typePeche)>1
     {
@@ -774,15 +752,31 @@ unit.f <- function(){
         unit$biomasse <- NULL
     }
 
-    write.csv(unit, file=paste(NomDossierTravail, "UnitobsMetriques.csv", sep=""), row.names = FALSE)
-
     if (is.benthos.f())                 # unique(unitobs$type) == "LIT"
     {
         unit$richesse_specifique <- as.integer(tapply(unitesp$pres_abs, unitesp$unite_observation,
                                                       sum, na.rm=TRUE)) # changé pour avoir des entiers.
         unit$richesse_specifique[is.na(unit$richesse_specifique)] <- as.integer(0) # pour conserver des entiers.
     }
+
     assign("unit", unit, envir=.GlobalEnv)
+
+    ## Certaines métriques (densités) sont ramenées à /100m² :
+    if (any(is.element(colnames(unit),
+                       colTmp <- c("densite", "densiteMax", "densiteSD",
+                                   "biomasse", "biomassMax", "biomasseSD"))))
+    {
+        unit[ , is.element(colnames(unit),
+                           colTmp)] <- sweep(unit[ , is.element(colnames(unit),
+                                                                colTmp)],
+                                       2, 100, "*")
+    }else{}
+
+    ## Sauvegarde dans un fichier :
+    write.csv2(merge(unit,
+                     unitobs[ , c("unite_observation", paste("habitat", 1:3, sep=""))],
+                     by.x="unitobs", by.y=c("unite_observation")),
+               file=paste(NomDossierTravail, "UnitobsMetriques.csv", sep=""), row.names = FALSE)
 
     stepInnerProgressBar.f(n=1)
 

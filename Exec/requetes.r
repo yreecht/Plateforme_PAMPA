@@ -306,7 +306,8 @@ choixespeces.f <- function()
     rm(b)
     assign("contingence", contingence, envir=.GlobalEnv)
 
-    write.csv(contingence, file=paste(nameWorkspace, "/FichiersSortie/ContingenceUnitObsEspeces.csv", sep=""))
+    write.csv2(contingence,
+               file=paste(nameWorkspace, "/FichiersSortie/ContingenceUnitObsEspeces.csv", sep=""))
 
     ## on recrée les tables de base
     creationTablesBase.f()

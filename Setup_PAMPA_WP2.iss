@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "PAMPA WP2"
-#define MyAppVersion "1.0-4"
+#define MyAppVersion "1.1-0"
 #define MyAppPublisher "Ifremer"
 #define MyAppURL "http://wwz.ifremer.fr/pampa/"
 #define MyAppExeName "PAMPA WP2.bat"
@@ -64,3 +64,18 @@ Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChang
 [Dirs]
 Name: "{#InstallDir}\Data"; Flags: uninsneveruninstall; Tasks: ; Languages:
 
+[code]
+// Sauvegarde de l'ancien config.r -> config.bak.R
+procedure CurStepChanged(CurStep: TSetupStep); 
+var
+  OldFile: string;
+begin
+  case CurStep of    
+    ssInstall:
+      begin
+        OldFile := ExpandConstant('{app}\config.r');
+        if FileExists(OldFile) then
+          RenameFile(OldFile, ExpandConstant('{app}\config.bak.r'));
+      end;
+  end;
+end;

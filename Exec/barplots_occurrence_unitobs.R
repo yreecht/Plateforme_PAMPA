@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: barplots_occurrence.R
-### Time-stamp: <2011-01-27 15:53:38 yreecht>
+### Time-stamp: <2011-06-23 11:42:19 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -75,27 +75,32 @@ barplotOccurrence.unitobs.f <- function(factGraph, factGraphSel, listFact, listF
         warning("Nombre d'observations pour (", paste(iFactGraphSel, collapse=", "), ") < ", getOption("P.MinNbObs"),
                 " : Graphique non créé !\n")
     }else{
+        ## Option graphique :
+        cex <- getOption("P.cex")
+
         ## Suppression des 'levels' non utilisés :
         tmpData <- dropLevels.f(tmpData)
 
         ## Ouverture et configuration du périphérique graphique :
-        openDevice.f(noGraph=1,
-                     metrique=metrique,
-                     factGraph=factGraph,
-                     modSel=iFactGraphSel,
-                     listFact=listFact,
-                     type="unitobs",
-                     typeGraph="barplot")
+        wmfFile <- openDevice.f(noGraph=1,
+                                metrique=metrique,
+                                factGraph=factGraph,
+                                modSel=iFactGraphSel,
+                                listFact=listFact,
+                                type="unitobs",
+                                typeGraph="barplot")
 
         ## Titre (d'après les métriques, modalité du facteur de séparation et facteurs de regroupement) :
-        mainTitle <- graphTitle.f(metrique=metrique,
-                                  modGraphSel=iFactGraphSel,
-                                  factGraph=factGraph,
-                                  listFact=listFact,
-                                  type="unitobs")
-
-        ## Paramètres graphiques :
-        par(mar=c(5, 5, 8, 7) + 0.1,  mgp=c(3.5, 1, 0))
+        if (! isTRUE(getOption("P.graphPaper")))
+        {
+            mainTitle <- graphTitle.f(metrique=metrique,
+                                      modGraphSel=iFactGraphSel,
+                                      factGraph=factGraph,
+                                      listFact=listFact,
+                                      type="unitobs")
+        }else{
+            mainTitle <- NULL
+        }
 
         ## Calcul des fréquences :
         heights <- with(tmpData,
@@ -106,17 +111,48 @@ barplotOccurrence.unitobs.f <- function(factGraph, factGraphSel, listFact, listF
                            }))
 
 
+        ## Paramètres graphiques :
+        par(mar=c(4.5,
+            ## Marge de gauche dynamique :
+            tmp2 <- ifelse((tmp <- 2.1 +
+                            ifelse(isTRUE(getOption("P.graphPNG")), # Coef différent pour les PNGs.
+                                   75,
+                                   100)*
+                            max(strDimRotation.f(as.graphicsAnnot(pretty(range(heights, na.rm=TRUE))),
+                                                 srt=0,
+                                                 unit="figure",
+                                                 cex=cex)$width, na.rm=TRUE)) > 11,
+                           11,
+                           tmp),
+            ## Marge supérieure augmentée s'il y a un titre :
+            ifelse(isTRUE(getOption("P.graphPaper")) , 3, 8),
+            7) + 0.1,
+            ## Distance du nom d'axe dépendante de la taille de marge gauche :
+            mgp=c(tmp2 - 1.4, 0.9, 0))
+
+        ## Label axe y :
+        ylab <- parse(text=paste("'", Capitalize.f(varNames[metrique, "nom"]), "'",
+                      ifelse(varNames[metrique, "unite"] != "",
+                             paste("~~(", varNames[metrique, "unite"], ")", sep=""),
+                             ""),
+                      sep=""))
 
         barPlotTmp <- barplot(heights,
                               beside=TRUE,
                               main=mainTitle,
-                              xlab=Capitalize.f(varNames[tail(listFact, 1), "nom"]),
-                              ylab="Fréquences d'occurrence relatives (%)",
+                              xlab="",
+                              ylab=ylab,
                               ylim=c(0, 1.1 * max(heights, na.rm=TRUE)),
-                              col=rev(heat.colors(nrow(heights))),
+                              las=1,
+                              col=.ColorPalette(nrow(heights)),
+                              cex.lab=cex,
+                              cex.axis=cex,
                               legend.text=ifelse(length(listFact) > 1, TRUE, FALSE),
                               args.legend=list("x"="topright", "inset"=-0.08, "xpd"=NA,
                                                "title"=Capitalize.f(varNames[listFact[1], "nom"])))
+
+        mtext(Capitalize.f(varNames[tail(listFact, 1), "nom"]),
+              side=1, line=2.3, cex=cex)
 
         if (getOption("P.NbObs"))
         {
@@ -145,7 +181,13 @@ barplotOccurrence.unitobs.f <- function(factGraph, factGraphSel, listFact, listF
     if (getOption("P.graphPDF") || isTRUE(getOption("P.graphPNG")))
     {
         dev.off()
-    }else{}
+    }else{
+        if (.Platform$OS.type == "windows" && isTRUE(getOption("P.graphWMF")))
+        {
+            ## Sauvegarde en wmf si pertinent et souhaité :
+            savePlot(wmfFile, type="wmf", device=dev.cur())
+        }else{}
+    }
 }
 
 

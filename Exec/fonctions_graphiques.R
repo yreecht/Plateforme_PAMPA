@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: fonctions_graphiques.R
-### Time-stamp: <2011-05-11 16:56:50 yreecht>
+### Time-stamp: <2011-06-23 12:49:02 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -10,6 +10,23 @@
 ###
 ### Fonctions communes pour les graphiques.
 ####################################################################################################
+
+########################################################################################################################
+makeColorPalette.f <- function()
+{
+    ## Purpose: Créer la palette de couleur pour les graphiques
+    ## ----------------------------------------------------------------------
+    ## Arguments:
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date: 31 mai 2011, 17:02
+
+    assign(".ColorPalette",
+           colorRampPalette(switch(getOption("P.colPalette"),
+                                   "heat"=heat.colors(5),
+                                   "gray"=c("#787878", "#dddddd"))),
+           envir=.GlobalEnv)
+}
+
 
 ########################################################################################################################
 resFileGraph.f <- function(metrique, factGraph, modSel, listFact,
@@ -35,7 +52,11 @@ resFileGraph.f <- function(metrique, factGraph, modSel, listFact,
     ## Nom de fichier :
     filename <- paste(nameWorkspace, "/FichiersSortie/", prefix, "_",
                       ## Métrique analysée :
-                      metrique, "_",
+                      metrique,
+                      ifelse(getOption("P.maxExclu") && getOption("P.GraphPartMax") < 1,
+                             paste("(", round(100 * getOption("P.GraphPartMax")),"%-max)", sep=""),
+                             ""),
+                      "_",
                       ## si facteur de séparation des analyses :
                       "Agr-",
                       switch(type,
@@ -106,6 +127,7 @@ openDevice.f <- function(noGraph, metrique, factGraph, modSel, listFact, type="e
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 12 août 2010, 14:54
 
+    fileName <- NULL
 
     if (!getOption("P.graphPDF")) # sorties graphiques à l'écran ou PNG.
     {
@@ -120,12 +142,8 @@ openDevice.f <- function(noGraph, metrique, factGraph, modSel, listFact, type="e
                                                               "%03d",
                                                               ""),
                                               type = type)
-                ## paste(nameWorkspace, "/FichiersSortie/",
-                ##                  metrique, "_", factGraph, "_", paste(listFact, collapse="-"), "-%03d.png", sep="")
 
-
-
-                 ## Si plusieurs graphiques par page :
+                ## Si plusieurs graphiques par page :
                 if (getOption("P.plusieursGraphPage") && length(modSel) > 1 & # Regrouper dans une fonction de test
                     !is.element(type, c("unitobs")))                          # (mutualiser le code). [!!!]
                 {
@@ -135,12 +153,23 @@ openDevice.f <- function(noGraph, metrique, factGraph, modSel, listFact, type="e
                         pointsize=14)
                     par(mfrow=c(getOption("P.nrowGraph"), getOption("P.ncolGraph")))
                 }else{
-                    png(pngFileName, width=ifelse(large, 100, 75) * 15,
-                        height=ifelse(large, 55, 40) * 15, pointsize=14)
+                    png(pngFileName,
+                        width=ifelse(large, 100,
+                                     ifelse(isTRUE(getOption("P.graphPaper")), 50, 75)) * 15,
+                        height=ifelse(large, 55,
+                                      ifelse(isTRUE(getOption("P.graphPaper")), 30, 40)) * 15, pointsize=14)
                 }
             }else{}
 
-        }else{
+        }else{   ## Graphiques à l'écran :
+            ## Des fonctions différentes pour l'affichage à l'écran, selon la plateforme :
+            if (.Platform$OS.type == "windows")
+            {
+                winFUN <- "windows"
+            }else{
+                winFUN <- "X11"
+            }
+
             if (getOption("P.plusieursGraphPage") && # Plusieurs graphs par page...
                     length(modSel) > 1 &&            # ...plus d'un facteur sélectionné...
                     !is.element(type, c("unitobs"))) # ...et pas d'agrégation.
@@ -149,15 +178,30 @@ openDevice.f <- function(noGraph, metrique, factGraph, modSel, listFact, type="e
                      (getOption("P.nrowGraph") * getOption("P.ncolGraph"))) == 1)
                 {
                     ## [!!!] Limiter aux cas nécessaires... (cf. plus haut).
-                    X11(width=ifelse(large, 80, 60),
-                        height=ifelse(large, 45, 35), pointsize=10)
+                    eval(call(winFUN,
+                              width=ifelse(large, 80, 60),
+                              height=ifelse(large, 45, 35),
+                              pointsize=ifelse(isTRUE(getOption("P.graphPaper")), 14, 10)))
+
                     par(mfrow=c(getOption("P.nrowGraph"), getOption("P.ncolGraph")))
                 }else{                  # Pas plusieurs graphs par page.
                 }
             }else{                      # Pas plusieurs graphs par page.
-                X11(width=ifelse(large, 70, 50),
-                    height=ifelse(large, 30, 20), pointsize=10)
+                eval(call(winFUN,
+                          width=ifelse(large, 70,
+                                       ifelse(isTRUE(getOption("P.graphPaper")), 10, 50)),
+                          height=ifelse(large, 30,
+                                        ifelse(isTRUE(getOption("P.graphPaper")), 6, 20)),
+                          pointsize=ifelse(isTRUE(getOption("P.graphPaper")), 14, 10)))
             }
+
+            fileName <- resFileGraph.f(metrique=metrique, factGraph=factGraph, modSel=modSel, listFact=listFact,
+                                       ext="wmf", prefix = typeGraph,
+                                       sufixe = ifelse(getOption("P.plusieursGraphPage") &&
+                                                        (length(modSel) > 1 || modSel[1] == ""),
+                                                       "%03d",
+                                                       ""),
+                                       type=type)
         }
     }else{ ## Sorties graphiques en pdf :
         if (noGraph == 1)
@@ -176,7 +220,11 @@ openDevice.f <- function(noGraph, metrique, factGraph, modSel, listFact, type="e
             }
             ## Ouverture de fichier :
             pdf(pdfFileName, encoding="ISOLatin1", family="URWHelvetica", onefile=onefile,
-                width=ifelse(large, 30, 20), height=ifelse(large, 20, 12), pointsize=14)
+                width=ifelse(large, 30,
+                             ifelse(isTRUE(getOption("P.graphPaper")), 12, 20)),
+                height=ifelse(large, 20,
+                             ifelse(isTRUE(getOption("P.graphPaper")), 8, 12)),
+                pointsize=14)
 
             ## Si plusieurs graphiques par page :
             if (getOption("P.plusieursGraphPage") &&
@@ -187,11 +235,14 @@ openDevice.f <- function(noGraph, metrique, factGraph, modSel, listFact, type="e
             }else{}
         }else{}
     }
+
+    par(cex=getOption("P.cex"))
+    return(fileName)
 }
 
 
 ########################################################################################################################
-boxplotPAMPA.f <- function(exprBP, data,...)
+boxplotPAMPA.f <- function(exprBP, data, main=NULL, cex=getOption("P.cex"),...)
 {
     ## Purpose: Boxplot avec un formatage pour pampa
     ## ----------------------------------------------------------------------
@@ -205,40 +256,74 @@ boxplotPAMPA.f <- function(exprBP, data,...)
     ## Les couleurs pour l'identification des modalités du facteur de second niveau :
     colors <- colBoxplot.f(terms=attr(terms(exprBP), "term.labels"), data=data)
 
+    ## ylims :
+    ylim <- c(min(data[ , metrique], na.rm=TRUE),
+              ifelse(getOption("P.maxExclu") && getOption("P.GraphPartMax") < 1,
+                     getOption("P.GraphPartMax") * max(data[ , metrique], na.rm=TRUE),
+                     max(data[ , metrique], na.rm=TRUE) +
+                     0.1*(max(data[ , metrique], na.rm=TRUE) -
+                          min(data[ , metrique], na.rm=TRUE))))
+
     ## Plot sans affichage pour récupérer l'objet :
     tmpBP <- boxplot(exprBP, data=data,
                      varwidth = TRUE, las=2,
                      col=colors,
-                     ylim=c(min(data[ , metrique], na.rm=TRUE),
-                            max(data[ , metrique], na.rm=TRUE) +
-                            0.1*(max(data[ , metrique], na.rm=TRUE) -
-                                 min(data[ , metrique], na.rm=TRUE))),
+                     ylim=ylim,
+                     cex.lab=cex,
+                     cex.axis=cex,
                      plot=FALSE,
                      ...)
 
-    ## Marge dynamiques :
+    ## Marge dynamiques (adaptation à la longueur des labels) :
     par(mar=c(
-        ifelse((tmp <- 3 +
+        ## Marge du bas dynamique :
+        ifelse((tmp <- 1.1 +
                 ifelse(isTRUE(getOption("P.graphPDF")), # Coef différent pour les PDFs.
-                       42,
-                       28)*
+                       41,
+                       27)*
                 max(strDimRotation.f(tmpBP$names,
                                      srt=45,
                                      unit="figure",
-                                     cex=1.0)$height, na.rm=TRUE)) > 11,
+                                     cex=cex)$height, na.rm=TRUE)) > 11,
                11,
                tmp),
-        5, 8, 1))
+        ## Marge de gauche dynamique :
+        tmp2 <- ifelse((tmp <- 2.6 +
+                        ifelse(isTRUE(getOption("P.graphPNG")), # Coef différent pour les PNGs.
+                               75,
+                               90)*
+                        max(strDimRotation.f(as.graphicsAnnot(pretty(range(if(getOption("P.maxExclu")
+                                                                              && getOption("P.GraphPartMax") < 1)
+                                                                       {
+                                                                           data[data[ ,metrique] <
+                                                                                  getOption("P.GraphPartMax") *
+                                                                                  max(data[ ,metrique], na.rm=TRUE) ,
+                                                                                metrique]
+                                                                       }else{
+                                                                           data[ , metrique]
+                                                                       }, na.rm=TRUE))),
+                                             srt=0,
+                                             unit="figure",
+                                             cex=cex)$width, na.rm=TRUE)) > 11,
+                       11,
+                       tmp),
+        ## Marge supérieure augmentée s'il y a un titre :
+        ifelse(isTRUE(getOption("P.graphPaper")) , 2, 8), 1),
+        ## Distance du nom d'axe dépendante de la taille de marge gauche :
+        mgp=c(tmp2 - 1.4, 0.9, 0))
 
     ## Plot avec affichage cette fois :
     tmpBP <- boxplot(exprBP, data=data,
                      varwidth = TRUE, las=2,
                      col=colors,
-                     ylim=c(min(data[ , metrique], na.rm=TRUE),
-                            max(data[ , metrique], na.rm=TRUE) +
-                            0.1*(max(data[ , metrique], na.rm=TRUE) -
-                                 min(data[ , metrique], na.rm=TRUE))),
+                     ylim=ylim,
                      xaxt="n",
+                     main=if (! isTRUE(getOption("P.graphPaper")))
+                 {
+                     main
+                 }else{NULL},
+                     cex.lab=cex,
+                     cex.axis=cex,
                      ...)
 
     ## Ajout de l'axe des abscices :
@@ -249,18 +334,21 @@ boxplotPAMPA.f <- function(exprBP, data,...)
          y = par("usr")[3] -
              ifelse(isTRUE(getOption("P.graphPDF")), # Coef différent pour les PDFs.
                     0.020,
-                    0.030) *
+                    0.030) * cex *
              diff(range(par("usr")[3:4])),
          labels = tmpBP$names,
          xpd = TRUE, srt = 45, adj = c(1, 1),
-         cex = 1.0)
+         cex = cex)
+
+    ## Stockage des ylim pour les traitements ultérieurs :
+    tmpBP$ylim <- ylim
 
     return(tmpBP)
 }
 
 
 ########################################################################################################################
-strDimRotation.f <- function(x, srt=0, unit="user",...)
+strDimRotation.f <- function(x, srt=0, unit="user", cex=getOption("P.cex"),...)
 {
     ## Purpose: Calcul des dimensions d'une chaîne de caractère à laquelle
     ##          on applique une rotation

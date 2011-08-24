@@ -1,5 +1,30 @@
 
 ########################################################################################################################
+reorderStatus.f <- function(Data, which="statut_protection")
+{
+    ## Purpose: Réordonner les nivaux du status de protection
+    ## ----------------------------------------------------------------------
+    ## Arguments: Data : la table de données.
+    ##            which : l'indice de la colonne (de préférence un nom).
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date:  1 juin 2011, 14:10
+
+    if (is.factor(Data[ , which]))
+    {
+        Data[ , which] <- factor(Data[ , which],
+                                 levels=c(getOption("P.statusOrder")[is.element(getOption("P.statusOrder"),
+                                                                                levels(Data[ , which]))],
+                                          levels(Data[ , which])[!is.element(levels(Data[ , which]),
+                                                                             getOption("P.statusOrder"))]))
+
+        return(Data)
+    }else{
+        stop("Pas un facteur !")
+    }
+}
+
+
+########################################################################################################################
 selectionObs.SVR.f <- function()
 {
     ## Purpose: Définir le seuil de Dmin (en m) au-dessus duquel les
@@ -146,8 +171,9 @@ lectureFichierEspeces.f <- function ()
                         "etat.pop.localBO", "etat.pop.localCR", "endemiqueNC", "endemiqueRUN", "endemiqueMAY",
                         "endemiqueSTM", "endemiqueCB", "endemiqueBA", "endemiqueBO", "endemiqueCR")
 
+
     ## Verification du nombre de colonnes:
-    if (dim(especes)[2] != 125)
+    if (ncol(especes) != 125)
     {
         rm(especes)
         gestionMSGerreur.f("nbChampEsp")
@@ -252,7 +278,7 @@ opendefault.f <- function ()
     ## ################################################################################
 
     unitobs <- read.table(fileNameUnitObs, sep="\t", dec=".", header=TRUE, encoding="latin1")
-    names(unitobs) <- c("AMP", "unite_observation", "type", "site", "station", "caracteristique_1", "caracteristique_2",
+    colnames(unitobs) <- c("AMP", "unite_observation", "type", "site", "station", "caracteristique_1", "caracteristique_2",
          "fraction_echantillonnee", "jour", "mois", "an", "heure", "nebulosite", "direction_vent", "force_vent",
          "etat_mer", "courant", "maree", "phase_lunaire", "latitude", "longitude", "statut_protection", "avant_apres",
          "biotope", "biotope_2", "habitat1", "habitat2", "habitat3", "visibilite", "prof_min", "prof_max", "DimObs1",
@@ -270,7 +296,7 @@ opendefault.f <- function ()
 
     levels(unitobs$caracteristique_1) <- c(levels(unitobs$caracteristique_1), "NA") # bon ça corrige l'erreur ci-dessous
                                         # mais est-ce bien nécessaire ? [yr: 23/08/2010]
-    unitobs$caracteristique_1[is.na(unitobs$caracteristique_1)] <- "NA" # [!!!] Erreur !
+    unitobs$caracteristique_1[is.na(unitobs$caracteristique_1)] <- "NA" # [!!!]
 
     ## Si les unités d'observation sont ne sont pas des facteurs :
     if (!is.factor(unitobs$unite_observation))
@@ -308,6 +334,9 @@ opendefault.f <- function ()
     {
         unitobs[unitobs=="-999"] <- NA
     }
+
+    ## Reorganisation des niveaux de protection :
+    unitobs <- reorderStatus.f(Data=unitobs, which="statut_protection")
 
     ## Années : integer -> factor (nécessaire pour les analyses stats):
     unitobs$an <- factor(unitobs$an)
@@ -409,8 +438,8 @@ opendefault.f <- function ()
 
     attr(PlanEchantillonnage, "class") <- "array" # Pour un affichage en "tableau".
 
-    write.csv(PlanEchantillonnage,
-              file=paste(NomDossierTravail, "PlanEchantillonnage_basique.csv", sep=""), row.names=TRUE)
+    write.csv2(PlanEchantillonnage,
+               file=paste(NomDossierTravail, "PlanEchantillonnage_basique.csv", sep=""), row.names=TRUE)
 
 
     ## ################
@@ -488,7 +517,8 @@ opendefault.f <- function ()
     ## dans le dossier de travail, elle sera detectee comme existante.
     if (exists("contingence", envir=.GlobalEnv, frame, mode="any", inherits=TRUE))
     {
-        write.csv(contingence, file=paste(NomDossierTravail, "ContingenceUnitObsEspeces.csv", sep=""))
+        write.csv2(contingence,
+                   file=paste(NomDossierTravail, "ContingenceUnitObsEspeces.csv", sep=""))
     }
 
     if (!exists("contingence", envir=.GlobalEnv, frame, mode="any", inherits=TRUE))

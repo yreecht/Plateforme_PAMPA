@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: Selection_variables_interface.R
-### Time-stamp: <2011-05-25 15:19:07 yreecht>
+### Time-stamp: <2011-08-23 13:45:17 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -44,17 +44,37 @@ initialiseGraphOptions.f <- function()
             P.PDFunFichierPage = FALSE,         # Créer un fichier par page pour les sorties PDF ?
             P.NbDecimal = 2,                    # Nombre de décimales à afficher sur les graphiques
             P.legendeCouleurs = TRUE,           # Afficher la légende pour le facteur identifié par une des couleurs ?
+            P.colPalette = "heat",              # Type de palette de couleur.
+            P.statusOrder = c("RE", "IN",       # Ordre des nivaux de protection pour les graphiques et analyses.
+                              "Z1", "I1",
+                              "PP",
+                              "Z2", "I2",
+                              "Z3", "I3",
+                              "HR", "OUT",
+                              "Z4"),
+            P.graphPaper = FALSE,
+            P.warnings = TRUE,
+            P.pointMoyenneCex = 1,
+            P.pointMoyennePch = 18,
+            P.cex = 1,
+            P.graphWMF = FALSE,
             ## ####################################################################################################
             ## Classe des options (pour conversion depuis les variables tcl) :
-            P.optionsClass = c(P.maxExclu="logical", P.NbObs="logical", P.NbObsCol="characters",
-                               P.pointMoyenne="logical", P.pointMoyenneCol="characters", P.valMoyenne="logical",
-                               P.valMoyenneCol="characters", "P.GraphPartMax"="numeric",
-                               P.MinNbObs="integer", P.sepGroupes="logical", P.sepGroupesCol="characters",
+            P.optionsClass = c(P.maxExclu="logical", P.NbObs="logical", P.NbObsCol="character",
+                               P.pointMoyenne="logical", P.pointMoyenneCol="character", P.valMoyenne="logical",
+                               P.valMoyenneCol="character", "P.GraphPartMax"="numeric",
+                               P.MinNbObs="integer", P.sepGroupes="logical", P.sepGroupesCol="character",
                                P.graphPDF="logical", P.graphPNG="logical", P.plusieursGraphPage="logical",
                                P.ncolGraph="integer",
                                P.nrowGraph="integer", P.PDFunFichierPage="logical", P.NbDecimal="integer",
-                               P.legendeCouleurs="logical")
+                               P.legendeCouleurs="logical", P.colPalette="character", P.statusOrder="character",
+                               P.graphPaper="logical", P.warnings="logical",
+                               P.pointMoyenneCex="numeric", P.pointMoyennePch="integer", P.cex="numeric",
+                               P.graphWMF="logical")
             )
+
+    ## On crée la pallette de couleurs par défaut :
+    makeColorPalette.f()
 }
 
 
@@ -77,7 +97,15 @@ choixOptionsGraphiques.f <- function()
     env <- environment()
     Done <- tclVar(0)                   # Statut d'exécution.
     P.options <- lapply(options()[names(options("P.optionsClass")[[1]])],
-                               tclVar)  # Sélection des options graphiques de PAMPA.
+                        function(x)
+                    {
+                        tclVar(paste(if (is.logical(x))
+                                     {  # Pour avoir "1" au lieu de "TRUE" -> valeurs logiques pour tcl/tk :
+                                         as.character(as.numeric(x))
+                                     }else{
+                                         as.character(x)
+                                     }, collapse="*_*"))
+                    })  # Sélection des options graphiques de PAMPA.
 
     P.options.old <- options()[names(options("P.optionsClass")[[1]])] # Pour pouvoir restorer les options (Cancel)
 
@@ -126,8 +154,8 @@ choixOptionsGraphiques.f <- function()
 
     ## Placement des éléments sur la grille :
     tkgrid(tklabel(WinOpt))
-    tkgrid(tklabel(FrameExclu, text=paste("Extraire les valeurs extrêmes maximales ",
-                           "de la représentation graphique", sep="")))
+    tkgrid(tklabel(FrameExclu, text=paste("Ne pas représenter les valeurs extrêmes",
+                           "", sep=" ")))
     tkgrid(FrameExclu2)
     tkgrid(tklabel(FrameExclu2, text="(supérieures à"), row=1, column=0, sticky="ne")
     tkgrid(E.GraphPartMax, row=1, column=1, sticky="n")
@@ -213,13 +241,20 @@ choixOptionsGraphiques.f <- function()
                    {
                        ## Conversion dans la bonne classe (renseignée par l'option P.optionClass) :
                        switch(options("P.optionsClass")[[1]][name],
-                              logical=as.logical(as.integer(tclvalue(P.options[[name]]))),
-                              characters=as.character(tclvalue(P.options[[name]])),
-                              integer=as.integer(tclvalue(P.options[[name]])),
-                              numeric=as.numeric(tclvalue(P.options[[name]])),
+                              logical=as.logical(as.integer(unlist(strsplit(tclvalue(P.options[[name]]),
+                                                                            split="*_*", fixed=TRUE)))),
+                              character=as.character(unlist(strsplit(tclvalue(P.options[[name]]),
+                                                                     split="*_*", fixed=TRUE))),
+                              integer=as.integer(unlist(strsplit(tclvalue(P.options[[name]]),
+                                                                 split="*_*", fixed=TRUE))),
+                              numeric=as.numeric(unlist(strsplit(tclvalue(P.options[[name]]),
+                                                                 split="*_*", fixed=TRUE))),
                               stop("Erreur : Option PAMPA '", name, "' non définie"))
                    }, simplify=FALSE))
      }
+
+    ## On re-crée la pallette de couleurs :
+    makeColorPalette.f()
 
     tkdestroy(WinOpt)                   # Destruction de la fenêtre
 }

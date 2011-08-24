@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: Boxplot_generique_calc.R
-### Time-stamp: <2011-05-11 16:17:58 yreecht>
+### Time-stamp: <2011-06-23 10:25:42 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -59,7 +59,7 @@ colBoxplot.f <- function(terms, data)
         n <- length(terms)
 
         ## Définition des couleurs :
-        col <- rep(rev(heat.colors(n=length(unique(na.omit(data[ , terms[n - 1]]))))),
+        col <- rep(.ColorPalette(n=length(unique(na.omit(data[ , terms[n - 1]])))),
                    each=ifelse(n == 2,
                                1,            # Pas de facteur imbriqué.
                                prod(sapply(data[ , terms[1:(n-2)], drop=FALSE], # nombres de niveaux du (des) facteur(s)
@@ -169,13 +169,17 @@ graphTitle.f <- function(metrique, modGraphSel, factGraph, listFact, model=NULL,
 
 
 ########################################################################################################################
-plotValMoyennes.f <- function(moyennes, objBP)
+plotValMoyennes.f <- function(moyennes, objBP,
+                              adj=c(0.5, -0.4), cex=0.9,...)
 {
     ## Purpose: Affichage des moyennes sur les boxplots en évitant le
     ##          recouvrement avec les lignes des boîtes.
     ## ----------------------------------------------------------------------
     ## Arguments: moyennes : les valeurs de moyennes.
     ##            objBP : un objet retourné par la fonction "boxplot".
+    ##            adj : justification.
+    ##            cex : taille de la police.
+    ##            ... : paramètres optionnels supplémentaires passés à text()
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 26 oct. 2010, 15:43
 
@@ -192,12 +196,29 @@ plotValMoyennes.f <- function(moyennes, objBP)
                                rep(NA, max(sapply(pointsOut, length)) - length(x)))
                          }),
                       ncol=length(pointsOut))[ , order(as.numeric(names(pointsOut))), drop=FALSE],
-               max(c(objBP$out, objBP$stats), na.rm=TRUE))
+               if (getOption("P.maxExclu") && getOption("P.GraphPartMax") < 1)
+                   {
+                       objBP$ylim[2]
+                   }else{
+                       max(c(objBP$out, objBP$stats), na.rm=TRUE)
+                   })
+
+    x[x > objBP$ylim[2] | x < objBP$ylim[1]] <- NA
 
     x <- apply(x, 2, sort, na.last=TRUE)
 
     ## Proportions occupées par les différentes parties des boites à moustaches :
-    xprop <- apply(x, 2, function(cln)(tail(cln, -1) - head(cln, -1))/max(cln, na.rm=TRUE))
+    xprop <- apply(x, 2,
+                   function(cln)
+               {
+                   res <- (tail(cln, -1) - head(cln, -1))/max(cln, na.rm=TRUE)
+                   if (all(na.omit(res) <= 0))
+                   {
+                       res[3] <- 1
+                   }else{}
+
+                   return(res)
+               })
 
     ## Ordre de priorité décroissante des positions où écrire :
     ord <- c(3, 4, 2, seq(from=5, to=nrow(xprop)), 1)
@@ -208,8 +229,8 @@ plotValMoyennes.f <- function(moyennes, objBP)
     ## Écriture des valeurs de moyennes sur le graphique :
     text(x=seq_along(xi), y=sapply(seq_along(xi), function(i)x[ord[xi][i], i]),
          labels=as.character(round(moyennes, digits=unlist(options("P.NbDecimal")))),
-         col=getOption("P.valMoyenneCol"), adj=c(0.5, -0.4),
-         cex=0.9)
+         col=getOption("P.valMoyenneCol"), adj=adj,
+         cex=cex,...)
 
 }
 
@@ -226,10 +247,10 @@ plotPetitsEffectifs.f <- function(objBP, nbmin=20)
     {
         msg <- c(
                  ## Affichage d'avertissement pour  > X% du max retiré :
-                 if (getOption("P.maxExclu"))
+                 if (getOption("P.maxExclu") &&  getOption("P.GraphPartMax") < 1)
                  {
                      paste("Enregistrements > ", 100 * getOption("P.GraphPartMax"),
-                           "% du maximum retirés\n", sep="")
+                           "% du maximum non affichés\n", sep="")
                  }else{},
                  paste("petit effectif (< ", nbmin, ")", sep=""))
 
@@ -255,7 +276,14 @@ plotPetitsEffectifs.f <- function(objBP, nbmin=20)
                                    rep(NA, max(sapply(pointsOut, length)) - length(x)))
                              }),
                           ncol=length(pointsOut))[ , order(as.numeric(names(pointsOut))), drop=FALSE],
-                   max(c(objBP$out, objBP$stats), na.rm=TRUE))
+                   if (getOption("P.maxExclu") && getOption("P.GraphPartMax") < 1)
+                   {
+                       objBP$ylim[2]
+                   }else{
+                       max(c(objBP$out, objBP$stats), na.rm=TRUE)
+                   })
+
+        x[x > objBP$ylim[2] | x < objBP$ylim[1]] <- NA
 
         x <- apply(x, 2, sort, na.last=TRUE)
 
@@ -291,7 +319,7 @@ plotPetitsEffectifs.f <- function(objBP, nbmin=20)
         {
             legend("top",
                    paste("Enregistrements > ", 100 * getOption("P.GraphPartMax"),
-                         "% du maximum retirés\n", sep=""),
+                         "% du maximum non affichés\n", sep=""),
                    cex =0.9, col="red", text.col="red", merge=FALSE)
         }else{}
     }
@@ -372,13 +400,13 @@ WP2boxplot.f <- function(metrique, factGraph, factGraphSel, listFact, listFactSe
             next()
         }else{}
 
-        ## Suppression des valeurs supérieures à X% du maximum (pour plus de lisibilité) :
-        if (getOption("P.maxExclu"))
-        {
-            tmpDataMod <- tmpDataMod[which(tmpDataMod[, metrique] <=
-                                           getOption("P.GraphPartMax") * max(tmpDataMod[, metrique],
-                                                                             na.rm=TRUE)), ]
-        }else{}
+        ## ## Suppression des valeurs supérieures à X% du maximum (pour plus de lisibilité) :
+        ## if (getOption("P.maxExclu"))
+        ## {
+        ##     tmpDataMod <- tmpDataMod[which(tmpDataMod[, metrique] <=
+        ##                                    getOption("P.GraphPartMax") * max(tmpDataMod[, metrique],
+        ##                                                                      na.rm=TRUE)), ]
+        ## }else{}
 
         ## Suppression des 'levels' non utilisés :
         tmpDataMod <- dropLevels.f(tmpDataMod)
@@ -387,23 +415,24 @@ WP2boxplot.f <- function(metrique, factGraph, factGraphSel, listFact, listFactSe
         DataBackup[[modGraphSel]] <<- tmpDataMod
 
         ## Ouverture et configuration du périphérique graphique :
-        openDevice.f(noGraph=which(modGraphSel == iFactGraphSel),
-                     metrique=metrique,
-                     factGraph=factGraph,
-                     modSel=if (getOption("P.plusieursGraphPage"))
-                 {
-                     iFactGraphSel      # toutes les modalités.
-                 }else{
-                     modGraphSel        # la modalité courante uniquement.
-                 },
-                     listFact=listFact,
-                     type=switch(tableMetrique, # différents types de graphs en fonction de la table de
+        wmfFile <- openDevice.f(noGraph=which(modGraphSel == iFactGraphSel),
+                                metrique=metrique,
+                                factGraph=factGraph,
+                                modSel=if (getOption("P.plusieursGraphPage"))
+                            {
+                                iFactGraphSel      # toutes les modalités.
+                            }else{
+                                modGraphSel        # la modalité courante uniquement.
+                            },
+                                listFact=listFact,
+                                type=switch(tableMetrique, # différents types de graphs en fonction de la table de
                                         # données.
-                                 "listespunit"={"espece"},
-                                 "unitespta"={"CL_espece"},
-                                 "TableBiodiv"={"unitobs"},
-                                 "espece"),
-                     typeGraph="boxplot")
+                                            "listespunit"={"espece"},
+                                            "unitespta"={"CL_espece"},
+                                            "TableBiodiv"={"unitobs"},
+                                            "espece"),
+                                typeGraph="boxplot")
+
 
         par(mar=c(9, 5, 8, 1), mgp=c(3.5, 1, 0)) # paramètres graphiques.
 
@@ -461,7 +490,10 @@ WP2boxplot.f <- function(metrique, factGraph, factGraphSel, listFact, listFactSe
         ## ... points :
         if (getOption("P.pointMoyenne"))
         {
-            points(Moyenne, pch=19, col=getOption("P.pointMoyenneCol"))
+            points(Moyenne,
+                   pch=getOption("P.pointMoyennePch"),
+                   col=getOption("P.pointMoyenneCol"), lwd=2.5,
+                   cex=getOption("P.pointMoyenneCex"))
         }else{}
 
         ## ... valeurs :
@@ -470,8 +502,11 @@ WP2boxplot.f <- function(metrique, factGraph, factGraphSel, listFact, listFactSe
             plotValMoyennes.f(moyennes=Moyenne, objBP=tmpBP)
         }else{}
 
-        ## Avertissement pour les petits effectifs :
-        plotPetitsEffectifs.f(objBP=tmpBP, nbmin=5)
+        if (isTRUE(getOption("P.warnings")))
+        {
+            ## Avertissement pour les petits effectifs :
+            plotPetitsEffectifs.f(objBP=tmpBP, nbmin=5)
+        }else{}
 
         ## Nombres d'observations :
         if (getOption("P.NbObs"))
@@ -480,25 +515,25 @@ WP2boxplot.f <- function(metrique, factGraph, factGraphSel, listFact, listFactSe
 
             ## Nombres sur l'axe supérieur :
             axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)),
-                 col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5)
+                 col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5,
+                 mgp=c(2, 0.5, 0))
 
             legend("topleft", "Nombre d'enregistrements par boite à moustache",
                    cex =0.9, col=getOption("P.NbObsCol"), text.col="orange", merge=FALSE)
         }else{}
-
-        ## ## Affichage d'avertissement pour  > X% du max retiré :
-        ## if (getOption("P.maxExclu"))
-        ## {
-        ##     legend("top",
-        ##            paste("Enregistrements > ", 100 * getOption("P.GraphPartMax"), "% du maximum retirés", sep=""),
-        ##            cex =0.9, col="red", text.col="red", merge=FALSE)
-        ## }else{}
 
         ## On ferme les périphériques PNG en mode fichier individuel :
         if (isTRUE(getOption("P.graphPNG")) &&
             (! getOption("P.plusieursGraphPage") || length(iFactGraphSel) <= 1))
         {
             dev.off()
+        }else{}
+
+        ## Sauvegarde en wmf si pertinent et souhaité :
+        if (.Platform$OS.type == "windows" && isTRUE(getOption("P.graphWMF")) &&
+            (! getOption("P.plusieursGraphPage") || length(iFactGraphSel) <= 1))
+        {
+            savePlot(wmfFile, type="wmf", device=dev.cur())
         }else{}
 
     }  ## Fin de boucle graphique.
@@ -508,6 +543,13 @@ WP2boxplot.f <- function(metrique, factGraph, factGraphSel, listFact, listFactSe
         (isTRUE(getOption("P.graphPNG")) && getOption("P.plusieursGraphPage") && length(iFactGraphSel) > 1))
     {
         dev.off()
+    }else{}
+
+    ## Sauvegarde en wmf restants si pertinent et souhaité :
+    if (.Platform$OS.type == "windows" && isTRUE(getOption("P.graphWMF")) &&
+        getOption("P.plusieursGraphPage") && length(iFactGraphSel) > 1)
+    {
+        savePlot(wmfFile, type="wmf", device=dev.cur())
     }else{}
 
     pampaProfilingEnd.f()

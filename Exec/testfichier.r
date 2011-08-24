@@ -19,7 +19,7 @@ testfileref.f <- function ()
     EnregistrerWinTest <- function ()
     {
         FichierCSV <- paste(NomDossierTravail, "Infos_", fileName3, ".csv", sep="")
-        write.csv(dataframeRefEsp, file=FichierCSV, row.names = FALSE)
+        write.csv2(dataframeRefEsp, file=FichierCSV, row.names = FALSE)
         gestionMSGinfo.f("InfoRefSpeEnregistre", FichierCSV)
         tkmessageBox(message=paste("Votre fichier d'information sur le référentiel espèce",
                                    " a été enregistré au format CSV dans le dossier de travail", sep=""))

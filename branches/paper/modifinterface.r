@@ -40,7 +40,8 @@ ModifierMenuApresImport.f <- function()
     }
 
     ## Suppression de la colonne "sélections" si besoin :
-    if (nchar(tclvalue(tclarray[[0, 4]])) > 3)
+    if (tryCatch(nchar(tclvalue(tclarray[[0, 4]])),
+                 error=function(e){0}) > 3)
     {
         tkdelete(table1, "cols", "end", 1)
     }

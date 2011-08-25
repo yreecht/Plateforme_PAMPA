@@ -317,21 +317,25 @@ unitespta.f <- function(){
 
         assign("unitespta", unitespta, envir=.GlobalEnv)
 
-        unitespta[ , is.element(colnames(unitespta),
-                                c("densite", "densiteMax", "densiteSD",
-                                  "biomasse", "biomassMax", "biomasseSD"))] <-
-                                      sweep(unitespta[ , is.element(colnames(unitespta),
-                                                                    c("densite", "densiteMax", "densiteSD",
-                                                                      "biomasse", "biomassMax", "biomasseSD"))],
-                                            2, 100, "*")
+        ## Certaines métriques (densités) sont ramenées à /100m² :
+        if (any(is.element(colnames(unitespta),
+                           colTmp <- c("densite", "densiteMax", "densiteSD",
+                                       "biomasse", "biomassMax", "biomasseSD"))))
+        {
+            unitespta[ , is.element(colnames(unitespta),
+                                    colTmp)] <- sweep(unitespta[ , is.element(colnames(unitespta),
+                                                                              colTmp)],
+                                                      2, 100, "*")
+        }else{}
 
-        write.csv(merge(merge(unitespta,
-                              unitobs[ , c("unite_observation", paste("habitat", 1:3, sep=""))],
-                              by=c("unite_observation")),
-                        especes[ , c("code_espece", "Famille", "Genre", "espece")],
-                        by="code_espece"),
-                  file=paste(nameWorkspace, "/FichiersSortie/UnitobsEspeceClassetailleMetriques.csv", sep=""),
-                  row.names = FALSE)
+        ## Sauvegarde dans un fichier :
+        write.csv2(merge(merge(unitespta,
+                               unitobs[ , c("unite_observation", paste("habitat", 1:3, sep=""))],
+                               by=c("unite_observation")),
+                         especes[ , c("code_espece", "Famille", "Genre", "espece")],
+                         by="code_espece"),
+                   file=paste(nameWorkspace, "/FichiersSortie/UnitobsEspeceClassetailleMetriques.csv", sep=""),
+                   row.names = FALSE)
     }else{
         message("Métriques par classe de taille incalculables")
         assign("unitespta",
@@ -591,27 +595,31 @@ unitesp.f <- function(){
     ## Ecriture du fichier des unités d'observations par espèce en sortie
     assign("unitesp", unitesp, envir=.GlobalEnv)
 
-    unitesp[ , is.element(colnames(unitesp),
-                          c("densite", "densiteMax", "densiteSD",
-                            "biomasse", "biomassMax", "biomasseSD"))] <-
-                                sweep(unitesp[ , is.element(colnames(unitesp),
-                                                            c("densite", "densiteMax", "densiteSD",
-                                                              "biomasse", "biomassMax", "biomasseSD"))],
-                                      2, 100, "*")
+    ## Certaines métriques (densités) sont ramenées à /100m² :
+    if (any(is.element(colnames(unitesp),
+                       colTmp <- c("densite", "densiteMax", "densiteSD",
+                                   "biomasse", "biomassMax", "biomasseSD"))))
+    {
+        unitesp[ , is.element(colnames(unitesp),
+                              colTmp)] <- sweep(unitesp[ , is.element(colnames(unitesp),
+                                                                      colTmp)],
+                                          2, 100, "*")
+    }else{}
 
-    write.csv(merge(merge(unitesp,
-                          unitobs[ , c("unite_observation", paste("habitat", 1:3, sep=""))],
-                          by=c("unite_observation")),
-                    especes[ , c("code_espece", "Famille", "Genre", "espece")],
-                    by="code_espece"),
-              file=paste(NomDossierTravail, "UnitobsEspeceMetriques.csv", sep=""), row.names = FALSE)
+    ## Sauvegarde dans un fichier :
+    write.csv2(merge(merge(unitesp,
+                           unitobs[ , c("unite_observation", paste("habitat", 1:3, sep=""))],
+                           by=c("unite_observation")),
+                     especes[ , c("code_espece", "Famille", "Genre", "espece")],
+                     by="code_espece"),
+               file=paste(NomDossierTravail, "UnitobsEspeceMetriques.csv", sep=""), row.names = FALSE)
 
     ## table avec la liste des espèces presentes dans chaque transect
     listespunit <- unitesp## [unitesp$pres_abs != 0, ]
     listespunit <- listespunit[order(listespunit$code_espece), ]
     assign("listespunit", listespunit, envir=.GlobalEnv)
 
-    ## write.csv(listespunit, file=paste(NomDossierTravail, "ListeEspecesUnitobs.csv", sep=""), row.names = FALSE)
+    ## write.csv2(listespunit, file=paste(NomDossierTravail, "ListeEspecesUnitobs.csv", sep=""), row.names = FALSE)
 } # fin unitesp.f()
 
 
@@ -753,18 +761,22 @@ unit.f <- function(){
 
     assign("unit", unit, envir=.GlobalEnv)
 
-    unit[ , is.element(colnames(unit),
-                       c("densite", "densiteMax", "densiteSD",
-                         "biomasse", "biomassMax", "biomasseSD"))] <-
-                             sweep(unit[ , is.element(colnames(unit),
-                                                      c("densite", "densiteMax", "densiteSD",
-                                                        "biomasse", "biomassMax", "biomasseSD"))],
-                                   2, 100, "*")
+    ## Certaines métriques (densités) sont ramenées à /100m² :
+    if (any(is.element(colnames(unit),
+                       colTmp <- c("densite", "densiteMax", "densiteSD",
+                                   "biomasse", "biomassMax", "biomasseSD"))))
+    {
+        unit[ , is.element(colnames(unit),
+                           colTmp)] <- sweep(unit[ , is.element(colnames(unit),
+                                                                colTmp)],
+                                       2, 100, "*")
+    }else{}
 
-    write.csv(merge(unit,
-                    unitobs[ , c("unite_observation", paste("habitat", 1:3, sep=""))],
-                    by.x="unitobs", by.y=c("unite_observation")),
-              file=paste(NomDossierTravail, "UnitobsMetriques.csv", sep=""), row.names = FALSE)
+    ## Sauvegarde dans un fichier :
+    write.csv2(merge(unit,
+                     unitobs[ , c("unite_observation", paste("habitat", 1:3, sep=""))],
+                     by.x="unitobs", by.y=c("unite_observation")),
+               file=paste(NomDossierTravail, "UnitobsMetriques.csv", sep=""), row.names = FALSE)
 
     stepInnerProgressBar.f(n=1)
 

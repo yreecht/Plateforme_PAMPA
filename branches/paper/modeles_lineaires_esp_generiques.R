@@ -1655,7 +1655,7 @@ sortiesLM.f <- function(objLM, formule, metrique, factAna, modSel, listFact, Dat
          {
              eval(parse(text=paste("interaction.plot(", listFact[1], ", ", listFact[2],
                         ", log(", metrique, "), ylab=\"",
-                        paste("mean log(", Capitalize.f(varNames[metrique, "nom"]), ")", sep=""),
+                        paste("log(", Capitalize.f(varNames[metrique, "nom"]), ") moyen", sep=""),
                         "\", xlab=\"", Capitalize.f(varNames[listFact[1], "nom"]),
                         "\", main=\"",
                         ifelse(isTRUE(getOption("P.graphPaper")), "", mainTitle),
@@ -1665,8 +1665,8 @@ sortiesLM.f <- function(objLM, formule, metrique, factAna, modSel, listFact, Dat
          }else{
              eval(parse(text=paste("interaction.plot(", listFact[1], ", ", listFact[2],
                         ", ", metrique, ", ylab=\"",
-                        paste("mean ", Capitalize.f(varNames[metrique, "nom"]),
-                              "",
+                        paste("", Capitalize.f(varNames[metrique, "nom"]),
+                              " moyen",
                               switch(varNames[metrique, "genre"],
                                      "f"="ne",
                                      "fp"="nes",

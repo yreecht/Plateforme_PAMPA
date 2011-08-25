@@ -249,7 +249,7 @@ WP2boxplot.unitobs.f <- function(metrique, factGraph, factGraphSel, listFact, li
                  col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5,
                  mgp=c(2, 0.5, 0))
 
-            legend("topleft", "Number of replicates",
+            legend("topleft", "Nombre d'enregistrements par boite à moustache",
                    cex =0.9, col=getOption("P.NbObsCol"), text.col="orange", merge=FALSE)
         }else{}
 

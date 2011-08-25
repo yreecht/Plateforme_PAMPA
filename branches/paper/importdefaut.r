@@ -438,8 +438,8 @@ opendefault.f <- function ()
 
     attr(PlanEchantillonnage, "class") <- "array" # Pour un affichage en "tableau".
 
-    write.csv(PlanEchantillonnage,
-              file=paste(NomDossierTravail, "PlanEchantillonnage_basique.csv", sep=""), row.names=TRUE)
+    write.csv2(PlanEchantillonnage,
+               file=paste(NomDossierTravail, "PlanEchantillonnage_basique.csv", sep=""), row.names=TRUE)
 
 
     ## ################
@@ -517,7 +517,8 @@ opendefault.f <- function ()
     ## dans le dossier de travail, elle sera detectee comme existante.
     if (exists("contingence", envir=.GlobalEnv, frame, mode="any", inherits=TRUE))
     {
-        write.csv(contingence, file=paste(NomDossierTravail, "ContingenceUnitObsEspeces.csv", sep=""))
+        write.csv2(contingence,
+                   file=paste(NomDossierTravail, "ContingenceUnitObsEspeces.csv", sep=""))
     }
 
     if (!exists("contingence", envir=.GlobalEnv, frame, mode="any", inherits=TRUE))

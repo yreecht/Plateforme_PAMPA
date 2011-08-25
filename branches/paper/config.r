@@ -91,8 +91,14 @@ assign("Jeuxdonnescoupe", Jeuxdonnescoupe, envir=.GlobalEnv)
 ########################################################################################################################
 ## Ajouts pour les graphs génériques [yr: 13/08/2010] :
 
-## Noms d'usage des variables des principales tables de données (référentiels compris) :
-assign("varNames", read.csv(paste(basePath, "/Exec/NomsVariables.csv", sep=""),
-                            header=TRUE, row.names=1, stringsAsFactors=FALSE),
+## Noms d'usage des variables des principales tables de données
+## (référentiels compris) :
+assign("varNames",
+       read.csv(paste(basePath, "/Exec/NomsVariables_fr.csv", sep=""),
+                header=TRUE, row.names=1, stringsAsFactors=FALSE),
        envir=.GlobalEnv)
+
+## Remplacer "/Exec/NomsVariables_fr.csv" par "/Exec/NomsVariables_en.csv" pour des axes et noms de variables en
+## anglais.
+## Affecte uniquement les sorties !
 

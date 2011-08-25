@@ -249,10 +249,10 @@ plotPetitsEffectifs.f <- function(objBP, nbmin=20)
                  ## Affichage d'avertissement pour  > X% du max retiré :
                  if (getOption("P.maxExclu") &&  getOption("P.GraphPartMax") < 1)
                  {
-                     paste("Records > ", 100 * getOption("P.GraphPartMax"),
-                           "% of the maximum not plotted\n", sep="")
+                     paste("Enregistrements > ", 100 * getOption("P.GraphPartMax"),
+                           "% du maximum non affichés\n", sep="")
                  }else{},
-                 paste("small sample (< ", nbmin, ")", sep=""))
+                 paste("petit effectif (< ", nbmin, ")", sep=""))
 
         ## "Légende" :
         legend("top",
@@ -318,8 +318,8 @@ plotPetitsEffectifs.f <- function(objBP, nbmin=20)
         if (getOption("P.maxExclu"))
         {
             legend("top",
-                   paste("Records > ", 100 * getOption("P.GraphPartMax"),
-                         "% of the maximum not plotted\n", sep=""),
+                   paste("Enregistrements > ", 100 * getOption("P.GraphPartMax"),
+                         "% du maximum non affichés\n", sep=""),
                    cex =0.9, col="red", text.col="red", merge=FALSE)
         }else{}
     }

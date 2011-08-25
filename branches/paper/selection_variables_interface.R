@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: Selection_variables_interface.R
-### Time-stamp: <2011-06-23 10:47:58 yreecht>
+### Time-stamp: <2011-08-23 13:45:17 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -45,16 +45,19 @@ initialiseGraphOptions.f <- function()
             P.NbDecimal = 2,                    # Nombre de décimales à afficher sur les graphiques
             P.legendeCouleurs = TRUE,           # Afficher la légende pour le facteur identifié par une des couleurs ?
             P.colPalette = "heat",              # Type de palette de couleur.
-            P.statusOrder = c("RE", "PP", "HR", # Ordre des nivaux de protection pour les graphiques et analyses.
+            P.statusOrder = c("RE", "IN",       # Ordre des nivaux de protection pour les graphiques et analyses.
                               "Z1", "I1",
+                              "PP",
                               "Z2", "I2",
                               "Z3", "I3",
+                              "HR", "OUT",
                               "Z4"),
             P.graphPaper = FALSE,
             P.warnings = TRUE,
             P.pointMoyenneCex = 1,
             P.pointMoyennePch = 18,
             P.cex = 1,
+            P.graphWMF = FALSE,
             ## ####################################################################################################
             ## Classe des options (pour conversion depuis les variables tcl) :
             P.optionsClass = c(P.maxExclu="logical", P.NbObs="logical", P.NbObsCol="character",
@@ -66,7 +69,8 @@ initialiseGraphOptions.f <- function()
                                P.nrowGraph="integer", P.PDFunFichierPage="logical", P.NbDecimal="integer",
                                P.legendeCouleurs="logical", P.colPalette="character", P.statusOrder="character",
                                P.graphPaper="logical", P.warnings="logical",
-                               P.pointMoyenneCex="numeric", P.pointMoyennePch="integer", P.cex="numeric")
+                               P.pointMoyenneCex="numeric", P.pointMoyennePch="integer", P.cex="numeric",
+                               P.graphWMF="logical")
             )
 
     ## On crée la pallette de couleurs par défaut :

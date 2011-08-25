@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: demo_cartes.R
-### Time-stamp: <2011-07-29 14:00:52 yreecht>
+### Time-stamp: <2011-08-23 10:45:30 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -152,6 +152,8 @@ boxplotCarte.f <- function(metrique, tableMetrique)
                      unitobs[match(tmpData$unite_observation, unitobs$unite_observation) ,
                              c("longitude", "latitude", "unite_observation")])
 
+    tmpData <- dropLevels.f(tmpData)
+
     ## fond de carte NC :
     MapNC <- readShapePoly(paste(basePath, "/shapefiles/NewCaledonia_v7", sep=""),
                            verbose=TRUE, repair=FALSE, delete_null_obj=TRUE)
@@ -181,16 +183,25 @@ boxplotCarte.f <- function(metrique, tableMetrique)
     y <- tapply(tmpData[ , metrique], tmpData$site, function(x)x)
     x <- tapply(tmpData$statut_protection, tmpData$site, function(x)x)
 
+    ## Rectangles pour avoir un fond (transparent) aux subplots.
+    for (i in seq_along(X))
+    {
+        subplot({plot(0:1, 0:1, xaxt="n", yaxt="n", type="n", xlab="", ylab="", bty="n") ;
+                 rect(0, 0, 1, 1, col=rgb(1, 1, 1, 0.4))},
+                X[i], Y[i], size=c(1.2, 1.12), type="plt")
+    }
 
+    ## Barplots :
     for (i in seq_along(X))
     {
         subplot(boxplot(y[[i]] ~ x[[i]],
                         ylim=c(0, max(tmpData[ , metrique], na.rm=TRUE)),
                         col=.ColorPalette(nlevels(tmpData$statut_protection)),
-                        main=paste("\n\n", names(x)[i]), sep=""),
-                X[i], Y[i], size=c(0.5, 0.5), ## type="plt",
+                        main=paste("", names(x)[i], sep=""),
+                        las=1),
+                X[i], Y[i], size=c(1.2, 1.12),  type="fig",
                 pars=list(bg="white", fg="black", cex=0.6, xpd=NA, mgp=c(1.5, 0.5, 0),
-                          tcl=-0.3))
+                          tcl=-0.3, mar=c(2.5, 4, 2, 1) + 0.1))
     }
 }
 

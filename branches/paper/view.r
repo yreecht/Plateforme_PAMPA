@@ -21,7 +21,7 @@ Voirentableau <- function(Montclarray, title="", height=-1, width=-1, nrow=-1, n
     EnregistrerWintb <- function()
     {
         FichierCSV <- paste(NomDossierTravail, "Tableau_", title, ".csv", sep="")
-        write.csv(dataframetb, file=FichierCSV, row.names = FALSE)
+        write.csv2(dataframetb, file=FichierCSV, row.names = FALSE)
 
         gestionMSGinfo.f("InfoRefSpeEnregistre", FichierCSV)
 
@@ -101,9 +101,9 @@ VoirPlanEchantillonnage.f <- function()
 {
     runLog.f(msg=c("Affichage du plan d'échantillonnage :"))
 
-    myRarrayPE <- read.csv(paste(NomDossierTravail,
-                                 "PlanEchantillonnage_basique.csv", sep=""),
-                           row.names=1)
+    myRarrayPE <- read.csv2(paste(NomDossierTravail,
+                                  "PlanEchantillonnage_basique.csv", sep=""),
+                            row.names=1)
 
     tkinsert(txt.w, "end", paste("\n fichier Plan d'échantillonnage lu :\n ", myRarrayPE))
 

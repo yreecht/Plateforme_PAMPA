@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "PAMPA WP2"
-#define MyAppVersion "1.0-5_paper"
+#define MyAppVersion "1.1-0_paper"
 #define MyAppPublisher "Ifremer"
 #define MyAppURL "http://wwz.ifremer.fr/pampa/"
 #define MyAppExeName "PAMPA WP2.bat"
@@ -66,7 +66,7 @@ Source: "paper\modeles_lineaires_esp_generiques.R"; DestDir: "{app}"
 Source: "paper\modeles_lineaires_unitobs_generiques.R"; DestDir: "{app}"
 Source: "paper\modeles_lineaires_interface.R"; DestDir: "{app}"
 Source: "paper\modifinterface.r"; DestDir: "{app}"
-Source: "paper\NomsVariables.csv"; DestDir: "{app}"
+Source: "paper\NomsVariables_fr.csv"; DestDir: "{app}"
 Source: "paper\NomsVariables_en.csv"; DestDir: "{app}"
 Source: "paper\PAMPA WP2.bat"; DestDir: "{app}"
 Source: "paper\requetes.r"; DestDir: "{app}"

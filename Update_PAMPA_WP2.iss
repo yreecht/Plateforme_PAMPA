@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "PAMPA WP2"
-#define MyAppVersion "1.1-0"
+#define MyAppVersion "1.1-1"
 #define MyAppPublisher "Ifremer"
 #define MyAppURL "http://wwz.ifremer.fr/pampa/"
 #define MyAppExeName "PAMPA WP2.bat"

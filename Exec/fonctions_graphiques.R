@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: fonctions_graphiques.R
-### Time-stamp: <2011-06-23 12:49:02 yreecht>
+### Time-stamp: <2011-08-26 15:40:00 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -275,42 +275,51 @@ boxplotPAMPA.f <- function(exprBP, data, main=NULL, cex=getOption("P.cex"),...)
                      ...)
 
     ## Marge dynamiques (adaptation à la longueur des labels) :
-    par(mar=c(
-        ## Marge du bas dynamique :
-        ifelse((tmp <- 1.1 +
-                ifelse(isTRUE(getOption("P.graphPDF")), # Coef différent pour les PDFs.
-                       41,
-                       27)*
-                max(strDimRotation.f(tmpBP$names,
-                                     srt=45,
-                                     unit="figure",
-                                     cex=cex)$height, na.rm=TRUE)) > 11,
-               11,
-               tmp),
-        ## Marge de gauche dynamique :
-        tmp2 <- ifelse((tmp <- 2.6 +
-                        ifelse(isTRUE(getOption("P.graphPNG")), # Coef différent pour les PNGs.
-                               75,
-                               90)*
-                        max(strDimRotation.f(as.graphicsAnnot(pretty(range(if(getOption("P.maxExclu")
-                                                                              && getOption("P.GraphPartMax") < 1)
-                                                                       {
-                                                                           data[data[ ,metrique] <
-                                                                                  getOption("P.GraphPartMax") *
-                                                                                  max(data[ ,metrique], na.rm=TRUE) ,
-                                                                                metrique]
-                                                                       }else{
-                                                                           data[ , metrique]
-                                                                       }, na.rm=TRUE))),
-                                             srt=0,
-                                             unit="figure",
-                                             cex=cex)$width, na.rm=TRUE)) > 11,
-                       11,
-                       tmp),
-        ## Marge supérieure augmentée s'il y a un titre :
-        ifelse(isTRUE(getOption("P.graphPaper")) , 2, 8), 1),
-        ## Distance du nom d'axe dépendante de la taille de marge gauche :
-        mgp=c(tmp2 - 1.4, 0.9, 0))
+    optim(par=unlist(par("mai")),       # Le rapport inch/ligne est modifié en changeant les marges => besoin
+                                        # de l'optimiser.
+          fn=function(x)
+      {
+          par(mai=c(
+              ## Marge du bas dynamique :
+              ifelse((tmp <- lineInchConvert.f()$V * cex * unlist(par("lheight")) * (0.2 + 0.9) + # marge
+                                        # supplémentaire.
+                      max(strDimRotation.f(tmpBP$names,
+                                           srt=45,
+                                           unit="inches",
+                                           cex=cex)$height, na.rm=TRUE)) > 0.65 * unlist(par("pin"))[2],
+                     0.65 * unlist(par("pin"))[2],
+                     tmp),
+              ## Marge de gauche dynamique :
+              tmp2 <- ifelse((tmp <- lineInchConvert.f()$H * cex * unlist(par("lheight")) * (1.4 +0.4 + 0.9) + # marge
+                                        # supplémentaire.
+                              max(strDimRotation.f(as.graphicsAnnot(pretty(range(if(getOption("P.maxExclu")
+                                                                                    && getOption("P.GraphPartMax") < 1)
+                                                                             {
+                                                                                 data[data[ ,metrique] <
+                                                                                      getOption("P.GraphPartMax") *
+                                                                                      max(data[ ,metrique], na.rm=TRUE) ,
+                                                                                      metrique]
+                                                                             }else{
+                                                                                 data[ , metrique]
+                                                                             }, na.rm=TRUE))),
+                                                   srt=0,
+                                                   unit="inches",
+                                                   cex=cex)$width, na.rm=TRUE)) > 0.7 * unlist(par("pin"))[1],
+                             0.7 * unlist(par("pin"))[1],
+                             tmp),
+              ## Marge supérieure augmentée s'il y a un titre :
+              ifelse(isTRUE(getOption("P.graphPaper")) ,
+                     2 * lineInchConvert.f()$V,
+                     8 * lineInchConvert.f()$V),
+              ## Marge de droite :
+              lineInchConvert.f()$H * cex * unlist(par("lheight")) * 0.5),
+              ## Distance du nom d'axe dépendante de la taille de marge gauche :
+              mgp=c(tmp2 / lineInchConvert.f()$H - 1.4, 0.9, 0))
+
+          ## Valeur à minimiser :
+          return(sum(abs(x - unlist(par("mai")))))
+      },
+          control=list(abstol=0.01))    # Tolérance.
 
     ## Plot avec affichage cette fois :
     tmpBP <- boxplot(exprBP, data=data,
@@ -363,12 +372,12 @@ strDimRotation.f <- function(x, srt=0, unit="user", cex=getOption("P.cex"),...)
     ## browser()
 
     ## Dimensions en pouces :
-    W.inches <- strwidth(x, unit="inches",...)
-    H.inches <- strheight(x, unit="inches",...)
+    W.inches <- strwidth(x, unit="inches", cex=cex,...)
+    H.inches <- strheight(x, unit="inches", cex=cex,...)
 
     ## Facteur de conversion avec l'unité souhaitée :
-    X.inchesVSunit <- W.inches / strwidth(x, unit=unit,...)
-    Y.inchesVSunit <- H.inches / strheight(x, unit=unit,...)
+    X.inchesVSunit <- W.inches / strwidth(x, unit=unit, cex=cex,...)
+    Y.inchesVSunit <- H.inches / strheight(x, unit=unit, cex=cex,...)
 
     ## Calcul des largeurs et hauteurs en rotations :
     X.calc <- abs(W.inches * cos(srt * base:::pi / 180)) + abs(H.inches * sin(srt * base:::pi / 180))
@@ -378,6 +387,73 @@ strDimRotation.f <- function(x, srt=0, unit="user", cex=getOption("P.cex"),...)
     return(list(width = X.calc / X.inchesVSunit,
                 height = Y.calc / Y.inchesVSunit))
 }
+
+########################################################################################################################
+
+lineInchConvert.f <- function()
+{
+    ## Purpose: Calcul du facteur de conversion inch/ligne.
+    ## ----------------------------------------------------------------------
+    ## Arguments: Aucun
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date: 26 août 2011, 13:07
+
+    pars <- par(c("mai", "mar"))
+
+    return(list(H=(pars$mai/pars$mar)[2],
+                V=(pars$mai/pars$mar)[1]))
+}
+
+########################################################################################################################
+
+unitConvY.f <- function(x=NULL, from="user", to="user")
+{
+    ## Purpose: Conversion verticale des unités entre différents systèmes de
+    ##          coordonnées
+    ## ----------------------------------------------------------------------
+    ## Arguments: x : valeur à convertir. Si NULL, retourne le rapport
+    ##                unité2/unité1 (to/from).
+    ##            from : unité de départ.
+    ##            to : unité vers laquelle convertir.
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date: 26 août 2011, 14:21
+
+    Y1 <- strheight("X", unit=from, cex=10)
+    Y2 <- strheight("X", unit=to, cex=10)
+
+    if (is.null(x))
+    {
+        return(Y2/Y1)                   # Rapport uniquement.
+    }else{
+        return(x * Y2/Y1)               # Valeur convertie.
+    }
+}
+
+########################################################################################################################
+
+unitConvX.f <- function(x=NULL, from="user", to="user")
+{
+    ## Purpose: Conversion horizontale des unités entre différents systèmes
+    ##          de coordonnées
+    ## ----------------------------------------------------------------------
+    ## Arguments: x : valeur à convertir. Si NULL, retourne le rapport
+    ##                unité2/unité1 (to/from).
+    ##            from : unité de départ.
+    ##            to : unité vers laquelle convertir.
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date: 26 août 2011, 14:21
+
+    X1 <- strwidth("XXXXXX", unit=from, cex=10)
+    X2 <- strwidth("XXXXXX", unit=to, cex=10)
+
+    if (is.null(x))
+    {
+        return(X2/X1)                   # Rapport uniquement.
+    }else{
+        return(x * X2/X1)               # Valeur convertie.
+    }
+}
+
 
 
 

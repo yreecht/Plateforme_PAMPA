@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: fonctions_graphiques.R
-### Time-stamp: <2011-08-26 15:40:00 yreecht>
+### Time-stamp: <2011-08-30 15:26:52 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -308,11 +308,12 @@ boxplotPAMPA.f <- function(exprBP, data, main=NULL, cex=getOption("P.cex"),...)
                              0.7 * unlist(par("pin"))[1],
                              tmp),
               ## Marge supérieure augmentée s'il y a un titre :
-              ifelse(isTRUE(getOption("P.graphPaper")) ,
+              ifelse(isTRUE(getOption("P.graphPaper")),
                      2 * lineInchConvert.f()$V,
                      8 * lineInchConvert.f()$V),
               ## Marge de droite :
-              lineInchConvert.f()$H * cex * unlist(par("lheight")) * 0.5),
+              lineInchConvert.f()$H * cex * unlist(par("lheight")) * 0.5) +
+                  lineInchConvert.f()$H * cex * unlist(par("lheight")) * 0.1,
               ## Distance du nom d'axe dépendante de la taille de marge gauche :
               mgp=c(tmp2 / lineInchConvert.f()$H - 1.4, 0.9, 0))
 

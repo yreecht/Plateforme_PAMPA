@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: Selection_variables_interface.R
-### Time-stamp: <2011-08-23 13:45:17 yreecht>
+### Time-stamp: <2011-08-25 14:18:43 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -183,7 +183,7 @@ choixOptionsGraphiques.f <- function()
 
 
     tkgrid(ttkseparator(WinOpt, orient="horizontal"), columnspan=2, sticky="ew")
-    tkgrid(tklabel(WinOpt, text="Sortie des graphiques dans des fichiers PNG ? "), B.graphPNG, sticky="es")
+    tkgrid(tklabel(WinOpt, text="Sortie des graphiques dans des fichiers TIFF ? "), B.graphPNG, sticky="es")
     tkgrid(tklabel(WinOpt, text="Sortie des graphiques dans des fichiers PDF ? "), B.graphPDF, sticky="es")
     tkgrid(tklabel(WinOpt, text="Créer un fichier par page (PDF) ? "), B.PDFunFichierPage, sticky="es")
     tkgrid(tklabel(WinOpt, text=paste("Plusieurs graphiques par page (", tclvalue(P.options[["P.nrowGraph"]]), "x",

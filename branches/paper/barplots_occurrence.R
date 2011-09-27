@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: barplots_occurrence.R
-### Time-stamp: <2011-06-23 11:42:43 yreecht>
+### Time-stamp: <2011-08-30 15:34:11 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -125,23 +125,37 @@ barplotOccurrence.f <- function(factGraph, factGraphSel, listFact, listFactSel)
                            }))
 
         ## Paramètres graphiques :
-        par(mar=c(4.5,
-            ## Marge de gauche dynamique :
-            tmp2 <- ifelse((tmp <- 2.1 +
-                            ifelse(isTRUE(getOption("P.graphPNG")), # Coef différent pour les PNGs.
-                                   75,
-                                   100)*
-                            max(strDimRotation.f(as.graphicsAnnot(pretty(range(heights, na.rm=TRUE))),
-                                                 srt=0,
-                                                 unit="figure",
-                                                 cex=cex)$width, na.rm=TRUE)) > 11,
-                           11,
-                           tmp),
-            ## Marge supérieure augmentée s'il y a un titre :
-            ifelse(isTRUE(getOption("P.graphPaper")) , 3, 8),
-            7) + 0.1,
-            ## Distance du nom d'axe dépendante de la taille de marge gauche :
-            mgp=c(tmp2 - 1.4, 0.9, 0))
+        ## Marge dynamiques (adaptation à la longueur des labels) :
+        optim(par=unlist(par("mai")),   # Le rapport inch/ligne est modifié en changeant les marges => besoin
+                                        # de l'optimiser.
+              fn=function(x)
+          {
+              par(mai=c(
+                  ## Marge du bas :
+                  lineInchConvert.f()$V * cex * unlist(par("lheight")) * 4.5,
+                  ## Marge de gauche dynamique :
+                  tmp2 <- ifelse((tmp <- lineInchConvert.f()$H * cex * unlist(par("lheight")) * (1.4 +0.4 + 0.9) + # marge
+                                        # supplémentaire.
+                              max(strDimRotation.f(as.graphicsAnnot(pretty(range(heights, na.rm=TRUE))),
+                                                   srt=0,
+                                                   unit="inches",
+                                                   cex=cex)$width, na.rm=TRUE)) > 0.7 * unlist(par("pin"))[1],
+                                 0.7 * unlist(par("pin"))[1],
+                                 tmp),
+                  ## Marge supérieure augmentée s'il y a un titre :
+                  ifelse(isTRUE(getOption("P.graphPaper")) ,
+                         3 * lineInchConvert.f()$V,
+                         8 * lineInchConvert.f()$V),
+                  ## Marge de droite :
+                  lineInchConvert.f()$H * cex * unlist(par("lheight")) * 7) +
+                  lineInchConvert.f()$H * cex * unlist(par("lheight")) * 0.1,
+                  ## Distance du nom d'axe dépendante de la taille de marge gauche :
+                  mgp=c(tmp2 / lineInchConvert.f()$H - 1.4, 0.9, 0))
+
+              ## Valeur à minimiser :
+              return(sum(abs(x - unlist(par("mai")))))
+          },
+              control=list(abstol=0.01))    # Tolérance.
 
         ## Label axe y :
         ylab <- parse(text=paste("'", Capitalize.f(varNames[metrique, "nom"]), "'",

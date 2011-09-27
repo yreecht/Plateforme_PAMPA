@@ -9,7 +9,7 @@
 ################################################################################
 
 ## ** Version **
-options(versionPAMPA = "1.1-1_paper_tiff")
+options(versionPAMPA = "1.1-2_paper_tiff")
 
 ## Réglage de l'encodage des caractères :
 options(encoding="latin1")

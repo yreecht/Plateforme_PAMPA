@@ -595,7 +595,12 @@ unitesp.f <- function(){
     ## Ecriture du fichier des unités d'observations par espèce en sortie
     assign("unitesp", unitesp, envir=.GlobalEnv)
 
-    ## Certaines métriques (densités) sont ramenées à /100m² :
+    ## table avec la liste des espèces presentes dans chaque transect
+    listespunit <- unitesp## [unitesp$pres_abs != 0, ]
+    listespunit <- listespunit[order(listespunit$code_espece), ]
+    assign("listespunit", listespunit, envir=.GlobalEnv)
+
+    ## Certaines métriques (densités) sont ramenées à /100m² pour les sorties fichier :
     if (any(is.element(colnames(unitesp),
                        colTmp <- c("densite", "densiteMax", "densiteSD",
                                    "biomasse", "biomassMax", "biomasseSD"))))
@@ -613,11 +618,6 @@ unitesp.f <- function(){
                      especes[ , c("code_espece", "Famille", "Genre", "espece")],
                      by="code_espece"),
                file=paste(NomDossierTravail, "UnitobsEspeceMetriques.csv", sep=""), row.names = FALSE)
-
-    ## table avec la liste des espèces presentes dans chaque transect
-    listespunit <- unitesp## [unitesp$pres_abs != 0, ]
-    listespunit <- listespunit[order(listespunit$code_espece), ]
-    assign("listespunit", listespunit, envir=.GlobalEnv)
 
     ## write.csv2(listespunit, file=paste(NomDossierTravail, "ListeEspecesUnitobs.csv", sep=""), row.names = FALSE)
 } # fin unitesp.f()
@@ -879,6 +879,16 @@ creationTablesCalcul.f <- function(){
                                      grep(paste("^interet\\.[[:alpha:]]+", siteEtudie, "$", sep=""), # Colonnes
                                           colnames(especes), value=TRUE))])                          # site-spécifiques.
 
+    ## Certaines métriques (densités) sont ramenées à /100m² :
+    if (any(is.element(colnames(TableMetrique),
+                       colTmp <- c("densite", "densiteMax", "densiteSD",
+                                   "biomasse", "biomassMax", "biomasseSD"))))
+    {
+        TableMetrique[ , is.element(colnames(TableMetrique),
+                                    colTmp)] <- sweep(TableMetrique[ , is.element(colnames(TableMetrique),
+                                                                                  colTmp)],
+                                                      2, 100, "*")
+    }else{}
 
     if (is.benthos.f())                 # unique(unitobs$type) == "LIT"
     {
@@ -903,6 +913,17 @@ creationTablesCalcul.f <- function(){
                                    "courant", "maree", "phase_lunaire", "avant_apres", "biotope_2", "habitat1",
                                    "habitat2", "habitat3", "visibilite", "prof_min", "prof_max", "DimObs1", "DimObs2",
                                    "nb_plong", "plongeur")])
+
+    ## Certaines métriques (densités) sont ramenées à /100m² :
+    if (any(is.element(colnames(TableBiodiv),
+                       colTmp <- c("densite", "densiteMax", "densiteSD",
+                                   "biomasse", "biomassMax", "biomasseSD"))))
+    {
+        TableBiodiv[ , is.element(colnames(TableBiodiv),
+                                  colTmp)] <- sweep(TableBiodiv[ , is.element(colnames(TableBiodiv),
+                                                                              colTmp)],
+                                                    2, 100, "*")
+    }else{}
 
 
     assign("TableBiodiv", TableBiodiv, envir=.GlobalEnv)

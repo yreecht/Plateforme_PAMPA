@@ -23,6 +23,28 @@ reorderStatus.f <- function(Data, which="statut_protection")
     }
 }
 
+########################################################################################################################
+PlanEchantillonnageBasic.f <- function(tabUnitobs, tabObs)
+{
+    ## Purpose: Écrire le plan d'échantillonnage basic dans un fichier.
+    ## ----------------------------------------------------------------------
+    ## Arguments: tabUnitobs : table des unités d'observation (data.frame).
+    ##            tabObs : table des observations (data.frame).
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date: 21 sept. 2011, 13:53
+
+    PlanEchantillonnage <- with(dropLevels.f(tabUnitobs[is.element(tabUnitobs$unite_observation,
+                                                                   levels(tabObs$unite_observation)), ]),
+                                table(an, statut_protection, exclude = NA))
+
+    attr(PlanEchantillonnage, "class") <- "array" # Pour un affichage en "tableau".
+
+    write.csv2(PlanEchantillonnage,
+               file=paste(NomDossierTravail, "PlanEchantillonnage_basique",
+                          ifelse(Jeuxdonnescoupe, "_selection", ""),
+                          ".csv", sep=""), row.names=TRUE)
+}
+
 
 ########################################################################################################################
 selectionObs.SVR.f <- function()
@@ -432,14 +454,7 @@ opendefault.f <- function ()
     stepInnerProgressBar.f(n=1, msg="Plan d'échantillonnage")
 
     ## ############# Récapitulatif du plan d'échantillonnage ############# # [!!!] : revoir tout ça !
-    PlanEchantillonnage <- with(dropLevels.f(unitobs[is.element(unitobs$unite_observation,
-                                                                levels(obs$unite_observation)), ]),
-                                table(an, statut_protection, exclude = NA))
-
-    attr(PlanEchantillonnage, "class") <- "array" # Pour un affichage en "tableau".
-
-    write.csv2(PlanEchantillonnage,
-               file=paste(NomDossierTravail, "PlanEchantillonnage_basique.csv", sep=""), row.names=TRUE)
+    PlanEchantillonnageBasic.f(tabUnitobs=unitobs, tabObs=obs)
 
 
     ## ################
@@ -454,20 +469,20 @@ opendefault.f <- function ()
 
     stepInnerProgressBar.f(n=1, msg="Table de contingence")
 
-    if (unique(unitobs$type)[1] != "SVR")
+    if (unique(unitobs$type)[1] != "SVR") # [!!!]
     {
         obsSansCatBenth <- obs
         obsSansCatBenth$Genre <- especes$Genre[match(obsSansCatBenth$code_espece, especes$code_espece)]
-        if(length(obsSansCatBenth$Genre[obsSansCatBenth$Genre=="ge."])>0)
+        if(length(obsSansCatBenth$Genre[obsSansCatBenth$Genre=="ge."])>0) # [!!!]
         {
             infoLoading.f(msg=paste("Pour les calculs des indices de diversité, ",
-                                     length(obsSansCatBenth$Genre[obsSansCatBenth$Genre=="ge."]),
-                                     " observations de la table de contingence pour lesquels le genre ",
-                                     " \n\tn'est pas renseigné ('ge.') dans le référentiel espèce ont été supprimées",
-                                     sep=""),
+                                    length(obsSansCatBenth$Genre[obsSansCatBenth$Genre=="ge."]),
+                                    " observations de la table de contingence pour lesquels le genre ",
+                                    " \n\tn'est pas renseigné ('ge.') dans le référentiel espèce ont été supprimées",
+                                    sep=""),
                           icon="info")
 
-            obsSansCatBenth <- subset(obsSansCatBenth, obsSansCatBenth$Genre!="ge.")
+            obsSansCatBenth <- subset(obsSansCatBenth, obsSansCatBenth$Genre!="ge.") # [!!!]
 
         }
         contingence <- tapply(obsSansCatBenth$nombre,
@@ -518,7 +533,9 @@ opendefault.f <- function ()
     if (exists("contingence", envir=.GlobalEnv, frame, mode="any", inherits=TRUE))
     {
         write.csv2(contingence,
-                   file=paste(NomDossierTravail, "ContingenceUnitObsEspeces.csv", sep=""))
+                   file=paste(NomDossierTravail, "ContingenceUnitObsEspeces",
+                              ifelse(Jeuxdonnescoupe, "_selection", ""),
+                              ".csv", sep=""))
     }
 
     if (!exists("contingence", envir=.GlobalEnv, frame, mode="any", inherits=TRUE))

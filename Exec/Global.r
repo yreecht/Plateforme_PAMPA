@@ -9,7 +9,7 @@
 ################################################################################
 
 ## ** Version **
-options(versionPAMPA = "1.1-2")
+options(versionPAMPA = "1.1-3")
 
 ## Réglage de l'encodage des caractères :
 options(encoding="latin1")
@@ -47,7 +47,6 @@ nameWorkspace <- basePath
                                                            # -----------------------
 source("./Exec/load_packages.R", encoding="latin1")        # OK
 source("./Exec/fonctions_base.R", encoding="latin1")       # OK
-source("./Exec/config.r", encoding="latin1")               # faite
 source("./Exec/gestionmessages.r", encoding="latin1")      # faite
 source("./Exec/nombres_SVR.R", encoding="latin1")          # OK
 source("./Exec/mkfilegroupe.r", encoding="latin1")         # faite
@@ -99,6 +98,10 @@ if (is.null(getOption("GraphPAMPA")))
 {
     initialiseGraphOptions.f()
 }
+
+## Chargement de la configuration après l'initialisation des options => permet d'avoir des options personnalisées dans
+## la configuration.
+source("./Exec/config.r", encoding="latin1")               # faite
 
 
 ## On lance l'interface :

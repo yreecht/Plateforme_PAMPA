@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: Selection_variables_fonctions.R
-### Time-stamp: <2011-08-09 19:58:29 yreecht>
+### Time-stamp: <2011-09-19 14:46:37 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -455,6 +455,7 @@ agregationTableParCritere.f <- function(Data, metrique, facteurs, listFact=NULL)
                      "colonie"="sum",
                      "recouvrement"="sum",
                      "taille.moy.colonies"="w.mean.colonies",
+                     ## SVR (expérimental) :
                      "nombreMax"="sum",
                      "nombreSD"="",
                      "densiteMax"="sum",
@@ -478,7 +479,7 @@ agregationTableParCritere.f <- function(Data, metrique, facteurs, listFact=NULL)
                           as.data.frame(as.table(nbTot), responseName="nombre.tot"))
         }else{
             Data <- merge(Data,
-                          unitespta[ , c("code_espece", "unite_observation", "nombre")],
+                          unitespta[ , c("code_espece", "unite_observation", "nombre")], # [!!!] unitespta ?
                           by=c("code_espece", "unite_observation"))
         }
     }else{}
@@ -631,6 +632,23 @@ agregationTableParCritere.f <- function(Data, metrique, facteurs, listFact=NULL)
                             }))
     }else{}
 
+    ## Si certains facteurs ne sont pas de classe facteur, il faut les remettre dans leur classe d'origine :
+    if (any(tmp <- sapply(reslong[ , listFact, drop=FALSE], class) != sapply(Data[ , listFact, drop=FALSE], class)))
+    {
+        for (i in which(tmp))
+        {
+            switch(sapply(Data[ , listFact, drop=FALSE], class)[i],
+                   "integer"={
+                       reslong[ , listFact[i]] <- as.integer(as.character(reslong[ , listFact[i]]))
+                   },
+                   "numeric"={
+                       reslong[ , listFact[i]] <- as.numeric(as.character(reslong[ , listFact[i]]))
+                   },
+                   reslong[ , listFact[i]] <- eval(call(paste("as", sapply(Data[ , listFact, drop=FALSE], class)[i], sep="."),
+                                                        reslong[ , listFact[i]]))
+                   )
+        }
+    }else{}
 
     ## Rétablir l'ordre initial des nivaux de facteurs :
     reslong <- as.data.frame(sapply(colnames(reslong),
@@ -884,8 +902,8 @@ calcBiodivTaxo.f <- function(Data, unitobs="unite_observation", code.especes="co
     {
         return(NULL)                    # Rien !
     }else{
-        ## Suppréssion de tout ce qui n'a pas de genre (peut être du non biotique) :
-        Data <- Data[especes$Genre[match(Data$code_espece, especes$code_espece)] != "ge.", ]
+        ## Suppression de tout ce qui n'a pas de genre (peut être du non biotique) :
+        Data <- Data[especes$Genre[match(Data$code_espece, especes$code_espece)] != "ge.", ] # [!!!]
 
         ## Suppression des niveaux de facteur inutilisés :
         Data <- dropLevels.f(df=Data)

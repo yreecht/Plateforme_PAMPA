@@ -63,6 +63,33 @@ SelectionUnCritereEsp.f <- function ()
                    dropLevels.f(unitespta[is.element(unitespta$code_espece, keptEspeces), , drop=FALSE],
                                 which="code_espece"),
                    envir=.GlobalEnv)
+
+            ## #### Écriture des fichiers :
+            tmp1 <- unitespta
+
+            ## Certaines métriques (densités) sont ramenées à /100m² :
+            if (any(is.element(colnames(tmp1),
+                               colTmp <- c("densite", "densiteMax", "densiteSD",
+                                           "biomasse", "biomassMax", "biomasseSD"))))
+            {
+                tmp1[ , is.element(colnames(tmp1),
+                                   colTmp)] <- sweep(tmp1[ , is.element(colnames(tmp1),
+                                                                        colTmp)],
+                                                     2, 100, "*")
+            }else{}
+
+            ## Sauvegarde dans un fichier :
+            write.csv2(merge(merge(tmp1,
+                                   unitobs[ , c("unite_observation", paste("habitat", 1:3, sep=""))],
+                                   by=c("unite_observation")),
+                             especes[ , c("code_espece", "Famille", "Genre", "espece")],
+                             by="code_espece"),
+                       file=paste(nameWorkspace,
+                                  "/FichiersSortie/UnitobsEspeceClassetailleMetriques",
+                                  ifelse(Jeuxdonnescoupe, "_selection", ""),
+                                  ".csv", sep=""),
+                       row.names = FALSE)
+             ## ####
         }else{}
 
         assign("unitesp",
@@ -75,9 +102,45 @@ SelectionUnCritereEsp.f <- function ()
                             which="code_espece"),
                envir=.GlobalEnv)
 
-        assign("contingence",
-               contingence[ , is.element(colnames(contingence), keptEspeces), drop=FALSE],
-               envir=.GlobalEnv)
+        ## #### Écriture des fichiers :
+        ## Certaines métriques (densités) sont ramenées à /100m² pour les sorties fichier :
+        tmp2 <- unitesp
+
+        if (any(is.element(colnames(tmp2),
+                           colTmp <- c("densite", "densiteMax", "densiteSD",
+                                       "biomasse", "biomassMax", "biomasseSD"))))
+        {
+            tmp2[ , is.element(colnames(tmp2),
+                               colTmp)] <- sweep(tmp2[ , is.element(colnames(tmp2),
+                                                                    colTmp)],
+                                                 2, 100, "*")
+        }else{}
+
+        ## Sauvegarde dans un fichier :
+        write.csv2(merge(merge(tmp2,
+                               unitobs[ , c("unite_observation", paste("habitat", 1:3, sep=""))],
+                               by=c("unite_observation")),
+                         especes[ , c("code_espece", "Famille", "Genre", "espece")],
+                         by="code_espece"),
+                   file=paste(NomDossierTravail, "UnitobsEspeceMetriques",
+                              ifelse(Jeuxdonnescoupe, "_selection", ""),
+                              ".csv", sep=""), row.names = FALSE)
+        ## ####
+
+        if (exists("contingence", envir=.GlobalEnv, frame, mode="any", inherits=TRUE))
+        {
+            assign("contingence",
+                   contingence[ , is.element(colnames(contingence), keptEspeces), drop=FALSE],
+                   envir=.GlobalEnv)
+
+            write.csv2(contingence,
+                       file=paste(NomDossierTravail, "ContingenceUnitObsEspeces",
+                                  ifelse(Jeuxdonnescoupe, "_selection", ""),
+                                  ".csv", sep=""))
+        }
+
+        ## Plan d'échantillonnage basic :
+        PlanEchantillonnageBasic.f(tabUnitobs=unitobs, tabObs=obs)
 
         ## Recalcul des indices de biodiversité :
         unit.f()
@@ -137,6 +200,33 @@ SelectionUnCritereUnitobs.f <- function ()
                                           , drop=FALSE],
                                 which="unite_observation"),
                    envir=.GlobalEnv)
+
+            ## #### Écriture des fichiers :
+            tmp1 <- unitespta
+
+            ## Certaines métriques (densités) sont ramenées à /100m² :
+            if (any(is.element(colnames(tmp1),
+                               colTmp <- c("densite", "densiteMax", "densiteSD",
+                                           "biomasse", "biomassMax", "biomasseSD"))))
+            {
+                tmp1[ , is.element(colnames(tmp1),
+                                   colTmp)] <- sweep(tmp1[ , is.element(colnames(tmp1),
+                                                                        colTmp)],
+                                                     2, 100, "*")
+            }else{}
+
+            ## Sauvegarde dans un fichier :
+            write.csv2(merge(merge(tmp1,
+                                   unitobs[ , c("unite_observation", paste("habitat", 1:3, sep=""))],
+                                   by=c("unite_observation")),
+                             especes[ , c("code_espece", "Famille", "Genre", "espece")],
+                             by="code_espece"),
+                       file=paste(nameWorkspace,
+                                  "/FichiersSortie/UnitobsEspeceClassetailleMetriques",
+                                  ifelse(Jeuxdonnescoupe, "_selection", ""),
+                                  ".csv", sep=""),
+                       row.names = FALSE)
+             ## ####
         }else{}
 
         assign("unitesp",
@@ -153,6 +243,31 @@ SelectionUnCritereUnitobs.f <- function ()
                             which="unite_observation"),
                envir=.GlobalEnv)
 
+        ## #### Écriture des fichiers :
+        tmp2 <- unitesp
+
+        ## Certaines métriques (densités) sont ramenées à /100m² pour les sorties fichier :
+        if (any(is.element(colnames(tmp2),
+                           colTmp <- c("densite", "densiteMax", "densiteSD",
+                                       "biomasse", "biomassMax", "biomasseSD"))))
+        {
+            tmp2[ , is.element(colnames(tmp2),
+                               colTmp)] <- sweep(tmp2[ , is.element(colnames(tmp2),
+                                                                    colTmp)],
+                                                 2, 100, "*")
+        }else{}
+
+        ## Sauvegarde dans un fichier :
+        write.csv2(merge(merge(tmp2,
+                               unitobs[ , c("unite_observation", paste("habitat", 1:3, sep=""))],
+                               by=c("unite_observation")),
+                         especes[ , c("code_espece", "Famille", "Genre", "espece")],
+                         by="code_espece"),
+                   file=paste(NomDossierTravail, "UnitobsEspeceMetriques",
+                              ifelse(Jeuxdonnescoupe, "_selection", ""),
+                              ".csv", sep=""), row.names = FALSE)
+        ## ####
+
         assign("unit",
                dropLevels.f(unit[is.element(unit$unitobs,
                                             keptUnitobs),
@@ -160,11 +275,46 @@ SelectionUnCritereUnitobs.f <- function ()
                             which="unitobs"),
                envir=.GlobalEnv)
 
-        assign("contingence",
-               contingence[is.element(row.names(contingence),
-                                      keptUnitobs),
-                           , drop=FALSE],
-               envir=.GlobalEnv)
+        ## #### Écriture des fichiers :
+        ## Certaines métriques (densités) sont ramenées à /100m² pour les sorties fichier :
+        tmp3 <- unit
+
+        ## Certaines métriques (densités) sont ramenées à /100m² :
+        if (any(is.element(colnames(tmp3),
+                           colTmp <- c("densite", "densiteMax", "densiteSD",
+                                       "biomasse", "biomassMax", "biomasseSD"))))
+        {
+            tmp3[ , is.element(colnames(tmp3),
+                               colTmp)] <- sweep(tmp3[ , is.element(colnames(tmp3),
+                                                                    colTmp)],
+                                           2, 100, "*")
+        }else{}
+
+        ## Sauvegarde dans un fichier :
+        write.csv2(merge(tmp3,
+                         unitobs[ , c("unite_observation", paste("habitat", 1:3, sep=""))],
+                         by.x="unitobs", by.y=c("unite_observation")),
+                   file=paste(NomDossierTravail, "UnitobsMetriques",
+                              ifelse(Jeuxdonnescoupe, "_selection", ""),
+                              ".csv", sep=""), row.names = FALSE)
+        ## ####
+
+        if (exists("contingence", envir=.GlobalEnv, frame, mode="any", inherits=TRUE))
+        {
+            assign("contingence",
+                   contingence[is.element(row.names(contingence),
+                                          keptUnitobs),
+                               , drop=FALSE],
+                   envir=.GlobalEnv)
+
+            write.csv2(contingence,
+                       file=paste(NomDossierTravail, "ContingenceUnitObsEspeces",
+                                  ifelse(Jeuxdonnescoupe, "_selection", ""),
+                                  ".csv", sep=""))
+        }
+
+        ## Plan d'échantillonnage basic :
+        PlanEchantillonnageBasic.f(tabUnitobs=unitobs, tabObs=obs)
 
         ## Information de l'utilisateur :
         infoLoading.f(msg=paste("Les métriques ont été",

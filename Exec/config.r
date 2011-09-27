@@ -27,32 +27,6 @@
 ## Fin de la zone éditable
 ########################################################################################################################
 
-## Vérification de l'existances de la configuration :
-requiredVar <- c("SiteEtudie", "fileName1", "fileName2", "fileName3", "nameWorkspace")
-existVar <- sapply(requiredVar, exists)
-
-if (any(! existVar))                    # Si au moins une des variables n'est pas définie.
-{
-    pluriel <- sum(! existVar) > 1
-
-    tkmessageBox(message=paste(ifelse(pluriel,
-                                      "Les variables suivantes ne sont pas définies ",
-                                      "La variable suivante n'est pas définie "),
-                               "dans votre fichier \"", basePath, "/Exec/config.r\" :\n\n\t*  ",
-                               paste(requiredVar[! existVar], collapse="\n\t*  "),
-                               "\n\nVous devez éditer le fichier.", sep=""),
-                 icon="error")
-
-    if (getOption("editor") != "")
-    {
-        file.edit(paste(basePath, "/Exec/config.r", sep=""), title="Éditez \"config.r\" (zone éditable uniquement)")
-    }else{}
-
-    ## stop("Configuration incorrecte : relancez la plateforme une fois la configuration effectuée.")
-
-}else{}
-
-
 pathMaker.f <- function()
 {
     ## Purpose: Redéfinir les chemins (par exemple après changement du
@@ -71,22 +45,63 @@ pathMaker.f <- function()
     ## assign("fileNameRefSpa", paste(NomDossierData, fileNameRefSpa, sep=""), envir=.GlobalEnv)
 }
 
-pathMaker.f()
+## Vérification de l'existances de la configuration :
+requiredVar <- c("SiteEtudie", "fileName1", "fileName2", "fileName3", "nameWorkspace")
+existVar <- sapply(requiredVar, exists)
+
+if (any(! existVar))                    # Si au moins une des variables n'est pas définie.
+{
+    pluriel <- sum(! existVar) > 1
+
+    tkmessageBox(message=paste(ifelse(pluriel,
+                                      "Les variables suivantes ne sont pas définies ",
+                                      "La variable suivante n'est pas définie "),
+                               "dans votre fichier \"", basePath, "/Exec/config.r\" :\n\n\t*  ",
+                               paste(requiredVar[! existVar], collapse="\n\t*  "),
+                               "\n\nVous devez éditer ce fichier",
+                               "\n\t(ouvert automatiquement, ainsi que la sauvegarde si elle existe).",
+                               sep=""),
+                 icon="error")
+
+    if (getOption("editor") != "")
+    {
+        file.edit(paste(basePath, "/Exec/config.r", sep=""), title="Éditez \"config.r\" (zone éditable uniquement)")
+
+        if (file.exists(fileTmp <- paste(basePath, "/Exec/config.bak.r", sep="")))
+        {
+            file.edit(fileTmp, title="Précédente sauvegarde de \"config.r\"")
+        }else{}
+    }else{
+        shell.exec(paste(basePath, "/Exec/config.r", sep=""))
+
+        if (file.exists(fileTmp <- paste(basePath, "/Exec/config.bak.r", sep="")))
+        {
+            shell.exec(fileTmp)
+        }else{}
+    }
+
+    ## stop("Configuration incorrecte : relancez la plateforme une fois la configuration effectuée.")
+
+}else{
+    pathMaker.f()
+
+    assign("siteEtudie", SiteEtudie, envir=.GlobalEnv)
+}
+
+
 
 ##################### Initialisation des variables globales ####################
 Jeuxdonnescoupe <- 0
+assign("Jeuxdonnescoupe", Jeuxdonnescoupe, envir=.GlobalEnv)
 
 #### Logo :
 fileimage <- "./Exec/img/pampa2.GIF"
+assign("fileimage", fileimage, envir=.GlobalEnv)
 
 
 ## variables d'environnement pour l'interface
 lang <- "FR"
 
-
-assign("siteEtudie", SiteEtudie, envir=.GlobalEnv)
-assign("fileimage", fileimage, envir=.GlobalEnv)
-assign("Jeuxdonnescoupe", Jeuxdonnescoupe, envir=.GlobalEnv)
 
 ########################################################################################################################
 ## Ajouts pour les graphs génériques [yr: 13/08/2010] :

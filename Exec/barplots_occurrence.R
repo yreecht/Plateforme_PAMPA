@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: barplots_occurrence.R
-### Time-stamp: <2011-08-30 15:34:11 yreecht>
+### Time-stamp: <2011-09-01 15:36:43 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -91,18 +91,21 @@ barplotOccurrence.f <- function(factGraph, factGraphSel, listFact, listFactSel)
         DataBackup[[modGraphSel]] <<- tmpDataMod
 
         ## Ouverture et configuration du périphérique graphique :
-        wmfFile <- openDevice.f(noGraph=which(modGraphSel == iFactGraphSel),
-                                metrique=metrique,
-                                factGraph=factGraph,
-                                modSel=if (getOption("P.plusieursGraphPage"))
-                            {
-                                iFactGraphSel      # toutes les modalités.
-                            }else{
-                                modGraphSel        # la modalité courante uniquement.
-                            },
-                                listFact=listFact,
-                                type="espece",
-                                typeGraph="barplot")
+        graphFileTmp <- openDevice.f(noGraph=which(modGraphSel == iFactGraphSel),
+                                     metrique=metrique,
+                                     factGraph=factGraph,
+                                     modSel=if (getOption("P.plusieursGraphPage"))
+                                 {
+                                     iFactGraphSel      # toutes les modalités.
+                                 }else{
+                                     modGraphSel        # la modalité courante uniquement.
+                                 },
+                                     listFact=listFact,
+                                     type="espece",
+                                     typeGraph="barplot")
+
+        ## graphFile uniquement si nouveau fichier :
+        if (!is.null(graphFileTmp)) graphFile <- graphFileTmp
 
         ## Titre (d'après les métriques, modalité du facteur de séparation et facteurs de regroupement) :
         if (! isTRUE(getOption("P.graphPaper")))
@@ -203,33 +206,41 @@ barplotOccurrence.f <- function(factGraph, factGraphSel, listFact, listFactSel)
         }else{}
 
         ## On ferme les périphériques PNG en mode fichier individuel :
-        if (isTRUE(getOption("P.graphPNG")) &&
-            (! getOption("P.plusieursGraphPage") || length(iFactGraphSel) <= 1))
+        if (isTRUE(getOption("P.graphPNG")))
         {
-            dev.off()
-        }else{}
-
-        ## Sauvegarde en wmf si pertinent et souhaité :
-        if (.Platform$OS.type == "windows" && isTRUE(getOption("P.graphWMF")) &&
-            (! getOption("P.plusieursGraphPage") || length(iFactGraphSel) <= 1))
-        {
-            savePlot(wmfFile, type="wmf", device=dev.cur())
-        }else{}
-
+            if ((! getOption("P.plusieursGraphPage") || length(iFactGraphSel) <= 1))
+                dev.off()
+        }else{
+            ## Sauvegarde en wmf si pertinent et souhaité :
+            if (.Platform$OS.type == "windows" && isTRUE(getOption("P.graphWMF")) &&
+                (! getOption("P.plusieursGraphPage") || length(iFactGraphSel) <= 1) &&
+                !getOption("P.graphPDF"))
+            {
+                savePlot(graphFile, type="wmf", device=dev.cur())
+            }else{}
+        }
     }                                   # Fin de boucle graphique
+
 
     ## On ferme les périphériques PDF ou PNG restants :
     if (getOption("P.graphPDF") ||
         (isTRUE(getOption("P.graphPNG")) && getOption("P.plusieursGraphPage") && length(iFactGraphSel) > 1))
     {
-        dev.off()
+            dev.off()
+
+            ## Inclusion des fontes dans le pdf si souhaité :
+            if (getOption("P.graphPDF") && getOption("P.pdfEmbedFonts"))
+            {
+                embedFonts(file=graphFile)
+            }else{}
     }else{}
 
     ## Sauvegarde en wmf restants si pertinent et souhaité :
     if (.Platform$OS.type == "windows" && isTRUE(getOption("P.graphWMF")) &&
+        !(getOption("P.graphPNG") || getOption("P.graphPDF")) &&
         getOption("P.plusieursGraphPage") && length(iFactGraphSel) > 1)
     {
-        savePlot(wmfFile, type="wmf", device=dev.cur())
+        savePlot(graphFile, type="wmf", device=dev.cur())
     }else{}
 }
 

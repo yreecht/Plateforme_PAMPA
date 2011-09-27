@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: arbres_regression_unitobs_generiques.R
-### Time-stamp: <2011-05-12 16:26:49 yreecht>
+### Time-stamp: <2011-09-01 15:23:14 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -106,16 +106,16 @@ WP2MRT.unitobs.f <- function(metrique, factGraph, factGraphSel, listFact, listFa
     tmpData <- dropLevels.f(tmpData)
 
     ## Ouverture et configuration du périphérique graphique :
-    openDevice.f(noGraph=1,
-                 metrique=metrique,
-                 factGraph=factGraph,
-                 modSel=iFactGraphSel,
-                 listFact=listFact,
-                 type=ifelse(tableMetrique == "unitespta" && factGraph != "classe_taille",
-                 "CL_unitobs",
-                 "unitobs"),
-                 typeGraph="MRT",
-                 large=TRUE)
+    graphFile <- openDevice.f(noGraph=1,
+                              metrique=metrique,
+                              factGraph=factGraph,
+                              modSel=iFactGraphSel,
+                              listFact=listFact,
+                              type=ifelse(tableMetrique == "unitespta" && factGraph != "classe_taille",
+                                          "CL_unitobs",
+                                          "unitobs"),
+                              typeGraph="MRT",
+                              large=TRUE)
 
     par(mar=c(1.5, 7, 7, 7), mgp=c(3.5, 1, 0)) # paramètres graphiques.
 
@@ -151,7 +151,19 @@ WP2MRT.unitobs.f <- function(metrique, factGraph, factGraphSel, listFact, listFa
     if (getOption("P.graphPDF") || isTRUE(getOption("P.graphPNG")))
     {
         dev.off()
-    }else{}
+
+        ## Inclusion des fontes dans le pdf si souhaité :
+        if (getOption("P.graphPDF") && getOption("P.pdfEmbedFonts"))
+        {
+            embedFonts(file=graphFile)
+        }else{}
+    }else{
+        if (.Platform$OS.type == "windows" && isTRUE(getOption("P.graphWMF")))
+        {
+            ## Sauvegarde en wmf si pertinent et souhaité :
+            savePlot(graphFile, type="wmf", device=dev.cur())
+        }else{}
+    }
 
     pampaProfilingEnd.f()
 }

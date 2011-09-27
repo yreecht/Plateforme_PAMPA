@@ -334,7 +334,10 @@ unitespta.f <- function(){
                                by=c("unite_observation")),
                          especes[ , c("code_espece", "Famille", "Genre", "espece")],
                          by="code_espece"),
-                   file=paste(nameWorkspace, "/FichiersSortie/UnitobsEspeceClassetailleMetriques.csv", sep=""),
+                   file=paste(nameWorkspace,
+                              "/FichiersSortie/UnitobsEspeceClassetailleMetriques",
+                              ifelse(Jeuxdonnescoupe, "_selection", ""),
+                              ".csv", sep=""),
                    row.names = FALSE)
     }else{
         message("Métriques par classe de taille incalculables")
@@ -617,7 +620,9 @@ unitesp.f <- function(){
                            by=c("unite_observation")),
                      especes[ , c("code_espece", "Famille", "Genre", "espece")],
                      by="code_espece"),
-               file=paste(NomDossierTravail, "UnitobsEspeceMetriques.csv", sep=""), row.names = FALSE)
+               file=paste(NomDossierTravail, "UnitobsEspeceMetriques",
+                          ifelse(Jeuxdonnescoupe, "_selection", ""),
+                          ".csv", sep=""), row.names = FALSE)
 
     ## write.csv2(listespunit, file=paste(NomDossierTravail, "ListeEspecesUnitobs.csv", sep=""), row.names = FALSE)
 } # fin unitesp.f()
@@ -776,7 +781,9 @@ unit.f <- function(){
     write.csv2(merge(unit,
                      unitobs[ , c("unite_observation", paste("habitat", 1:3, sep=""))],
                      by.x="unitobs", by.y=c("unite_observation")),
-               file=paste(NomDossierTravail, "UnitobsMetriques.csv", sep=""), row.names = FALSE)
+               file=paste(NomDossierTravail, "UnitobsMetriques",
+                          ifelse(Jeuxdonnescoupe, "_selection", ""),
+                          ".csv", sep=""), row.names = FALSE)
 
     stepInnerProgressBar.f(n=1)
 

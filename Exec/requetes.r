@@ -307,7 +307,9 @@ choixespeces.f <- function()
     assign("contingence", contingence, envir=.GlobalEnv)
 
     write.csv2(contingence,
-               file=paste(nameWorkspace, "/FichiersSortie/ContingenceUnitObsEspeces.csv", sep=""))
+               file=paste(nameWorkspace, "/FichiersSortie/ContingenceUnitObsEspeces",
+                          ifelse(Jeuxdonnescoupe, "_selection", ""),
+                          ".csv", sep=""))
 
     ## on recrée les tables de base
     creationTablesBase.f()
@@ -363,7 +365,7 @@ UnCritereEspDansObs.f <- function ()
         return(list(facteur=factesp,
                     selection=selectfactesp,
                     obs=obs))
-    }
+    }else{}
 }
 
 
@@ -413,5 +415,5 @@ UnCritereUnitobsDansObs.f <- function ()
         return(list(facteur=factunitobs,
                     selection=selectfactunitobs,
                     obs=obs))
-    }
+    }else{}
 }

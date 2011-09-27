@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: boxplots_ttesp_generic.R
-### Time-stamp: <2011-06-23 10:25:14 yreecht>
+### Time-stamp: <2011-09-01 15:18:44 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -154,15 +154,16 @@ WP2boxplot.unitobs.f <- function(metrique, factGraph, factGraphSel, listFact, li
         tmpData <- dropLevels.f(tmpData)
 
         ## Ouverture et configuration du périphérique graphique :
-        wmfFile <- openDevice.f(noGraph=1,
-                                metrique=metrique,
-                                factGraph=factGraph,
-                                modSel=iFactGraphSel,
-                                listFact=listFact,
-                                type=ifelse(tableMetrique == "unitespta" && factGraph != "classe_taille",
-                                            "CL_unitobs",
-                                            "unitobs"),
-                                typeGraph="boxplot")
+        graphFile <- openDevice.f(noGraph=1,
+                                  metrique=metrique,
+                                  factGraph=factGraph,
+                                  modSel=iFactGraphSel,
+                                  listFact=listFact,
+                                  type=ifelse(tableMetrique == "unitespta" && factGraph != "classe_taille",
+                                              "CL_unitobs",
+                                              "unitobs"),
+                                  typeGraph="boxplot")
+
 
         par(mar=c(9, 5, 8, 1), mgp=c(3.5, 1, 0)) # paramètres graphiques.
 
@@ -253,19 +254,25 @@ WP2boxplot.unitobs.f <- function(metrique, factGraph, factGraphSel, listFact, li
                    cex =0.9, col=getOption("P.NbObsCol"), text.col="orange", merge=FALSE)
         }else{}
 
-    }  ## Fin de graphique.
-
-    ## On ferme les périphériques PDF :
-    if (getOption("P.graphPDF") || isTRUE(getOption("P.graphPNG")))
-    {
-        dev.off()
-    }else{
-        if (.Platform$OS.type == "windows" && isTRUE(getOption("P.graphWMF")))
+        ## On ferme les périphériques PDF :
+        if (getOption("P.graphPDF") || isTRUE(getOption("P.graphPNG")))
         {
-            ## Sauvegarde en wmf si pertinent et souhaité :
-            savePlot(wmfFile, type="wmf", device=dev.cur())
-        }else{}
-    }
+            dev.off()
+
+            ## Inclusion des fontes dans le pdf si souhaité :
+            if (getOption("P.graphPDF") && getOption("P.pdfEmbedFonts"))
+            {
+                embedFonts(file=graphFile)
+            }
+
+        }else{
+            if (.Platform$OS.type == "windows" && isTRUE(getOption("P.graphWMF")))
+            {
+                ## Sauvegarde en wmf si pertinent et souhaité :
+                savePlot(graphFile, type="wmf", device=dev.cur())
+            }else{}
+        }
+    }  ## Fin de graphique.
 
     pampaProfilingEnd.f()
 }

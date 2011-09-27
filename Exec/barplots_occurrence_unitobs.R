@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: barplots_occurrence.R
-### Time-stamp: <2011-08-30 15:34:28 yreecht>
+### Time-stamp: <2011-09-01 15:24:37 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -82,13 +82,13 @@ barplotOccurrence.unitobs.f <- function(factGraph, factGraphSel, listFact, listF
         tmpData <- dropLevels.f(tmpData)
 
         ## Ouverture et configuration du périphérique graphique :
-        wmfFile <- openDevice.f(noGraph=1,
-                                metrique=metrique,
-                                factGraph=factGraph,
-                                modSel=iFactGraphSel,
-                                listFact=listFact,
-                                type="unitobs",
-                                typeGraph="barplot")
+        graphFile <- openDevice.f(noGraph=1,
+                                  metrique=metrique,
+                                  factGraph=factGraph,
+                                  modSel=iFactGraphSel,
+                                  listFact=listFact,
+                                  type="unitobs",
+                                  typeGraph="barplot")
 
         ## Titre (d'après les métriques, modalité du facteur de séparation et facteurs de regroupement) :
         if (! isTRUE(getOption("P.graphPaper")))
@@ -195,11 +195,17 @@ barplotOccurrence.unitobs.f <- function(factGraph, factGraphSel, listFact, listF
     if (getOption("P.graphPDF") || isTRUE(getOption("P.graphPNG")))
     {
         dev.off()
+
+        ## Inclusion des fontes dans le pdf si souhaité :
+        if (getOption("P.graphPDF") && getOption("P.pdfEmbedFonts"))
+        {
+            embedFonts(file=graphFile)
+        }else{}
     }else{
         if (.Platform$OS.type == "windows" && isTRUE(getOption("P.graphWMF")))
         {
             ## Sauvegarde en wmf si pertinent et souhaité :
-            savePlot(wmfFile, type="wmf", device=dev.cur())
+            savePlot(graphFile, type="wmf", device=dev.cur())
         }else{}
     }
 }

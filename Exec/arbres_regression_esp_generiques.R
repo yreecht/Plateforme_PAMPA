@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: arbres_regression_esp_generiques.R
-### Time-stamp: <2011-05-17 14:50:40 yreecht>
+### Time-stamp: <2011-09-01 15:36:14 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -613,22 +613,25 @@ WP2MRT.esp.f <- function(metrique, factGraph, factGraphSel, listFact, listFactSe
         DataBackup[[modGraphSel]] <<- tmpDataMod
 
         ## Ouverture et configuration du périphérique graphique :
-        openDevice.f(noGraph=which(modGraphSel == iFactGraphSel),
-                     metrique=metrique,
-                     factGraph=factGraph,
-                     modSel=if (getOption("P.plusieursGraphPage"))
-                 {
-                     iFactGraphSel      # toutes les modalités.
-                 }else{
-                     modGraphSel        # la modalité courante uniquement.
-                 },
-                     listFact=listFact,
-                     type=switch(tableMetrique, # différents types de graphs en fonction de la table de
+        graphFileTmp <- openDevice.f(noGraph=which(modGraphSel == iFactGraphSel),
+                                     metrique=metrique,
+                                     factGraph=factGraph,
+                                     modSel=if (getOption("P.plusieursGraphPage"))
+                                 {
+                                     iFactGraphSel      # toutes les modalités.
+                                 }else{
+                                     modGraphSel        # la modalité courante uniquement.
+                                 },
+                                     listFact=listFact,
+                                     type=switch(tableMetrique, # différents types de graphs en fonction de la table de
                                         # données.
-                                 "listespunit"={"espece"},
-                                 "unitespta"={"CL_espece"},
-                                 "espece"),
-                     typeGraph="MRT")
+                                                 "listespunit"={"espece"},
+                                                 "unitespta"={"CL_espece"},
+                                                 "espece"),
+                                     typeGraph="MRT")
+
+        ## graphFile uniquement si nouveau fichier :
+        if (!is.null(graphFileTmp)) graphFile <- graphFileTmp
 
         par(mar=c(2, 5, 8, 5), mgp=c(3.5, 1, 0)) # paramètres graphiques.
 
@@ -664,21 +667,40 @@ WP2MRT.esp.f <- function(metrique, factGraph, factGraphSel, listFact, listFactSe
                  error=errorLog.f)
 
         ## On ferme les périphériques PNG en mode fichier individuel :
-        if (isTRUE(getOption("P.graphPNG")) &&
-            (! getOption("P.plusieursGraphPage") || length(iFactGraphSel) <= 1))
+        if (isTRUE(getOption("P.graphPNG")))
         {
-            dev.off()
-        }else{}
-
+            if ((! getOption("P.plusieursGraphPage") || length(iFactGraphSel) <= 1))
+                dev.off()
+        }else{
+            ## Sauvegarde en wmf si pertinent et souhaité :
+            if (.Platform$OS.type == "windows" && isTRUE(getOption("P.graphWMF")) &&
+                (! getOption("P.plusieursGraphPage") || length(iFactGraphSel) <= 1) &&
+                !getOption("P.graphPDF"))
+            {
+                savePlot(graphFile, type="wmf", device=dev.cur())
+            }else{}
+        }
     }
 
     ## On ferme les périphériques PDF ou PNG restants :
     if (getOption("P.graphPDF") ||
-        (isTRUE(getOption("P.graphPNG")) &&
-         getOption("P.plusieursGraphPage") &&
-         length(iFactGraphSel) > 1))
+        (isTRUE(getOption("P.graphPNG")) && getOption("P.plusieursGraphPage") && length(iFactGraphSel) > 1))
     {
-        dev.off()
+            dev.off()
+
+            ## Inclusion des fontes dans le pdf si souhaité :
+            if (getOption("P.graphPDF") && getOption("P.pdfEmbedFonts"))
+            {
+                embedFonts(file=graphFile)
+            }else{}
+    }else{}
+
+    ## Sauvegarde en wmf restants si pertinent et souhaité :
+    if (.Platform$OS.type == "windows" && isTRUE(getOption("P.graphWMF")) &&
+        !(getOption("P.graphPNG") || getOption("P.graphPDF")) &&
+        getOption("P.plusieursGraphPage") && length(iFactGraphSel) > 1)
+    {
+        savePlot(graphFile, type="wmf", device=dev.cur())
     }else{}
 
     pampaProfilingEnd.f()

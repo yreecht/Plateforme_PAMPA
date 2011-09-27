@@ -102,7 +102,9 @@ VoirPlanEchantillonnage.f <- function()
     runLog.f(msg=c("Affichage du plan d'échantillonnage :"))
 
     myRarrayPE <- read.csv2(paste(NomDossierTravail,
-                                  "PlanEchantillonnage_basique.csv", sep=""),
+                                  "PlanEchantillonnage_basique",
+                                  ifelse(Jeuxdonnescoupe, "_selection", ""),
+                                  ".csv", sep=""),
                             row.names=1)
 
     tkinsert(txt.w, "end", paste("\n fichier Plan d'échantillonnage lu :\n ", myRarrayPE))

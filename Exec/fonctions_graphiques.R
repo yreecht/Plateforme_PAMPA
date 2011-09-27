@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: fonctions_graphiques.R
-### Time-stamp: <2011-08-30 15:26:52 yreecht>
+### Time-stamp: <2011-09-01 15:06:35 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -159,6 +159,9 @@ openDevice.f <- function(noGraph, metrique, factGraph, modSel, listFact, type="e
                         height=ifelse(large, 55,
                                       ifelse(isTRUE(getOption("P.graphPaper")), 30, 40)) * 15, pointsize=14)
                 }
+
+                ## Pour retourner le nom de fichier malgré tout :
+                fileName <- pngFileName
             }else{}
 
         }else{   ## Graphiques à l'écran :
@@ -233,6 +236,9 @@ openDevice.f <- function(noGraph, metrique, factGraph, modSel, listFact, type="e
             {
                 par(mfrow=c(getOption("P.nrowGraph"), getOption("P.ncolGraph")))
             }else{}
+
+            ## Pour retourner le nom de fichier également :
+            fileName <- pdfFileName
         }else{}
     }
 

@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: Selection_variables_interface.R
-### Time-stamp: <2011-08-23 13:45:17 yreecht>
+### Time-stamp: <2011-09-14 16:12:03 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -58,6 +58,7 @@ initialiseGraphOptions.f <- function()
             P.pointMoyennePch = 18,
             P.cex = 1,
             P.graphWMF = FALSE,
+            P.pdfEmbedFonts = TRUE,
             ## ####################################################################################################
             ## Classe des options (pour conversion depuis les variables tcl) :
             P.optionsClass = c(P.maxExclu="logical", P.NbObs="logical", P.NbObsCol="character",
@@ -70,7 +71,7 @@ initialiseGraphOptions.f <- function()
                                P.legendeCouleurs="logical", P.colPalette="character", P.statusOrder="character",
                                P.graphPaper="logical", P.warnings="logical",
                                P.pointMoyenneCex="numeric", P.pointMoyennePch="integer", P.cex="numeric",
-                               P.graphWMF="logical")
+                               P.graphWMF="logical", P.pdfEmbedFonts="logical")
             )
 
     ## On crée la pallette de couleurs par défaut :
@@ -615,7 +616,7 @@ verifVariables.f <- function(metrique, factGraph, factGraphSel, listFact, listFa
         ## Bloquer les analyses à plus de 3 facteurs :
         if (length(listFact[unlist(listFact) != ""]) > 3)
         {
-            infoLoading.f(msg==paste("Vous avez sélectionné trop de facteurs de regroupement : ",
+            infoLoading.f(msg=paste("Vous avez sélectionné trop de facteurs de regroupement : ",
                                      "\nLes résultats seraient inexploitables !",
                                      "\n\nVeuillez sélectionner *au plus* trois facteurs de regroupement",
                                      sep=""),

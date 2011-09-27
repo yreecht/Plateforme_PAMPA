@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: Boxplot_generique_calc.R
-### Time-stamp: <2011-06-23 10:25:42 yreecht>
+### Time-stamp: <2011-09-01 15:34:41 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -397,16 +397,12 @@ WP2boxplot.f <- function(metrique, factGraph, factGraphSel, listFact, listFactSe
         {
             warning("Nombre d'observations pour ", modGraphSel, " < ", getOption("P.MinNbObs"),
                     " : Graphique non créé !\n")
-            next()
-        }else{}
 
-        ## ## Suppression des valeurs supérieures à X% du maximum (pour plus de lisibilité) :
-        ## if (getOption("P.maxExclu"))
-        ## {
-        ##     tmpDataMod <- tmpDataMod[which(tmpDataMod[, metrique] <=
-        ##                                    getOption("P.GraphPartMax") * max(tmpDataMod[, metrique],
-        ##                                                                      na.rm=TRUE)), ]
-        ## }else{}
+            plotted <- FALSE
+            next()
+        }else{
+            plotted <- TRUE
+        }
 
         ## Suppression des 'levels' non utilisés :
         tmpDataMod <- dropLevels.f(tmpDataMod)
@@ -415,24 +411,26 @@ WP2boxplot.f <- function(metrique, factGraph, factGraphSel, listFact, listFactSe
         DataBackup[[modGraphSel]] <<- tmpDataMod
 
         ## Ouverture et configuration du périphérique graphique :
-        wmfFile <- openDevice.f(noGraph=which(modGraphSel == iFactGraphSel),
-                                metrique=metrique,
-                                factGraph=factGraph,
-                                modSel=if (getOption("P.plusieursGraphPage"))
-                            {
-                                iFactGraphSel      # toutes les modalités.
-                            }else{
-                                modGraphSel        # la modalité courante uniquement.
-                            },
-                                listFact=listFact,
-                                type=switch(tableMetrique, # différents types de graphs en fonction de la table de
+        graphFileTmp <- openDevice.f(noGraph=which(modGraphSel == iFactGraphSel),
+                                     metrique=metrique,
+                                     factGraph=factGraph,
+                                     modSel=if (getOption("P.plusieursGraphPage"))
+                                 {
+                                     iFactGraphSel      # toutes les modalités.
+                                 }else{
+                                     modGraphSel        # la modalité courante uniquement.
+                                 },
+                                     listFact=listFact,
+                                     type=switch(tableMetrique, # différents types de graphs en fonction de la table de
                                         # données.
-                                            "listespunit"={"espece"},
-                                            "unitespta"={"CL_espece"},
-                                            "TableBiodiv"={"unitobs"},
-                                            "espece"),
-                                typeGraph="boxplot")
+                                                 "listespunit"={"espece"},
+                                                 "unitespta"={"CL_espece"},
+                                                 "TableBiodiv"={"unitobs"},
+                                                 "espece"),
+                                     typeGraph="boxplot")
 
+        ## graphFile uniquement si nouveau fichier :
+        if (!is.null(graphFileTmp)) graphFile <- graphFileTmp
 
         par(mar=c(9, 5, 8, 1), mgp=c(3.5, 1, 0)) # paramètres graphiques.
 
@@ -523,33 +521,43 @@ WP2boxplot.f <- function(metrique, factGraph, factGraphSel, listFact, listFactSe
         }else{}
 
         ## On ferme les périphériques PNG en mode fichier individuel :
-        if (isTRUE(getOption("P.graphPNG")) &&
-            (! getOption("P.plusieursGraphPage") || length(iFactGraphSel) <= 1))
+        if (isTRUE(getOption("P.graphPNG")))
         {
-            dev.off()
-        }else{}
-
-        ## Sauvegarde en wmf si pertinent et souhaité :
-        if (.Platform$OS.type == "windows" && isTRUE(getOption("P.graphWMF")) &&
-            (! getOption("P.plusieursGraphPage") || length(iFactGraphSel) <= 1))
-        {
-            savePlot(wmfFile, type="wmf", device=dev.cur())
-        }else{}
+            if ((! getOption("P.plusieursGraphPage") || length(iFactGraphSel) <= 1) && plotted)
+                dev.off()
+        }else{
+            ## Sauvegarde en wmf si pertinent et souhaité :
+            if (.Platform$OS.type == "windows" && isTRUE(getOption("P.graphWMF")) &&
+                (! getOption("P.plusieursGraphPage") || length(iFactGraphSel) <= 1) &&
+                plotted && !getOption("P.graphPDF"))
+            {
+                savePlot(graphFile, type="wmf", device=dev.cur())
+            }else{}
+        }
 
     }  ## Fin de boucle graphique.
 
     ## On ferme les périphériques PDF ou PNG restants :
     if (getOption("P.graphPDF") ||
-        (isTRUE(getOption("P.graphPNG")) && getOption("P.plusieursGraphPage") && length(iFactGraphSel) > 1))
+        (isTRUE(getOption("P.graphPNG")) && getOption("P.plusieursGraphPage") && length(iFactGraphSel) > 1)
+         && plotted)
     {
-        dev.off()
+            dev.off()
+
+            ## Inclusion des fontes dans le pdf si souhaité :
+            if (getOption("P.graphPDF") && getOption("P.pdfEmbedFonts"))
+            {
+                embedFonts(file=graphFile)
+            }else{}
     }else{}
 
     ## Sauvegarde en wmf restants si pertinent et souhaité :
     if (.Platform$OS.type == "windows" && isTRUE(getOption("P.graphWMF")) &&
-        getOption("P.plusieursGraphPage") && length(iFactGraphSel) > 1)
+        !(getOption("P.graphPNG") || getOption("P.graphPDF")) && # Si pas d'autre sortie fichier.
+        getOption("P.plusieursGraphPage") && length(iFactGraphSel) > 1
+        && plotted)
     {
-        savePlot(wmfFile, type="wmf", device=dev.cur())
+        savePlot(graphFile, type="wmf", device=dev.cur())
     }else{}
 
     pampaProfilingEnd.f()

@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: Selection_variables_interface.R
-### Time-stamp: <2011-09-14 16:12:03 yreecht>
+### Time-stamp: <2011-10-06 09:18:04 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -47,7 +47,7 @@ initialiseGraphOptions.f <- function()
             P.colPalette = "heat",              # Type de palette de couleur.
             P.statusOrder = c("RE", "IN",       # Ordre des nivaux de protection pour les graphiques et analyses.
                               "Z1", "I1",
-                              "PP",
+                              "PP", "RP",
                               "Z2", "I2",
                               "Z3", "I3",
                               "HR", "OUT",
@@ -986,7 +986,8 @@ selectionVariables.f <- function(nextStep)
     nextStepSansCT <- c("")
 
     ## Étapes avec agrégation par unitobs :
-    nextStepUnitobs <- c("boxplot.unitobs", "modele_lineaire.unitobs", "freq_occurrence", "freq_occurrence.unitobs",
+    nextStepUnitobs <- c("boxplot.unitobs", "modele_lineaire.unitobs", ## "freq_occurrence",
+                         "freq_occurrence.unitobs",
                          "MRT.unitobs")
 
     ## Étapes avec biodiversité (généralement pour les métriques agrégées par unité d'observation) :

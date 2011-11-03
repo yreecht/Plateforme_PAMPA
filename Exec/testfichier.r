@@ -33,7 +33,7 @@ testfileref.f <- function ()
     matable <- "obs"
     objtable <- eval(parse(text=matable))
 
-    espSite <- paste("Obs", SiteEtudie, sep="")
+    espSite <- paste("Obs", siteEtudie, sep="")
 
     especes.select <- dropLevels.f(subset(especes,
                                             is.element(code_espece, levels(obs$code_espece))))
@@ -42,7 +42,7 @@ testfileref.f <- function ()
     listeSite <- c("RUN" , "MAY" , "BA" , "BO" , "CB" , "CR" , "STM" , "NC")
 
     ## Noms des sites dont on doit exclure les colonnes :
-    sitesExclus <- listeSite[ ! grepl(pattern=paste("^", SiteEtudie, "$", sep=""), x=listeSite)]
+    sitesExclus <- listeSite[ ! grepl(pattern=paste("^", siteEtudie, "$", sep=""), x=listeSite)]
 
     ## champs ne correspondant pas au motif "(Site1|Site2|...)$" :
     champsSite <- colnames(especes.select)[! grepl(paste("(", paste(sitesExclus, collapse="|"), ")$", sep=""),
@@ -104,7 +104,7 @@ testfileref.f <- function ()
            Enregistrer.but)
 
     tkgrid(tklabel(wintest,
-                   text=paste("Nombre d'espèces référencées pour ", SiteEtudie, " : ",
+                   text=paste("Nombre d'espèces référencées pour ", siteEtudie, " : ",
                    nrow(subset(especes, especes[, espSite]=="oui")))))
 
     tkgrid(tklabel(wintest,

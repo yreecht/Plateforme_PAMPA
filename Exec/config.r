@@ -7,7 +7,7 @@
 ## Exemple : faites de même avec vos jeux de donnée (sans les commentaires -- "## " -- en début de ligne.) :
 
 ## #### RUN :
-## SiteEtudie <- "RUN"
+## siteEtudie <- "RUN"
 ## fileName1 <- "unitobspampaGCRMNpoisson-100810.txt"
 ## fileName2 <- "obspampaGCRMNpoisson-100810.txt"
 ## fileName3 <- "PAMPA-WP1-Meth-4-RefSpOM 110810.txt"
@@ -27,7 +27,7 @@
 ## Fin de la zone éditable
 ########################################################################################################################
 
-pathMaker.f <- function()
+pathMaker.f <- function(nameWorkspace, fileName1, fileName2, fileName3)
 {
     ## Purpose: Redéfinir les chemins (par exemple après changement du
     ##          dossier de travail)
@@ -35,7 +35,14 @@ pathMaker.f <- function()
     ## Arguments: aucun
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 28 sept. 2010, 10:05
+
+    ## browser()
+
     assign("nameWorkspace", nameWorkspace, envir=.GlobalEnv)
+    assign("fileName1", fileName1, envir=.GlobalEnv)
+    assign("fileName2", fileName2, envir=.GlobalEnv)
+    assign("fileName3", fileName3, envir=.GlobalEnv)
+
     assign("NomDossierTravail", paste(nameWorkspace, "/FichiersSortie/", sep=""), envir=.GlobalEnv)
     assign("NomDossierData", paste(nameWorkspace, "/Data/", sep=""), envir=.GlobalEnv)   # sert a concaténer les
                                         # variables fileNameUnitObs fileNameObs   fileNameRefEsp fileNameRefSpa
@@ -46,46 +53,38 @@ pathMaker.f <- function()
 }
 
 ## Vérification de l'existances de la configuration :
-requiredVar <- c("SiteEtudie", "fileName1", "fileName2", "fileName3", "nameWorkspace")
+requiredVar <- c(## "siteEtudie",
+                 "fileName1", "fileName2", "fileName3", "nameWorkspace")
 existVar <- sapply(requiredVar, exists)
 
 if (any(! existVar))                    # Si au moins une des variables n'est pas définie.
 {
     pluriel <- sum(! existVar) > 1
 
-    tkmessageBox(message=paste(ifelse(pluriel,
-                                      "Les variables suivantes ne sont pas définies ",
-                                      "La variable suivante n'est pas définie "),
-                               "dans votre fichier \"", basePath, "/Exec/config.r\" :\n\n\t*  ",
-                               paste(requiredVar[! existVar], collapse="\n\t*  "),
-                               "\n\nVous devez éditer ce fichier",
-                               "\n\t(ouvert automatiquement, ainsi que la sauvegarde si elle existe).",
-                               sep=""),
-                 icon="error")
-
-    if (getOption("editor") != "")
+    ## Demande pour l'ouverture du fichier de configuration :
+    if(tclvalue(tkmessageBox(message=paste(ifelse(pluriel,
+                                           "Les variables suivantes ne sont pas définies ",
+                                           "La variable suivante n'est pas définie "),
+                                           "dans votre fichier \"", basePath, "/Exec/config.r\" :\n\n\t*  ",
+                                           paste(requiredVar[! existVar], collapse="\n\t*  "),
+                                           "\n\nVoulez-vous éditer ce fichier ?",
+                                           "\n\t(ouverture automatiquement de la sauvegarde également, si elle existe).",
+                                           sep=""),
+                             icon="warning", type="yesno", title="Configuration imcomplète",
+                             default="no")) == "yes")
     {
-        file.edit(paste(basePath, "/Exec/config.r", sep=""), title="Éditez \"config.r\" (zone éditable uniquement)")
-
-        if (file.exists(fileTmp <- paste(basePath, "/Exec/config.bak.r", sep="")))
-        {
-            file.edit(fileTmp, title="Précédente sauvegarde de \"config.r\"")
-        }else{}
-    }else{
         shell.exec(paste(basePath, "/Exec/config.r", sep=""))
 
         if (file.exists(fileTmp <- paste(basePath, "/Exec/config.bak.r", sep="")))
         {
             shell.exec(fileTmp)
         }else{}
-    }
-
-    ## stop("Configuration incorrecte : relancez la plateforme une fois la configuration effectuée.")
-
+    }else{}
 }else{
-    pathMaker.f()
-
-    assign("siteEtudie", SiteEtudie, envir=.GlobalEnv)
+    pathMaker.f(nameWorkspace=nameWorkspace,
+                fileName1=fileName1,
+                fileName2=fileName2,
+                fileName3=fileName3)
 }
 
 

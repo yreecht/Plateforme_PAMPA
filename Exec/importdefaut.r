@@ -278,7 +278,11 @@ opendefault.f <- function ()
     runLog.f(msg=c("--------------------------------------------------------------------------------",
                    "Nouveau chargement des données :"))
 
-    pathMaker.f()                       # MàJ des variables "fileNameUnitObs", "fileNameObs", "fileNameRefEsp". Pour les
+    pathMaker.f(nameWorkspace=nameWorkspace,
+                fileName1=fileName1,
+                fileName2=fileName2,
+                fileName3=fileName3)
+                                        # MàJ des variables "fileNameUnitObs", "fileNameObs", "fileNameRefEsp". Pour les
                                         # cas où les variables fileName1-3 auraient changé.
 
     assign("Jeuxdonnescoupe", 0, envir=.GlobalEnv)
@@ -438,7 +442,8 @@ opendefault.f <- function ()
                                 sum(!is.element(obs$unite_observation, unitobs$unite_observation)),
                                 " (sur ",
                                 nrow(obs),
-                                ") enregistrements avec des unités d'observation absentes dans la table unitobs ",
+                                ") enregistrements ",
+                                "\navec des unités d'observation absentes dans la table unitobs.",
                                 sep=""),
                      icon="warning")
     }
@@ -453,7 +458,7 @@ opendefault.f <- function ()
     ## Plan d'échantillonnage (à refaire complètement) :
     stepInnerProgressBar.f(n=1, msg="Plan d'échantillonnage")
 
-    ## ############# Récapitulatif du plan d'échantillonnage ############# # [!!!] : revoir tout ça !
+    ## ############# Récapitulatif du plan d'échantillonnage #############
     PlanEchantillonnageBasic.f(tabUnitobs=unitobs, tabObs=obs)
 
 
@@ -469,44 +474,26 @@ opendefault.f <- function ()
 
     stepInnerProgressBar.f(n=1, msg="Table de contingence")
 
-    if (unique(unitobs$type)[1] != "SVR") # [!!!]
+    obsTmp <- obs
+
+    obsTmp$espece <- especes$espece[match(obsTmp$code_espece, especes$code_espece)]
+    if(length(obsTmp$espece[obsTmp$espece=="sp."])>0) # [!!!]
     {
-        obsSansCatBenth <- obs
-        obsSansCatBenth$Genre <- especes$Genre[match(obsSansCatBenth$code_espece, especes$code_espece)]
-        if(length(obsSansCatBenth$Genre[obsSansCatBenth$Genre=="ge."])>0) # [!!!]
-        {
-            infoLoading.f(msg=paste("Pour les calculs des indices de diversité, ",
-                                    length(obsSansCatBenth$Genre[obsSansCatBenth$Genre=="ge."]),
-                                    " observations de la table de contingence pour lesquels le genre ",
-                                    " \n\tn'est pas renseigné ('ge.') dans le référentiel espèce ont été supprimées",
-                                    sep=""),
-                          icon="info")
+        infoLoading.f(msg=paste("Pour les calculs des indices de diversité, ",
+                      length(obsTmp$espece[obsTmp$espece == "sp."]),
+                      " observations de la table de contingence pour lesquels l'espèce ",
+                      " \n\tn'est pas renseigné ('sp.') dans le référentiel espèces ont été supprimées.",
+                      sep=""),
+                      icon="info")
 
-            obsSansCatBenth <- subset(obsSansCatBenth, obsSansCatBenth$Genre!="ge.") # [!!!]
+        obsTmp <- subset(obsTmp, espece != "sp.")
 
-        }
-        contingence <- tapply(obsSansCatBenth$nombre,
-                              list(obsSansCatBenth$unite_observation, obsSansCatBenth$code_espece), na.rm=TRUE, sum)
-    }else{
-        contingenceSVRt <- tapply(obs$nombre,
-                                  list(obs$unite_observation, obs$rotation, obs$code_espece), na.rm=TRUE, mean)
-
-        contingenceSVRt[is.na(contingenceSVRt)] <- 0
-
-        contingenceSVR <- as.data.frame(matrix(NA, dim(contingenceSVRt)[1] * dim(contingenceSVRt)[2] *
-                                               dim(contingenceSVRt)[3], 4))
-
-        colnames(contingenceSVR) = c("unitobs", "rotation", "code_espece", "abondance")
-        contingenceSVR$abondance <- as.vector(contingenceSVRt)
-        contingenceSVR$unitobs <- rep(dimnames(contingenceSVRt)[[1]],
-                                      times = dim(contingenceSVRt)[2] * dim(contingenceSVRt)[3])
-        contingenceSVR$rotation <- rep(dimnames(contingenceSVRt)[[2]],
-                                       each = dim(contingenceSVRt)[1], times = dim(contingenceSVRt)[3])
-        contingenceSVR$code_espece <- rep(dimnames(contingenceSVRt)[[3]],
-                                          each = dim(contingenceSVRt)[1]*dim(contingenceSVRt)[2])
-        contingence <- tapply(contingenceSVR$abondance,
-                              list(contingenceSVR$unitobs, contingenceSVR$code_espece), na.rm=TRUE, sum)
     }
+
+    contingence <- tapply(obsTmp$nombre,
+                          list(obsTmp$unite_observation, obsTmp$code_espece), sum, na.rm=TRUE)
+
+    rm(obsTmp)
 
     contingence[is.na(contingence)] <- 0
     ## Suppression des especes qui ne sont jamais vues
@@ -518,7 +505,7 @@ opendefault.f <- function ()
     }
     rm(a)
 
-    ## idem
+    ## idem unitobs :
     b <- which(apply(contingence, 1, sum, na.rm=TRUE) == 0)
     if (length(b) != 0)
     {
@@ -540,7 +527,7 @@ opendefault.f <- function ()
 
     if (!exists("contingence", envir=.GlobalEnv, frame, mode="any", inherits=TRUE))
     {
-        infoLoading.f(msg="La table de contingence n'a pas été calculée",
+        infoLoading.f(msg="La table de contingence n'a pas été calculée.",
                       icon="warning")
 
         warning("La table de contingence n'a pas été calculée")

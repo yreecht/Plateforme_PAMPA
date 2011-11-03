@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: fonctions_graphiques.R
-### Time-stamp: <2011-09-01 15:06:35 yreecht>
+### Time-stamp: <2011-10-05 13:54:51 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -54,7 +54,7 @@ resFileGraph.f <- function(metrique, factGraph, modSel, listFact,
                       ## Métrique analysée :
                       metrique,
                       ifelse(getOption("P.maxExclu") && getOption("P.GraphPartMax") < 1,
-                             paste("(", round(100 * getOption("P.GraphPartMax")),"%-max)", sep=""),
+                             paste("(", round(100 * getOption("P.GraphPartMax")),"pc-max)", sep=""),
                              ""),
                       "_",
                       ## si facteur de séparation des analyses :
@@ -82,14 +82,14 @@ resFileGraph.f <- function(metrique, factGraph, modSel, listFact,
                              },
                              "unitobs"={
                                  ifelse(factGraph == "",
-                                        "(toutes espèces)_",
+                                        "(toutes_espèces)_",
                                         paste(factGraph, "(", ifelse(modSel[1] != "",
                                                                      paste(modSel, collapse="+"),
                                                                      "toutes"), ")_", sep=""))
                              },
                              "CL_unitobs"={
                                  ifelse(factGraph == "",
-                                        "(toutes espèces)_",
+                                        "(toutes_espèces)_",
                                         paste(factGraph, "(", ifelse(modSel[1] != "",
                                                                      paste(modSel, collapse="+"),
                                                                      "toutes"), ")_", sep=""))

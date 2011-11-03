@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: comparaison_distri_generique.R
-### Time-stamp: <2011-09-15 15:30:24 yreecht>
+### Time-stamp: <2011-10-10 08:09:55 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -66,7 +66,9 @@ tkrplot <- function(parent, fun, hscale = 1, vscale = 1,...)
     ## Author: Yves Reecht, Date: 23 août 2010, 12:46
 
     image <- paste("Rplot",
-                   tkrplot:::.make.tkindex(), # nécessaire si ".make.tkindex" n'a pas été exportée.
+                   ifelse(exists(".make.tkindex"),
+                          .make.tkindex(),
+                          tkrplot:::.make.tkindex()), # nécessaire si ".make.tkindex" n'a pas été exportée.
                    sep = "")
 
     ## Périphérique graphique :

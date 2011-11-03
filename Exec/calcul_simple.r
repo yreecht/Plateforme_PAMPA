@@ -265,6 +265,7 @@ calcPoids.f <- function(Data)
            res[idxP] <- (Data$nombre * especes$Coeff.a.NC[match(Data$code_espece, especes$code_espece)] *
                          Data$taille ^ especes$Coeff.b.NC[match(Data$code_espece, especes$code_espece)])[idxP]
            )
+
     ## [!!!] Comptabiliser les tailles incalculables !
     ## Nombre de poids ajoutées grâce à la méthode :
     nbObsType[c("taille", "taille.moy")] <- c(sum(!is.na(res[idxTaille])), sum(!is.na(res[idxTailleMoy])))

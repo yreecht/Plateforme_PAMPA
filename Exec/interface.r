@@ -90,6 +90,7 @@ tkadd(import, "command", label="Choix des dossiers et fichiers de données...",
 tkadd(import, "command", label="Dossiers et fichiers par defaut", accelerator="CTRL+A",
       command = function()
   {
+      rm(fileName1, fileName2, fileName3, envir=.GlobalEnv)
       eval(source("./Exec/config.r", encoding="latin1"), envir=.GlobalEnv) # rechargement de la configuration.
       opendefault.f()                                                      # chargement des données.
   })
@@ -169,7 +170,7 @@ tkadd(traitement, "command", label="Boxplots métrique /espèce/unité d'observatio
   })
 
 ## Barplots espèces :
-tkadd(traitement, "command", label="Fréquences d'occurrence /espèce/unité d'observation...",
+tkadd(traitement, "command", label="Fréquences d'occurrence (/espèce sur des unité d'observation)...",
       background="#FFFBCF",
       command=function ()
   {
@@ -194,7 +195,7 @@ tkadd(traitement, "command", label="Boxplots métrique /unité d'observation (dont
   })
 
 ## Barplots unitobs :
-tkadd(traitement, "command", label="Fréquences d'occurrence /unité d'observation...",
+tkadd(traitement, "command", label="Fréquences d'occurrence (/facteurs d'unité d'observation)...",
       background="#FFFBCF",
       command=function ()
   {

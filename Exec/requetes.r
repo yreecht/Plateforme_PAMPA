@@ -38,7 +38,7 @@ critereespref.f <- function ()
 
     ## ici, on liste les AMP qui ne correspondent pas au jeu de données :
     listeSite <- c("RUN" , "MAY" , "BA" , "BO" , "CB" , "CR" , "STM" , "NC")
-    listeSiteExclus <- subset(listeSite, listeSite!=SiteEtudie)
+    listeSiteExclus <- subset(listeSite, listeSite!=siteEtudie)
 
     ## On retire les champs contenant les lettres des sites exclus :
     for (k in (seq(along=listeSiteExclus)))

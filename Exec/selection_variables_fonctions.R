@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: Selection_variables_fonctions.R
-### Time-stamp: <2011-09-19 14:46:37 yreecht>
+### Time-stamp: <2011-10-10 17:58:45 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -191,7 +191,7 @@ champsRefEspeces.f <- function(site, ordered=FALSE, tableMetrique="", nextStep=N
     listeSite <- c("RUN" , "MAY" , "BA" , "BO" , "CB" , "CR" , "STM" , "NC")
 
     ## Noms des sites dont on doit exclure les colonnes :
-    sitesExclus <- listeSite[ ! grepl(pattern=paste("^", SiteEtudie, "$", sep=""), x=listeSite)]
+    sitesExclus <- listeSite[ ! grepl(pattern=paste("^", siteEtudie, "$", sep=""), x=listeSite)]
 
     ## champs ne correspondant pas au motif "(Site1|Site2|...)$" :
     champs <- sort(colnames(especes))[! grepl(paste("(", paste(sitesExclus, collapse="|"), ")$", sep=""),
@@ -717,14 +717,14 @@ calcBiodiv.f <- function(Data, unitobs="unite_observation", code.especes="code_e
     ##                     * espèces présentes
     ##                     * nombre d'individus /espèce/unitobs.
     ##            unitobs : nom de la colone d'unités d'observation.
-    ##            especes : nom de la colone d'espèces.
+    ##            code.especes : nom de la colone d'espèces.
     ##            nombres : nom de la colone de nombres.
     ##            indices : liste des indices à calculer
     ##                      (vecteur de caractères)
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 29 oct. 2010, 08:58
 
-    ## Supression de tout ce qui n'a pas de genre (peut être du non biotique) :
+    ## Supression de tout ce qui n'a pas d'espèce précisee (peut être du non biotique ou identification >= genre) :
     Data <- Data[especes$espece[match(Data$code_espece, especes$code_espece)] != "sp.", ]
 
     ## Suppression des niveaux de facteur inutilisés :
@@ -903,7 +903,7 @@ calcBiodivTaxo.f <- function(Data, unitobs="unite_observation", code.especes="co
         return(NULL)                    # Rien !
     }else{
         ## Suppression de tout ce qui n'a pas de genre (peut être du non biotique) :
-        Data <- Data[especes$Genre[match(Data$code_espece, especes$code_espece)] != "ge.", ] # [!!!]
+        Data <- Data[especes$espece[match(Data$code_espece, especes$code_espece)] != "sp.", ]
 
         ## Suppression des niveaux de facteur inutilisés :
         Data <- dropLevels.f(df=Data)
@@ -926,7 +926,7 @@ calcBiodivTaxo.f <- function(Data, unitobs="unite_observation", code.especes="co
         ## tableau avec genre, famille, etc.
         sp.taxon <- dropLevels.f(especes[match(colnames(contingence),
                                                especes$code_espece, nomatch=NA, incomparables = FALSE),
-                                         c("Genre", "Famille", "Ordre", "Classe", "Phylum")])
+                                         c("espece", "Genre", "Famille", "Ordre", "Classe", "Phylum")])
 
         ## colnames(sp.taxon) <- c("genre", "famille", "ordre", "classe", "phylum")
         rownames(sp.taxon) <- colnames(contingence)

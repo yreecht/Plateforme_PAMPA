@@ -21,17 +21,13 @@ unitespta.f <- function(){
     stepInnerProgressBar.f(n=1, msg="Calcul des métriques par unité d'observation, espèce et classe de taille...")
 
 
-    ## creation des classes de tailles si champ classe taille contient uniquement des NA [!!!] uniquement [???]
-    if (any(is.na(obs$classe_taille)))  ## (NA %in% unique(obs$classe_taille)==TRUE) # [!!!]
+    ## creation des classes de tailles si le champ classe taille contient des NA.
+    if (any(is.na(obs$classe_taille)))
     {
         classeTaille.f()
     }else{
         ## si le champ taille contient uniquement des valeurs a NA
-        if (all(is.na(obs$taille))) # (length(unique(obs$taille))==1 & NA %in% unique(obs$taille)==TRUE)
-                                   # # [!!!] remplacer par all(is.na()) ??
-                                        # !!Non!! + inconsistence avec la première clause (il ne devrait pas y avoir de
-                                        # NAs ici) !!Non!!
-                                        # [yr: 13/08/2010]
+        if (all(is.na(obs$taille)))
         {
             ct <- 2
         }else{
@@ -49,7 +45,7 @@ unitespta.f <- function(){
         ## Nombre d'individus :
         if (unique(unitobs$type) == "SVR")
         {
-            stepInnerProgressBar.f(n=1, msg="Interpolations pour vidéos rotative (étape longue)")
+            stepInnerProgressBar.f(n=1, msg="Interpolations pour vidéos rotatives (étape longue)")
             switch(getOption("PAMPA.SVR.interp"),
                    "extended"={
                        statRotations <- statRotation.extended.f(facteurs=c("unite_observation", "code_espece",
@@ -71,7 +67,7 @@ unitespta.f <- function(){
             ## Somme des nombres d'individus :
             unitesptaT <- tapply(obs$nombre,
                                  as.list(obs[ , c("unite_observation", "code_espece", "classe_taille")]),
-                                 sum, na.rm = TRUE) # [!!!] nombres à zéro [???] [yr: 17/08/2010]
+                                 sum, na.rm = TRUE)
 
             ## Absences considérée comme "vrais zéros" :
             unitesptaT[is.na(unitesptaT)] <- 0
@@ -184,7 +180,7 @@ unitespta.f <- function(){
         }else{
             ## alerte que les calculs de biomasse sont impossibles
             infoLoading.f(msg=paste("Calcul de biomasse impossible : ",
-                                    "\nles poids ne sont pas renseignés ou ne peuvent être calculés", sep=""),
+                                    "\nles poids ne sont pas renseignés ou ne peuvent être calculés.", sep=""),
                           icon="warning")
         }
 
@@ -373,7 +369,7 @@ unitesp.f <- function(){
     ## Si video rotative, on divise par le nombre de rotation
     if (unique(unitobs$type) == "SVR")
     {
-        stepInnerProgressBar.f(n=1, msg="Interpolations pour vidéos rotative")
+        stepInnerProgressBar.f(n=1, msg="Interpolations pour vidéos rotatives")
 
         switch(getOption("PAMPA.SVR.interp"),
                    "extended"={
@@ -560,13 +556,11 @@ unitesp.f <- function(){
         ## Pourcentage de recouvrement de chaque espèce/categorie pour les couvertures biotiques et abiotiques
         s <- tapply(unitesp$nombre, unitesp$unite_observation, sum, na.rm=TRUE)
         unitesp$recouvrement <- as.vector(100 * unitesp$nombre /
-                                          s[match(unitesp$unite_observation, rownames(s))]) ## [!!!] ajout 100 * [???]
+                                          s[match(unitesp$unite_observation, rownames(s))])
         rm(s)
 
-        ## Nombre de colonies
-        ## Vérifier si pas de risque que des longueurs de transitions == 0 => besoin de mettre 0 à count dans ces cas là
-        ## [!!!]
-        obs$count <- 1                  # [!!!] somme des obs$nombre > 0 [???]
+        ## Nombre de colonies (longueurs de transition > 0) :
+        obs$count <- ifelse(obs$nombre > 0, 1, 0)
 
         e <- tapply(obs$count, list(obs$unite_observation, obs$code_espece), sum, na.rm=TRUE)
 
@@ -659,21 +653,19 @@ unit.f <- function(){
 
         if (unique(unitobs$type) != "SVR")
         {
-            ## calcul biomasse
-            ## unit$nombre[is.na(unit$nombre)] <- 0 # as.integer() pour conserver des entiers [???]
+            ## calcul biomasse :
             unit$biomasse <- as.numeric(unit$biomasse) /
                 (unitobs$DimObs1[match(unit$unitobs, unitobs$unite_observation)] *
                  unitobs$DimObs2[match(unit$unitobs, unitobs$unite_observation)])
-            ## unit$biomasse[is.na(unit$biomasse)] <- 0 # [!!!] encore une fois, quelle horreur  [yr: 13/08/2010]
 
-            ## calcul densite
+            ## calcul densite :
             unit.d <- tapply(obs$nombre, obs$unite_observation, sum, na.rm=TRUE)
             unit$densite <- unit.d[match(unit$unitobs, rownames(unit.d))]
             unit$densite <- as.numeric(unit$densite) /
                 (unitobs$DimObs1[match(unit$unitobs, unitobs$unite_observation)] *
                  unitobs$DimObs2[match(unit$unitobs, unitobs$unite_observation)])
-            unit$densite[is.na(unit$densite)] <- 0 # [!!!] vérifier si c'est correct [yr: 17/08/2010]
-        }else{
+            unit$densite[is.na(unit$densite)] <- 0
+        }else{                          # Vidéos rotatives :
             ## calcul densite d'abondance
             ## Moyennes :
             unit$nombre <- apply(.NombresSVR,
@@ -738,7 +730,10 @@ unit.f <- function(){
         unit <- merge(unit, tmp[ , colnames(tmp) != "nombre"], by.x="unitobs", by.y="unite_observation")
     }else{
         ## Benthos :
+        tmp <- calcBiodiv.f(Data=listespunit, unitobs = "unite_observation",
+                            code.especes = "code_espece", nombres = "colonie", indices = "all")
 
+        unit <- merge(unit, tmp[ , colnames(tmp) != "colonie"], by.x="unitobs", by.y="unite_observation")
     }
 
     ## ajout des champs "an", "site", "statut_protection", "biotope", "latitude", "longitude"

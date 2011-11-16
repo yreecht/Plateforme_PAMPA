@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: Selection_variables_interface.R
-### Time-stamp: <2011-10-06 09:18:04 yreecht>
+### Time-stamp: <2011-11-14 14:49:43 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -1175,7 +1175,7 @@ selectionVariables.f <- function(nextStep)
 
     tkgrid(ttkseparator(FrameFact, orient = "horizontal"), column=0, columnspan=4, sticky="ew")
     tkgrid(tklabel(FrameFact, text="    Modalités (toutes par défaut)  "), column=2, sticky="w")
-    tkgrid(tklabel(FrameFact, text="Facteur 1 "), CB.fact1, B.factSel1, sticky="n")
+    tkgrid(tklabel(FrameFact, text="Facteur 1 "), CB.fact1, B.factSel1, sticky="n", pady=1)
 
     tkgrid(tklabel(WinSelection), column=4)
 

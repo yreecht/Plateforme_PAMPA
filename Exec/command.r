@@ -8,7 +8,10 @@ RestaurerDonnees.f <- function ()
     {
         assign("obs", SAUVobs, envir=.GlobalEnv)
         assign("unitobs", SAUVunitobs, envir=.GlobalEnv)
-        assign("contingence", SAUVcontingence, envir=.GlobalEnv)
+        if (exists("SAUVcontingence", envir=.GlobalEnv))
+        {
+            assign("contingence", SAUVcontingence, envir=.GlobalEnv)
+        }else{}
         assign("unitesp", SAUVunitesp, envir=.GlobalEnv)
         assign("unit", SAUVunit, envir=.GlobalEnv)
         assign("listespunit", SAUVlistespunit, envir=.GlobalEnv)
@@ -17,7 +20,6 @@ RestaurerDonnees.f <- function ()
 
         if (!is.benthos.f())               # unique(unitobs$type) != "LIT"
         {  # car pas de classes de tailles avec les recouvrements
-            ## unitespta <- SAUVunitespta
             assign("unitespta", SAUVunitespta, envir=.GlobalEnv)
         }
 
@@ -25,9 +27,13 @@ RestaurerDonnees.f <- function ()
         ModifierInterfaceApresRestore.f("Tout", "Toutes")
         assign("Jeuxdonnescoupe", 0, envir=.GlobalEnv)
 
-        gestionMSGinfo.f("Jeuxdedonnerestore", dim(obs)[1])
-        tkmessageBox(message=paste("Jeu de données restauré \n", dim(obs)[1],
-                                   "enregistrements dans la table observation"))
+        add.logFrame.f(msgID="restauration", env = .GlobalEnv)
+
+        tkmessageBox(message=paste("Données originales restaurée."## , dim(obs)[1],
+                                   ## "enregistrements dans la table des observations"
+                     ))
+
+        gestionMSGaide.f("SelectionOuTraitement")
     }
 }
 
@@ -57,7 +63,7 @@ SelectionUnCritereEsp.f <- function ()
                                                                    selection[["selection"]])])
 
         ## Réduction des tables de données (au espèces sélectionnées) :
-        if (exists("unitespta", envir=.GlobalEnv) && nrow(unitespta))
+        if (exists("unitespta", envir=.GlobalEnv) && ncol(unitespta))
         {
             assign("unitespta",
                    dropLevels.f(unitespta[is.element(unitespta$code_espece, keptEspeces), , drop=FALSE],
@@ -74,7 +80,8 @@ SelectionUnCritereEsp.f <- function ()
             {
                 tmp1[ , is.element(colnames(tmp1),
                                    colTmp)] <- sweep(tmp1[ , is.element(colnames(tmp1),
-                                                                        colTmp)],
+                                                                        colTmp),
+                                                          drop=FALSE],
                                                      2, 100, "*")
             }else{}
 
@@ -112,7 +119,8 @@ SelectionUnCritereEsp.f <- function ()
         {
             tmp2[ , is.element(colnames(tmp2),
                                colTmp)] <- sweep(tmp2[ , is.element(colnames(tmp2),
-                                                                    colTmp)],
+                                                                    colTmp),
+                                                      drop=FALSE],
                                                  2, 100, "*")
         }else{}
 
@@ -152,13 +160,17 @@ SelectionUnCritereEsp.f <- function ()
                       icon="info",
                       font=tkfont.create(weight="bold", size=9))
 
-        gestionMSGinfo.f("CalculSelectionFait")
 
         ## Recréation des tables de calcul :
         creationTablesCalcul.f()
         ModifierInterfaceApresSelection.f(paste(selection[["facteur"]], ":",
                                                 paste(selection[["selection"]], collapse=", ")), dim(obs)[1])
-        ## gestionMSGinfo.f("Critereselectionne", dim(obs)[1])
+
+        ## Ajout d'info dans le log de sélection :
+        add.logFrame.f(msgID="selection", env = .GlobalEnv,
+                       facteur=selection[["facteur"]], selection=selection[["selection"]],
+                       workSpace=nameWorkspace, referentiel="especes")
+
 
         infoLoading.f(button=TRUE)
     }else{
@@ -192,7 +204,7 @@ SelectionUnCritereUnitobs.f <- function ()
                                                                          selection[["selection"]])])
 
         ## Réduction des tables de données (au espèces sélectionnées) :
-        if (exists("unitespta", envir=.GlobalEnv))
+        if (exists("unitespta", envir=.GlobalEnv) && ncol(unitespta))
         {
             assign("unitespta",
                    dropLevels.f(unitespta[is.element(unitespta$unite_observation,
@@ -211,7 +223,8 @@ SelectionUnCritereUnitobs.f <- function ()
             {
                 tmp1[ , is.element(colnames(tmp1),
                                    colTmp)] <- sweep(tmp1[ , is.element(colnames(tmp1),
-                                                                        colTmp)],
+                                                                        colTmp),
+                                                          drop=FALSE],
                                                      2, 100, "*")
             }else{}
 
@@ -253,7 +266,8 @@ SelectionUnCritereUnitobs.f <- function ()
         {
             tmp2[ , is.element(colnames(tmp2),
                                colTmp)] <- sweep(tmp2[ , is.element(colnames(tmp2),
-                                                                    colTmp)],
+                                                                    colTmp),
+                                                      drop=FALSE],
                                                  2, 100, "*")
         }else{}
 
@@ -286,7 +300,8 @@ SelectionUnCritereUnitobs.f <- function ()
         {
             tmp3[ , is.element(colnames(tmp3),
                                colTmp)] <- sweep(tmp3[ , is.element(colnames(tmp3),
-                                                                    colTmp)],
+                                                                    colTmp),
+                                                      drop=FALSE],
                                            2, 100, "*")
         }else{}
 
@@ -323,15 +338,16 @@ SelectionUnCritereUnitobs.f <- function ()
                       icon="info",
                       font=tkfont.create(weight="bold", size=9))
 
-        gestionMSGinfo.f("CalculSelectionFait")
-
         ## Recréation des tables de calcul :
         creationTablesCalcul.f()
 
         ModifierInterfaceApresSelection.f(paste(selection[["facteur"]], ":",
                                                 paste(selection[["selection"]], collapse=", ")), dim(obs)[1])
 
-        ## gestionMSGinfo.f("Critereselectionne", dim(obs)[1])
+        ## Ajout d'info dans le log de sélection :
+        add.logFrame.f(msgID="selection", env = .GlobalEnv,
+                       facteur=selection[["facteur"]], selection=selection[["selection"]],
+                       workSpace=nameWorkspace, referentiel="unitobs")
 
         infoLoading.f(button=TRUE)
     }else{

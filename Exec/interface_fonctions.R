@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: interface_fonctions.R
-### Time-stamp: <2011-05-13 15:44:59 yreecht>
+### Time-stamp: <2011-11-16 10:26:01 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -145,7 +145,12 @@ quitConfirm.f <- function(win)
         if (doneVal == "2")
         {
             q()
-        }else{}
+        }else{
+            if (exists("interface.PAMPA.f", envir=.GlobalEnv, mode="function"))
+            {
+                evalq(interface.PAMPA.f(), envir=.GlobalEnv)
+            }
+        }
     }else{}
 }
 
@@ -240,6 +245,8 @@ infoLoading.f <- function(msg="", icon="info", button=FALSE,
     ##            ... : paramètres supplémentaires pour le texte.
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 11 févr. 2011, 15:24
+
+    tcl("update")
 
     ## Environnement de stockage des infos
     if (! exists(".InfoLoading", envir=.GlobalEnv))
@@ -340,12 +347,14 @@ infoLoading.f <- function(msg="", icon="info", button=FALSE,
     ## tkwait.visibility(LabVide)
 
     ## Placement de la fenêtre :
+    tcl("update")
     winSmartPlace.f(win=WinInfoLoading)
     winRaise.f(win=WinInfoLoading)
 
     if (button)
     {
         tkfocus(OK.button)
+
         tkwait.window(WinInfoLoading)
     }else{
         ## Update des fenêtres :

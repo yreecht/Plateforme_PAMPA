@@ -320,7 +320,8 @@ unitespta.f <- function(){
         {
             unitespta[ , is.element(colnames(unitespta),
                                     colTmp)] <- sweep(unitespta[ , is.element(colnames(unitespta),
-                                                                              colTmp)],
+                                                                              colTmp),
+                                                                drop=FALSE],
                                                       2, 100, "*")
         }else{}
 
@@ -604,7 +605,8 @@ unitesp.f <- function(){
     {
         unitesp[ , is.element(colnames(unitesp),
                               colTmp)] <- sweep(unitesp[ , is.element(colnames(unitesp),
-                                                                      colTmp)],
+                                                                      colTmp),
+                                                        drop=FALSE],
                                           2, 100, "*")
     }else{}
 
@@ -636,6 +638,7 @@ unit.f <- function(){
 
     unit <- as.data.frame(as.table(tapply(obs$nombre, obs$unite_observation, sum, na.rm = TRUE))
                           , responseName="nombre")
+
     colnames(unit)[1] = c("unitobs")
 
     unit$nombre[is.na(unit$nombre)] <- 0      # Les NAs correspondent à des vrais zéros.
@@ -725,13 +728,15 @@ unit.f <- function(){
         ##  Indices de diversité :
 
         tmp <- calcBiodiv.f(Data=listespunit, unitobs = "unite_observation",
-                            code.especes = "code_espece", nombres = "nombre", indices = "all")
+                            code.especes = "code_espece", nombres = "nombre", indices = "all",
+                            printInfo=TRUE, global=TRUE)
 
         unit <- merge(unit, tmp[ , colnames(tmp) != "nombre"], by.x="unitobs", by.y="unite_observation")
     }else{
         ## Benthos :
         tmp <- calcBiodiv.f(Data=listespunit, unitobs = "unite_observation",
-                            code.especes = "code_espece", nombres = "colonie", indices = "all")
+                            code.especes = "code_espece", nombres = "colonie", indices = "all",
+                            printInfo=TRUE, global=TRUE)
 
         unit <- merge(unit, tmp[ , colnames(tmp) != "colonie"], by.x="unitobs", by.y="unite_observation")
     }
@@ -768,7 +773,8 @@ unit.f <- function(){
     {
         unit[ , is.element(colnames(unit),
                            colTmp)] <- sweep(unit[ , is.element(colnames(unit),
-                                                                colTmp)],
+                                                                colTmp),
+                                                  drop=FALSE],
                                        2, 100, "*")
     }else{}
 
@@ -816,7 +822,10 @@ creationTablesBase.f <- function(){
     {
         assign("SAUVobs", obs, envir=.GlobalEnv)
         assign("SAUVunitobs", unitobs, envir=.GlobalEnv)
-        assign("SAUVcontingence", contingence, envir=.GlobalEnv)
+        if (exists("contingence", envir=.GlobalEnv))
+        {
+            assign("SAUVcontingence", contingence, envir=.GlobalEnv)
+        }else{}
         assign("SAUVunitesp", unitesp, envir=.GlobalEnv)
         assign("SAUVunit", unit, envir=.GlobalEnv)
         assign("SAUVlistespunit", listespunit, envir=.GlobalEnv)
@@ -826,14 +835,13 @@ creationTablesBase.f <- function(){
     if (Jeuxdonnescoupe==1)
     {
         infoLoading.f(msg=paste("Les métriques ont été",
-                                " recalculées sur le jeu de données sélectionné.",
+                                " recalculées sur la sélection du jeu de données.",
                                 sep=""),
                       icon="info",
                       font=tkfont.create(weight="bold", size=9))
 
         infoLoading.f(button=TRUE)
 
-        gestionMSGinfo.f("CalculSelectionFait")
     }
     if (Jeuxdonnescoupe==0)
     {
@@ -843,7 +851,6 @@ creationTablesBase.f <- function(){
                       icon="info",
                       font=tkfont.create(weight="bold", size=9))
 
-        gestionMSGinfo.f("CalculTotalFait")
     }
 }
 
@@ -888,7 +895,8 @@ creationTablesCalcul.f <- function(){
     {
         TableMetrique[ , is.element(colnames(TableMetrique),
                                     colTmp)] <- sweep(TableMetrique[ , is.element(colnames(TableMetrique),
-                                                                                  colTmp)],
+                                                                                  colTmp),
+                                                                    drop=FALSE],
                                                       2, 100, "*")
     }else{}
 
@@ -923,7 +931,8 @@ creationTablesCalcul.f <- function(){
     {
         TableBiodiv[ , is.element(colnames(TableBiodiv),
                                   colTmp)] <- sweep(TableBiodiv[ , is.element(colnames(TableBiodiv),
-                                                                              colTmp)],
+                                                                              colTmp),
+                                                                drop=FALSE],
                                                     2, 100, "*")
     }else{}
 

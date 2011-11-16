@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: Selection_variables_fonctions.R
-### Time-stamp: <2011-10-10 17:58:45 yreecht>
+### Time-stamp: <2011-11-15 15:57:04 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -178,7 +178,7 @@ champsRefEspeces.f <- function(site, ordered=FALSE, tableMetrique="", nextStep=N
     if (is.element(tableMetrique, c("listespunit", "TableOccurrences", "unitespta")) &&
         is.element(nextStep, c("boxplot.esp", "modele_lineaire", "freq_occurrence", "MRT.esp")))
     {
-        cPrincip <- c("code_espece", "espece")
+        cPrincip <- c("code_espece", "espece", "Identifiant")
     }else{
         cPrincip <- c(
                       ## table "especes" :
@@ -707,7 +707,7 @@ presAbs.f <- function(nombres, logical=FALSE)
 
 ########################################################################################################################
 calcBiodiv.f <- function(Data, unitobs="unite_observation", code.especes="code_espece", nombres="nombre",
-                         indices="all")
+                         indices="all", global=FALSE, printInfo=FALSE)
 {
     ## Purpose: calcul des indices de biodiversité
     ## ----------------------------------------------------------------------
@@ -721,14 +721,79 @@ calcBiodiv.f <- function(Data, unitobs="unite_observation", code.especes="code_e
     ##            nombres : nom de la colone de nombres.
     ##            indices : liste des indices à calculer
     ##                      (vecteur de caractères)
+    ##            global : est-ce que les résultats doivent être exportés
+    ##                     globalement (booléen).
+    ##            printInfo : affichage des infos (chargement) ? (booléen).
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 29 oct. 2010, 08:58
 
+    DataTmp <- Data
+
     ## Supression de tout ce qui n'a pas d'espèce précisee (peut être du non biotique ou identification >= genre) :
-    Data <- Data[especes$espece[match(Data$code_espece, especes$code_espece)] != "sp.", ]
+    if (! nrow(Data <- Data[especes$espece[match(Data[ , code.especes], especes$code_espece)] != "sp.", ]))
+    {
+        if (printInfo)
+        {
+            infoLoading.f(msg = paste("Calculs de biodiversité impossibles !",
+                                      "\n   La table de contingence n'a pas été calculée."), icon = "warning")
+        }else{}
+
+        if (global)
+        {
+            stepInnerProgressBar.f(n=1, msg="Table de contingence")
+
+            tryCatch(rm(contingence, envir=.GlobalEnv), warning=function(w){invisible(NULL)})
+        }else{}
+
+        return(Data)
+    }else{}
 
     ## Suppression des niveaux de facteur inutilisés :
     Data <- dropLevels.f(df=Data)
+
+    if (printInfo)
+    {
+        if (nlevels(DataTmp[ , code.especes]) > nlevels(Data[ , code.especes]))
+        {
+            nsup <- nlevels(DataTmp[ , code.especes]) - nlevels(Data[ , code.especes])
+            infoLoading.f(msg=paste(nsup, " \"code_espece\" non identifié",
+                                    ifelse(nsup >1 , "s", ""),
+                                    " au niveau de l'espèce (\"sp.\")\n   ",
+                                    ifelse(nsup > 1, "ont été supprimés", "a été supprimé"),
+                                    " pour le calcul des indices de biodiversité.",
+                                    sep=""))
+        }else{}
+    }else{}
+
+    ## Exportation de la table de contingence :
+    if (global)
+    {
+        stepInnerProgressBar.f(n=1, msg="Table de contingence")
+
+        contingence <- tapply(Data$nombre,
+                          list(Data[ , unitobs], Data[ , code.especes]), sum, na.rm=TRUE)
+
+        contingence[is.na(contingence)] <- 0
+
+        ## Suppression des especes qui ne sont jamais vues
+        ## Sinon problemes pour les calculs d'indices de diversite.
+        a <- which(apply(contingence, 2, sum, na.rm=TRUE) == 0)
+        if (length(a) != 0)
+        {
+            contingence <- contingence[, -a, drop=FALSE]
+        }
+        rm(a)
+
+        ## idem unitobs :
+        b <- which(apply(contingence, 1, sum, na.rm=TRUE) == 0)
+        if (length(b) != 0)
+        {
+            contingence <- contingence[-b, , drop=FALSE]
+        }
+        rm(b)
+
+        assign("contingence", contingence, envir=.GlobalEnv)
+    }else{}
 
     ## Si les données ne sont pas encore agrégées /espèce/unitobs on le fait ici :
     if (nrow(Data) > nrow(expand.grid(unique(Data[ , unitobs]), unique(Data[ , code.especes]))))
@@ -847,7 +912,7 @@ calcBiodiv.f <- function(Data, unitobs="unite_observation", code.especes="code_e
     ## Indices de biodiversité taxonomique :
     df.biodivTaxo <- calcBiodivTaxo.f(Data=Data,
                                       unitobs = unitobs, code.especes = code.especes, nombres = nombres,
-                                      global = FALSE, printInfo = FALSE,
+                                      global = global, printInfo = printInfo,
                                       indices=indices)
 
     if (!is.null(dim(df.biodivTaxo)))
@@ -950,24 +1015,39 @@ calcBiodivTaxo.f <- function(Data, unitobs="unite_observation", code.especes="co
             }
 
             ## calcul des distances taxonomiques entre les especes
-            taxdis <- taxa2dist(sp.taxon, varstep=TRUE, check=TRUE)
+            if (!is.null(taxdis <- tryCatch(taxa2dist(sp.taxon, varstep=TRUE, check=TRUE),
+                                            error=function(e)
+                                        {
+                                            if (printInfo)
+                                            {
+                                                infoLoading.f(msg="Indices de diversité taxinomique non-calculables !",
+                                                              icon="warning")
+                                            }else{}
 
-            ## Function finds indices of taxonomic diversity and distinctiness, which are averaged taxonomic distances among
-            ## species or individuals in the community...
-            divTaxo <- taxondive(contingence, taxdis)
-
-            ## mise de divTaxo sous forme de data.frame :
-            df.biodivTaxo <- as.data.frame(divTaxo[names(retained.indices)])
-
-            colnames(df.biodivTaxo) <- retained.indices # [!!!] "LambdaPlus" ? vraiment ? [???]
-
-            ## affichage des valeurs attendues :
-            if (printInfo)
+                                            ## errorLog.f(error=e, niv = -3)
+                                            return(NULL)
+                                        })))
             {
-                message(paste("La valeur théorique de Delta est :" , round(divTaxo[["ED"]], 3)))
-                message(paste("La valeur théorique de Delta* est :" , round(divTaxo[["EDstar"]], 3)))
-                message(paste("La valeur théorique de Delta+ est :" , round(divTaxo[["EDplus"]], 3)))
-            }else{}
+                ## Function finds indices of taxonomic diversity and distinctiness, which are averaged taxonomic distances among
+                ## species or individuals in the community...
+                divTaxo <- taxondive(contingence, taxdis)
+
+                ## mise de divTaxo sous forme de data.frame :
+                df.biodivTaxo <- as.data.frame(divTaxo[names(retained.indices)])
+
+                colnames(df.biodivTaxo) <- retained.indices # [!!!] "LambdaPlus" ? vraiment ? [???]
+
+                ## affichage des valeurs attendues :
+                if (printInfo)
+                {
+                    message(paste("La valeur théorique de Delta est :" , round(divTaxo[["ED"]], 3)))
+                    message(paste("La valeur théorique de Delta* est :" , round(divTaxo[["EDstar"]], 3)))
+                    message(paste("La valeur théorique de Delta+ est :" , round(divTaxo[["EDplus"]], 3)))
+                }else{}
+            }else{
+                divTaxo <- NULL
+                df.biodivTaxo <- NULL
+            }
 
             ## Résultats :
             if (global)

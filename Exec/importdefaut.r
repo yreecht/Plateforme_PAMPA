@@ -248,19 +248,15 @@ environnementdefault.f <- function (nameWorkspace)
     {
         if (file.access(nameWorkspace, mode = 0)== 0)
         {
-            tkinsert(txt.w, "end", paste(nameWorkspace, " existe\n", sep=""))
             if (file.access(paste(nameWorkspace, "/FichiersSortie", sep=""), mode = 0)==-1)
             {
                 dir.create(paste(nameWorkspace, "/FichiersSortie", sep=""),
                            showWarnings = TRUE, recursive = FALSE, mode = "0777")
-                tkinsert(txt.w, "end", paste("\n", nameWorkspace, "/FichiersSortie a été créé", sep=""))
             }
         }else{
             dir.create(nameWorkspace, showWarnings = TRUE, recursive = FALSE, mode = "0777")
             dir.create(paste(nameWorkspace, "/FichiersSortie", sep=""),
                        showWarnings = TRUE, recursive = FALSE, mode = "0777")
-            tkinsert(txt.w, "end",
-                     paste("\n", nameWorkspace, " et", nameWorkspace, "/FichiersSortie ont été créés", sep=""))
         }
     }else{
         gestionMSGerreur.f("noWorkspace")
@@ -285,6 +281,10 @@ opendefault.f <- function ()
                                         # MàJ des variables "fileNameUnitObs", "fileNameObs", "fileNameRefEsp". Pour les
                                         # cas où les variables fileName1-3 auraient changé.
 
+    add.logFrame.f(msgID="dataLoading", env = .GlobalEnv,
+                   workSpace=nameWorkspace, fileObs=fileNameObs,
+                   fileEsp=fileNameRefEsp, fileUnitobs=fileNameUnitObs)
+
     assign("Jeuxdonnescoupe", 0, envir=.GlobalEnv)
 
     ## Informations de chargement (initialisation) :
@@ -298,8 +298,6 @@ opendefault.f <- function ()
     tkconfigure(ResumerEspaceTravail, text=paste("Espace de travail : ", nameWorkspace))
 
     environnementdefault.f(nameWorkspace)
-    ## après, return fonction dans variables environnement
-    tkinsert(txt.w, "end", paste("\n", "Patientez, chargement des données en cours ...\n", sep=""))
 
     ## ################################################################################
 
@@ -470,69 +468,6 @@ opendefault.f <- function ()
                 text=paste("Aire Marine Protégée : ", unique(unitobs$AMP), " ; type d'observation : ",
                            unique(unitobs$type), sep=""))
 
-    ## ################# Creation de la table de contingence ##################
-
-    stepInnerProgressBar.f(n=1, msg="Table de contingence")
-
-    obsTmp <- obs
-
-    obsTmp$espece <- especes$espece[match(obsTmp$code_espece, especes$code_espece)]
-    if(length(obsTmp$espece[obsTmp$espece=="sp."])>0) # [!!!]
-    {
-        infoLoading.f(msg=paste("Pour les calculs des indices de diversité, ",
-                      length(obsTmp$espece[obsTmp$espece == "sp."]),
-                      " observations de la table de contingence pour lesquels l'espèce ",
-                      " \n\tn'est pas renseigné ('sp.') dans le référentiel espèces ont été supprimées.",
-                      sep=""),
-                      icon="info")
-
-        obsTmp <- subset(obsTmp, espece != "sp.")
-
-    }
-
-    contingence <- tapply(obsTmp$nombre,
-                          list(obsTmp$unite_observation, obsTmp$code_espece), sum, na.rm=TRUE)
-
-    rm(obsTmp)
-
-    contingence[is.na(contingence)] <- 0
-    ## Suppression des especes qui ne sont jamais vues
-    ## Sinon problemes pour les calculs d'indices de diversite.
-    a <- which(apply(contingence, 2, sum, na.rm=TRUE) == 0)
-    if (length(a) != 0)
-    {
-        contingence <- contingence[, -a, drop=FALSE]
-    }
-    rm(a)
-
-    ## idem unitobs :
-    b <- which(apply(contingence, 1, sum, na.rm=TRUE) == 0)
-    if (length(b) != 0)
-    {
-        contingence <- contingence[-b, , drop=FALSE]
-    }
-    rm(b)
-    assign("contingence", contingence, envir=.GlobalEnv)
-
-    ## Attention, si la table de contingence avait ete cree anterieurement lors
-    ## d'une utilisation des routines par exemple, et est toujours presente
-    ## dans le dossier de travail, elle sera detectee comme existante.
-    if (exists("contingence", envir=.GlobalEnv, frame, mode="any", inherits=TRUE))
-    {
-        write.csv2(contingence,
-                   file=paste(NomDossierTravail, "ContingenceUnitObsEspeces",
-                              ifelse(Jeuxdonnescoupe, "_selection", ""),
-                              ".csv", sep=""))
-    }
-
-    if (!exists("contingence", envir=.GlobalEnv, frame, mode="any", inherits=TRUE))
-    {
-        infoLoading.f(msg="La table de contingence n'a pas été calculée.",
-                      icon="warning")
-
-        warning("La table de contingence n'a pas été calculée")
-    }
-
     ## Conversion des dates (tester si meilleur endroit pour faire ça) [yr: 17/08/2010] :
 
 
@@ -571,10 +506,21 @@ opendefault.f <- function ()
     ## Creation des tables de base :
     creationTablesBase.f()
 
+    ## Exportation de la table de contingence si elle existe :
+    if (exists("contingence", envir=.GlobalEnv, frame, mode="any", inherits=TRUE))
+    {
+        write.csv2(contingence,
+                   file=paste(NomDossierTravail, "ContingenceUnitObsEspeces",
+                              ifelse(Jeuxdonnescoupe, "_selection", ""),
+                              ".csv", sep=""))
+    }
+
     ## ! ici, donner des noms avec une base variable, pour rendre les fichiers indépendants et plus facilement
     ## ! reconnaissables
 
-    gestionMSGinfo.f("BasetxtCreate")
+    ## Ajout des fichiers créés au log de chargement :
+    add.logFrame.f(msgID="fichiers", env = .GlobalEnv, workSpace=nameWorkspace)
+
     gestionMSGaide.f("SelectionOuTraitement")
     MiseajourTableau.f(tclarray)
 
@@ -584,7 +530,7 @@ opendefault.f <- function ()
 
     ModifierInterfaceApresSelection.f("Tout", "NA")
 
-    tkgrid.configure(scr, sticky="ns")
+    ## tkgrid.configure(scr, sticky="ns")
 
     ## creation du vecteur de couleurs pour les futurs graphiques
     cl <<- colors()

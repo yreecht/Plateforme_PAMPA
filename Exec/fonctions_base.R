@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: fonctions_base.R
-### Time-stamp: <2011-04-12 17:00:31 yreecht>
+### Time-stamp: <2011-11-04 14:07:16 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -40,7 +40,7 @@ dropLevels.f <- function(df, which=NULL)
             x[ , which] <- as.data.frame(sapply(df[ , which, drop=FALSE],
                                                 function(x)
                                             {
-                                                return(x[ ,drop=TRUE])
+                                                return(x[ , drop=TRUE])
                                             }, simplify=FALSE),
                                          stringsAsFactors=FALSE)
         }
@@ -116,15 +116,17 @@ is.peche.f <- function()
 ########################################################################################################################
 pampaProfilingStart.f <- function()
 {
-    ## Purpose:
+    ## Purpose: Initialiser le profilage d'une portion de code. Le nom de
+    ##          fichier est construit d'après le nom de la fonction
+    ##          appelante.
     ## ----------------------------------------------------------------------
-    ## Arguments:
+    ## Arguments: aucun.
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 20 oct. 2010, 15:58
 
     if (!is.null(getOption("pampaProfiling")) && getOption("pampaProfiling"))
     {
-        filename <- paste("Rprof-", deparse(sys.call(-1)[[1]]), ".out", sep="")
+        filename <- paste("logs/Rprof-", deparse(sys.call(-1)[[1]]), ".out", sep="")
 
         Rprof(filename=filename, interval=0.1)
     }else{}
@@ -135,9 +137,9 @@ pampaProfilingStart.f <- function()
 ########################################################################################################################
 pampaProfilingEnd.f <- function()
 {
-    ## Purpose:
+    ## Purpose: Stopper le profilage d'une portion de code.
     ## ----------------------------------------------------------------------
-    ## Arguments:
+    ## Arguments: aucun.
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 20 oct. 2010, 15:58
 

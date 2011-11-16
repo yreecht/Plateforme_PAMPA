@@ -23,11 +23,7 @@ Voirentableau <- function(Montclarray, title="", height=-1, width=-1, nrow=-1, n
         FichierCSV <- paste(NomDossierTravail, "Tableau_", title, ".csv", sep="")
         write.csv2(dataframetb, file=FichierCSV, row.names = FALSE)
 
-        gestionMSGinfo.f("InfoRefSpeEnregistre", FichierCSV)
-
-        tkmessageBox(message=paste("Votre fichier d'information sur le référentiel",
-                                   "\n\tespèce a été enregistré au format",
-                                   " CSV dans le dossier de travail", sep=""))
+        add.logFrame.f(msgID="InfoRefSpeEnregistre", env = .GlobalEnv, file=FichierCSV)
     }
 
     ## Déclaration des objets bouton
@@ -106,8 +102,6 @@ VoirPlanEchantillonnage.f <- function()
                                   ifelse(Jeuxdonnescoupe, "_selection", ""),
                                   ".csv", sep=""),
                             row.names=1)
-
-    tkinsert(txt.w, "end", paste("\n fichier Plan d'échantillonnage lu :\n ", myRarrayPE))
 
     tclarrayPE <- tclArray()
     ## tclarrayPE[[0, ]] <- c("Année", "Type", "Fréquence")

@@ -2,7 +2,7 @@
 ## les passages à la ligne se font à la fin des messages
 ## on retourne encore à la ligne avant une erreur
 
-gestionMSGerreur.f <- function (nameerror, variable)
+gestionMSGerreur.f <- function (nameerror, variable, env=.GlobalEnv)
 {
     runLog.f(msg=c("Envoie d'un message d'erreur dans l'interface :"))
 
@@ -63,11 +63,11 @@ gestionMSGerreur.f <- function (nameerror, variable)
     ## gestionMSGerreur.f(nbChampUnitobs)
     ## langue = EN
 
-    tkinsert(helpframe, "end", paste("\nERREUR : ", MSG, sep=""))
-    tkyview.moveto(helpframe, 1)
+    tkinsert(get("helpframe", envir=env), "end", paste("\nERREUR : ", MSG, sep=""))
+    tkyview.moveto(get("helpframe", envir=env), 1)
 }
 
-gestionMSGaide.f <- function (namemsg)
+gestionMSGaide.f <- function (namemsg, env=.GlobalEnv)
 {
     runLog.f(msg=c("Envoie d'un message d'aide dans l'interface :"))
 
@@ -75,126 +75,158 @@ gestionMSGaide.f <- function (namemsg)
     MSG <-
         switch(namemsg,
                "ZeroEnregistrement"={
-                   paste("! votre sélection ne contient plus d'enregistrement",
+                   paste("Attention : votre sélection ne contient plus d'enregistrement",
                          ", veuillez restaurer ou recharger les données (CTRL + a) !\n", sep="")
                },
                "etapeImport"={
-                   paste("1 : Chargez les \"Dossiers et fichiers par défaut\" (CTRL + a)\n",
-                         "\t ou choisissez les dossier/fichiers un à un (CTRL + n).\n",
-                         "\t (également accessibles par le menu \"Données\")", sep="")
+                   paste("  * charger les \"Dossiers et fichiers par défaut\" (CTRL + a).",
+                         "\n  * choisir les dossier/fichiers un à un (CTRL + n).",
+                         "\n\t(actions également accessibles par le menu \"Données\")",
+                         sep="")
                },
                "SelectionOuTraitement"={
-                   paste("2 : Vous pouvez restreindre votre sélection de données\n",
-                         "\t (menu \"Sélection et recalcul\")\n",
-                         "\t ou commencer les traitements standards.", sep="")
+                   paste("  * restreindre votre sélection de données (menu \"Sélection et recalcul\").\n",
+                         "  * commencer les traitements standards (graphiques & analyses statistiques).",
+                         "\n", sep="")
                },
                "startsansficher"={
                    paste("Si les fichiers par défauts paramétrés dans 'config.r'- ", fileName1, " - ", fileName2, " - ",
                          fileName3, " ne sont pas les bons, Veuillez les modifier\n", sep="")
                },
                "etapeselected"={
-                   paste("3 : Vous pouvez retrouver l'ensemble des observations en",
-                         "\n\t* les restaurant : menu \"Sélection et recalcul\" ou bouton en bas à gauche.",
-                         "\n\t* les rechargeant (CTRL + a)",
+                   paste("  * restaurer les données originales (sans sélection) :",
+                         " menu \"Sélection et recalcul\" ou bouton ci-dessous à droite.",
+                         "\n  * faire d'autres sélections (imbriquées avec les sélections courantes).",
+                         "\n  * commencer les traitements standards (graphiques & analyses statistiques).",
                          sep="")
                },
                "message à définir")
 
-    tkinsert(helpframe, "end", paste("\nETAPE ", MSG, "", sep=""))
-    tkyview.moveto(helpframe, 1)
+    tkinsert(get("helpframe", envir=env), "end", paste("\n", MSG, "", sep=""))
+    tkyview.moveto(get("helpframe", envir=env), 1)
 }
 
-gestionMSGinfo.f <- function (namemsg, parametrenum,...)
+########################################################################################################################
+add.logFrame.f <- function(msgID, env=.GlobalEnv,...)
 {
-    runLog.f(msg=c("Envoie d'un message d'information dans l'interface :"))
+    ## Purpose: Ajout de messages dans le cadre d'info sur les chargements
+    ##          et sélections.
+    ## ----------------------------------------------------------------------
+    ## Arguments: msgID : identifiant du type de message.
+    ##            env : environnement où est définit le cadre d'information.
+    ##            ... : arguments supplémentaires (dont l'existance est
+    ##                  testée en fonction du type de message choisi.)
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date:  9 nov. 2011, 16:01
 
-    ## Message :
-    MSG <-
-        switch(namemsg,
-               "plusieursAMP"={
-                   paste("Votre fichier d'unités d'observation fait référence à plusieurs AMP!",
-                         " Corrigez le et recommencez l'importation.\n", sep="")
-               },
-               "start"={
-                   "Bienvenue sur l'interface TclTK de PAMPA\n"
-               },
-               "config"={
-                   paste("Les fichiers par défauts paramétrés dans 'config.r' sont :",
-                         "\n    - ", fileName1,
-                         "\n    - ", fileName2,
-                         "\n    - ", fileName3, "\n", sep="")
-               },
-               "BasetxtCreate"={
-                   paste("Les fichiers .csv:",
-                         "\n         - Contingence",
-                         "\n         - PlanEchantillonnage",
-                         "\n         - Métriques par unité d'observation (UnitobsMetriques.csv)",
-                         "\n         - Métriques par unité d'observation pour les espèces présentes",
-                         " (ListeEspecesUnitobs.csv)",
-                         "\n         - Métriques par unité d'observation / espèce (UnitobsEspeceMetriques.csv)",
-                         "\n         - Métriques par unité d'observation / espèce / classe de taille",
-                         " (UnitobsEspeceClassetailleMetriques.csv)",
-                         "\nont été créés\n", sep="")
-               },
-               "MSGnbgraphe"={
-                   paste("Le nombre de catégories de votre graphique étant trop important, celui ci a été découpé en ",
-                         parametrenum, " parties\n")
-               },
-               "Familleselectionne"={
-                   paste("Vous avez réduit les observations à la famille ", fa,
-                         " et ", parametrenum, " enregistrements\n")
-               },
-               "Phylumselectionne"={
-                   paste("Vous avez réduit les observations au phylum ", phy,
-                         " et ", parametrenum, " enregistrements\n")
-               },
-               "Ordreselectionne"={
-                   paste("Vous avez réduit les observations à l'ordre ", ord,
-                         " et ", parametrenum, " enregistrements\n")
-               },
-               "Classeselectionne"={
-                   paste("Vous avez réduit les observations à la classe ", cla,
-                         " et ", parametrenum, " enregistrements\n")
-               },
-               "Biotopeselectionne"={
-                   paste("Vous avez réduit les observations biotope ", biotopechoisi, " et ", parametrenum,
-                         " enregistrements\n")
-               },
-               "Statutselectionne"={
-                   paste("Vous avez réduit  les observations au statut ", statut, " et ", parametrenum,
-                         " enregistrements\n")
-               },
-               "InfoRefSpeEnregistre"={
-                   paste("Votre fichier d'information sur le référentiel espèce a été enregistré",
-                         " au format CSV\n dans le dossier de travail sous le nom", parametrenum, ".\n")
-               },
-               "InfoPDFdansFichierSortie"={
-                   paste("Vos Fichiers regroupant tous les graphiques par espèce",
-                         " pour une métrique sont enregistrés dans FichiersSortie.\n", sep="")
-               },
-               "AucunPDFdansFichierSortie"={
-                   paste("Aucun type de graphes par espèce pour une métrique n'est sélectionné.\n")
-               },
-               "Jeuxdedonnerestore"={
-                   paste("Votre jeu de données a été restauré ainsi que les tables de métriques originales",
-                         " \nAttention, pour restaurer les CSV initiaux, vous devez réimporter les données\n ",
-                         parametrenum, " dans la table d'observation.\n", sep="")
-               },
-               "CalculSelectionFait"={
-                   paste("Les métriques par unités d'observations ont",
-                         " été recalculées sur le jeu de données sélectionné", sep="")
-               },
-               "CalculTotalFait"={
-                   paste("Les métriques par unités d'observations ont été calculées sur l'ensemble",
-                         " du jeu de données importé", sep="")
-               },
-               "message à définir")
+    ## On récupère les arguments supplémentaires sous une forme facilement utilisable (list) :
+    argsSup <- list(...)
 
-    tkinsert(txt.w, "end", paste("\nINFO : ", MSG, sep=""))
-    ## tkset(scr, 0.999, 1)     # pour activer l'acensseur : activate, cget, configure, delta, fraction, get, identify,
-    ## or set.
-    tkyview.moveto(txt.w, 1) # bbox, cget, compare, configure, count, debug, delete, dlineinfo, dump, edit, get, image,
-                             # index, insert, mark, peer, replace, scan, search, see, tag, window, xview, or yview.
+    ## Traitement des différents cas de message :
+    msg <- switch(msgID,
+                  "dataLoading"={
+                      if (any(!is.element(c("workSpace", "fileObs", "fileUnitobs", "fileEsp"),
+                                          names(argsSup))))
+                      {
+                          stop("Arguments incorrects !")
+                      }else{
+                          paste("",
+                                paste(rep("=", 100), collapse=""),
+                                paste("Chargement de données  (",
+                                      format(Sys.time(), "%d/%m/%Y\t%H:%M:%S"),
+                                      ")", sep=""),
+
+                                paste("\n   Fichier d'observation :", argsSup$fileObs),
+                                paste("   Fichier d'unités d'observation :", argsSup$fileUnitobs),
+                                paste("   Fichier du référentiel espèces :", argsSup$fileEsp),
+                                paste("\n   Répertoire des résultats et des exports : ", argsSup$workSpace, "/FichiersSortie/",
+                                      sep=""),
+                                "", sep="\n")
+                      }
+                  },
+                  "restauration"={
+                      paste("",
+                            paste(rep("-", 80), collapse=""),
+                            paste("Restauration des données originales  (sans sélection ; ",
+                                  format(Sys.time(), "%d/%m/%Y\t%H:%M:%S"),
+                                  ")", sep=""),
+                            "", sep="\n")
+                  },
+                  "selection"={
+                      if (any(!is.element(c("facteur", "selection", "workSpace", "referentiel"),
+                                          names(argsSup))))
+                      {
+                          stop("Arguments incorrects !")
+                      }else{
+                          paste("",
+                                paste(rep("-", 100), collapse=""),
+                                paste("Sélection des observations selon un critère",
+                                      ifelse(argsSup$referentiel == "especes",
+                                             " du référentiel espèces",
+                                             " des unités d'observation"),
+                                      " (",
+                                      format(Sys.time(), "%d/%m/%Y\t%H:%M:%S"),
+                                      ")", sep=""),
+                                paste("\n   Facteur :", argsSup$facteur),
+                                paste("   Modalités :",
+                                      paste(argsSup$selection, collapse=", ")),
+                                paste("\nFichiers exportés dans ", argsSup$workSpace, "/FichiersSortie/ :", sep=""),
+                                paste("   - métriques par unité d'observation / esp. / cl. de taille :",
+                                      "UnitobsEspeceClassetailleMetriques_selection.csv"),
+                                paste("   - métriques par unité d'observation / esp. :",
+                                      "UnitobsEspeceMetriques_selection.csv"),
+                                paste("   - métriques par unité d'observation :",
+                                      "UnitobsMetriques_selection.csv"),
+                                paste("   - table contingence d'abondance code espèce / unité d'observation :",
+                                      "ContingenceUnitObsEspeces_selection.csv"),
+                                paste("   - plan d'échantillonnage basique (année - statut de protection) :",
+                                      "PlanEchantillonnage_basique_selection.csv"),
+                                "", sep="\n")
+                      }
+                  },
+                  "fichiers"={
+                      if (any(!is.element(c("workSpace"),
+                                          names(argsSup))))
+                      {
+                          stop("Arguments incorrects !")
+                      }else{
+                          paste("",
+                                paste(rep("-", 100), collapse=""),
+                                paste("Fichiers exportés dans ", argsSup$workSpace, "/FichiersSortie/", sep=""),
+                                paste("   (avant ", format(Sys.time(), "%d/%m/%Y\t%H:%M:%S"), ") :", sep=""),
+                                paste("   - métriques par unité d'observation / esp. / cl. de taille :",
+                                      "UnitobsEspeceClassetailleMetriques.csv"),
+                                paste("   - métriques par unité d'observation / esp. :",
+                                      "UnitobsEspeceMetriques.csv"),
+                                paste("   - métriques par unité d'observation :",
+                                      "UnitobsMetriques.csv"),
+                                paste("   - table contingence d'abondance code espèce / unité d'observation :",
+                                      "ContingenceUnitObsEspeces.csv"),
+                                paste("   - plan d'échantillonnage basique (année - statut de protection) :",
+                                      "PlanEchantillonnage_basique.csv"),
+                                "", sep="\n")
+                      }
+                  },
+                  "InfoRefSpeEnregistre"={
+                      if (any(!is.element(c("file"),
+                                          names(argsSup))))
+                      {
+                          stop("Arguments incorrects !")
+                      }else{
+                          paste("",
+                                paste(rep("-", 100), collapse=""),
+                                "Enregistrement des informations sur le référentiel espèce dans le fichier :",
+                                paste("   ", argsSup$file, format(Sys.time(), "  (%d/%m/%Y\t%H:%M:%S)"), sep=""),
+                                "", sep="\n")
+                      }
+                  },
+                  "")
+
+    ## Ajout du message :
+    tkinsert(get("txt.w", envir=env), "end", msg)
+    tkyview.moveto(get("txt.w", envir=env), 1)
 }
+
+
 
 

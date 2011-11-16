@@ -20,9 +20,8 @@ testfileref.f <- function ()
     {
         FichierCSV <- paste(NomDossierTravail, "Infos_", fileName3, ".csv", sep="")
         write.csv2(dataframeRefEsp, file=FichierCSV, row.names = FALSE)
-        gestionMSGinfo.f("InfoRefSpeEnregistre", FichierCSV)
-        tkmessageBox(message=paste("Votre fichier d'information sur le référentiel espèce",
-                                   " a été enregistré au format CSV dans le dossier de travail", sep=""))
+
+        add.logFrame.f(msgID="InfoRefSpeEnregistre", env = .GlobalEnv, file=FichierCSV)
     }
 
     ## Déclaration des objets bouton

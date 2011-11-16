@@ -281,35 +281,42 @@ choixespeces.f <- function()
     unitobs <- subset(unitobs, unitobs$unite_observation %in% listeEspecesUnitobsAnalyse)
     assign("unitobs", unitobs, envir=.GlobalEnv)
 
-    ## on refait la table de contingence
-    contingence <- tapply(obs$nombre,
-                          list(obs$unite_observation, obs$code_espece),
-                          sum, na.rm=TRUE)
-
-    contingence[is.na(contingence)] <- 0
-    ## Suppression des especes qui ne sont jamais vues
-    ## Sinon problemes pour les calculs d'indices de diversité.
-    a <- which(apply(contingence, 2, sum, na.rm=TRUE) == 0)
-
-    if (length(a) != 0)
+    ## on refait la table de contingence :
+    if (nrow(obsTmp <- obs[especes$espece[match(obs$code_especes, especes$code_espece)] != "sp.", ]))
     {
-        contingence <- contingence[, -a, drop=FALSE]
-    }
-    rm(a)
 
-    ## idem
-    b <- which(apply(contingence, 1, sum, na.rm=TRUE) == 0)
-    if (length(b) != 0)
-    {
-        contingence <- contingence[-b, , drop=FALSE]
-    }
-    rm(b)
-    assign("contingence", contingence, envir=.GlobalEnv)
+        contingence <- tapply(obsTmp$nombre,
+                              list(obsTmp$unite_observation, obsTmp$code_espece),
+                              sum, na.rm=TRUE)
 
-    write.csv2(contingence,
-               file=paste(nameWorkspace, "/FichiersSortie/ContingenceUnitObsEspeces",
-                          ifelse(Jeuxdonnescoupe, "_selection", ""),
-                          ".csv", sep=""))
+
+
+        contingence[is.na(contingence)] <- 0
+        ## Suppression des especes qui ne sont jamais vues
+        ## Sinon problemes pour les calculs d'indices de diversité.
+        a <- which(apply(contingence, 2, sum, na.rm=TRUE) == 0)
+
+        if (length(a) != 0)
+        {
+            contingence <- contingence[, -a, drop=FALSE]
+        }
+        rm(a)
+
+        ## idem
+        b <- which(apply(contingence, 1, sum, na.rm=TRUE) == 0)
+        if (length(b) != 0)
+        {
+            contingence <- contingence[-b, , drop=FALSE]
+        }
+        rm(b)
+        assign("contingence", contingence, envir=.GlobalEnv)
+
+        write.csv2(contingence,
+                   file=paste(nameWorkspace, "/FichiersSortie/ContingenceUnitObsEspeces",
+                              ifelse(Jeuxdonnescoupe, "_selection", ""),
+                              ".csv", sep=""))
+    }
+    rm(obsTmp)
 
     ## on recrée les tables de base
     creationTablesBase.f()

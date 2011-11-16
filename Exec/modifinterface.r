@@ -15,7 +15,7 @@ ModifierMenuApresImport.f <- function()
     tkentryconfigure(import, 6, state="normal")
 
     ## Désactivation du bouton et du menu de restauration des données originales :
-    tkconfigure(button.DataRestore, state="disabled")
+    tkconfigure(B.DataRestore, state="disabled")
     tkentryconfigure(selection, 5, state="disabled")
 
     if (siteEtudie == "NC")
@@ -47,6 +47,9 @@ ModifierMenuApresImport.f <- function()
     }
 
     tkconfigure(MonCritere, text="Tout")
+
+    ## Titre du cadre de sélection en non-gras :
+    tkconfigure(L.criteres, font=tkfont.create(size=8))
 
     winRaise.f(tm)
 }
@@ -121,14 +124,14 @@ MiseajourTableau.f <- function(tclarray)
 {
     ##  ############# Mise à jour des valeurs dans le tableau #############
     tclarray[["1,1"]] <- sub(paste(nameWorkspace, "/Data/", sep=""), '', fileName1)
-    tclarray[["1,2"]] <- dim(unitobs)[1]
-    tclarray[["1,3"]] <- dim(unitobs)[2]
+    tclarray[["1,2"]] <- ncol(unitobs)
+    tclarray[["1,3"]] <- nrow(unitobs)
     tclarray[["2,1"]] <- sub(paste(nameWorkspace, "/Data/", sep=""), '', fileName2)
-    tclarray[["2,2"]] <- dim(obs)[1]
-    tclarray[["2,3"]] <- dim(obs)[2]
+    tclarray[["2,2"]] <- ncol(obs)
+    tclarray[["2,3"]] <- nrow(obs)
     tclarray[["3,1"]] <- sub(paste(nameWorkspace, "/Data/", sep=""), '', fileName3)
-    tclarray[["3,2"]] <- dim(especes)[1]
-    tclarray[["3,3"]] <- dim(especes)[2]
+    tclarray[["3,2"]] <- ncol(especes)
+    tclarray[["3,3"]] <- nrow(especes)
 
     ColAutoWidth.f(table1)
 }
@@ -159,14 +162,23 @@ ModifierInterfaceApresSelection.f <- function(Critere, Valeur)
         tkconfigure(MonCritere, text=paste(tmp, Critere, sep="\n\n"))
     }
 
+    ## Titre du cadre de sélection en gras :
+    if (Critere != "Tout")
+    {
+        tkconfigure(L.criteres, font=tkfont.create(weight="bold", size=8))
+    }else{
+        tkconfigure(L.criteres, font=tkfont.create(size=8))
+    }
+
     ## Nombre d'espèces réellement restantes dans les observations :
     tkconfigure(ResumerSituationEspecesSelectionnees,
-                text = paste("-> Nombre d'espèces",
-                             ifelse(Jeuxdonnescoupe, " restantes", ""),
+                text = paste("-> Nombre de codes espèce",
+                             ifelse(Jeuxdonnescoupe, " restants", ""),
                              " dans le fichier d'observation",
                              ifelse(Jeuxdonnescoupe,
                                     " (peut différer du nombre retenu !) : ", " : "),
-                             length(unique(obs$code_espece)), sep=""))
+                             length(unique(obs$code_espece)), sep=""),
+                state="normal")
 
     ## Nombre d'espèces réellement restantes dans les observations :
     tkconfigure(ResumerSituationUnitobsSelectionnees,
@@ -175,11 +187,12 @@ ModifierInterfaceApresSelection.f <- function(Critere, Valeur)
                              " dans le fichier d'observations",
                              ifelse(Jeuxdonnescoupe,
                                     " (peut différer du nombre retenu !) : ", " : "),
-                             length(unique(obs$unite_observation)), sep=""))
+                             length(unique(obs$unite_observation)), sep=""),
+                state="normal")
 
     if (Jeuxdonnescoupe==1) # Ré-activation du bouton et du menu de restauration des données originales.
     {
-        tkconfigure(button.DataRestore, state="normal")
+        tkconfigure(B.DataRestore, state="normal")
         tkentryconfigure(selection, 5, state="normal")
     }
 
@@ -197,20 +210,25 @@ ModifierInterfaceApresRestore.f <- function(Critere="Aucun", Valeur="NA")
 
     tkconfigure(MonCritere, text=Critere)
 
+    ## Titre du cadre de sélection en non-gras :
+    tkconfigure(L.criteres, font=tkfont.create(size=8))
+
     ## Nombre d'espèces réellement restantes dans les observations :
     tkconfigure(ResumerSituationEspecesSelectionnees,
                 text = paste("-> Nombre d'espèces",
                              " dans le fichier d'observation : ",
-                             length(unique(obs$code_espece)), sep=""))
+                             length(unique(obs$code_espece)), sep=""),
+                state="normal")
 
     ## Nombre d'espèces réellement restantes dans les observations :
     tkconfigure(ResumerSituationUnitobsSelectionnees,
                 text = paste("-> Nombre d'unités d'observations",
                              " dans le fichier d'observations : ",
-                             length(unique(obs$unite_observation)), sep=""))
+                             length(unique(obs$unite_observation)), sep=""),
+                state="normal")
 
     ## Désactivation du bouton et du menu de restauration des données originales :
-    tkconfigure(button.DataRestore, state="disabled")
+    tkconfigure(B.DataRestore, state="disabled")
     tkentryconfigure(selection, 5, state="disabled")
 
     winRaise.f(tm)

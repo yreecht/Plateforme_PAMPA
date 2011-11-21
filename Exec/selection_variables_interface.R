@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: Selection_variables_interface.R
-### Time-stamp: <2011-11-14 14:49:43 yreecht>
+### Time-stamp: <2011-11-17 17:14:28 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -59,6 +59,7 @@ initialiseGraphOptions.f <- function()
             P.cex = 1,
             P.graphWMF = FALSE,
             P.pdfEmbedFonts = TRUE,
+            P.lang = "fr",
             ## ####################################################################################################
             ## Classe des options (pour conversion depuis les variables tcl) :
             P.optionsClass = c(P.maxExclu="logical", P.NbObs="logical", P.NbObsCol="character",
@@ -71,11 +72,15 @@ initialiseGraphOptions.f <- function()
                                P.legendeCouleurs="logical", P.colPalette="character", P.statusOrder="character",
                                P.graphPaper="logical", P.warnings="logical",
                                P.pointMoyenneCex="numeric", P.pointMoyennePch="integer", P.cex="numeric",
-                               P.graphWMF="logical", P.pdfEmbedFonts="logical")
+                               P.graphWMF="logical", P.pdfEmbedFonts="logical",
+                               P.lang="character")
             )
 
     ## On crée la pallette de couleurs par défaut :
     makeColorPalette.f()
+
+    ## Initialisation de la langue des variables de graphiques :
+    init.GraphLang.f()
 }
 
 
@@ -256,6 +261,9 @@ choixOptionsGraphiques.f <- function()
 
     ## On re-crée la pallette de couleurs :
     makeColorPalette.f()
+
+    ## Initialisation de la langue des variables de graphiques :
+    init.GraphLang.f()
 
     tkdestroy(WinOpt)                   # Destruction de la fenêtre
 }
@@ -539,10 +547,10 @@ verifVariables.f <- function(metrique, factGraph, factGraphSel, listFact, listFa
         return.val <- ifelse(return.val, 1, 0)
     }else{}
 
-    ## Métrique par espèce mais facteur 'espece' ou 'code_espece' non retenu :
+    ## Métrique par espèce mais facteur 'espece', 'Identifiant' ou 'code_espece' non retenu :
     if (is.element(nextStep, c("boxplot.esp", "modele_lineaire",
                                "freq_occurrence", "MRT.esp")) &
-        !any(is.element(c("espece", "code_espece"), facts)))
+        !any(is.element(c("espece", "code_espece", "Identifiant"), facts)))
     {
         infoLoading.f(msg=paste("Attention : représentation d'une métrique par espèce\n",
                                 "mais 'espece' ou 'code_espece' n'est pas utilisé comme facteur"),

@@ -9,7 +9,7 @@
 ################################################################################
 
 ## ** Version **
-options(versionPAMPA = "1.1-5")
+options(versionPAMPA = "1.1-6")
 
 ## Réglage de l'encodage des caractères :
 options(encoding="latin1")
@@ -93,15 +93,20 @@ source("./Exec/barplots_occurrence_unitobs.R", encoding="latin1")          # OK
 ########################################################################################################################
 ## Configuration :
 
+source("./Exec/Initialisation.R", encoding="latin1")
+
 ## Initialisation des options graphiques (nouveau système) :
-if (is.null(getOption("GraphPAMPA")))
+if (is.null(getOption("GraphPAMPA")))   # uniquement si pas déjà initialisées (cas de lancement multiple)
 {
     initialiseGraphOptions.f()
 }
 
 ## Chargement de la configuration après l'initialisation des options => permet d'avoir des options personnalisées dans
 ## la configuration.
-source("./Exec/config.r", encoding="latin1")               # faite
+## source("./Exec/config.r", encoding="latin1")               # faite
+                                        # supprimé et remplacé par un script d'initialisation pour éviter la demande de
+                                        # configuration au premier lancement (pas utile en cas de chargement manuel).
+                                        # [yr: 17/11/2011]
 
 
 ## On lance l'interface :

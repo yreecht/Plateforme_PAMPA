@@ -45,6 +45,7 @@ Source: ".\Exec\img\*"; DestDir: "{app}\img"; Flags: ignoreversion
 Source: ".\Exec\Doc\*"; DestDir: "{app}\Doc"; Flags: ignoreversion
 Source: ".\Exec\config.r"; DestDir: "{app}"; Flags: uninsneveruninstall
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
+Source: "Exec\Initialisation.R"; DestDir: "{app}"
 Source: "Exec\barplots_occurrence.R"; DestDir: "{app}"
 Source: "Exec\barplots_occurrence_unitobs.R"; DestDir: "{app}"
 Source: "Exec/fonctions_graphiques.R"; DestDir: "{app}"

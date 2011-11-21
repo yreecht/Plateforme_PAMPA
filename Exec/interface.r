@@ -23,7 +23,9 @@ tm <- tktoplevel(height=600, width=800, background="#FFFFFF")
 
 tkwm.title(tm, "Indicateurs relatifs à la biodiversité et aux ressources")
 
-tkwm.maxsize(tm, 1000, 768)             # taille maximale de la fenetre
+tkwm.maxsize(tm,
+             tkwinfo("screenwidth", tm),
+             as.numeric(tclvalue(tkwinfo("screenheight", tm))) - 30)             # taille maximale de la fenetre
 tkwm.minsize(tm, 800, 500)              # taille minimale de la fenetre
 
 ## Couleurs :
@@ -105,7 +107,12 @@ tkadd(import, "command", label="Dossiers et fichiers par defaut", accelerator="C
   {
       rm(fileName1, fileName2, fileName3, envir=.GlobalEnv)
       eval(source("./Exec/config.r", encoding="latin1"), envir=.GlobalEnv) # rechargement de la configuration.
-      opendefault.f()                                                      # chargement des données.
+
+      ## chargement (conditionnel) des données :
+      if (all(sapply(get("requiredVar", envir=.GlobalEnv), exists)))
+      {
+          opendefault.f()
+      }else{}
   },
       background=.MenuBackground)
 
@@ -435,7 +442,7 @@ tkgrid(ResumerEspaceTravail <-
        tklabel(frameOverall,
                text=paste("Espace de travail : ", "non sélectionné."),
                background=.FrameBackground,
-               width=134,
+               width=110,
                font=tkfont.create(size=9)))
 
 tkgrid(ResumerAMPetType <-
@@ -590,12 +597,20 @@ tkbind(tm, "<Control-a>",
        function()
    {
        eval(source("./Exec/config.r", encoding="latin1"), envir=.GlobalEnv) # rechargement de la configuration.
-       opendefault.f()
+
+       if (all(sapply(get("requiredVar", envir=.GlobalEnv), exists)))
+       {
+           opendefault.f()
+       }else{}
    })
 tkbind(tm, "<Control-A>", function()
    {
        eval(source("./Exec/config.r", encoding="latin1"), envir=.GlobalEnv) # rechargement de la configuration.
-       opendefault.f()
+
+       if (all(sapply(get("requiredVar", envir=.GlobalEnv), exists)))
+       {
+           opendefault.f()
+       }else{}
    })
 
 tkbind(tm, "<Control-n>", openfile.f)

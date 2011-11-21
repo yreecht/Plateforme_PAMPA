@@ -45,9 +45,10 @@ Source: ".\Exec\img\*"; DestDir: "{app}\img"; Flags: ignoreversion
 Source: ".\Exec\Doc\*"; DestDir: "{app}\Doc"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 Source: ".\Exec\config.r"; DestDir: "{app}"; Flags: uninsneveruninstall onlyifdoesntexist
+Source: "Exec\Initialisation.R"; DestDir: "{app}"
 Source: "Exec\barplots_occurrence.R"; DestDir: "{app}"
 Source: "Exec\barplots_occurrence_unitobs.R"; DestDir: "{app}"
-Source: "Exec/fonctions_graphiques.R"; DestDir: "{app}"
+Source: "Exec\fonctions_graphiques.R"; DestDir: "{app}"
 Source: "Exec\boxplots_esp_generiques.R"; DestDir: "{app}"
 Source: "Exec\boxplots_unitobs_generiques.R"; DestDir: "{app}"
 Source: "Exec\calcul_simple.r"; DestDir: "{app}"
@@ -87,7 +88,7 @@ Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{app}\{uninstalle
 Name: "{commondesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon; WorkingDir: {#InstallDir}; IconFilename: "{app}\img\Pampa.ico"
 Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: quicklaunchicon; WorkingDir: {#InstallDir}; IconFilename: "{app}\img\Pampa.ico"
 
-Name: "{group}\Documentation\Guide Utilisateur"; Filename: "{app}\Doc\Guide_plateforme_WP2_Meth4-042011.pdf";
+Name: "{group}\Documentation\Guide Utilisateur"; Filename: "{app}\Doc\Guide_plateforme_WP2_Meth4.pdf";
 ;; Name: "{group}\Documentation\Nouveautés de la plateforme PAMPA WP2"; Filename: "{app}\Doc\Annexe_GuideCalculsIndicateurs-WP2-Meth4-092010.pdf";
 Name: "{group}\Créer un rapport de bug"; Filename: "{app}\Doc\Rapport_bug_PAMPA-WP2.dot";
 

@@ -2,12 +2,12 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "PAMPA WP2"
-#define MyAppVersion "1.1-5"
+#define MyAppVersion "1.1-7"
 #define MyAppPublisher "Ifremer"
 #define MyAppURL "http://wwz.ifremer.fr/pampa/"
 #define MyAppExeName "PAMPA WP2.bat"
 #define InstallDir "C:\PAMPA"
-#define ExecDir "Exec"
+#define ExecDir "Scripts_Biodiv"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application.
@@ -40,46 +40,46 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked; OnlyBelowVersion: 0,6.1
 
 [Files]
-Source: ".\Exec\PAMPA WP2.bat"; DestDir: "{app}"; Flags: ignoreversion
-Source: ".\Exec\img\*"; DestDir: "{app}\img"; Flags: ignoreversion
-Source: ".\Exec\Doc\*"; DestDir: "{app}\Doc"; Flags: ignoreversion
-Source: ".\Exec\config.r"; DestDir: "{app}"; Flags: uninsneveruninstall
+Source: ".\Scripts_Biodiv\PAMPA WP2.bat"; DestDir: "{app}"; Flags: ignoreversion
+Source: ".\Scripts_Biodiv\img\*"; DestDir: "{app}\img"; Flags: ignoreversion
+Source: ".\Scripts_Biodiv\Doc\*"; DestDir: "{app}\Doc"; Flags: ignoreversion
+Source: ".\Scripts_Biodiv\config.r"; DestDir: "{app}"; Flags: uninsneveruninstall
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
-Source: "Exec\Initialisation.R"; DestDir: "{app}"
-Source: "Exec\barplots_occurrence.R"; DestDir: "{app}"
-Source: "Exec\barplots_occurrence_unitobs.R"; DestDir: "{app}"
-Source: "Exec/fonctions_graphiques.R"; DestDir: "{app}"
-Source: "Exec\boxplots_esp_generiques.R"; DestDir: "{app}"
-Source: "Exec\boxplots_unitobs_generiques.R"; DestDir: "{app}"
-Source: "Exec\calcul_simple.r"; DestDir: "{app}"
-Source: "Exec\command.r"; DestDir: "{app}"
-Source: "Exec\corresp-cat-benth.csv"; DestDir: "{app}"
-Source: "Exec\fonctions_base.R"; DestDir: "{app}"
-Source: "Exec\gestionmessages.r"; DestDir: "{app}"
-Source: "Exec\Global.r"; DestDir: "{app}"
-Source: "Exec\import.r"; DestDir: "{app}"
-Source: "Exec\importdefaut.r"; DestDir: "{app}"
-Source: "Exec\interface.r"; DestDir: "{app}"
-Source: "Exec\interface_fonctions.R"; DestDir: "{app}"
-Source: "Exec\load_packages.R"; DestDir: "{app}"
-Source: "Exec\mkfilegroupe.r"; DestDir: "{app}"
-Source: "Exec\modeles_lineaires_esp_generiques.R"; DestDir: "{app}"
-Source: "Exec\modeles_lineaires_unitobs_generiques.R"; DestDir: "{app}"
-Source: "Exec\modeles_lineaires_interface.R"; DestDir: "{app}"
-Source: "Exec\modifinterface.r"; DestDir: "{app}"
-Source: "Exec\NomsVariables_fr.csv"; DestDir: "{app}"
-Source: "Exec\NomsVariables_en.csv"; DestDir: "{app}"
-Source: "Exec\PAMPA WP2.bat"; DestDir: "{app}"
-Source: "Exec\requetes.r"; DestDir: "{app}"
-Source: "Exec\Rprofile.site"; DestDir: "{app}"
-Source: "Exec\selection_variables_fonctions.R"; DestDir: "{app}"
-Source: "Exec\selection_variables_interface.R"; DestDir: "{app}"
-Source: "Exec\testfichier.r"; DestDir: "{app}"
-Source: "Exec\view.r"; DestDir: "{app}"
-Source: "Exec\nombres_SVR.R"; DestDir: "{app}"
-Source: "Exec\arbres_regression_unitobs_generiques.R"; DestDir: "{app}"
-Source: "Exec\arbres_regression_esp_generiques.R"; DestDir: "{app}"
-Source: "Exec\demo_cartes.R"; DestDir: "{app}"
+Source: "Scripts_Biodiv\Initialisation.R"; DestDir: "{app}"
+Source: "Scripts_Biodiv\barplots_occurrence.R"; DestDir: "{app}"
+Source: "Scripts_Biodiv\barplots_occurrence_unitobs.R"; DestDir: "{app}"
+Source: "Scripts_Biodiv\fonctions_graphiques.R"; DestDir: "{app}"
+Source: "Scripts_Biodiv\boxplots_esp_generiques.R"; DestDir: "{app}"
+Source: "Scripts_Biodiv\boxplots_unitobs_generiques.R"; DestDir: "{app}"
+Source: "Scripts_Biodiv\calcul_simple.r"; DestDir: "{app}"
+Source: "Scripts_Biodiv\command.r"; DestDir: "{app}"
+Source: "Scripts_Biodiv\corresp-cat-benth.csv"; DestDir: "{app}"
+Source: "Scripts_Biodiv\fonctions_base.R"; DestDir: "{app}"
+Source: "Scripts_Biodiv\gestionmessages.r"; DestDir: "{app}"
+Source: "Scripts_Biodiv\Global.r"; DestDir: "{app}"
+Source: "Scripts_Biodiv\import.r"; DestDir: "{app}"
+Source: "Scripts_Biodiv\importdefaut.r"; DestDir: "{app}"
+Source: "Scripts_Biodiv\interface.r"; DestDir: "{app}"
+Source: "Scripts_Biodiv\interface_fonctions.R"; DestDir: "{app}"
+Source: "Scripts_Biodiv\load_packages.R"; DestDir: "{app}"
+Source: "Scripts_Biodiv\mkfilegroupe.r"; DestDir: "{app}"
+Source: "Scripts_Biodiv\modeles_lineaires_esp_generiques.R"; DestDir: "{app}"
+Source: "Scripts_Biodiv\modeles_lineaires_unitobs_generiques.R"; DestDir: "{app}"
+Source: "Scripts_Biodiv\modeles_lineaires_interface.R"; DestDir: "{app}"
+Source: "Scripts_Biodiv\modifinterface.r"; DestDir: "{app}"
+Source: "Scripts_Biodiv\NomsVariables_fr.csv"; DestDir: "{app}"
+Source: "Scripts_Biodiv\NomsVariables_en.csv"; DestDir: "{app}"
+Source: "Scripts_Biodiv\PAMPA WP2.bat"; DestDir: "{app}"
+Source: "Scripts_Biodiv\requetes.r"; DestDir: "{app}"
+Source: "Scripts_Biodiv\Rprofile.site"; DestDir: "{app}"
+Source: "Scripts_Biodiv\selection_variables_fonctions.R"; DestDir: "{app}"
+Source: "Scripts_Biodiv\selection_variables_interface.R"; DestDir: "{app}"
+Source: "Scripts_Biodiv\testfichier.r"; DestDir: "{app}"
+Source: "Scripts_Biodiv\view.r"; DestDir: "{app}"
+Source: "Scripts_Biodiv\nombres_SVR.R"; DestDir: "{app}"
+Source: "Scripts_Biodiv\arbres_regression_unitobs_generiques.R"; DestDir: "{app}"
+Source: "Scripts_Biodiv\arbres_regression_esp_generiques.R"; DestDir: "{app}"
+Source: "Scripts_Biodiv\demo_cartes.R"; DestDir: "{app}"
 
 [Icons]
 ;; IconFilename: "{app}\img\Pampa.ico" pour définir l'icone d'un raccourci.

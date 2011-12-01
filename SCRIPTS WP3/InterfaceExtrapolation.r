@@ -336,7 +336,7 @@ LancementExtrapolation.f <- function(tab, niveauSpatial, niveauTemporel, variabl
                                                    modalites = modalites,                                                 
                                                    titre = "",
                                                    nombre = nombre,
-                                                   graph = T)
+                                                   graph = T)      # graph=graph
                        },
                        "tousJours"={                                             # types de jours confondus
                                     Estimateur.f (FreqSpatialMoisJour = FreqSpatialMoisJour, 
@@ -348,7 +348,7 @@ LancementExtrapolation.f <- function(tab, niveauSpatial, niveauTemporel, variabl
                                                   modalites = modalites, 
                                                   titre = "",
                                                   nombre = nombre,
-                                                  graph = T)
+                                                  graph = T)       # graph=graph
                        },
                        warning("Pas implémenté : harcelez la hotline PAMPA !"))
 }
@@ -442,7 +442,7 @@ LancementExtrapolationFacteursSep.f <- function(tab, niveauSpatial, niveauTempor
                                                    modalites = modalites, 
                                                    titre = paste("pour le facteur",facteurSep, "=",modalites),
                                                    nombre = nombre,
-                                                   graph = T)
+                                                   graph = T)      # graph=graph
                        },
                        "tousJours"={                                             # types de jours confondus
                                     Estimateur.f (FreqSpatialMoisJour = FreqSpatialMoisJour, 
@@ -454,7 +454,7 @@ LancementExtrapolationFacteursSep.f <- function(tab, niveauSpatial, niveauTempor
                                                   modalites = modalites, 
                                                   titre = paste("pour le facteur",facteurSep, "=",modalites),
                                                   nombre = nombre,
-                                                  graph = T)
+                                                  graph = T)      # graph=graph
                        },
                        warning("Pas implémenté : harcelez la hotline PAMPA !"))
 }

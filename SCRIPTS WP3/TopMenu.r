@@ -120,19 +120,19 @@ MiseajourTableauInfo.f = function(tclarray2) {
 }
 
 # construction du menu d'interface
-tm <- tktoplevel(height=500,width=1500,bg="lightyellow")
-winSmartPlace.f(tm)
+tm <- tktoplevel(height=500,width=800,bg="lightyellow")
 topMenu <- tkmenu(tm)
 tkconfigure(tm,menu=topMenu)
 tkwm.title(tm,"INDICATEURS RELATIFS AUX USAGES")
 tkwm.maxsize(tm,1500,768) #taille maximale de la fenetre
-tkwm.minsize(tm,1500,600) #taille minimale de la fenetre
+tkwm.minsize(tm,800,550) #taille minimale de la fenetre
 
 topFrame <- tkframe(tm,relief="groove",borderwidth=2)  
 imageAMP <- tclVar()    #crée un objet Tk image pour l'interface
 tcl("image","create","photo",imageAMP,file="C:/PAMPA/SCRIPTS WP3/img/pampa2.GIF")
 imgAsLabel <- tklabel(tm,image=imageAMP,bg="white")
-helpframe <- tktext(tm,bg="skyblue3",font="arial",width=120,height=3,relief="groove",borderwidth=2)
+helpframe <- tktext(tm,bg="skyblue3",font="arial",# width=80,
+                    height=3,relief="groove",borderwidth=2)
 titreAideContextuelle<-tklabel(tm,width=106,text=" \n Informations données ",background="lightyellow")
 
 # on place les éléments dans un espace en trois colonnes avec tkgrid.configure -column, -columnspan, -in, -ipadx, -ipady, -padx, -pady, -row, -rowspan, et -sticky.
@@ -141,7 +141,7 @@ tkgrid(imgAsLabel,helpframe)
 tkgrid.configure(imgAsLabel,sticky="w",rowspan=3)  #L'image fait trois lignes de haut
 # puis on place les 3 objets à coté de l'image
 tkgrid.configure(titreAideContextuelle,columnspan=3,row=1,column=2,sticky="n")
-tkgrid.configure(helpframe,sticky="e",columnspan=3,row=2,column=2,sticky="n")
+tkgrid.configure(helpframe, columnspan=3,row=2,column=2,sticky="new")
 button.widgetRESTIT <- tkbutton(tm,text="Restituer les données",background="yellow",command=function () RestitutionDonnees.f())
 button.widgetOFF <- tkbutton(tm,text="Fermer les graphiques",background="purple",command=graphics.off)
 button.widgetQUIT <- tkbutton(tm,text="Quitter",background="deeppink3",command=function() tkdestroy(tm))
@@ -154,7 +154,7 @@ tkgrid.configure(button.widgetOFF,columnspan=2,column=1,sticky="e")
 tkgrid.configure(button.widgetQUIT,columnspan=3,column=2,sticky="e")
 
 #tkgrid.configure(ResumerEspaceTravail<-tklabel(tm,background="lightyellow",text=paste("\n Espace de travail : ","non sélectionné"),width="200"))
-tkgrid.configure(ResumerAMP<-tklabel(tm,background="lightyellow",text="\n Actuellement aucun jeu de données n'a été importé. \n \n",width="200"))
+tkgrid.configure(ResumerAMP<-tklabel(tm,background="lightyellow",text="\n Actuellement aucun jeu de données n'a été importé. \n \n",width="120"))
 #tkgrid.configure(ResumerEspaceTravail,sticky="w",columnspan=4)
 tkgrid.configure(ResumerAMP,sticky="w",columnspan=4)
 
@@ -163,7 +163,7 @@ ResumerSituationPeche<-tklabel(tm,text=paste("Enquêtes Pêche : ","non sélectionn
 ResumerSituationCaptures<-tklabel(tm,text=paste("Captures associées : ","non sélectionné"))
 ResumerSituationCapturesAn<-tklabel(tm,text=paste("Captures annuelles : ","non sélectionné"))
 ResumerSituationPlaisance<-tklabel(tm,text=paste("Enquêtes Plaisance : ","non sélectionné"))
-ResumerSituationPlongée<-tklabel(tm,text=paste("Enquêtes Plongée : ","non sélectionné"))
+ResumerSituationPlongee<-tklabel(tm,text=paste("Enquêtes Plongée : ","non sélectionné"))
 ResumerSituationExcursion<-tklabel(tm,text=paste("Enquêtes Excursion : ","non sélectionné"))
 ResumerSituationRefSpatial<-tklabel(tm,text=paste("Référentiel Spatial : ","non sélectionné"))
 ResumerSituationRefEspeces<-tklabel(tm,text=paste("Référentiel Espèces : ","non sélectionné"))
@@ -205,10 +205,10 @@ tclRequire("Tktable")
 table2 <-tkwidget(tm,"table",variable=tclarray2,rows=2,cols=4,titlerows=1,selectmode="extended",colwidth=20,background="white")
 
 # position des tableaux
-tkgrid(table1)
+tkgrid(table1, pady=5)
 tkgrid.configure(table1,columnspan=4,column=2,sticky="w")
 tkgrid.configure(espace,columnspan=4,column=2,row=1,sticky="n")
-tkgrid(table2)
+tkgrid(table2, pady=5)
 tkgrid.configure(table2,columnspan=4,column=2,sticky="w")
 
 
@@ -242,3 +242,6 @@ ChoixUtilisateur <- tkmenu(topMenu,tearoff=FALSE,bg="lightsalmon")
 ################################################################################
 
 tkfocus(tm)
+
+tcl("update")
+winSmartPlace.f(tm)

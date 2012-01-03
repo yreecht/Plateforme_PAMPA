@@ -757,7 +757,7 @@ unit.f <- function(){
         unit$biomasse <- NULL
     }
 
-    if (is.benthos.f())                 # unique(unitobs$type) == "LIT"
+    if (is.benthos.f() && nrow(unit))                 # unique(unitobs$type) == "LIT"
     {
         unit$richesse_specifique <- as.integer(tapply(unitesp$pres_abs, unitesp$unite_observation,
                                                       sum, na.rm=TRUE)) # changé pour avoir des entiers.

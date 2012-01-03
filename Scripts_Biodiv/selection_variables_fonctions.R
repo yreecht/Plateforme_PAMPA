@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: Selection_variables_fonctions.R
-### Time-stamp: <2011-11-15 15:57:04 yreecht>
+### Time-stamp: <2011-12-05 17:41:16 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -730,7 +730,8 @@ calcBiodiv.f <- function(Data, unitobs="unite_observation", code.especes="code_e
     DataTmp <- Data
 
     ## Supression de tout ce qui n'a pas d'espèce précisee (peut être du non biotique ou identification >= genre) :
-    if (! nrow(Data <- Data[especes$espece[match(Data[ , code.especes], especes$code_espece)] != "sp.", ]))
+    if (! nrow(Data <- Data[(spTmp <- especes$espece[match(Data[ , code.especes], especes$code_espece)]) != "sp." &
+                            !is.na(spTmp), ]))
     {
         if (printInfo)
         {

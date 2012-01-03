@@ -422,8 +422,12 @@ opendefault.f <- function ()
         obs[obs == "-999"] <- NA
     }
 
-    ## nombre : numeric -> factor (nécessaire pour une bonne prise en compte dans les analyses stat) :
-    obs$nombre <- as.integer(obs$nombre)
+    ## nombre : numeric -> integer (nécessaire pour une bonne prise en compte dans les analyses stat) :
+    ## uniquement si == entier
+    if (isTRUE(all.equal(obs$nombre, as.integer(obs$nombre))))
+    {
+        obs$nombre <- as.integer(obs$nombre)
+    }else{}
 
     ## Si les unités d'observation sont ne sont pas des facteurs :
     if (!is.factor(obs$unite_observation))

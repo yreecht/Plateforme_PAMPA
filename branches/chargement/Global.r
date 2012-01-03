@@ -9,18 +9,31 @@
 ################################################################################
 
 ## ** Version **
-options(versionPAMPA = "1.1-7")
+options(versionPAMPA = "1.1-8_chargement")
 
 ## Réglage de l'encodage des caractères :
 ## options(encoding="latin1")
 
 ## Platform-specific treatment:
-if (.Platform$OS.type == "windows")
+## Identification du dossier parent :
+fileCall <- sub("source\\([[:blank:]]*(file[[:blank:]]*=[[:blank:]]*)?(\"|\')([^\"\']*)(\"|\')[[:blank:]]*(,.*\\)|\\))",
+                "\\3",
+                deparse(sys.calls()[[1]]))
+
+if(basename(fileCall) == "Global.r")
 {
-    setwd("C:/PAMPA/")
+    setwd(paste(dirname(fileCall), "/../", sep=""))
 }else{
-    setwd("/media/ifremer/PAMPA/Scripts/latest/")
+    message("Dossier non-trouvé")
+    setwd("C:/PAMPA/")
 }
+
+## if (.Platform$OS.type == "windows")
+## {
+##     setwd("C:/PAMPA/")
+## }else{
+##     setwd("/media/ifremer/PAMPA/Scripts/latest/")
+## }
 basePath <- getwd()
 
 ## Répertoire de travail par défaut (si pas configuré par ailleurs) :

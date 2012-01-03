@@ -54,7 +54,7 @@ openUnitobs.f <- function(dir, env=NULL)
 
         return(nameUnitobs)
 
-        ## assign("fileName1", nameUnitobs, envir=.GlobalEnv)
+        ## assign("fileNameUnitobs", nameUnitobs, envir=.GlobalEnv)
     }
 }
 
@@ -127,9 +127,9 @@ openfile.f <- function()
     env <- environment()
 
     workSpaceTmp <- get("nameWorkspace", envir=.GlobalEnv)
-    unitobsTmp <- ifelse(exists("fileName1", envir=.GlobalEnv), get("fileName1", envir=.GlobalEnv), character())
-    obsTmp <- ifelse(exists("fileName2", envir=.GlobalEnv), get("fileName2", envir=.GlobalEnv), character())
-    refespTmp <- ifelse(exists("fileName3", envir=.GlobalEnv), get("fileName3", envir=.GlobalEnv), character())
+    unitobsTmp <- ifelse(exists("fileNameUnitobs", envir=.GlobalEnv), get("fileNameUnitobs", envir=.GlobalEnv), character())
+    obsTmp <- ifelse(exists("fileNameObs", envir=.GlobalEnv), get("fileNameObs", envir=.GlobalEnv), character())
+    refespTmp <- ifelse(exists("fileNameRefesp", envir=.GlobalEnv), get("fileNameRefesp", envir=.GlobalEnv), character())
 
     ## ########################################################
 
@@ -243,8 +243,8 @@ openfile.f <- function()
 
 
     tkfocus(tt)
-    winSmartPlace.f(tt)
     tcl("update")
+    winSmartPlace.f(tt)
 
     tkwait.variable(Done)
 
@@ -253,9 +253,9 @@ openfile.f <- function()
         tkdestroy(tt)
         ## Changement des variables globales
         pathMaker.f(nameWorkspace=workSpaceTmp,
-                    fileName1=unitobsTmp,
-                    fileName2=obsTmp,
-                    fileName3=refespTmp)
+                    fileNameUnitobs=unitobsTmp,
+                    fileNameObs=obsTmp,
+                    fileNameRefesp=refespTmp)
 
         opendefault.f()
 

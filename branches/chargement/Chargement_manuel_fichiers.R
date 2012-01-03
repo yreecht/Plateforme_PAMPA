@@ -1,0 +1,454 @@
+#-*- coding: latin-1 -*-
+
+### File: Chargement_manuel_fichiers.R
+### Time-stamp: <2011-12-16 11:42:03 yreecht>
+###
+### Author: Yves Reecht
+###
+####################################################################################################
+### Description:
+###
+### Scripts pour le chargement manuel des fichiers
+####################################################################################################
+
+
+########################################################################################################################
+loadManual.f <- function(baseEnv, dataEnv)
+{
+    ## Purpose: Chargement des données avec choix manuel des fichiers et
+    ##          dossiers.
+    ## ----------------------------------------------------------------------
+    ## Arguments: baseEnv : environnement de l'interface principale.
+    ##            dataEnv : environnement des données.
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date: 14 déc. 2011, 18:20
+
+    ## Sauvegarde et suppression des noms de fichiers, options, etc. :
+    dataEnvTmp <- backupEnv.f(dataEnv) # On sauvegarde temporairement l'environnement de données.
+    obsTypeTmp <- getOption("P.obsType") # ...et le type d'observations.
+
+    ## Choix des fichiers et dossiers :
+    fileNames <- chooseFiles.f(dataEnv = dataEnv)
+
+
+    suppressWarnings(rm(list=ls(envir=dataEnv)[!is.element(ls(envir=dataEnv), "fileNames")],
+                        envir=dataEnv)) # [!!!] revoir  [yr: 13/12/2011]
+
+
+    ## Vérification de la configuration :
+    filePathes <- testConfig.f(requiredVar=getOption("P.requiredVar"),
+                               fileNames = fileNames,
+                               dataEnv = dataEnv)
+
+    ## chargement (conditionnel) des données :
+    if (! is.null(filePathes))
+    {
+        Data <- loadData.f(filePathes=filePathes, dataEnv=dataEnv, baseEnv = baseEnv)
+    }else{
+        stop("Problème de configuration")
+    }
+
+    ## Calculs des poids (faits par AMP) :
+    Data <- calcWeight.f(Data=Data)
+
+    ## [!!!] ajouter réinitialisation des menus si échec  [yr: 14/12/2011]
+    return(Data)
+}
+
+########################################################################################################################
+chooseWS.f <- function(dir=getwd(), env=NULL)
+{
+    ## Purpose: Choix d'un répertoir de travail.
+    ## ----------------------------------------------------------------------
+    ## Arguments: dir : répertoir initial.
+    ##            env : environnement de l'interface de choix de fichier
+    ##                  (optionnel) pour la modification du résumé.
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date: 14 déc. 2011, 18:45
+
+    dir <- tclvalue(tkchooseDirectory(initialdir=ifelse(!is.na(dir),
+                                                        dir, "")))
+
+    if (!nchar(dir))
+    {
+        return(NULL)## Rien !
+    }else{
+        if (as.logical(length(grep("[dD]ata$", dir))) && !file.exists(paste(dir, "/Data", sep="")))
+        {
+            dir <- sub("/[dD]ata$", "", (oldDir <- dir))
+            tkmessageBox(message=paste("\"", oldDir, "\" changé en \"", dir, "\" !",
+                         "\n\nLe dossier de donnée est un sous-répertoire de l'espace de travail.", sep=""),
+                         icon="warning")
+        }else{}
+
+        if (!is.null(env))
+        {
+            eval(substitute(evalq(tkconfigure(SummaryWS,
+                                              text=dir,
+                                              foreground="darkred"),
+                                  envir=env),
+                            list(dir=dir)))
+        }else{}
+
+        return(dir)
+    }
+}
+
+########################################################################################################################
+chooseUnitobs.f <- function(dir=getwd(), env=NULL)
+{
+    ## Purpose: Choix d'un fichier d'unités d'observation.
+    ## ----------------------------------------------------------------------
+    ## Arguments: dir : répertoir initial.
+    ##            env : environnement de l'interface de choix de fichier
+    ##                  (optionnel) pour la modification du résumé.
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date: 14 déc. 2011, 18:45
+
+    runLog.f(msg=c("Choix manuel du fichiers d'unités d'observations :"))
+
+    nameUnitobs <- tclvalue(tkgetOpenFile(initialdir=paste(dir, "/Data/", sep="")))
+
+    ## On enlève le nom de chemin pour ne conserver que le nom du fichier:
+    nameUnitobs <- basename(nameUnitobs)
+
+    if (!nchar(nameUnitobs))
+    {
+        return(NULL) ## Rien !
+    }else{
+        if (!is.null(env))
+        {
+            eval(substitute(evalq(tkconfigure(SummaryUnitobs,
+                                              text=nameUnitobs,
+                                              foreground="darkred"),
+                                  envir=env),
+                            list(nameUnitobs=nameUnitobs)))
+        }else{}
+
+        return(nameUnitobs)
+    }
+}
+
+########################################################################################################################
+chooseObservations.f <- function(dir=getwd(), env=NULL)
+{
+    ## Purpose: Choix d'un fichier d'observations
+    ## ----------------------------------------------------------------------
+    ## Arguments: dir : répertoir initial.
+    ##            env : environnement de l'interface de choix de fichier
+    ##                  (optionnel) pour la modification du résumé.
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date: 14 déc. 2011, 18:45
+
+    runLog.f(msg=c("Choix manuel du fichiers d'observations :"))
+
+    namefileObs <- tclvalue(tkgetOpenFile(initialdir=paste(dir, "/Data/", sep="")))
+
+    ## On enlève le nom de chemin pour ne conserver que le nom du fichier:
+    namefileObs <- basename(namefileObs)
+
+    if (!nchar(namefileObs))
+    {
+        return(NULL)
+    }else{
+        ## ici du coup, on peut y mettre un choix ou reconnaitre le référentiel automatiquement
+        if (!is.null(env))
+        {
+            eval(substitute(evalq(tkconfigure(SummaryObs,
+                                              text=namefileObs,
+                                              foreground="darkred"),
+                                  envir=env),
+                            list(namefileObs=namefileObs)))
+        }else{}
+
+        return(namefileObs)
+    }
+}
+
+########################################################################################################################
+chooseRefesp.f <- function(dir=getwd(), env=NULL)
+{
+    ## Purpose: Choix d'un fichier de référentiel espèces
+    ## ----------------------------------------------------------------------
+    ## Arguments: dir : répertoir initial.
+    ##            env : environnement de l'interface de choix de fichier
+    ##                  (optionnel) pour la modification du résumé.
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date: 14 déc. 2011, 18:50
+
+    runLog.f(msg=c("Choix manuel du fichiers du référentiel espèces :"))
+
+    namefileRef <- tclvalue(tkgetOpenFile(initialdir=paste(dir, "/Data/", sep="")))
+
+    ## On enlève le nom de chemin pour ne conserver que le nom du fichier:
+    namefileRef <- basename(namefileRef)
+
+    if (!nchar(namefileRef))
+    {
+        return(NULL)
+    }else{
+        if (!is.null(env))
+        {
+            eval(substitute(evalq(tkconfigure(SummaryRefEsp,
+                                              text=namefileRef,
+                                              foreground="darkred"),
+                                  envir=env),
+                            list(namefileRef=namefileRef)))
+        }else{}
+
+        return(namefileRef)
+    }
+}
+
+########################################################################################################################
+chooseRefspa.f <- function(dir=getwd(), env=NULL)
+{
+    ## Purpose: Choix d'un fichier de référentiel spatial
+    ## ----------------------------------------------------------------------
+    ## Arguments: dir : répertoir initial.
+    ##            env : environnement de l'interface de choix de fichier
+    ##                  (optionnel) pour la modification du résumé.
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date: 14 déc. 2011, 18:55
+
+    runLog.f(msg=c("Choix manuel du fichiers du référentiel espèces :"))
+
+    namefileRef <- tclvalue(tkgetOpenFile(initialdir=paste(dir, "/Data/", sep="")))
+
+    ## On enlève le nom de chemin pour ne conserver que le nom du fichier:
+    namefileRef <- basename(namefileRef)
+
+    if (!nchar(namefileRef))
+    {
+        return(NULL)
+    }else{
+        if (!is.null(env))
+        {
+            eval(substitute(evalq(tkconfigure(SummaryRefSpa,
+                                              text=namefileRef,
+                                              foreground="darkred"),
+                                  envir=env),
+                            list(namefileRef=namefileRef)))
+        }else{}
+
+        return(namefileRef)
+    }
+}
+
+
+########################################################################################################################
+chooseFiles.f <- function(dataEnv)
+{
+    ## Purpose: Choix manuel des fichiers et dossiers.
+    ## ----------------------------------------------------------------------
+    ## Arguments: dataEnv : environnement des données
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date: 14 déc. 2011, 18:31
+
+    runLog.f(msg=c("Interface de choix manuel des fichiers de données."))
+
+
+    ## ########################################################
+    tt <- tktoplevel(height=50, width=300)
+    tkwm.title(tt, "Choix des fichiers de données à importer")
+
+    ## Variables :
+    Done <- tclVar(0)
+    env <- environment()
+
+    if (! missing(dataEnv) && is.environment(dataEnv) && exists("fileNames", envir=dataEnv))
+    {
+        fileNames <- get("fileNames", envir=dataEnv)
+    }else{
+        fileNames <- c(unitobs=NA,
+                       obs=NA,
+                       refesp=NA,
+                       refspa=NA,
+                       ws=getwd())
+    }
+
+    workSpaceTmp <- fileNames["ws"]
+    unitobsTmp <- ifelse(is.na(fileNames["unitobs"]), character(), fileNames["unitobs"])
+    obsTmp <- ifelse(is.na(fileNames["obs"]), character(), fileNames["obs"])
+    refespTmp <- ifelse(is.na(fileNames["refesp"]), character(), fileNames["refesp"])
+    refspaTmp <- ifelse(is.na(fileNames["refspa"]), character(), fileNames["refspa"])
+
+    ## ########################################################
+
+    ## Information importante :
+    L.Info <-  tklabel(tt,
+                       text=paste("L'espace de travail est le répertoire qui contient le dossier \"Data\".",
+                                  "\nNe pas selectionner ce dernier !", sep=""),
+                       bg="#FFFBCF", foreground="darkred",
+                       font=tkfont.create(family="arial", ## weight="bold",
+                                          size=9),#,
+                       width=71, height=4, # taille.
+                       relief="groove", borderwidth=2,
+                       justify="left")
+
+    button.widget0 <- tkbutton(tt, text="Espace de travail", ## width=45,
+                               command=function()
+                           {
+                               if ( ! is.null(workSpaceTmp <- chooseWS.f(dir=workSpaceTmp, env=env)))
+                               {
+                                   assign("workSpaceTmp",
+                                          workSpaceTmp,
+                                          envir=env)
+                               }
+                           },
+                               justify="left")
+
+    button.widget1 <- tkbutton(tt, text="Table de données d'unités d'observation",
+                               command=function()
+                           {
+                               if ( ! is.null(unitobsTmp <- chooseUnitobs.f(dir=workSpaceTmp, env=env)))
+                               {
+                                   assign("unitobsTmp",
+                                          unitobsTmp,
+                                          envir=env)
+                               }
+                           },
+                               justify="left")
+
+    button.widget2 <- tkbutton(tt, text="Table de données d'observations",
+                               command=function()
+                           {
+                               if ( ! is.null(obsTmp <- chooseObservations.f(dir=workSpaceTmp, env=env)))
+                               {
+                                   assign("obsTmp",
+                                          obsTmp,
+                                          envir=env)
+                               }
+                           },
+                               justify="left")
+
+    button.widget3 <- tkbutton(tt, text="Référentiel espèces",
+                               command=function()
+                           {
+                               if ( ! is.null(refespTmp <- chooseRefesp.f(dir=workSpaceTmp, env=env)))
+                               {
+                                   assign("refespTmp",
+                                          refespTmp,
+                                          envir=env)
+                               }
+                           },
+                               justify="left")
+
+    button.widget4 <- tkbutton(tt, text="Référentiel spatial",
+                               command=function()
+                           {
+                               if ( ! is.null(refspaTmp <- chooseRefspa.f(dir=workSpaceTmp, env=env)))
+                               {
+                                   assign("refspaTmp",
+                                          refspaTmp,
+                                          envir=env)
+                               }
+                           },
+                               justify="left")
+
+    FrameBT <- tkframe(tt)
+
+    OK.but <- tkbutton(FrameBT, text=" Valider ",
+                       command=function(){tclvalue(Done) <- "1"})
+
+    B.Cancel <- tkbutton(FrameBT, text="  Annuler  ",
+                         command=function(){tclvalue(Done) <- "2"})
+
+    tkgrid(L.Info,
+           columnspan=2,
+           pady=3, padx=5, sticky="ew")
+
+    tkgrid(button.widget0,
+           SummaryWS <- tklabel(tt, text=paste("non sélectionné - par défaut :",
+                                               ifelse(!is.na(workSpaceTmp),
+                                                      workSpaceTmp, "RIEN !!!"))),
+           pady=3, padx=5, sticky="w")
+
+    tkgrid(button.widget1,
+           SummaryUnitobs <- tklabel(tt, text=paste("non sélectionné - par défaut :",
+                                                    ifelse(!is.na(unitobsTmp),
+                                                           unitobsTmp, "RIEN !!!"))),
+           pady=3, padx=5, sticky="w")
+
+    tkgrid(button.widget2,
+           SummaryObs <- tklabel(tt, text=paste("non sélectionné - par défaut :",
+                                                ifelse(!is.na(obsTmp),
+                                                       obsTmp, "RIEN !!!"))),
+           pady=3, padx=5, sticky="w")
+
+    tkgrid(button.widget3,
+           SummaryRefEsp <- tklabel(tt, text=paste("non sélectionné - par défaut :",
+                                                   ifelse(!is.na(refespTmp),
+                                                          refespTmp, "RIEN !!!"))),
+           pady=3, padx=5, sticky="w")
+
+    tkgrid(button.widget4,
+           SummaryRefSpa <- tklabel(tt, text=paste("non sélectionné - par défaut :",
+                                                   ifelse(!is.na(refspaTmp),
+                                                          refspaTmp, "RIEN !!!"))),
+           pady=3, padx=5, sticky="w")
+
+    tkgrid(OK.but, tklabel(FrameBT, text="            "), B.Cancel, pady=5, padx=5)
+
+    tkgrid(FrameBT, pady=5, padx=5, columnspan=2)
+
+    ## Informations sur l'espace de travail en gras au passage sur le bouton de choix de celui-ci :
+    tkbind(button.widget0,
+           "<Enter>", function(){tkconfigure(L.Info,
+                                             font=tkfont.create(family="arial", weight="bold", size=9))})
+
+    tkbind(SummaryWS,
+           "<Enter>", function(){tkconfigure(L.Info,
+                                             font=tkfont.create(family="arial", weight="bold", size=9))})
+
+    tkbind(button.widget0,
+           "<Leave>", function(){tkconfigure(L.Info,
+                                             font=tkfont.create(family="arial", size=9))})
+
+    tkbind(SummaryWS,
+           "<Leave>", function(){tkconfigure(L.Info,
+                                             font=tkfont.create(family="arial", size=9))})
+
+    tkbind(tt, "<Destroy>", function(){tclvalue(Done) <- "2"})
+
+    tkgrid.configure(button.widget0, button.widget1, button.widget2, button.widget3, button.widget4, sticky="ew")
+
+
+    tkfocus(tt)
+    tcl("update")
+    winSmartPlace.f(tt)
+
+    tkwait.variable(Done)
+
+    if (tclvalue(Done) == "1")
+    {
+        tkdestroy(tt)
+
+        fileNames <- c(unitobs=unname(unitobsTmp),
+                       obs=unname(obsTmp),
+                       refesp=unname(refespTmp),
+                       refspa=unname(refspaTmp),
+                       ws=unname(workSpaceTmp))
+
+        ## Sauvegarde dans l'environnement des données :
+        if (! missing(dataEnv) && is.environment(dataEnv))
+        {
+            assign("fileNames", fileNames, envir=dataEnv)
+        }else{}
+
+        ## Retourne les noms de fichiers :
+        return(fileNames)
+    }else{
+        tkdestroy(tt)
+
+        return(NULL)
+    }
+}
+
+
+
+### Local Variables:
+### ispell-local-dictionary: "english"
+### fill-column: 120
+### End:
+

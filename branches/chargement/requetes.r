@@ -265,7 +265,7 @@ choixespeces.f <- function()
     {
         tkmessageBox(message="Aucun fichier n'a ete selectionne!")
     }else{
-        assign("fileNameRefEsp", nameFichierEspecesAnalyser, envir=.GlobalEnv)
+        assign("pathRefesp", nameFichierEspecesAnalyser, envir=.GlobalEnv)
         lectureFichierEspeces.f()
     }
 

@@ -167,7 +167,7 @@ lectureFichierEspeces.f <- function ()
     runLog.f(msg=c("Chargement du référentiel espèces :"))
 
     ## Importation des caracteristiques des especes
-    especes <- read.table(fileNameRefEsp, sep="\t", dec=".", quote="", header=TRUE, encoding="latin1")
+    especes <- read.table(pathRefesp, sep="\t", dec=".", quote="", header=TRUE, encoding="latin1")
     names(especes) <- c("code_espece", "GrSIH", "CodeSIH", "IssCaap", "TaxoCode", "CodeFAO", "CodeFB", "Phylum",
                         "Cat_benthique", "Classe", "Ordre", "Famille", "Genre", "espece", "Identifiant", "ObsNC",
                         "ObsRUN", "ObsMAY", "ObsSTM", "ObsCB", "ObsBA", "ObsBO", "ObsCR", "taillemax", "L50",
@@ -217,7 +217,8 @@ lectureFichierEspeces.f <- function ()
 
     ## Suppression de la ligne en NA
     especes <- subset(especes, !is.na(especes$code_espece))
-    assign("especes", especes, envir=.GlobalEnv)
+    ## assign("especes", especes, envir=.GlobalEnv)
+    return(especes)
 }
 
 ################################################################################
@@ -260,11 +261,11 @@ environnementdefault.f <- function (nameWorkspace)
             dir.create(paste(nameWorkspace, "/FichiersSortie", sep=""),
                        showWarnings = TRUE, recursive = FALSE, mode = "0777")
         }
+        return(nameWorkspace)
+
     }else{
         gestionMSGerreur.f("noWorkspace")
     }
-
-    return(nameWorkspace)
 }
 
 ## Choix par defauts de C:/PAMPA
@@ -277,15 +278,15 @@ opendefault.f <- function ()
                    "Nouveau chargement des données :"))
 
     pathMaker.f(nameWorkspace=nameWorkspace,
-                fileName1=fileName1,
-                fileName2=fileName2,
-                fileName3=fileName3)
-                                        # MàJ des variables "fileNameUnitObs", "fileNameObs", "fileNameRefEsp". Pour les
-                                        # cas où les variables fileName1-3 auraient changé.
+                fileNameUnitobs=fileNameUnitobs,
+                fileNameObs=fileNameObs,
+                fileNameRefesp=fileNameRefesp)
+                                        # MàJ des variables "pathUnitobs", "pathObs", "pathRefesp". Pour les
+                                        # cas où les variables fileNameUnitobs-Refesp auraient changé.
 
     add.logFrame.f(msgID="dataLoading", env = .GlobalEnv,
-                   workSpace=nameWorkspace, fileObs=fileNameObs,
-                   fileEsp=fileNameRefEsp, fileUnitobs=fileNameUnitObs)
+                   workSpace=nameWorkspace, fileObs=pathObs,
+                   fileEsp=pathRefesp, fileUnitobs=pathUnitobs)
 
     assign("Jeuxdonnescoupe", 0, envir=.GlobalEnv)
 
@@ -303,7 +304,7 @@ opendefault.f <- function ()
 
     ## ################################################################################
 
-    unitobs <- read.table(fileNameUnitObs, sep="\t", dec=".", header=TRUE, encoding="latin1")
+    unitobs <- read.table(pathUnitobs, sep="\t", dec=".", header=TRUE, encoding="latin1")
     colnames(unitobs) <- c("AMP", "unite_observation", "type", "site", "station", "caracteristique_1", "caracteristique_2",
          "fraction_echantillonnee", "jour", "mois", "an", "heure", "nebulosite", "direction_vent", "force_vent",
          "etat_mer", "courant", "maree", "phase_lunaire", "latitude", "longitude", "statut_protection", "avant_apres",
@@ -373,7 +374,7 @@ opendefault.f <- function ()
     ## Chargement des observations :
     stepInnerProgressBar.f(n=1, msg="Chargement du fichier d'observations")
 
-    obs <- read.table(fileNameObs, sep="\t", dec=".", header=TRUE, encoding="latin1")
+    obs <- read.table(pathObs, sep="\t", dec=".", header=TRUE, encoding="latin1")
 
     if (unique(unitobs$type)[1] != "SVR")
     {
@@ -452,7 +453,7 @@ opendefault.f <- function ()
     stepInnerProgressBar.f(n=1, msg="Chargement du référentiel espèces")
 
     ## Référentiel espèces :
-    lectureFichierEspeces.f()
+    assign("especes", lectureFichierEspeces.f(), envir=.GlobalEnv)
 
     #####################################################
     ## Plan d'échantillonnage (à refaire complètement) :

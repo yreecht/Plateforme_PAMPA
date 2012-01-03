@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: Initialisation.R
-### Time-stamp: <2011-11-24 17:41:23 yreecht>
+### Time-stamp: <2011-12-13 16:43:01 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -12,42 +12,24 @@
 ####################################################################################################
 
 
-pathMaker.f <- function(nameWorkspace, fileName1, fileName2, fileName3)
-{
-    ## Purpose: Redéfinir les chemins (par exemple après changement du
-    ##          dossier de travail)
-    ## ----------------------------------------------------------------------
-    ## Arguments: aucun
-    ## ----------------------------------------------------------------------
-    ## Author: Yves Reecht, Date: 28 sept. 2010, 10:05
+## ## Vérification de l'existances de la configuration :
+## assign(".requiredVar",
+##        c(## "siteEtudie",
+##          unitobs="fileNameUnitobs", obs="fileNameObs", refesp="fileNameRefesp", ws="nameWorkspace"),
+##        envir=.GlobalEnv)
 
-    assign("nameWorkspace", nameWorkspace, envir=.GlobalEnv)
-    assign("fileName1", fileName1, envir=.GlobalEnv)
-    assign("fileName2", fileName2, envir=.GlobalEnv)
-    assign("fileName3", fileName3, envir=.GlobalEnv)
-
-    assign("NomDossierTravail", paste(nameWorkspace, "/FichiersSortie/", sep=""), envir=.GlobalEnv)
-    assign("NomDossierData", paste(nameWorkspace, "/Data/", sep=""), envir=.GlobalEnv)   # sert a concaténer les
-                                        # variables fileNameUnitObs fileNameObs   fileNameRefEsp fileNameRefSpa
-    assign("fileNameUnitObs", paste(NomDossierData, fileName1, sep=""), envir=.GlobalEnv)
-    assign("fileNameObs", paste(NomDossierData, fileName2, sep=""), envir=.GlobalEnv)
-    assign("fileNameRefEsp", paste(NomDossierData, fileName3, sep=""), envir=.GlobalEnv)
-    ## assign("fileNameRefSpa", paste(NomDossierData, fileNameRefSpa, sep=""), envir=.GlobalEnv)
-}
-
-## Vérification de l'existances de la configuration :
-assign("requiredVar",
-       c(## "siteEtudie",
-         unitobs="fileName1", obs="fileName2", esp="fileName3", ws="nameWorkspace"),
-       envir=.GlobalEnv)
+options(P.requiredVar=c(unitobs="fileNameUnitobs",
+                        obs="fileNameObs",
+                        refesp="fileNameRefesp",
+                        ws="nameWorkspace"))
 
 ##################### Initialisation des variables globales ####################
 Jeuxdonnescoupe <- 0
-assign("Jeuxdonnescoupe", Jeuxdonnescoupe, envir=.GlobalEnv)
+assign("Jeuxdonnescoupe", Jeuxdonnescoupe, envir=.GlobalEnv) # [!!!] Changer de system   [yr: 8/12/2011]
 
 #### Logo :
-fileimage <- "./Scripts_Biodiv/img/pampa2.GIF"
-assign("fileimage", fileimage, envir=.GlobalEnv)
+.fileimage <- "./Scripts_Biodiv/img/pampa2.GIF"
+assign(".fileimage", .fileimage, envir=.GlobalEnv)
 
 
 ########################################################################################################################
@@ -87,9 +69,9 @@ testVar.f <- function(requiredVar, env=.GlobalEnv)
         }else{}
     }else{
         pathMaker.f(nameWorkspace=get(requiredVar["ws"], envir=env),
-                    fileName1=get(requiredVar["unitobs"], envir=env),
-                    fileName2=get(requiredVar["obs"], envir=env),
-                    fileName3=get(requiredVar["esp"], envir=env))
+                    fileNameUnitobs=get(requiredVar["unitobs"], envir=env),
+                    fileNameObs=get(requiredVar["obs"], envir=env),
+                    fileNameRefesp=get(requiredVar["esp"], envir=env))
     }
 }
 

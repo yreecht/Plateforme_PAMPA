@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: fonctions_base.R
-### Time-stamp: <2011-11-04 14:07:16 yreecht>
+### Time-stamp: <2011-12-13 16:23:34 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -114,13 +114,13 @@ is.peche.f <- function()
 
 
 ########################################################################################################################
-pampaProfilingStart.f <- function()
+pampaProfilingStart.f <- function(interval=0.1)
 {
     ## Purpose: Initialiser le profilage d'une portion de code. Le nom de
     ##          fichier est construit d'après le nom de la fonction
     ##          appelante.
     ## ----------------------------------------------------------------------
-    ## Arguments: aucun.
+    ## Arguments: interval : intervalle d'échantillonnage.
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 20 oct. 2010, 15:58
 
@@ -128,7 +128,7 @@ pampaProfilingStart.f <- function()
     {
         filename <- paste("logs/Rprof-", deparse(sys.call(-1)[[1]]), ".out", sep="")
 
-        Rprof(filename=filename, interval=0.1)
+        Rprof(filename=filename, interval=interval)
     }else{}
 }
 
@@ -247,6 +247,39 @@ errorLog.f <- function(error, niv=-3)
     message("\n\tIl y a eu une erreur.", "\n\tVoir le fichier log : ", logFileName, "\n")
 }
 
+
+########################################################################################################################
+backupEnv.f <- function(envSource, envSink)
+{
+    ## Purpose: Sauvegarde d'un environnement dans un autre
+    ## ----------------------------------------------------------------------
+    ## Arguments: envSource : l'environnement à sauvegarder (marche également
+    ##                        avec une liste).
+    ##            envSink : l'environnement de sauvegarde (peut être
+    ##                      manquant => nouvel environnement)
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date: 13 déc. 2011, 15:39
+
+    ## Test de l'environnement "puit" :
+    if (missing(envSink))
+    {
+        envSink <- new.env()            # Création s'il est manquant.
+    }else{
+        if (! is.environment(envSink)) stop("envSink n'est pas un environnement")
+    }
+
+    ## Copie des élements :
+    invisible(sapply(envSource,
+                     function(x, Nx, env)
+                 {
+                     i <- sys.call()[[2]][[3]]
+                     assign(Nx[i], x, envir=env)
+                 },
+                     Nx=names(as.list(envSource)),
+                     env=envSink))
+
+    return(invisible(envSink))
+}
 
 
 

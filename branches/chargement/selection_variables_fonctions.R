@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: Selection_variables_fonctions.R
-### Time-stamp: <2011-11-15 15:57:04 yreecht>
+### Time-stamp: <2011-12-21 09:55:26 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -25,7 +25,7 @@ is.benthos.f <- function()
     ## Author: Yves Reecht, Date: 17 août 2010, 16:19
 
     benthTypes <- c("LIT")
-    return(all(is.element(unitobs$type, benthTypes)))
+    return(all(is.element(getOption("P.obsType"), benthTypes)))
 }
 
 ########################################################################################################################
@@ -706,7 +706,7 @@ presAbs.f <- function(nombres, logical=FALSE)
 }
 
 ########################################################################################################################
-calcBiodiv.f <- function(Data, unitobs="unite_observation", code.especes="code_espece", nombres="nombre",
+calcBiodiv.f <- function(Data, refesp, MPA, unitobs="unite_observation", code.especes="code_espece", nombres="nombre",
                          indices="all", global=FALSE, printInfo=FALSE)
 {
     ## Purpose: calcul des indices de biodiversité
@@ -716,6 +716,8 @@ calcBiodiv.f <- function(Data, unitobs="unite_observation", code.especes="code_e
     ##                     * unités d'observations/sites
     ##                     * espèces présentes
     ##                     * nombre d'individus /espèce/unitobs.
+    ##            refesp : le référentiel espèces.
+    ##            MPA : l'AMP (chaîne de charactères).
     ##            unitobs : nom de la colone d'unités d'observation.
     ##            code.especes : nom de la colone d'espèces.
     ##            nombres : nom de la colone de nombres.
@@ -730,7 +732,7 @@ calcBiodiv.f <- function(Data, unitobs="unite_observation", code.especes="code_e
     DataTmp <- Data
 
     ## Supression de tout ce qui n'a pas d'espèce précisee (peut être du non biotique ou identification >= genre) :
-    if (! nrow(Data <- Data[especes$espece[match(Data[ , code.especes], especes$code_espece)] != "sp.", ]))
+    if (! nrow(Data <- Data[refesp$espece[match(Data[ , code.especes], refesp$code_espece)] != "sp.", ]))
     {
         if (printInfo)
         {
@@ -821,23 +823,23 @@ calcBiodiv.f <- function(Data, unitobs="unite_observation", code.especes="code_e
     ## richesses specifiques relatives :
 
     ## Phylum(s) présent(s) dans le jeux de données :
-    phylums <- as.character(unique(na.omit(especes$Phylum[match(Data[ , code.especes],
-                                                                especes$code_espece)])))
+    phylums <- as.character(unique(na.omit(refesp$Phylum[match(Data[ , code.especes],
+                                                               refesp$code_espece)])))
 
     ## RS relative par rapp. au nombre d'espèces du site :
     if (any(is.element(c("all", "RS.relative.site"), indices)))
     {
         df.biodiv$RS.relative.site <- (df.biodiv$richesse_specifique /
-                                       nrow(subset(especes,
-                                                   eval(parse(text=paste("Obs", siteEtudie, sep=""))) == "oui"))) * 100
+                                       nrow(subset(refesp,
+                                                   eval(parse(text=paste("Obs", MPA, sep=""))) == "oui"))) * 100
     }
 
     ## RS relative par rapp. au nombre d'espèces du site et du(des) phylum(s) concerné(s) (jeu de données) :
     if (any(is.element(c("all", "RS.relative.site.phylum"), indices)))
     {
         df.biodiv$RS.relative.site.phylum <- (df.biodiv$richesse_specifique /
-                                              nrow(subset(especes,
-                                                          eval(parse(text=paste("Obs", siteEtudie, sep=""))) == "oui" &
+                                              nrow(subset(refesp,
+                                                          eval(parse(text=paste("Obs", MPA, sep=""))) == "oui" &
                                                           is.element(Phylum, phylums)))) * 100
     }
 
@@ -845,7 +847,7 @@ calcBiodiv.f <- function(Data, unitobs="unite_observation", code.especes="code_e
     if (any(is.element(c("all", "RS.relative.donnees"), indices)))
     {
         df.biodiv$RS.relative.donnees <- (df.biodiv$richesse_specifique /
-                                          nrow(subset(especes,
+                                          nrow(subset(refesp,
                                                       is.element(code_espece, Data[ , code.especes])))) * 100
     }
 
@@ -856,7 +858,7 @@ calcBiodiv.f <- function(Data, unitobs="unite_observation", code.especes="code_e
     if (any(is.element(c("all", "RS.relative.region"), indices)))
     {
         df.biodiv$RS.relative.region <- (df.biodiv$richesse_specifique /
-                                         nrow(especes)) * 100
+                                         nrow(refesp)) * 100
     }
 
     ## RS relative par rapp. au nombre d'espèces au niveau régional (OM ou méditerrannée) et
@@ -864,7 +866,7 @@ calcBiodiv.f <- function(Data, unitobs="unite_observation", code.especes="code_e
     if (any(is.element(c("all", "RS.relative.region.phylum"), indices)))
     {
         df.biodiv$RS.relative.region.phylum <- (df.biodiv$richesse_specifique /
-                                                nrow(subset(especes, is.element(Phylum, phylums)))) * 100
+                                                nrow(subset(refesp, is.element(Phylum, phylums)))) * 100
     }
 
     ## ##################################################
@@ -911,6 +913,7 @@ calcBiodiv.f <- function(Data, unitobs="unite_observation", code.especes="code_e
     ## ##################################################
     ## Indices de biodiversité taxonomique :
     df.biodivTaxo <- calcBiodivTaxo.f(Data=Data,
+                                      refesp=refesp,
                                       unitobs = unitobs, code.especes = code.especes, nombres = nombres,
                                       global = global, printInfo = printInfo,
                                       indices=indices)
@@ -933,7 +936,7 @@ calcBiodiv.f <- function(Data, unitobs="unite_observation", code.especes="code_e
 }
 
 ########################################################################################################################
-calcBiodivTaxo.f <- function(Data, unitobs="unite_observation", code.especes="code_espece", nombres="nombre",
+calcBiodivTaxo.f <- function(Data, refesp, unitobs="unite_observation", code.especes="code_espece", nombres="nombre",
                              global=FALSE, printInfo=FALSE,
                              indices="all")
 {
@@ -944,6 +947,7 @@ calcBiodivTaxo.f <- function(Data, unitobs="unite_observation", code.especes="co
     ##                     * unités d'observations/sites
     ##                     * espèces présentes
     ##                     * nombre d'individus /espèce/unitobs.
+    ##            refesp : référentiel espèces.
     ##            unitobs : nom de la colone d'unités d'observation.
     ##            especes : nom de la colone d'espèces.
     ##            nombres : nom de la colone de nombres.
@@ -968,7 +972,7 @@ calcBiodivTaxo.f <- function(Data, unitobs="unite_observation", code.especes="co
         return(NULL)                    # Rien !
     }else{
         ## Suppression de tout ce qui n'a pas de genre (peut être du non biotique) :
-        Data <- Data[especes$espece[match(Data$code_espece, especes$code_espece)] != "sp.", ]
+        Data <- Data[refesp$espece[match(Data$code_espece, refesp$code_espece)] != "sp.", ]
 
         ## Suppression des niveaux de facteur inutilisés :
         Data <- dropLevels.f(df=Data)
@@ -989,9 +993,9 @@ calcBiodivTaxo.f <- function(Data, unitobs="unite_observation", code.especes="co
         contingence[is.na(contingence)] <- 0 # Vrais zéros.
 
         ## tableau avec genre, famille, etc.
-        sp.taxon <- dropLevels.f(especes[match(colnames(contingence),
-                                               especes$code_espece, nomatch=NA, incomparables = FALSE),
-                                         c("espece", "Genre", "Famille", "Ordre", "Classe", "Phylum")])
+        sp.taxon <- dropLevels.f(refesp[match(colnames(contingence),
+                                              refesp$code_espece, nomatch=NA, incomparables = FALSE),
+                                        c("espece", "Genre", "Famille", "Ordre", "Classe", "Phylum")])
 
         ## colnames(sp.taxon) <- c("genre", "famille", "ordre", "classe", "phylum")
         rownames(sp.taxon) <- colnames(contingence)

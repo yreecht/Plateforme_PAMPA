@@ -15,7 +15,7 @@
 ## Output : obs$classe_taille
 ################################################################################
 
-classeTaille.f <- function()
+classeTaille.f <- function(Data, refesp)
 {
     runLog.f(msg=c("Attribution des individus à des classes de taille :"))
 
@@ -208,7 +208,9 @@ bilanCalcPoids.f <- function(x)
 
 
 ########################################################################################################################
-calcPoids.f <- function(Data)
+calcPoids.f <- function(Data, unitobs, refesp,
+                        vars=c(sp="code_espece", unitobs="unite_observation",
+                               sz="taille", wg="poids", szcl="classe_taille"))
 {
     ## Purpose: Calculs des poids (manquants) pour un fichier de type
     ##          "observation", avec par ordre de priorité :
@@ -221,8 +223,11 @@ calcPoids.f <- function(Data)
     ##           Afficher les un bilan si nécessaire.
     ## ----------------------------------------------------------------------
     ## Arguments: Data : jeu de données ; doit contenir les colonnes
-    ##                   "code_espece", "unite_observation", "taille",
-    ##                   "poids" et éventuellement "classe_taille".
+    ##                   décrites par vars (à l'exception de szcl qui
+    ##                   est optionnelle).
+    ##            unitobs : table d'unités d'observation.
+    ##            refesp : référentiel espèces.
+    ##            vars : nom des colonnes de différents types dans Data.
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date:  6 déc. 2010, 11:57
 
@@ -253,17 +258,17 @@ calcPoids.f <- function(Data)
     switch(casSite[unique(as.character(unitobs$AMP))],
            ## Méditerrannée :
            "Med"={
-               res[idxP] <- (Data$nombre * especes$Coeff.a.Med[match(Data$code_espece, especes$code_espece)] *
-                             Data$taille ^ especes$Coeff.b.Med[match(Data$code_espece, especes$code_espece)])[idxP]
+               res[idxP] <- (Data$nombre * refesp$Coeff.a.Med[match(Data$code_espece, refesp$code_espece)] *
+                             Data$taille ^ refesp$Coeff.b.Med[match(Data$code_espece, refesp$code_espece)])[idxP]
            },
            ## Certains sites outre-mer :
            "MAY"={
-               res[idxP] <- (Data$nombre * especes$Coeff.a.MAY[match(Data$code_espece, especes$code_espece)] *
-                             Data$taille ^ especes$Coeff.b.MAY[match(Data$code_espece, especes$code_espece)])[idxP]
+               res[idxP] <- (Data$nombre * refesp$Coeff.a.MAY[match(Data$code_espece, refesp$code_espece)] *
+                             Data$taille ^ refesp$Coeff.b.MAY[match(Data$code_espece, refesp$code_espece)])[idxP]
            },
            ## Autres (NC,...) :
-           res[idxP] <- (Data$nombre * especes$Coeff.a.NC[match(Data$code_espece, especes$code_espece)] *
-                         Data$taille ^ especes$Coeff.b.NC[match(Data$code_espece, especes$code_espece)])[idxP]
+           res[idxP] <- (Data$nombre * refesp$Coeff.a.NC[match(Data$code_espece, refesp$code_espece)] *
+                         Data$taille ^ refesp$Coeff.b.NC[match(Data$code_espece, refesp$code_espece)])[idxP]
            )
 
     ## [!!!] Comptabiliser les tailles incalculables !

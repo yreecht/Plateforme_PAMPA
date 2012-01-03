@@ -18,7 +18,7 @@ testfileref.f <- function ()
 
     EnregistrerWinTest <- function ()
     {
-        FichierCSV <- paste(NomDossierTravail, "Infos_", fileName3, ".csv", sep="")
+        FichierCSV <- paste(NomDossierTravail, "Infos_", fileNameRefesp, ".csv", sep="")
         write.csv2(dataframeRefEsp, file=FichierCSV, row.names = FALSE)
 
         add.logFrame.f(msgID="InfoRefSpeEnregistre", env = .GlobalEnv, file=FichierCSV)
@@ -82,7 +82,7 @@ testfileref.f <- function ()
     }
 
     ## construction de la fenêtre
-    tkwm.title(wintest, paste("Informations sur ", fileName3))
+    tkwm.title(wintest, paste("Informations sur ", fileNameRefesp))
     frameOverwintest <- tkframe(wintest)
     imgAsLabelwintest <- tklabel(frameOverwintest, image=imageAMP, bg="white")
 
@@ -91,15 +91,15 @@ testfileref.f <- function ()
 
     tkgrid(imgAsLabelwintest,
            tklabel(frameOverwintest,
-                   text=paste("Taux de renseignement des champs de ", fileName3,
-                              "\npour le jeu de données (tient compte des sélections)\n", fileName2), relief="groove", borderwidth=2,
+                   text=paste("Taux de renseignement des champs de ", fileNameRefesp,
+                              "\npour le jeu de données (tient compte des sélections)\n", fileNameObs), relief="groove", borderwidth=2,
                    bg="yellow", justify="left"),
            padx=5, sticky="e")
 
     tkgrid.configure(imgAsLabelwintest, sticky="w")
 
     ## tkgrid.configure(frameOverwintest, columnspan=1, column=1)
-    tkgrid(tklabel(wintest, text=paste("Nombre de champs de ", fileName3, " : ", dim(especes.select)[2])),
+    tkgrid(tklabel(wintest, text=paste("Nombre de champs de ", fileNameRefesp, " : ", dim(especes.select)[2])),
            Enregistrer.but)
 
     tkgrid(tklabel(wintest,
@@ -107,7 +107,7 @@ testfileref.f <- function ()
                    nrow(subset(especes, especes[, espSite]=="oui")))))
 
     tkgrid(tklabel(wintest,
-                   text=paste("Nombre d'espèces du jeux de données ", fileName2, " : ",
+                   text=paste("Nombre d'espèces du jeux de données ", fileNameObs, " : ",
                    length(unique(obs$code_espece)))), Fermer.but)
 
     tkgrid(tklabel(wintest,

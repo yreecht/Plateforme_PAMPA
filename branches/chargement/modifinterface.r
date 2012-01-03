@@ -123,13 +123,13 @@ RowAutoEight.f <- function(TK.table)
 MiseajourTableau.f <- function(tclarray)
 {
     ##  ############# Mise à jour des valeurs dans le tableau #############
-    tclarray[["1,1"]] <- sub(paste(nameWorkspace, "/Data/", sep=""), '', fileName1)
+    tclarray[["1,1"]] <- sub(paste(nameWorkspace, "/Data/", sep=""), '', fileNameUnitobs)
     tclarray[["1,2"]] <- ncol(unitobs)
     tclarray[["1,3"]] <- nrow(unitobs)
-    tclarray[["2,1"]] <- sub(paste(nameWorkspace, "/Data/", sep=""), '', fileName2)
+    tclarray[["2,1"]] <- sub(paste(nameWorkspace, "/Data/", sep=""), '', fileNameObs)
     tclarray[["2,2"]] <- ncol(obs)
     tclarray[["2,3"]] <- nrow(obs)
-    tclarray[["3,1"]] <- sub(paste(nameWorkspace, "/Data/", sep=""), '', fileName3)
+    tclarray[["3,1"]] <- sub(paste(nameWorkspace, "/Data/", sep=""), '', fileNameRefesp)
     tclarray[["3,2"]] <- ncol(especes)
     tclarray[["3,3"]] <- nrow(especes)
 

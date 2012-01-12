@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: Calcul_tables_metriques_SVR.R
-### Time-stamp: <2011-12-23 11:28:19 yreecht>
+### Time-stamp: <2012-01-12 14:33:47 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -25,55 +25,57 @@ calc.density.SVR.f <- function(Data, obs, metric="densite",
                   densiteMax="nombreMax",
                   densiteSD="nombreSD")
 
-    if ( ! is.na(nbMetric[metric]))     # la colonne de nombre doit être définie.
+    if ( ! all(is.na(nbMetric[metric])))     # la colonne de nombre doit être définie.
     {
-        density <- Data[ , nbMetric[metric]] /
-            ## Surface : vecteur recyclé autant de fois qu'il y a de classes de taille
-            ##           si Data  en contient.
-            (pi * (as.vector(tapply(obs[ , "dmin"],
-                                    as.list(obs[ , factors, drop=FALSE]),
-                                    max, na.rm=TRUE)))^2)
+        metric <- metric[!is.na(nbMetric[metric])]
 
-        ## Vrais zéros :
-        density[Data[ , nbMetric[metric]] == 0 & !is.na(Data[ , nbMetric[metric]])] <- 0
+        ## Calcul du rayon d'observation :
+        Data <- merge(Data,
+                      ## Calcul du max du diamètre minimum sur les observation conservées(nombre > 0) :
+                      as.data.frame(as.table(tapply(obs[obs[ , "nombre"] > 0 , "dmin"],
+                                                    as.list(obs[obs[ , "nombre"] > 0, factors, drop=FALSE]),
+                                                    max, na.rm=TRUE)),
+                                    responseName="r"))
 
-        return(density)
+        ## Calcul des différentes densités :
+        res <- lapply(metric,
+                      function(x, Data, nbMetrics)
+                  {
+                      density <- Data[ , nbMetric[x]] /
+                          (pi * (Data[ , "r"] ^ 2))
+
+                      ## Vrais zéros :
+                      density[Data[ , nbMetric[x]] == 0 & !is.na(Data[ , nbMetric[x]])] <- 0
+
+                      return(density)
+                  },
+                      Data=Data, nbMetrics=nbMetrics)
+
+        ## Ajout des résultats à Data
+        names(res) <- metric
+
+        res <- as.data.frame(res)
+
+        Data <- cbind(Data, res)
+        Data$r <- NULL
+
+        ## density <- Data[ , nbMetric[metric]] /
+        ##     ## Surface : vecteur recyclé autant de fois qu'il y a de classes de taille
+        ##     ##           si Data  en contient.
+        ##     (pi * (as.vector(t(tapply(obs[ , "dmin"],
+        ##                               as.list(obs[ , factors, drop=FALSE]),
+        ##                               max, na.rm=TRUE))))^2)
+
+        ## Seconde méthode désactivée car certaines fois t() requis, d'autres fois pas.
+
+        return(Data)
     }else{
         stop("Métrique de densité inconnue !")
     }
 }
 
 ########################################################################################################################
-## stat.density.SVR.f <- function(Data, obs, metric,
-##                                factors=c("unite_observation", "code_espece"))
-## {
-##     ## Purpose:
-##     ## ----------------------------------------------------------------------
-##     ## Arguments:
-##     ## ----------------------------------------------------------------------
-##     ## Author: Yves Reecht, Date: 22 déc. 2011, 12:10
-
-##     ## Nom de la colonne de nombre en fonction de la métrique de densité :
-##     nbMetric <- c(densiteMax="nombreMax",
-##                   densiteSD="nombreSD")
-
-##     if ( ! is.na(nbMetric[metric]))     # la colonne de nombre doit être définie.
-##     {
-##         stat <- Data[ , nbMetric[metric]] / # métrique de nombre
-##                 ## / Surface : vecteur recyclé autant de fois qu'il y a de classes de taille
-##                 ##           si Data  en contient.
-##                 (pi * (as.vector(tapply(obs[ , "dmin"],
-##                                         as.list(obs[ , factors, drop=FALSE]),
-##                                         max, na.rm=TRUE)))^2)
-
-##         return(stat)
-##     }else{
-##         stop("Métrique de biomasse inconnue !")
-##     }
-## }
-
-########################################################################################################################
-calc.biomass.SVR.f <- function(Data, obs)
+calc.biomass.SVR.f <- function(Data, obs, factors=c("unite_observation", "code_espece"))
 {
     ## Purpose:
     ## ----------------------------------------------------------------------
@@ -81,16 +83,21 @@ calc.biomass.SVR.f <- function(Data, obs)
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 22 déc. 2011, 12:02
 
-    biomass <- Data[ , "poids"] /
-        ## Surface : vecteur recyclé autant de fois qu'il y a de classes de taille
-        ##           si Data  en contient.
-        (pi * (as.vector(tapply(obs[ , "dmin"],
-                                as.list(obs[ , c("unite_observation", "code_espece")]),
-                                max, na.rm=TRUE)))^2)
+    ## Calcul du rayon d'observation :
+    Data <- merge(Data,
+                  ## Calcul du max du diamètre minimum sur les observation conservées(nombre > 0) :
+                  as.data.frame(as.table(tapply(obs[obs[ , "nombre"] > 0 , "dmin"],
+                                                as.list(obs[obs[ , "nombre"] > 0, factors, drop=FALSE]),
+                                                max, na.rm=TRUE)),
+                                responseName="r"))
 
+    biomass <- Data[ , "poids"] /
+        (pi * (Data[ , "r"] ^ 2))
     ## Les poids ont été corrigés au préalable et tiennent compte des espèces pour lesquelles
     ## ils ne peuvent être calculés.
     ## Aucune correction n'est donc nécessaire.
+
+    return(biomass)
 }
 
 ########################################################################################################################
@@ -107,17 +114,37 @@ stat.biomass.SVR.f <- function(Data, obs, metric,
     nbMetric <- c(biomasseMax="nombreMax",
                   biomasseSD="nombreSD")
 
-    if ( ! is.na(nbMetric[metric]))     # la colonne de nombre doit être définie.
+    if ( ! all(is.na(nbMetric[metric])))     # la colonne de nombre doit être définie.
     {
-        stat <- Data[ , nbMetric[metric]] * # métrique de nombre
-            Data[ , "poids_moyen"] /        # * poids moyens d'un individu.
-                ## / Surface : vecteur recyclé autant de fois qu'il y a de classes de taille
-                ##           si Data  en contient.
-                (pi * (as.vector(tapply(obs[ , "dmin"],
-                                        as.list(obs[ , factors, drop=FALSE]),
-                                        max, na.rm=TRUE)))^2)
+        metric <- metric[!is.na(nbMetric[metric])]
 
-        return(stat)
+        ## Calcul du rayon d'observation :
+        Data <- merge(Data,
+                      ## Calcul du max du diamètre minimum sur les observation conservées(nombre > 0) :
+                      as.data.frame(as.table(tapply(obs[obs[ , "nombre"] > 0 , "dmin"],
+                                                    as.list(obs[obs[ , "nombre"] > 0, factors, drop=FALSE]),
+                                                    max, na.rm=TRUE)),
+                                    responseName="r"))
+
+        ## Calcul des différentes densités :
+        res <- lapply(metric,
+                      function(x, Data, nbMetrics)
+                  {
+                      return(Data[ , nbMetric[x]] * # métrique de nombre
+                             Data[ , "poids_moyen"] /    # * poids moyens d'un individu.
+                             (pi * (Data[ , "r"] ^ 2)))
+                  },
+                      Data=Data, nbMetrics=nbMetrics)
+
+        ## Ajout des résultats à Data
+        names(res) <- metric
+
+        res <- as.data.frame(res)
+
+        Data <- cbind(Data, res)
+        Data$r <- NULL
+
+        return(Data)
     }else{
         stop("Métrique de biomasse inconnue !")
     }
@@ -204,28 +231,16 @@ calc.tables.SVR.f <- function(obs,
     ## Poids moyen par individu :
     res[ , "poids_moyen"] <- calc.meanWeight.f(Data=res)
 
-    ## Densité :
-    res[ , "densite"] <- calc.density.SVR.f(Data=res, obs=obs,
-                                            metric="densite")
-
-    ## Densité max :
-    res[ , "densiteMax"] <- calc.density.SVR.f(Data=res, obs=obs,
-                                               metric="densiteMax")
-
-    ## Densité SD :
-    res[ , "densiteSD"] <- calc.density.SVR.f(Data=res, obs=obs,
-                                              metric="densiteSD")
+    ## Densité (+Max +SD) :
+    res <- calc.density.SVR.f(Data=res, obs=obs,
+                               metric=c("densite", "densiteMax", "densiteSD"))
 
     ## Biomasse :
     res[ , "biomasse"] <- calc.biomass.SVR.f(Data=res, obs=obs)
 
-    ## Biomasse max :
-    res[ , "biomasseMax"] <- stat.biomass.SVR.f(Data=res, obs=obs,
-                                                metric="biomasseMax")
-
-    ## Biomasse SD :
-    res[ , "biomasseSD"] <- stat.biomass.SVR.f(Data=res, obs=obs,
-                                               metric="biomasseSD")
+    ## Biomasse max+SD :
+    res <- stat.biomass.SVR.f(Data=res, obs=obs,
+                              metric=c("biomasseMax", "biomasseSD"))
 
     ## Présence/absence :
     res[ , "pres_abs"] <- calc.presAbs.f(Data=res)
@@ -291,20 +306,12 @@ calc.unitSp.SVR.f <- function(unitSpSz, obs, dataEnv)
                                            }, na.rm=TRUE)))
 
     ## densité max :
-    unitSp[ , "densiteMax"] <- calc.density.SVR.f(Data=unitSp, obs=obs,
-                                                  metric="densiteMax")
-
-    ## densité SD :
-    unitSp[ , "densiteSD"] <- calc.density.SVR.f(Data=unitSp, obs=obs,
-                                                 metric="densiteSD")
+    unitSp <- calc.density.SVR.f(Data=unitSp, obs=obs,
+                                 metric=c("densiteMax", "densiteSD"))
 
     ## Biomasse max :
-    unitSp[ , "biomasseMax"] <- stat.biomass.SVR.f(Data=unitSp, obs=obs,
-                                                   metric="biomasseMax")
-
-    ## Biomasse SD :
-    unitSp[ , "biomasseSD"] <- stat.biomass.SVR.f(Data=unitSp, obs=obs,
-                                                  metric="biomasseSD")
+    unitSp <- stat.biomass.SVR.f(Data=unitSp, obs=obs,
+                                 metric=c("biomasseMax", "biomasseSD"))
 
     return(unitSp)
 }
@@ -360,24 +367,14 @@ calc.unit.SVR.f <- function(unitSp, obs, refesp, unitobs, dataEnv,
                                          }, na.rm=TRUE)))
 
     ## Densite max :
-    unit[ , "densiteMax"] <- calc.density.SVR.f(Data=unit, obs=obs,
-                                                metric="densiteMax",
-                                                factors="unite_observation")
-
-    ## Densite SD :
-    unit[ , "densiteSD"] <- calc.density.SVR.f(Data=unit, obs=obs,
-                                               metric="densiteSD",
-                                               factors="unite_observation")
+    unit <- calc.density.SVR.f(Data=unit, obs=obs,
+                               metric=c("densiteMax", "densiteSD"),
+                               factors="unite_observation")
 
     ## Biomasse max :
-    unit[ , "biomasseMax"] <- stat.biomass.SVR.f(Data=unit, obs=obs,
-                                                 metric="biomasseMax",
-                                                 factors="unite_observation")
-
-    ## Biomasse SD :
-    unit[ , "biomasseSD"] <- stat.biomass.SVR.f(Data=unit, obs=obs,
-                                                metric="biomasseSD",
-                                                factors="unite_observation")
+    unit <- stat.biomass.SVR.f(Data=unit, obs=obs,
+                               metric=c("biomasseMax", "biomasseSD"),
+                               factors="unite_observation")
 
     return(unit)
 }

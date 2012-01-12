@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: test_load_packages.R
-### Time-stamp: <2011-08-23 10:43:05 yreecht>
+### Time-stamp: <2012-01-10 17:28:37 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -57,6 +57,12 @@ loadPackages.f <- function()
 
 
     require(tcltk)
+
+    ## Pour régler un bug sur certaines versions de R (e.g. 2.11.1)
+    ## (chemin des packages avec une installation dans les dossiers utilisateurs) :
+    env <- environment(.libPaths)
+    assign(".lib.loc", shortPathName(get(".lib.loc", envir=env)), envir=env)
+    ##  -> tous les chemins en format court !
 
     ## Packages nécessaires au bon fonctionnement de la plateforme PAMPA WP2 :
     requiredPack <- c("tcltk", "tkrplot", "vegan", "MASS",

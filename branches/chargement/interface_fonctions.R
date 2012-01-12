@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: interface_fonctions.R
-### Time-stamp: <2011-11-16 10:26:01 yreecht>
+### Time-stamp: <2012-01-12 15:06:16 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -155,7 +155,7 @@ quitConfirm.f <- function(win)
 }
 
 ########################################################################################################################
-infoGeneral.f <- function(msg,...)
+infoGeneral.f <- function(msg, waitCursor=FALSE,...)
 {
     ## Purpose: Afficher un cadre général dans la fenêtre d'info.
     ## ----------------------------------------------------------------------
@@ -195,6 +195,11 @@ infoGeneral.f <- function(msg,...)
         ## Note : objet de fenêtre déjà chargé lors du test !
     }
 
+    ## Curseur d'attente si besoin :
+    if (waitCursor)
+    {
+        tkconfigure(WinInfoLoading, cursor="watch")
+    }
 
     ## nom du cadre :
     frameName <- paste("Frame", round(runif(1, 0, 2000)), sep="")
@@ -345,6 +350,10 @@ infoLoading.f <- function(msg="", icon="info", button=FALSE,
 
     ## Forcer l'affichage de la fenêtre avant la suite :
     ## tkwait.visibility(LabVide)
+    if (button)
+    {
+        tkconfigure(WinInfoLoading, cursor="arrow")
+    }else{}
 
     ## Placement de la fenêtre :
     tcl("update")
@@ -407,20 +416,152 @@ apropos.f <- function()
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 21 févr. 2011, 15:51
 
-    WinApropos <- tktoplevel()
+    .FrameBackground <- "#FFF6BF"
+    WinApropos <- tktoplevel(bg="white")
 
     tkwm.title(WinApropos, "À propos de la plateforme")
 
+    TX.develop <- tktext(WinApropos, bg=.FrameBackground,
+                         ## state="disabled",
+                         height=8)
+
+    TX.finance <- tktext(WinApropos, bg=.FrameBackground, height=8)
+
+    ## Placement des éléments graphiques :
     tkgrid(tklabel(WinApropos,
-                   text=paste("Plateforme PAMPA WP2 : version ", getOption("versionPAMPA"), sep=""),
-                   padx=40, pady=20))
+                   bg="white",
+                   text=paste("Plateforme PAMPA \"Ressources & Biodiversité\" : version ", getOption("versionPAMPA"), sep=""),
+                   padx=10, pady=15))
 
-
+    tkgrid(TX.develop, sticky="ew", padx=3, pady=10, ipadx=3)
+    tkgrid(TX.finance, sticky="ew", padx=3, pady=10, ipadx=3)
 
     tkgrid(tkbutton(WinApropos, text="   OK   ",
-                    command = function(){tkdestroy(WinApropos)}))
+                    command = function(){tkdestroy(WinApropos)}),
+           pady=7)
 
-    tkgrid(tmp <- tklabel(WinApropos, text=""))
+    ## Textes sur l'équipe de développement :
+    licence <- "GNU GPL version >= 2"
+    tkinsert(TX.develop, "0.0",
+             paste(" Logiciel distribué sous licence ", licence, ",",
+                   "\n développé au sein de l'Ifremer.", sep=""))
+    tktag.add(TX.develop, "licence",
+              paste("1.end -", nchar(licence) + 2, " chars", sep=""), # calcul du début de plage du texte de licence.
+              "1.end -1 chars")                                      # fin de plage du text de licence (- ",").
+
+    tkinsert(TX.develop, "end", "\n\n Developpeurs :")
+    tktag.add(TX.develop, "title1", "end -1 lines linestart", "end -1 lines lineend")
+
+    tkinsert(TX.develop, "end",
+             "\n\tYves REECHT, Romain DAVID, Jérémie HABASQUE, Bastien PREUSS")
+    tktag.add(TX.develop, "text1", "end -2 lines linestart", "end")
+
+    tkinsert(TX.develop, "end", "\n\n Contact : ")
+    tktag.add(TX.develop, "title2", "end -1 lines linestart", "end")
+
+    email <- "developpeur-wp2@projet-pampa.fr"
+    tkinsert(TX.develop, "end", email)
+    tktag.add(TX.develop, "email",
+              paste("end -", nchar(email) + 1, " chars", sep=""), "end -1 chars")
+
+    ## ... configuration des différentes parties du texte :
+    FT.title <- tkfont.create(family="arial", weight="bold", size=8)
+    FT.email <- tkfont.create(family="courier", size=9, underline="true")
+
+    tktag.configure(TX.develop, "licence", foreground="blue")
+    tktag.configure(TX.develop, "title1", font=FT.title, foreground="darkred")
+    tktag.configure(TX.develop, "title2", font=FT.title, foreground="darkred")
+    tktag.configure(TX.develop, "email", font=FT.email, foreground="blue")
+
+    ## ...apparence du texte de licence :
+    tktag.bind(TX.develop, "licence", "<1>",
+               function() browseURL("http://www.gnu.org/licenses/licenses.fr.html#GPL"))
+    tktag.bind(TX.develop, "licence", "<Enter>",
+               function() tkconfigure(TX.develop, cursor="hand2"))
+    tktag.bind(TX.develop, "licence", "<Leave>",
+               function() tkconfigure(TX.develop, cursor="arrow"))
+
+    ## ...apparence de l'adresse e-mail :
+    tktag.bind(TX.develop, "email", "<1>",
+               function() browseURL(paste("mailto:", email, "?subject=Contact%20plateforme%20PAMPA", sep="")))
+    tktag.bind(TX.develop, "email", "<Enter>",
+               function() tkconfigure(TX.develop, cursor="hand2"))
+    tktag.bind(TX.develop, "email", "<Leave>",
+               function() tkconfigure(TX.develop, cursor="arrow"))
+
+    ## La zone doit être non éditable :
+    tkconfigure(TX.develop, state="disabled")
+
+    ## ##################################################
+    ## Texte "partenaires" :
+    tkinsert(TX.finance, "0.0", " Financements :")
+    tktag.add(TX.finance, "financement", "0.0", "1.end")
+
+    financeurs <- c("Projet Liteau III.",
+                    "Agence des Aires Marines Protégées.",
+                    "Ifrecor.")
+    links <- c("http://www1.liteau.net/index.php/projet/liteau-iii",
+               "http://www.aires-marines.fr/",
+               "http://www.ifrecor.org/")
+
+    tkinsert(TX.finance, "end",
+             paste("\n\t* ", paste(financeurs, collapse="\n\t* "), sep=""))
+
+    nbF <- length(financeurs)
+    for (i in 1:nbF)
+    {
+        tktag.add(TX.finance,
+                  paste("part", i, sep=""),
+                  paste("end -", nbF + 1 -i, " lines linestart +3 chars", sep=""),
+                  paste("end -", nbF + 1 -i, " lines lineend -1 chars", sep=""))
+    }
+
+    tkinsert(TX.finance, "end", "\n\n Autres partenaires : ")
+    tktag.add(TX.finance, "title2", "end -1 lines linestart", "end -1 lines lineend")
+
+    tkinsert(TX.finance, "end", "\n Retrouvez les tous sur le site insitutionnel PAMPA : \n ")
+
+    linkP <- "http://wwz.ifremer.fr/pampa/Partenaires"
+    tkinsert(TX.finance, "end", linkP)
+    tktag.add(TX.finance, "linkP",
+              paste("end -", nchar(linkP) + 1, " chars", sep=""), "end -1 chars")
+
+    ## ...configuration des différentes parties du texte de "partenaires" :
+    tktag.configure(TX.finance, "financement", font=FT.title, foreground="darkred")
+
+    ## Configuration des liens des financeurs :
+    for (i in 1:nbF)
+    {
+        tagF <- paste("part", i, sep="")
+        tktag.configure(TX.finance,
+                        tagF,
+                        font=FT.email, foreground="blue")
+
+        ## Liens :
+        eval(substitute(tktag.bind(TX.finance, tagF, "<1>",
+                                   function() browseURL(link)),
+                        list(link=links[i]))) # eval(substitute()) nécessaire car sinon seule la dernière url
+                                        # est utilisée.
+
+        tktag.bind(TX.finance, tagF, "<Enter>",
+                   function() tkconfigure(TX.finance, cursor="hand2"))
+        tktag.bind(TX.finance, tagF, "<Leave>",
+                   function() tkconfigure(TX.finance, cursor="arrow"))
+    }
+
+    tktag.configure(TX.finance, "title2", font=FT.title, foreground="darkred")
+    tktag.configure(TX.finance, "linkP", font=FT.email, foreground="blue")
+
+    ## ...apparence du lien PAMPA :
+    tktag.bind(TX.finance, "linkP", "<1>",
+               function() browseURL(linkP))
+    tktag.bind(TX.finance, "linkP", "<Enter>",
+               function() tkconfigure(TX.finance, cursor="hand2"))
+    tktag.bind(TX.finance, "linkP", "<Leave>",
+               function() tkconfigure(TX.finance, cursor="arrow"))
+
+    ## La zone doit être non éditable :
+    tkconfigure(TX.finance, state="disabled", wrap="word")
 
     winSmartPlace.f(WinApropos)
     winRaise.f(WinApropos)
@@ -637,6 +778,339 @@ tkObj.gridInfo.f <- function(tkObj)
                          return(res)
                      }))[-1])
 }
+
+########################################################################################################################
+ColAutoWidth.f <- function(TK.table)
+{
+    ## Purpose: Largeur automatique des colonnes du tableau
+    ## ----------------------------------------------------------------------
+    ## Arguments: TK.table : un widget tableau tcl.
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date: 18 avr. 2011, 16:40
+
+    ## Dimensions du tableau (à partir de 0 => +1) :
+
+    dim.array <- as.numeric(unlist(strsplit(tclvalue(tcl(.Tk.ID(TK.table),
+                                                         "index", "bottomright")),
+                                            ",")))
+
+    ## Redimensionnement des colonnes :
+    invisible(sapply(0:dim.array[2],
+                     function(j)
+                 {
+                     tmp <- sapply(0:dim.array[1],
+                                   function(i, j)
+                               {
+                                   max(sapply(strsplit(tclvalue(tcl(TK.table,
+                                                                    "get",
+                                                                    paste(i, ",", j, sep=""))),
+                                                       split="\n|\r", perl=TRUE),
+                                              nchar))
+                               }, j)
+
+                     tcl(.Tk.ID(TK.table), "width", j, max(c(tmp, 3)) + 3)
+                 }))
+}
+
+########################################################################################################################
+RowAutoEight.f <- function(TK.table)
+{
+    ## Purpose: Hauteur automatique des lignes du tableau
+    ## ----------------------------------------------------------------------
+    ## Arguments: TK.table : un widget tableau tcl.
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date: 18 avr. 2011, 16:40
+
+    ## Dimensions du tableau (à partir de 0 => +1) :
+
+    dim.array <- as.numeric(unlist(strsplit(tclvalue(tcl(.Tk.ID(TK.table),
+                                                         "index", "bottomright")),
+                                            ",")))
+
+    ## Redimensionnement des colonnes :
+    invisible(sapply(0:dim.array[1],
+                     function(i)
+                 {
+                     tmp <- sapply(0:dim.array[2],
+                                   function(j, i)
+                               {
+                                   sum(unlist(strsplit(tclvalue(tcl(TK.table,
+                                                                    "get",
+                                                                    paste(i, ",", j, sep=""))),
+                                                       split="\n|\r", perl=TRUE)) != "")
+                               }, i=i)
+
+                     tcl(.Tk.ID(TK.table), "height", i, max(c(tmp, 1)))
+                 }))
+}
+
+########################################################################################################################
+updateSummaryTable.f <- function(tclarray, fileNames, Data, table1)
+{
+    ## Purpose: MàJ du tableau de résumé des fichiers chargés.
+    ## ----------------------------------------------------------------------
+    ## Arguments: tclarray : tableau de valeurs TCL.
+    ##            fileNames : noms des fichiers
+    ##            Data : les données chargées.
+    ##            table1 : l'objet TCL de type "table".
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date: 21 déc. 2011, 11:12
+
+    ##  ############# Mise à jour des valeurs dans le tableau #############
+    tclarray[["1,1"]] <- fileNames["unitobs"]
+    tclarray[["1,2"]] <- ncol(Data$unitobs)
+    tclarray[["1,3"]] <- nrow(Data$unitobs)
+    tclarray[["2,1"]] <- fileNames["obs"]
+    tclarray[["2,2"]] <- ncol(Data$obs)
+    tclarray[["2,3"]] <- nrow(Data$obs)
+    tclarray[["3,1"]] <- fileNames["refesp"]
+    tclarray[["3,2"]] <- ncol(Data$refesp)
+    tclarray[["3,3"]] <- nrow(Data$refesp)
+
+    if ( ! is.na(fileNames["refspa"]))
+    {
+        tclarray[["4,1"]] <- fileNames["refspa"]
+        tclarray[["4,2"]] <- "(inclus dans"
+        tclarray[["4,3"]] <- "les unités d'obs."
+    }else{
+        tclarray[["4,1"]] <- "non sélectionné"
+        tclarray[["4,2"]] <- "-"
+        tclarray[["4,3"]] <- "-"
+    }
+
+    ColAutoWidth.f(table1)
+}
+
+########################################################################################################################
+updateInterface.load.f <- function(baseEnv, tabObs)
+{
+    ## Purpose:
+    ## ----------------------------------------------------------------------
+    ## Arguments:
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date:  3 janv. 2012, 15:55
+
+    runLog.f(msg=c("Modification des menus suite au chargement des données :"))
+
+
+    ## Réactivation des menus qui nécessitent le chargement préalable :
+    tkconfigure(get("MB.selection", envir=baseEnv), state="normal")
+    tkconfigure(get("MB.traitement", envir=baseEnv), state="normal")
+    tkconfigure(get("MB.analyse", envir=baseEnv), state="normal")
+
+    ## Réactivation des entrées du menu "Données" qui nécessitent le chargement préalable :
+    tkentryconfigure(get("import", envir=baseEnv), 3, state="normal")
+    tkentryconfigure(get("import", envir=baseEnv), 4, state="normal")
+    tkentryconfigure(get("import", envir=baseEnv), 5, state="normal")
+    tkentryconfigure(get("import", envir=baseEnv), 6, state="normal")
+
+    ## Désactivation du bouton et du menu de restauration des données originales :
+    tkconfigure(get("B.DataRestore", envir=baseEnv), state="disabled")
+    tkentryconfigure(get("selection", envir=baseEnv), 5, state="disabled")
+
+    if (length(getOption("P.MPA")) < 2 && getOption("P.MPA") == "NC")
+    {
+        if (! grepl("^Carte",
+                    tclvalue(tkentrycget(get("traitement", envir=baseEnv), "8", "-label"))))
+        {
+            tkadd(get("traitement", envir=baseEnv),
+                  "command", label="Carte de métrique /unité d'observation (démonstration)...",
+                  background="#FFFBCF",
+                  command=function ()
+              {
+                  selectionVariablesCarte.f(dataEnv=dataEnv) # [!!!]  [yr: 3/1/2012]
+                  winRaise.f(get("W.main", envir=baseEnv))
+              })
+        }else{
+            tkentryconfigure(get("traitement", envir=baseEnv), 8, state="normal")
+        }
+    }else{
+        if (grepl("^Carte",
+                  tclvalue(tkentrycget(get("traitement", envir=baseEnv), "8", "-label"))))
+        {
+            tkdelete(get("traitement", envir=baseEnv), "8", "8")
+        }else{}
+    }
+
+    ## Suppression de la colonne "sélections" si besoin :
+    if (tryCatch(nchar(tclvalue(get("tclarray", envir=baseEnv)[[0, 4]])),
+                 error=function(e){0}) > 3)
+    {
+        tkdelete(get("table1", envir=baseEnv), "cols", "end", 1)
+    }
+
+    tkconfigure(get("MonCritere", envir=baseEnv), text="Tout")
+
+    ## Titre du cadre de sélection en non-gras :
+    tkconfigure(get("L.criteres", envir=baseEnv), font=tkfont.create(size=8))
+
+    ## Nombres effectifs d'espèces et unitobs :
+    ResumerSituationEspecesSelectionnees <- get("ResumerSituationEspecesSelectionnees", envir=baseEnv)
+    ResumerSituationUnitobsSelectionnees <- get("ResumerSituationUnitobsSelectionnees", envir=baseEnv)
+
+    ## Nombre d'espèces réellement restantes dans les observations :
+    tkconfigure(ResumerSituationEspecesSelectionnees,
+                text = paste("-> Nombre de codes espèce",
+                             ifelse(getOption("P.selection"), " restants", ""),
+                             " dans le fichier d'observation",
+                             ifelse(getOption("P.selection"),
+                                    " (peut différer du nombre retenu !) : ", " : "),
+                             length(unique(tabObs[ , "code_espece"])), sep=""),
+                state="normal")
+
+    ## Nombre d'espèces réellement restantes dans les observations :
+    tkconfigure(ResumerSituationUnitobsSelectionnees,
+                text = paste("-> Nombre d'unités d'observations",
+                             ifelse(getOption("P.selection"), " restantes", ""),
+                             " dans le fichier d'observations",
+                             ifelse(getOption("P.selection"),
+                                    " (peut différer du nombre retenu !) : ", " : "),
+                             length(unique(tabObs[ , "unite_observation"])), sep=""),
+                state="normal")
+
+    winRaise.f(get("W.main", envir=baseEnv))
+}
+
+########################################################################################################################
+updateInterface.select.f <- function(criterion, tabObs, baseEnv)
+{
+    ## Purpose:
+    ## ----------------------------------------------------------------------
+    ## Arguments: criterion : le critère de sélection.
+    ##            tabObs : la table des observations (après sélection).
+    ##            baseEnv : l'environnement de l'interface.
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date:  4 janv. 2012, 11:59
+
+    runLog.f(msg=c("Modification de l'interface suite à une sélection d'enregistrement :"))
+
+    ## Récupérer les objets tclTk :
+    W.main <- get("W.main", envir=baseEnv)
+    table1 <- get("table1", envir=baseEnv)
+    tclarray <- get("tclarray", envir=baseEnv)
+    MonCritere <- get("MonCritere", envir=baseEnv)
+    L.criteres <- get("L.criteres", envir=baseEnv)
+    B.DataRestore <- get("B.DataRestore", envir=baseEnv)
+    ResumerSituationEspecesSelectionnees <- get("ResumerSituationEspecesSelectionnees", envir=baseEnv)
+    ResumerSituationUnitobsSelectionnees <- get("ResumerSituationUnitobsSelectionnees", envir=baseEnv)
+    selection <- get("selection", envir=baseEnv)
+
+    ## Ajout d'une colonne en fin de table avec les informations de sélection :
+    if (tryCatch(nchar(tclvalue(tclarray[[0, 4]])),
+                 error=function(e){0}) < 3
+        && getOption("P.selection"))
+    {
+        tkinsert(table1, "cols", "end", 1)
+        tclarray[[0, 4]] <- "Sélection"
+    }
+
+    tclarray[[1, 4]] <- nlevels(tabObs[ , "unite_observation"]) # Nombre d'unitobs conservées (! peut différer du nombre
+                                        # dans le fichier d'observation).
+    tclarray[[2, 4]] <- nrow(tabObs)       # Nombre d'observations
+    tclarray[[3, 4]] <- nlevels(tabObs[ , "code_espece"]) # Nombre d'espèces conservées (! peut différer du nombre dans
+                                        # le fichier d'observation).
+    tclarray[[4, 4]] <- "-"
+
+    ## Information sur les critères :
+    if((tmp <- tclvalue(tkcget(MonCritere, "-text"))) == "Tout") # ou bien : tcl(.Tk.ID(MonCritere), "cget", "-text")
+    {                                   # Si pas de sélection précédente, on affiche seulement le nouveau critère...
+        tkconfigure(MonCritere, text=criterion)
+    }else{                              # ...sinon on l'ajoute aux existants.
+        tkconfigure(MonCritere, text=paste(tmp, criterion, sep="\n\n"))
+    }
+
+    ## Titre du cadre de sélection en gras :
+    if (criterion != "Tout")
+    {
+        tkconfigure(L.criteres, font=tkfont.create(weight="bold", size=8))
+    }else{
+        tkconfigure(L.criteres, font=tkfont.create(size=8))
+    }
+
+    ## Nombre d'espèces réellement restantes dans les observations :
+    tkconfigure(ResumerSituationEspecesSelectionnees,
+                text = paste("-> Nombre de codes espèce",
+                             ifelse(getOption("P.selection"), " restants", ""),
+                             " dans le fichier d'observation",
+                             ifelse(getOption("P.selection"),
+                                    " (peut différer du nombre retenu !) : ", " : "),
+                             length(unique(tabObs[ , "code_espece"])), sep=""),
+                state="normal")
+
+    ## Nombre d'espèces réellement restantes dans les observations :
+    tkconfigure(ResumerSituationUnitobsSelectionnees,
+                text = paste("-> Nombre d'unités d'observations",
+                             ifelse(getOption("P.selection"), " restantes", ""),
+                             " dans le fichier d'observations",
+                             ifelse(getOption("P.selection"),
+                                    " (peut différer du nombre retenu !) : ", " : "),
+                             length(unique(tabObs[ , "unite_observation"])), sep=""),
+                state="normal")
+
+    if (getOption("P.selection")) # Ré-activation du bouton et du menu de restauration des données originales.
+    {
+        tkconfigure(B.DataRestore, state="normal")
+        tkentryconfigure(selection, 5, state="normal")
+    }
+
+    winRaise.f(W.main)
+}
+
+########################################################################################################################
+updateInterface.restore.f <- function(Critere="Aucun", tabObs, baseEnv)
+{
+    ## Purpose:
+    ## ----------------------------------------------------------------------
+    ## Arguments:
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date:  4 janv. 2012, 13:50
+
+    runLog.f(msg=c("Modification de l'interface après restauration des données originales :"))
+
+    ## Récupération des objets tclTk :
+    W.main <- get("W.main", envir=baseEnv)
+    table1 <- get("table1", envir=baseEnv)
+    tclarray <- get("tclarray", envir=baseEnv)
+    MonCritere <- get("MonCritere", envir=baseEnv)
+    L.criteres <- get("L.criteres", envir=baseEnv)
+    B.DataRestore <- get("B.DataRestore", envir=baseEnv)
+    ResumerSituationEspecesSelectionnees <- get("ResumerSituationEspecesSelectionnees", envir=baseEnv)
+    ResumerSituationUnitobsSelectionnees <- get("ResumerSituationUnitobsSelectionnees", envir=baseEnv)
+    selection <- get("selection", envir=baseEnv)
+
+    tkdelete(table1, "cols", "end", 1)
+
+    tclarray[[0, 4]] <- ""
+    tclarray[[2, 4]] <- nrow(tabObs)
+
+    ColAutoWidth.f(table1)
+
+    tkconfigure(MonCritere, text=Critere)
+
+    ## Titre du cadre de sélection en non-gras :
+    tkconfigure(L.criteres, font=tkfont.create(size=8))
+
+    ## Nombre d'espèces réellement restantes dans les observations :
+    tkconfigure(ResumerSituationEspecesSelectionnees,
+                text = paste("-> Nombre d'espèces",
+                             " dans le fichier d'observation : ",
+                             length(unique(tabObs[ , "code_espece"])), sep=""),
+                state="normal")
+
+    ## Nombre d'espèces réellement restantes dans les observations :
+    tkconfigure(ResumerSituationUnitobsSelectionnees,
+                text = paste("-> Nombre d'unités d'observations",
+                             " dans le fichier d'observations : ",
+                             length(unique(tabObs[ , "unite_observation"])), sep=""),
+                state="normal")
+
+    ## Désactivation du bouton et du menu de restauration des données originales :
+    tkconfigure(B.DataRestore, state="disabled")
+    tkentryconfigure(selection, 5, state="disabled")
+
+    winRaise.f(W.main)
+}
+
 
 
 

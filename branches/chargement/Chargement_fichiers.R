@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: Chargement_fichiers.R
-### Time-stamp: <2011-12-22 15:40:10 yreecht>
+### Time-stamp: <2012-01-12 18:25:07 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -11,41 +11,7 @@
 ### Routines de chargement des fichiers de données.
 ####################################################################################################
 
-updateSummaryTable.f <- function(tclarray, fileNames, Data, table1)
-{
-    ## Purpose: MàJ du tableau de résumé des fichiers chargés.
-    ## ----------------------------------------------------------------------
-    ## Arguments: tclarray : tableau de valeurs TCL.
-    ##            fileNames : noms des fichiers
-    ##            Data : les données chargées.
-    ##            table1 : l'objet TCL de type "table".
-    ## ----------------------------------------------------------------------
-    ## Author: Yves Reecht, Date: 21 déc. 2011, 11:12
 
-    ##  ############# Mise à jour des valeurs dans le tableau #############
-    tclarray[["1,1"]] <- fileNames["unitobs"]
-    tclarray[["1,2"]] <- ncol(Data$unitobs)
-    tclarray[["1,3"]] <- nrow(Data$unitobs)
-    tclarray[["2,1"]] <- fileNames["obs"]
-    tclarray[["2,2"]] <- ncol(Data$obs)
-    tclarray[["2,3"]] <- nrow(Data$obs)
-    tclarray[["3,1"]] <- fileNames["refesp"]
-    tclarray[["3,2"]] <- ncol(Data$refesp)
-    tclarray[["3,3"]] <- nrow(Data$refesp)
-
-    if ( ! is.na(fileNames["refspa"]))
-    {
-        tclarray[["4,1"]] <- fileNames["refspa"]
-        tclarray[["4,2"]] <- "(inclus dans"
-        tclarray[["4,3"]] <- "unités d'obs."
-    }else{
-        tclarray[["4,1"]] <- "non sélectionné"
-        tclarray[["4,2"]] <- ""
-        tclarray[["4,3"]] <- ""
-    }
-
-    ColAutoWidth.f(table1)
-}
 
 
 ########################################################################################################################
@@ -111,7 +77,7 @@ dimobsPecRec.f <- function(refUnitobs)
 
 
 ########################################################################################################################
-PlanEchantillonnageBasic.f <- function(tabUnitobs, tabObs)
+PlanEchantillonnageBasic.f <- function(tabUnitobs, tabObs, filePathes)
 {
     ## Purpose: Écrire le plan d'échantillonnage basic dans un fichier.
     ## ----------------------------------------------------------------------
@@ -127,9 +93,111 @@ PlanEchantillonnageBasic.f <- function(tabUnitobs, tabObs)
     attr(PlanEchantillonnage, "class") <- "array" # Pour un affichage en "tableau".
 
     write.csv2(PlanEchantillonnage,
-               file=paste(NomDossierTravail, "PlanEchantillonnage_basique",
-                          ifelse(Jeuxdonnescoupe, "_selection", ""),
+               file=paste(filePathes["results"],
+                          "PlanEchantillonnage_basique",
+                          ifelse(getOption("P.selection"), "_selection", ""),
                           ".csv", sep=""), row.names=TRUE)
+}
+
+########################################################################################################################
+scaleMetrics.f <- function(Data, unitobs, refesp,
+                           supl=c("an", "site", "statut_protection", "biotope", "latitude", "longitude",
+                                  "annee.campagne", "habitat1", "habitat2", "habitat3",
+                                  "Identifiant", "Famille", "Genre", "espece"),
+                           scale=TRUE)
+{
+    ## Purpose:
+    ## ----------------------------------------------------------------------
+    ## Arguments:
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date:  4 janv. 2012, 20:30
+
+    if ( ! is.null(Data) &&
+        prod(dim(Data)))                # i.e. ncol et nrow > 0.
+    {
+        ## Champs à ajouter par référentiel :
+        suplUnitobs <- supl[is.element(supl, colnames(unitobs)) &
+                            ! is.element(supl, colnames(Data))]
+        suplRefesp <- supl[is.element(supl, colnames(refesp)) &
+                           ! is.element(supl, colnames(Data))]
+
+        ## Ajout des champs supplémentaires des unitobs :
+        if (length(suplUnitobs))
+        {
+            Data <- merge(Data,
+                          unitobs[ , unique(c("unite_observation", suplUnitobs)), drop=FALSE],
+                          by=c("unite_observation"))
+        }else{}
+
+        ## Ajout des champs supplémentaires du référentiel espèces :
+        if (length(suplRefesp) && is.element("code_espece", colnames(Data)))
+        {
+            Data <- merge(Data,
+                          refesp[ , unique(c("code_espece", suplRefesp)), drop=FALSE],
+                          by=c("code_espece"))
+        }else{}
+
+        ## Scalling : certaines métriques (densités) doivent être ramenées à /100m² :
+        if (scale &&
+            any(is.element(colnames(Data),
+                           colTmp <- c("densite", "densiteMax", "densiteSD",
+                                       "biomasse", "biomasseMax", "biomasseSD"))))
+        {
+            Data[ , is.element(colnames(Data),
+                               colTmp)] <- sweep(Data[ , is.element(colnames(Data),
+                                                                    colTmp),
+                                                      drop=FALSE],
+                                                 2, 100, "*")
+        }else{}
+    }else{}
+
+    return(Data)
+}
+
+
+########################################################################################################################
+exportMetrics.f <- function(unitSpSz, unitSp, unit, obs, unitobs, refesp, filePathes, baseEnv)
+{
+    ## Purpose:
+    ## ----------------------------------------------------------------------
+    ## Arguments:
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date:  4 janv. 2012, 20:08
+
+    PlanEchantillonnageBasic.f(tabUnitobs=unitobs, tabObs=obs, filePathes=filePathes)
+
+    ## Certaines métriques (densités) sont ramenées à /100m² :
+    unitSpSz <- scaleMetrics.f(Data=unitSpSz, unitobs=unitobs, refesp=refesp, scale = TRUE)
+    unitSp <- scaleMetrics.f(Data=unitSp, unitobs=unitobs, refesp=refesp, scale = TRUE)
+    unit <- scaleMetrics.f(Data=unit, unitobs=unitobs, refesp=refesp, scale = TRUE)
+
+    ## Sauvegardes dans des fichiers :
+    if ( ! is.null(unitSpSz) &&
+        prod(dim(unitSpSz)))            # i.e. nrow et ncol > 0.
+    {
+        write.csv2(unitSpSz,
+                   file=paste(filePathes["results"],
+                              "UnitobsEspeceClassetailleMetriques",
+                              ifelse(getOption("P.selection"), "_selection", ""),
+                              ".csv", sep=""),
+                   row.names = FALSE)
+    }else{}                             # Sinon rien !
+
+    write.csv2(unitSp,
+               file=paste(filePathes["results"],
+                          "UnitobsEspeceMetriques",
+                          ifelse(getOption("P.selection"), "_selection", ""),
+                          ".csv", sep=""),
+               row.names = FALSE)
+
+    write.csv2(unit,
+               file=paste(filePathes["results"],
+                          "UnitobsMetriques",
+                          ifelse(getOption("P.selection"), "_selection", ""),
+                          ".csv", sep=""),
+               row.names = FALSE)
+
+    ## [!!!] Ajouter l'exportation des tables (.GlobalEnv)  [yr: 5/1/2012]
 }
 
 
@@ -370,14 +438,6 @@ testConfig.f <- function(requiredVar, fileNames=NULL, dataEnv=NULL)
 }
 
 ########################################################################################################################
-################################################################################
-## Nom    : lectureFichierEspeces.f()
-## Objet  : lecture du référentiel espèces
-## Input  : fichier espèces
-## Output : table espèces
-## Modif 02/12/09 lecture d'un fichier CSV (DP)
-################################################################################
-
 loadRefEspeces.f <- function (pathRefesp, baseEnv=.GlobalEnv)
 {
     ## rm(especes)
@@ -439,6 +499,70 @@ loadRefEspeces.f <- function (pathRefesp, baseEnv=.GlobalEnv)
 }
 
 ########################################################################################################################
+chooseInList.f <- function(modList, fieldName, selectMode, ordered)
+{
+    ## Purpose:
+    ## ----------------------------------------------------------------------
+    ## Arguments:
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date: 12 janv. 2012, 18:00
+
+    W.fact <- tktoplevel(width = 80)
+    tkwm.title(W.fact, paste("Selection des valeurs de ", fieldName, sep=""))
+
+    scr <- tkscrollbar(W.fact, repeatinterval=5, command=function(...)tkyview(tl, ...))
+
+    tl <- tklistbox(W.fact, height=20, width=50, selectmode=selectMode,
+                    yscrollcommand=function(...)tkset(scr, ...), background="white")
+
+    tkgrid(tklabel(W.fact, text=paste("Liste des valeurs de \"", fieldName,
+                                      "\" :\n",
+                                      ifelse(selectMode == "single",
+                                             "Une seule sélection possible.",
+                                             "Plusieurs sélections possibles."), sep="")))
+
+    tkgrid(tl, scr)
+    tkgrid.configure(scr, rowspan=4, sticky="ensw")
+    tkgrid.configure(tl, rowspan=4, sticky="ensw")
+
+    if (ordered)
+    {
+        maliste <- sort(as.character(unique(modList)))
+    }
+
+    ## On remplit la liste de choix :
+    for (i in seq(along=maliste))
+    {
+        tkinsert(tl, "end", maliste[i])
+    }
+
+    OnOK <- function ()
+    {
+        assign("selectfact",
+               eval(maliste[as.numeric(tkcurselection(tl))+1], envir=parent.env(environment())),
+               envir=parent.env(environment()))
+
+        tkdestroy(W.fact)
+    }
+
+    OK.but <-tkbutton(W.fact, text="OK", command=OnOK)
+    tkgrid(OK.but, pady=5)
+
+    winSmartPlace.f(W.fact)
+    tkfocus(tl)
+
+    tkwait.window(W.fact)
+
+    if (exists("selectfact") && length(selectfact))
+    {
+        return(selectfact)
+    }else{
+        return(NULL)
+    }
+}
+
+
+########################################################################################################################
 checkType.unitobs.f <- function(unitobs)
 {
     ## Purpose: test l'existence d'un seul type, sinon demande à
@@ -455,7 +579,10 @@ checkType.unitobs.f <- function(unitobs)
                                    "Choisissez le type d'observation que vous souhaitez analyser.", sep=""),
                      icon="warning", type="ok")
 
-        while (is.null(selectType <- ChoixFacteurSelect.f(unitobs$type, "type", "single", 1)))
+        while (is.null(selectType <- chooseInList.f(modList=unitobs[ ,"type"],
+                                                    fieldName="type",
+                                                    selectMode="single",
+                                                    ordered=TRUE)))
         {}
 
         message(paste("Type d'observation sélectionné :", selectType))
@@ -778,19 +905,6 @@ pathMaker.f <- function(fileNames,
     }else{}
 
     return(filePathes)
-
-    ## assign("nameWorkspace", nameWorkspace, envir=env)
-    ## assign("fileNameUnitobs", fileNameUnitobs, envir=env)
-    ## assign("fileNameObs", fileNameObs, envir=env)
-    ## assign("fileNameRefesp", fileNameRefesp, envir=env)
-
-    ## assign("NomDossierTravail", paste(nameWorkspace, "/FichiersSortie/", sep=""), envir=env)
-    ## assign("NomDossierData", paste(nameWorkspace, "/Data/", sep=""), envir=env)   # sert a concaténer les
-    ##                                     # variables pathUnitobs pathObs   pathRefesp fileNameRefSpa
-    ## assign("pathUnitobs", paste(NomDossierData, fileNameUnitobs, sep=""), envir=env)
-    ## assign("pathObs", paste(NomDossierData, fileNameObs, sep=""), envir=env)
-    ## assign("pathRefesp", paste(NomDossierData, fileNameRefesp, sep=""), envir=env)
-    ## ## assign("fileNameRefSpa", paste(NomDossierData, fileNameRefSpa, sep=""), envir=env)
 }
 
 ########################################################################################################################
@@ -808,11 +922,11 @@ loadData.f <- function(filePathes, dataEnv, baseEnv=.GlobalEnv)
     ##                         - ws : dossier de travail.
     ##                         - ...
     ##            dataEnv : environnement où stocker les données.
-    ##            env : environnement parent (interface).
+    ##            baseEnv : environnement parent (interface).
     ##
-    ## Output: vecteur nommé des noms de tables de données, avec
-    ##         - unitespta : table agrégée /classe de taille/sp/unitobs.
-    ##         - unitesp : table agrégée /espèce/unitobs.
+    ## Output: liste nommé des tables de données, avec
+    ##         - unitSpSz : table agrégée /classe de taille/sp/unitobs.
+    ##         - unitSp : table agrégée /espèce/unitobs.
     ##         - unit : table agrégée /unitobs.
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date:  2 déc. 2011, 10:59
@@ -827,12 +941,14 @@ loadData.f <- function(filePathes, dataEnv, baseEnv=.GlobalEnv)
     add.logFrame.f(msgID="dataLoadingNew", env = baseEnv,
                    filePathes=filePathes)
 
-    ## assign("Jeuxdonnescoupe", 0, envir=.GlobalEnv)  # [!!!] modifier la façon dont c'est traité   [yr: 6/12/2011]
+    ## Réinitialisation de l'indicateur de sélection :
+    options(P.selection=FALSE)
 
     ## Informations de chargement (initialisation) :
     ## [!!!] travaille dans l'environnement global pour l'instant. À terme, modifier + fonctions associées pour
     ## travailler dans .baseEnv [!!!]  [yr: 5/12/2011]
     infoGeneral.f(msg="      Chargement des données      ",
+                  waitCursor=TRUE,
                   font=tkfont.create(weight="bold", size=9), foreground="darkred")
 
     initInnerTkProgressBar.f(initial=0, max=25, width=450)
@@ -855,6 +971,18 @@ loadData.f <- function(filePathes, dataEnv, baseEnv=.GlobalEnv)
            {
                reconfigureInnerProgressBar.f(max=13) # Dans tous les autres cas : 12
            })
+
+    ## Info sur les AMP du jeu actuel :
+    options(P.MPA=as.character(unique(refUnitobs[ , "AMP"])))
+
+    ## Information sur l'(les) AMP sélectionnées et le type d'observations analysées :
+    tkconfigure(get("ResumerAMPetType", envir=baseEnv),
+                text=paste(ifelse(length(getOption("P.MPA")) < 2,
+                                  "Aire Marine Protégée : ",
+                                  "Aires Marines Protégées : "),
+                           paste(getOption("P.MPA"), collapse=", "),
+                           " ; type d'observation : ",
+                           getOption("P.obsType"), sep=""))
 
     ## Fichier de référentiel spatial :
     stepInnerProgressBar.f(n=1, msg="Chargement du référentiel spatial...")
@@ -929,18 +1057,40 @@ loadDefault.f <- function(baseEnv, dataEnv)
 
     ## Calculs des poids (faits par AMP) :
     Data <- calcWeight.f(Data=Data)
-    assign("Data", Data, envir=.GlobalEnv) # [tmp]  [yr: 20/12/2011]
+
+    ## Assignement des données dans l'environnement adéquat :
+    listInEnv.f(list=Data, env=dataEnv)
+
+    ## assign("Data", Data, envir=.GlobalEnv) # [tmp]  [yr: 20/12/2011]
 
     ## Calcul des tables de métriques :
     metrics <- calcTables.f(obs=Data$obs, unitobs=Data$unitobs, refesp=Data$refesp, dataEnv=dataEnv)
 
-    assign("metrics", metrics, envir=.GlobalEnv) # [tmp]  [yr: 20/12/2011]
+    ## Assignement des tables de métriques dans l'environnement adéquat :
+    listInEnv.f(list=metrics, env=dataEnv)
+
+    ## assign("metrics", metrics, envir=.GlobalEnv) # [tmp]  [yr: 20/12/2011]
+
+    assign("backup", c(metrics, list(obs=Data$obs)), envir=dataEnv)
+
+    ## Export des tables de métriques :
+    exportMetrics.f(unitSpSz=metrics$unitSpSz, unitSp=metrics$unitSp, unit=metrics$unit,
+                    obs=Data$obs, unitobs=Data$unitobs, refesp=Data$refesp,
+                    filePathes=filePathes, baseEnv=baseEnv)
+
+    ## Ajout des fichiers créés au log de chargement :
+    add.logFrame.f(msgID="fichiers", env = baseEnv,
+                   results=filePathes["results"],
+                   has.SzCl=( ! is.null(metrics$unitSpSz) &&
+                             prod(dim(metrics$unitSpSz))))
 
     ## Fin des informations de chargement (demande de confirmation utilisateur) :
     stepInnerProgressBar.f(n=0, msg="Fin de chargement !",
                            font=tkfont.create(weight="bold", size=9), foreground="darkred")
 
-    infoLoading.f(button=TRUE)
+    infoLoading.f(button=TRUE, WinRaise=get("W.main", envir=baseEnv))
+
+    updateInterface.load.f(baseEnv=baseEnv, tabObs=Data$obs)
 
     ## [!!!] ajouter réinitialisation des menus si échec  [yr: 14/12/2011]
     return(Data)
@@ -948,7 +1098,7 @@ loadDefault.f <- function(baseEnv, dataEnv)
 
 
 ########################################################################################################################
-tryCatchLoad.f <- function(expr, ...)
+tryCatchLoad.f <- function(expr, baseEnv=.GlobalEnv,...)
 {
     ## Purpose: Gestion des exceptions du chargement de données.
     ## ----------------------------------------------------------------------
@@ -966,7 +1116,7 @@ tryCatchLoad.f <- function(expr, ...)
                                      sep=""),
                            icon="error")
 
-             infoLoading.f(button=TRUE)
+             infoLoading.f(button=TRUE, WinRaise=get("W.main", envir=baseEnv))
 
              message(e)
          },...)

@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: Chargement_manuel_fichiers.R
-### Time-stamp: <2011-12-16 11:42:03 yreecht>
+### Time-stamp: <2012-01-05 20:56:16 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -50,6 +50,20 @@ loadManual.f <- function(baseEnv, dataEnv)
 
     ## Calculs des poids (faits par AMP) :
     Data <- calcWeight.f(Data=Data)
+    assign("Data", Data, envir=.GlobalEnv) # [tmp]  [yr: 20/12/2011]
+
+    ## Calcul des tables de métriques :
+    metrics <- calcTables.f(obs=Data$obs, unitobs=Data$unitobs, refesp=Data$refesp, dataEnv=dataEnv)
+
+    assign("metrics", metrics, envir=.GlobalEnv) # [tmp]  [yr: 20/12/2011]
+
+    ## Fin des informations de chargement (demande de confirmation utilisateur) :
+    stepInnerProgressBar.f(n=0, msg="Fin de chargement !",
+                           font=tkfont.create(weight="bold", size=9), foreground="darkred")
+
+    infoLoading.f(button=TRUE, WinRaise=get("W.main", envir=baseEnv))
+
+    updateInterface.load.f(baseEnv=baseEnv, tabObs=Data$obs)
 
     ## [!!!] ajouter réinitialisation des menus si échec  [yr: 14/12/2011]
     return(Data)

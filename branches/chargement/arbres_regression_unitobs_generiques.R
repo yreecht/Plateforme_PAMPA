@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: arbres_regression_unitobs_generiques.R
-### Time-stamp: <2011-09-01 15:23:14 yreecht>
+### Time-stamp: <2012-01-10 18:12:14 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -12,7 +12,8 @@
 ####################################################################################################
 
 ########################################################################################################################
-WP2MRT.unitobs.f <- function(metrique, factGraph, factGraphSel, listFact, listFactSel, tableMetrique)
+WP2MRT.unitobs.f <- function(metrique, factGraph, factGraphSel, listFact, listFactSel, tableMetrique,
+                             dataEnv=dataEnv)
 {
     ## Purpose:
     ## ----------------------------------------------------------------------
@@ -41,16 +42,16 @@ WP2MRT.unitobs.f <- function(metrique, factGraph, factGraphSel, listFact, listFa
     selections <- c(list(factGraphSel), listFactSel) # Concaténation des leurs listes de modalités sélectionnées
 
     ## Données pour la série de MRT :
-    if (tableMetrique == "TableBiodiv")
+    if (tableMetrique == "unit")
     {
         ## Pour les indices de biodiversité, il faut travailler sur les nombres... :
         tmpData <- subsetToutesTables.f(metrique="nombre", facteurs=facteurs,
-                                        selections=selections, tableMetrique="listespunit",
+                                        selections=selections, dataEnv=dataEnv, tableMetrique="unitSp",
                                         exclude = NULL, add=c("unite_observation", "code_espece"))
     }else{
         ## ...sinon sur la métrique choisie :
         tmpData <- subsetToutesTables.f(metrique=metrique, facteurs=facteurs,
-                                        selections=selections, tableMetrique=tableMetrique,
+                                        selections=selections, dataEnv=dataEnv, tableMetrique=tableMetrique,
                                         exclude = NULL, add=c("unite_observation", "code_espece"))
     }
 
@@ -71,20 +72,28 @@ WP2MRT.unitobs.f <- function(metrique, factGraph, factGraphSel, listFact, listFa
     }
 
     ## Agrégation des observations / unité d'observation :
-    if (tableMetrique == "unitespta" && factGraph != "classe_taille")
+    if (tableMetrique == "unitSpSz" && factGraph != "classe_taille")
     {
         tmpData <- na.omit(agregationTableParCritere.f(Data=tmpData,
                                                        metrique=metrique,
                                                        facteurs=c("unite_observation", "classe_taille"),
+                                                       dataEnv=dataEnv,
                                                        listFact=listFact))
     }else{
-        if (tableMetrique == "TableBiodiv")
+        if (tableMetrique == "unit")
         {
             ## Calcul des indices de biodiversité sur sélection d'espèces :
-            tmp <- calcBiodiv.f(Data=tmpData,
-                                unitobs = "unite_observation", code.especes = "code_espece",
-                                nombres = "nombre",
-                                indices=metrique)
+            tmp <- do.call(rbind,
+                           lapply(getOption("P.MPA"),
+                                  function(MPA)
+                              {
+                                  calcBiodiv.f(Data=tmpData,
+                                               refesp=get("refesp", envir=dataEnv),
+                                               MPA=MPA,
+                                               unitobs = "unite_observation", code.especes = "code_espece",
+                                               nombres = "nombre",
+                                               indices=metrique)
+                              }))
 
             ## On rajoute les anciennes colonnes :
             tmpData <- cbind(tmp,
@@ -94,6 +103,7 @@ WP2MRT.unitobs.f <- function(metrique, factGraph, factGraphSel, listFact, listFa
             tmpData <- na.omit(agregationTableParCritere.f(Data=tmpData,
                                                            metrique=metrique,
                                                            facteurs=c("unite_observation"),
+                                                           dataEnv=dataEnv,
                                                            listFact=listFact))
         }
     }
@@ -111,7 +121,8 @@ WP2MRT.unitobs.f <- function(metrique, factGraph, factGraphSel, listFact, listFa
                               factGraph=factGraph,
                               modSel=iFactGraphSel,
                               listFact=listFact,
-                              type=ifelse(tableMetrique == "unitespta" && factGraph != "classe_taille",
+                              dataEnv=dataEnv,
+                              type=ifelse(tableMetrique == "unitSpSz" && factGraph != "classe_taille",
                                           "CL_unitobs",
                                           "unitobs"),
                               typeGraph="MRT",
@@ -124,9 +135,9 @@ WP2MRT.unitobs.f <- function(metrique, factGraph, factGraphSel, listFact, listFa
                               modGraphSel=iFactGraphSel,
                               factGraph=factGraph,
                               listFact=listFact,
-                              type=ifelse(tableMetrique == "unitespta" && factGraph != "classe_taille",
+                              type=ifelse(tableMetrique == "unitSpSz" && factGraph != "classe_taille",
                                           "CL_unitobs",
-                                          ifelse(tableMetrique == "unitespta",
+                                          ifelse(tableMetrique == "unitSpSz",
                                                  "unitobs(CL)",
                                                  "unitobs")),
                               model="Arbre de régression multivariée")
@@ -140,8 +151,8 @@ WP2MRT.unitobs.f <- function(metrique, factGraph, factGraphSel, listFact, listFa
     tryCatch(sortiesMRT.f(objMRT=tmpMRT, formule=exprMRT,
                           metrique=metrique,
                           factAna=factGraph, modSel=iFactGraphSel, listFact=listFact,
-                          Data=tmpData,
-                          type=ifelse(tableMetrique == "unitespta" && factGraph != "classe_taille",
+                          Data=tmpData, dataEnv=dataEnv,
+                          type=ifelse(tableMetrique == "unitSpSz" && factGraph != "classe_taille",
                                       "CL_unitobs",
                                       "unitobs")),
              error=errorLog.f)

@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: Calcul_tables_metriques.R
-### Time-stamp: <2011-12-23 10:47:01 yreecht>
+### Time-stamp: <2012-01-10 17:35:42 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -459,7 +459,12 @@ calc.unitSp.f <- function(unitSpSz, obs, unitobs, dataEnv)
     {
         unitSp <- switch(getOption("P.obsType"),
                          SVR=calc.unitSp.SVR.f(unitSpSz=unitSpSz, obs=obs, dataEnv=dataEnv),
-                         LIT=message("pas implémenté !"),
+                         LIT={
+                             warning(paste("Depuis quand les métriques par classe de taille sont calculées ",
+                                           "pour du benthos ?", sep=""))
+
+                             calc.unitSp.LIT.f(obs=obs, unitobs=unitobs, dataEnv=dataEnv)
+                         },
                          calc.unitSp.default.f(unitSpSz=unitSpSz))
     }else{
         factors <- c("unite_observation", "code_espece")
@@ -479,15 +484,17 @@ calc.unitSp.f <- function(unitSpSz, obs, unitobs, dataEnv)
                              calc.tables.Fishing.f(obs=obs, unitobs=unitobs, dataEnv=dataEnv, factors=factors)
                          },
                          "LIT"={
-                             ## calc.unitSpSz.LIT.f()
+                             calc.unitSp.LIT.f(obs=obs, unitobs=unitobs, dataEnv=dataEnv)
                          },
                          "PIT"={
+                             warning("Protocole PIT pas implémenté pour l'instant !")
                              ## calc.unitSpSz.PIT.f()
                          },
                          "Transect"={
                              calc.tables.Transect.f(obs=obs, unitobs=unitobs, dataEnv=dataEnv, factors=factors)
                          },
                          "Fixe"={
+                             warning("Protocole \"Point fixe\" pas implémenté pour l'instant !")
                              ## calc.unitSpSz.Fixe.f()
                          },
                      {
@@ -574,10 +581,11 @@ calc.unit.f <- function(unitSp, obs, refesp, unitobs, dataEnv)
                            calc.unit.SVR.f(unitSp=unitSp, obs=obs, refesp=refesp,
                                            unitobs=unitobs, dataEnv=dataEnv, colNombres = "nombre")
                        },
-                       "LIT"={        # Pour les types d'observation qui ont une colonne "nombre".
-                           calc.unit.default.f(unitSp=unitSp, refesp=refesp, unitobs=unitobs, colNombres="nombre")
+                       "LIT"={        # Pour les types d'observation qui ont une colonne "colonie" à la place de
+                                      # "nombre" :
+                           calc.unit.default.f(unitSp=unitSp, refesp=refesp, unitobs=unitobs, colNombres="colonie")
                        },
-                       calc.unit.default.f(unitSp=unitSp, refesp=refesp, unitobs=unitobs, colNombres="colonie"))
+                       calc.unit.default.f(unitSp=unitSp, refesp=refesp, unitobs=unitobs, colNombres="nombre"))
     }else{
         unit <- NULL
     }

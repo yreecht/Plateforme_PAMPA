@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: fonctions_graphiques.R
-### Time-stamp: <2011-10-05 13:54:51 yreecht>
+### Time-stamp: <2012-01-10 18:24:33 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -29,8 +29,8 @@ makeColorPalette.f <- function()
 
 
 ########################################################################################################################
-resFileGraph.f <- function(metrique, factGraph, modSel, listFact,
-                           ext, prefix="boxplot", sufixe=NULL, type="espece")
+resFileGraph.f <- function(metrique, factGraph, modSel, listFact, ext, dataEnv,
+                           prefix="boxplot", sufixe=NULL, type="espece")
 {
     ## Purpose: Définit les noms du fichiers pour les résultats des modèles
     ##          linéaires. L'extension et un prefixe peuvent êtres précisés,
@@ -50,7 +50,7 @@ resFileGraph.f <- function(metrique, factGraph, modSel, listFact,
     ## Author: Yves Reecht, Date: 21 janv. 2011, 10:38
 
     ## Nom de fichier :
-    filename <- paste(nameWorkspace, "/FichiersSortie/", prefix, "_",
+    filename <- paste(get("filePathes", envir=dataEnv)["results"], prefix, "_",
                       ## Métrique analysée :
                       metrique,
                       ifelse(getOption("P.maxExclu") && getOption("P.GraphPartMax") < 1,
@@ -111,8 +111,8 @@ resFileGraph.f <- function(metrique, factGraph, modSel, listFact,
 
 
 ########################################################################################################################
-openDevice.f <- function(noGraph, metrique, factGraph, modSel, listFact, type="espece", typeGraph="boxplot",
-                         large=FALSE)
+openDevice.f <- function(noGraph, metrique, factGraph, modSel, listFact, dataEnv,
+                         type="espece", typeGraph="boxplot", large=FALSE)
 {
     ## Purpose: Ouvrir les périphériques graphiques avec les bonnes options
     ## ----------------------------------------------------------------------
@@ -136,7 +136,7 @@ openDevice.f <- function(noGraph, metrique, factGraph, modSel, listFact, type="e
             if (noGraph == 1 || ! getOption("P.plusieursGraphPage"))
             {
                 pngFileName <- resFileGraph.f(metrique=metrique, factGraph=factGraph, modSel=modSel, listFact=listFact,
-                                              ext="png", prefix = typeGraph,
+                                              dataEnv=dataEnv, ext="png", prefix = typeGraph,
                                               sufixe = ifelse(getOption("P.plusieursGraphPage") &&
                                                                 (length(modSel) > 1 || modSel[1] == ""),
                                                               "%03d",
@@ -199,7 +199,7 @@ openDevice.f <- function(noGraph, metrique, factGraph, modSel, listFact, type="e
             }
 
             fileName <- resFileGraph.f(metrique=metrique, factGraph=factGraph, modSel=modSel, listFact=listFact,
-                                       ext="wmf", prefix = typeGraph,
+                                       dataEnv=dataEnv, ext="wmf", prefix = typeGraph,
                                        sufixe = ifelse(getOption("P.plusieursGraphPage") &&
                                                         (length(modSel) > 1 || modSel[1] == ""),
                                                        "%03d",
@@ -212,12 +212,12 @@ openDevice.f <- function(noGraph, metrique, factGraph, modSel, listFact, type="e
             ## Nom de fichier de fichier :
             if (getOption("P.PDFunFichierPage")) # Un fichier par graphique avec numéro.
             {
-                pdfFileName <- paste(nameWorkspace, "/FichiersSortie/",
+                pdfFileName <- paste(get("filePathes", envir=dataEnv)["results"],
                                      metrique, "_", factGraph, "_", paste(listFact, collapse="-"), "-%03d.pdf", sep="")
                 onefile <- FALSE
 
             }else{                          # Tous les graphiques dans des pages séparées d'un même fichier.
-                pdfFileName <- paste(nameWorkspace, "/FichiersSortie/",
+                pdfFileName <- paste(get("filePathes", envir=dataEnv)["results"],
                                      metrique, "_", factGraph, "_", paste(listFact, collapse="-"), ".pdf", sep="")
                 onefile <- TRUE
             }

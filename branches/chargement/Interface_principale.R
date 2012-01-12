@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: Interface_principale.R
-### Time-stamp: <2011-12-22 16:25:58 yreecht>
+### Time-stamp: <2012-01-12 17:41:37 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -117,7 +117,8 @@ mainInterface.create.f <- function()
 
           tryCatchLoad.f(assign("Data",            # [!!!] temporaire  [yr: 13/12/2011]
                                 loadManual.f(baseEnv=.baseEnv, dataEnv=.dataEnv),
-                                envir=.GlobalEnv))
+                                envir=.GlobalEnv),
+                         baseEnv=.baseEnv)
       },
           background=.MenuBackground)
 
@@ -127,7 +128,8 @@ mainInterface.create.f <- function()
 
           tryCatchLoad.f(assign("Data",            # [!!!] temporaire  [yr: 13/12/2011]
                                 loadDefault.f(baseEnv=.baseEnv, dataEnv=.dataEnv),
-                                envir=.GlobalEnv))
+                                envir=.GlobalEnv),
+                         baseEnv=.baseEnv)
       },
           background=.MenuBackground)
 
@@ -145,16 +147,25 @@ mainInterface.create.f <- function()
     ##       state="disabled")
 
     tkadd(import, "command", label="Plan d'échantillonnage basique", accelerator="CTRL+P", state="disabled",
-          command = VoirPlanEchantillonnage.f,
+          command = function()
+      {
+          VoirPlanEchantillonnage.f(dataEnv=.dataEnv)
+      },
           background=.MenuBackground)
 
     tkadd(import, "command", label="Info données par espèces", state="disabled", accelerator="CTRL+E",
-          command = VoirInformationsDonneesEspeces.f,
+          command = function()
+       {
+           VoirInformationsDonneesEspeces.f(dataEnv=.dataEnv)
+       },
           background=.MenuBackground)
 
     tkadd(import, "command", label="Info données par unité d'observation",
           state="disabled", accelerator="CTRL+U",
-          command = VoirInformationsDonneesUnitobs.f,
+          command = function()
+      {
+          VoirInformationsDonneesUnitobs.f(dataEnv=.dataEnv)
+      },
           background=.MenuBackground)
 
     ## ######################################
@@ -164,7 +175,7 @@ mainInterface.create.f <- function()
           background=.MenuBackground,
           command = function ()
       {
-          SelectionUnCritereEsp.f()
+          selectionOnRefesp.f(dataEnv=.dataEnv, baseEnv=.baseEnv)
           winRaise.f(W.main)
       })
 
@@ -172,7 +183,7 @@ mainInterface.create.f <- function()
           background=.MenuBackground,
           command = function ()
       {
-          SelectionUnCritereUnitobs.f()
+          selectionOnUnitobs.f(dataEnv=.dataEnv, baseEnv=.baseEnv)
           winRaise.f(W.main)
       })
 
@@ -181,7 +192,7 @@ mainInterface.create.f <- function()
           background=.MenuBackground,
           ## variable=SelectListEsp, # à quoi sert cette variable ? [???]
           ## onvalue=1, offvalue=0,
-          command = choixespeces.f, state="disabled")
+          command = function() message("En développement !"), state="disabled")
 
     ## Restauration des données :
     tkadd(selection, "separator", background=.MenuBackground)
@@ -190,7 +201,7 @@ mainInterface.create.f <- function()
           state="disabled",
           command = function ()
       {
-          RestaurerDonnees.f()
+          restoreData.f(baseEnv=.baseEnv, dataEnv=.dataEnv)
           winRaise.f(W.main)
       })
 
@@ -210,7 +221,7 @@ mainInterface.create.f <- function()
           background=.MenuBackground,
           command=function ()
       {
-          selectionVariables.f("boxplot.esp")
+          selectionVariables.f(nextStep="boxplot.esp", dataEnv=.dataEnv)
           winRaise.f(W.main)
       })
 
@@ -219,7 +230,7 @@ mainInterface.create.f <- function()
           background=.MenuBackground,
           command=function ()
       {
-          selectionVariables.f("freq_occurrence")
+          selectionVariables.f(nextStep="freq_occurrence", dataEnv=.dataEnv)
           winRaise.f(W.main)
       })
 
@@ -236,7 +247,7 @@ mainInterface.create.f <- function()
           background=.MenuBackground,
           command=function ()
       {
-          selectionVariables.f("boxplot.unitobs")
+          selectionVariables.f(nextStep="boxplot.unitobs", dataEnv=.dataEnv)
           winRaise.f(W.main)
       })
 
@@ -245,7 +256,7 @@ mainInterface.create.f <- function()
           background=.MenuBackground,
           command=function ()
       {
-          selectionVariables.f("freq_occurrence.unitobs")
+          selectionVariables.f(nextStep="freq_occurrence.unitobs", dataEnv=.dataEnv)
           winRaise.f(W.main)
       })
 
@@ -276,7 +287,7 @@ mainInterface.create.f <- function()
           background=.MenuBackground,
           command=function ()
       {
-          selectionVariables.f("modele_lineaire")
+          selectionVariables.f(nextStep="modele_lineaire", dataEnv=.dataEnv)
           winRaise.f(W.main)
       })
 
@@ -286,7 +297,7 @@ mainInterface.create.f <- function()
           background=.MenuBackground,
           command=function ()
       {
-          selectionVariables.f("MRT.esp")
+          selectionVariables.f(nextStep="MRT.esp", dataEnv=.dataEnv)
           winRaise.f(W.main)
       })
 
@@ -303,7 +314,7 @@ mainInterface.create.f <- function()
           background=.MenuBackground,
           command=function ()
       {
-          selectionVariables.f("modele_lineaire.unitobs")
+          selectionVariables.f(nextStep="modele_lineaire.unitobs", dataEnv=.dataEnv)
           winRaise.f(W.main)
       })
 
@@ -313,7 +324,7 @@ mainInterface.create.f <- function()
           background=.MenuBackground,
           command=function ()
       {
-          selectionVariables.f("MRT.unitobs")
+          selectionVariables.f(nextStep="MRT.unitobs", dataEnv=.dataEnv)
           winRaise.f(W.main)
       })
 
@@ -468,7 +479,11 @@ mainInterface.create.f <- function()
     ## tkgrid.propagate(frameOverall, "1")
 
     ## Restauration des données originales :
-    B.DataRestore <- tkbutton(F.titreSelect, text="Restaurer les données", command=RestaurerDonnees.f)
+    B.DataRestore <- tkbutton(F.titreSelect, text="Restaurer les données",
+                              command=function()
+                          {
+                              restoreData.f(baseEnv=.baseEnv, dataEnv=.dataEnv)
+                          })
 
     ## Titre des critères de sélection :
     L.criteres <- tklabel(F.titreSelect, text="       Critère(s) de sélection :", background="#FFEE70",
@@ -596,14 +611,16 @@ mainInterface.create.f <- function()
        {
            tryCatchLoad.f(assign("Data",            # [!!!] temporaire  [yr: 13/12/2011]
                                  loadDefault.f(baseEnv=.baseEnv, dataEnv=.dataEnv),
-                                 envir=.GlobalEnv))
+                                 envir=.GlobalEnv),
+                          baseEnv=.baseEnv)
        })
 
     tkbind(W.main, "<Control-A>", function()
        {
            tryCatchLoad.f(assign("Data",            # [!!!] temporaire  [yr: 13/12/2011]
                                  loadDefault.f(baseEnv=.baseEnv, dataEnv=.dataEnv),
-                                 envir=.GlobalEnv))
+                                 envir=.GlobalEnv),
+                          baseEnv=.baseEnv)
        })
 
     tkbind(W.main, "<Control-n>",
@@ -612,7 +629,8 @@ mainInterface.create.f <- function()
 
            tryCatchLoad.f(assign("Data",            # [!!!] temporaire  [yr: 13/12/2011]
                                  loadManual.f(baseEnv=.baseEnv, dataEnv=.dataEnv),
-                                 envir=.GlobalEnv))
+                                 envir=.GlobalEnv),
+                          baseEnv=.baseEnv)
        })
 
     tkbind(W.main, "<Control-N>",
@@ -621,7 +639,8 @@ mainInterface.create.f <- function()
 
            tryCatchLoad.f(assign("Data",            # [!!!] temporaire  [yr: 13/12/2011]
                                  loadManual.f(baseEnv=.baseEnv, dataEnv=.dataEnv),
-                                 envir=.GlobalEnv))
+                                 envir=.GlobalEnv),
+                          baseEnv=.baseEnv)
        })
 
     tkbind(W.main, "<Control-r>", testfileref.f)
@@ -629,14 +648,38 @@ mainInterface.create.f <- function()
 
     ## tkbind(W.main, "<Control-F1>", aide.f)
     ## tkbind(W.main, "<Control-?>", aide.f)
-    tkbind(W.main, "<Control-p>", VoirPlanEchantillonnage.f)
-    tkbind(W.main, "<Control-P>", VoirPlanEchantillonnage.f)
+    tkbind(W.main, "<Control-p>",
+           function()
+       {
+           VoirPlanEchantillonnage.f(dataEnv=.dataEnv)
+       })
+    tkbind(W.main, "<Control-P>",
+           function()
+       {
+           VoirPlanEchantillonnage.f(dataEnv=.dataEnv)
+       })
 
-    tkbind(W.main, "<Control-e>", VoirInformationsDonneesEspeces.f)
-    tkbind(W.main, "<Control-E>", VoirInformationsDonneesEspeces.f)
+    tkbind(W.main, "<Control-e>",
+           function()
+       {
+           VoirInformationsDonneesEspeces.f(dataEnv=.dataEnv)
+       })
+    tkbind(W.main, "<Control-E>",
+           function()
+       {
+           VoirInformationsDonneesEspeces.f(dataEnv=.dataEnv)
+       })
 
-    tkbind(W.main, "<Control-u>", VoirInformationsDonneesUnitobs.f)
-    tkbind(W.main, "<Control-U>", VoirInformationsDonneesUnitobs.f)
+    tkbind(W.main, "<Control-u>",
+           function()
+       {
+           VoirInformationsDonneesUnitobs.f(dataEnv=.dataEnv)
+       })
+    tkbind(W.main, "<Control-U>",
+           function()
+       {
+           VoirInformationsDonneesUnitobs.f(dataEnv=.dataEnv)
+       })
 
     tkbind(W.main, "<Control-o>", test.f)
     tkbind(W.main, "<Control-O>", test.f)

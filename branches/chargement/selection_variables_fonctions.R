@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: Selection_variables_fonctions.R
-### Time-stamp: <2011-12-21 09:55:26 yreecht>
+### Time-stamp: <2012-01-12 16:00:30 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -29,18 +29,19 @@ is.benthos.f <- function()
 }
 
 ########################################################################################################################
-has.no.pres.abs <- function(nextStep, tableMetrique)
+has.no.pres.abs <- function(nextStep, tableMetrique, dataEnv)
 {
     ## Purpose: si les présences/absences doivent ne pas être affichées,
     ##          renvoie "pres_abs", NULL sinon
     ## ----------------------------------------------------------------------
     ## Arguments: nextStep : l'identifiant de l'étape suivante
     ##            tableMetrique : la table de métrique.
+    ##            dataEnv : l'environnement des données.
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 12 oct. 2010, 09:07
     if (is.element(nextStep, c("boxplot.esp", "boxplot.unitobs")) |     # pas proposé si on fait des boxplots.
         length(unique(na.omit(get(tableMetrique, # "            " une seule modalité.
-                                  envir=.GlobalEnv)$pres_abs))) < 2)
+                                  envir=dataEnv)$pres_abs))) < 2)
     {
         return("pres_abs")              # fonctionnement "inversé" !
     }else{
@@ -50,7 +51,7 @@ has.no.pres.abs <- function(nextStep, tableMetrique)
 
 
 ########################################################################################################################
-champsMetriques.f <- function(nomTable, nextStep)
+champsMetriques.f <- function(nomTable, nextStep, dataEnv)
 {
     ## Purpose: Retourne la liste des champs pouvant être utilisés comme
     ##          métriques en fonction du nom de table
@@ -59,58 +60,66 @@ champsMetriques.f <- function(nomTable, nextStep)
     ##                       cherchées les métriques disponibles (chaîne de
     ##                       caractères).
     ##            nextStep : identifiant de l'étape suivante.
+    ##            dataEnv : l'environnement des données.
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 11 août 2010, 16:14
+
+    ## On récupère la table de données :
+    assign(nomTable, get(nomTable, envir=dataEnv),
+           envir=environment())
+
+    unitobs <- get("unitobs", envir=dataEnv)
+    refesp <- get("refesp", envir=dataEnv)
 
     if (!is.character(nomTable))
     {
         stop("'nomTable' doit être une chaîne de caractères !")
     }else{
         switch(nomTable,
-               ## Table listespunit (métriques d'observation) :
-               listespunit={
-                   res <- sort(colnames(listespunit)[sapply(listespunit,
-                                                            function(x){is.numeric(x) & !all(is.na(x))}) &
-                                                     !is.element(colnames(listespunit),
-                                                                 c("an",
-                                                                   has.no.pres.abs(nextStep, nomTable),
-                                                                   ifelse(is.benthos.f(),
-                                                                          "nombre",
-                                                                          "")))])
+               ## Table unitSp (métriques d'observation) :
+               unitSp={
+                   res <- sort(colnames(unitSp)[sapply(unitSp,
+                                                       function(x){is.numeric(x) & !all(is.na(x))}) &
+                                                !is.element(colnames(unitSp),
+                                                            c("an",
+                                                              has.no.pres.abs(nextStep, nomTable, dataEnv=dataEnv),
+                                                              ifelse(is.benthos.f(),
+                                                                     "nombre",
+                                                                     "")))])
                },
-               ## Table unitespta (métriques d'observation par classes de taille) :
-               unitespta={
-                   res <- sort(colnames(unitespta)[sapply(unitespta,
-                                                            function(x){is.numeric(x) & !all(is.na(x))}) &
-                                                     !is.element(colnames(unitespta),
-                                                                 c("an",
-                                                                   has.no.pres.abs(nextStep, nomTable),
-                                                                   "longitude", "latitude"))])
+               ## Table unitSpSz (métriques d'observation par classes de taille) :
+               unitSpSz={
+                   res <- sort(colnames(unitSpSz)[sapply(unitSpSz,
+                                                         function(x){is.numeric(x) & !all(is.na(x))}) &
+                                                  !is.element(colnames(unitSpSz),
+                                                              c("an",
+                                                                has.no.pres.abs(nextStep, nomTable, dataEnv=dataEnv),
+                                                                "longitude", "latitude"))])
                },
-               ## Table TabbleBiodiv (indices de biodiversité) :
-               TableBiodiv={
+               ## Table unit (indices de biodiversité) :
+               unit={
                    columns <- c("richesse_specifique", "simpson", "l.simpson", "pielou", "hill",
                                 "Delta", "DeltaEtoile", "LambdaPlus", "DeltaPlus",
                                 "SDeltaPlus",
                                 grep("RS.relative", colnames(eval(parse(text=nomTable))), value=TRUE))
 
-                   res <- sort(colnames(TableBiodiv)[sapply(TableBiodiv,
-                                                            function(x){is.numeric(x) & !all(is.na(x))}) &
-                                                     is.element(colnames(TableBiodiv), columns)])
+                   res <- sort(colnames(unit)[sapply(unit,
+                                                     function(x){is.numeric(x) & !all(is.na(x))}) &
+                                              is.element(colnames(unit), columns)])
                },
                ## Autres cas :
                res <- sort(colnames(eval(parse(text=nomTable)))[sapply(eval(parse(text=nomTable)),
                                                                        function(x){is.numeric(x) & !all(is.na(x))}) &
-                                                                colnames(listespunit)!="an"])
+                                                                colnames(unitSp)!="an"])
                )
 
-        return(res[!is.element(res, c(colnames(especes), colnames(unitobs)))])
+        return(res[!is.element(res, c(colnames(refesp), colnames(unitobs)))])
     }
 }
 
 
 ########################################################################################################################
-champsUnitobs.f <- function(ordered=FALSE, tableMetrique="")
+champsUnitobs.f <- function(dataEnv, ordered=FALSE, tableMetrique="")
 {
     ## Purpose: Retourne la liste des champs du référentiel d'unités
     ##          d'observations après avoir supprimé les champs vides.
@@ -120,8 +129,12 @@ champsUnitobs.f <- function(ordered=FALSE, tableMetrique="")
     ##            tableMetrique : nom de la table de métriques (pour pouvoir
     ##                            ajouter le champ classe de taille, même
     ##                            si ne fait pas partie de cette table).
+    ##            dataEnv : l'environnement des données.
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date:  3 août 2010, 11:12
+
+    ## Récupération des données :
+    unitobs <- get("unitobs", envir=dataEnv)
 
     ## Champs principaux :
     cPrincip <- c(
@@ -136,7 +149,7 @@ champsUnitobs.f <- function(ordered=FALSE, tableMetrique="")
     ## Champs principaux en premiers :
     if (ordered)
     {
-        res <- c(if (tableMetrique == "unitespta")
+        res <- c(if (tableMetrique == "unitSpSz")
                  {
                      c("classe_taille", "")
                  }else{
@@ -145,7 +158,7 @@ champsUnitobs.f <- function(ordered=FALSE, tableMetrique="")
                  sort(cPrincip[is.element(cPrincip, res)]),
                  "", sort(res[!is.element(res, cPrincip)]))
     }else{
-        res <- c(if (tableMetrique == "unitespta")
+        res <- c(if (tableMetrique == "unitSpSz")
                  {
                      c("classe_taille", "")
                  }else{
@@ -158,7 +171,7 @@ champsUnitobs.f <- function(ordered=FALSE, tableMetrique="")
 
 
 ########################################################################################################################
-champsRefEspeces.f <- function(site, ordered=FALSE, tableMetrique="", nextStep=NA)
+champsRefEspeces.f <- function(site, dataEnv, ordered=FALSE, tableMetrique="", nextStep=NA)
 {
     ## Purpose: Retourne la liste des champs du référentiel espèces après
     ##          avoir supprimé ceux ne correspondant pas au site étudié ainsi
@@ -171,17 +184,22 @@ champsRefEspeces.f <- function(site, ordered=FALSE, tableMetrique="", nextStep=N
     ##                            ajouter le champ classe de taille, même
     ##                            si ne fait pas partie de cette table).
     ##            nextStep : étape suivante.
+    ##            dataEnv : l'environnement des données.
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date:  3 août 2010, 11:16
 
+    ## Récupération des données (référentiel espèce et observations) :
+    refesp <- get("refesp", envir=dataEnv)
+    obs <- get("obs", envir=dataEnv)
+
     ## Champs principaux (externaliser par la suite) :
-    if (is.element(tableMetrique, c("listespunit", "TableOccurrences", "unitespta")) &&
+    if (is.element(tableMetrique, c("unitSp", "TableOccurrences", "unitSpSz")) &&
         is.element(nextStep, c("boxplot.esp", "modele_lineaire", "freq_occurrence", "MRT.esp")))
     {
         cPrincip <- c("code_espece", "espece", "Identifiant")
     }else{
         cPrincip <- c(
-                      ## table "especes" :
+                      ## table "refesp" :
                       "code_espece", "Cat_benthique", "Famille", "Genre", "Identifiant",
                       "CategB_general", "CategB_groupe"
                       )
@@ -191,21 +209,24 @@ champsRefEspeces.f <- function(site, ordered=FALSE, tableMetrique="", nextStep=N
     listeSite <- c("RUN" , "MAY" , "BA" , "BO" , "CB" , "CR" , "STM" , "NC")
 
     ## Noms des sites dont on doit exclure les colonnes :
-    sitesExclus <- listeSite[ ! grepl(pattern=paste("^", siteEtudie, "$", sep=""), x=listeSite)]
+    sitesExclus <- listeSite[ ! grepl(pattern=paste("^(",
+                                                    paste(site, collapse="|"),
+                                                    ")$", sep=""),
+                                      x=listeSite)]
 
     ## champs ne correspondant pas au motif "(Site1|Site2|...)$" :
-    champs <- sort(colnames(especes))[! grepl(paste("(", paste(sitesExclus, collapse="|"), ")$", sep=""),
-                                              sort(colnames(especes)))]
+    champs <- sort(colnames(refesp))[! grepl(paste("(", paste(sitesExclus, collapse="|"), ")$", sep=""),
+                                             sort(colnames(refesp)))]
 
     ## Champs non-vides de la table 'espèces' :
     res <- sort(champs[sapply(champs,
-                              function(i){!all(is.na(especes[is.element(especes$code_espece,
-                                                                        obs$code_espece) , i]))})])
+                              function(i){!all(is.na(refesp[is.element(refesp$code_espece,
+                                                                       obs$code_espece) , i]))})])
 
     ## Champs principaux en premiers :
     if (ordered)
     {
-        res <- c(if (tableMetrique == "unitespta")
+        res <- c(if (tableMetrique == "unitSpSz")
                  {
                      c("classe_taille", "")
                  }else{
@@ -214,7 +235,7 @@ champsRefEspeces.f <- function(site, ordered=FALSE, tableMetrique="", nextStep=N
                  sort(cPrincip[is.element(cPrincip, res)]),
                  "", sort(res[!is.element(res, cPrincip)]))
     }else{
-        res <- c(if (tableMetrique == "unitespta")
+        res <- c(if (tableMetrique == "unitSpSz")
                  {
                      c("classe_taille", "")
                  }else{
@@ -228,7 +249,7 @@ champsRefEspeces.f <- function(site, ordered=FALSE, tableMetrique="", nextStep=N
 
 
 ########################################################################################################################
-champsReferentiels.f <- function(nomTable, nextStep=NA)
+champsReferentiels.f <- function(nomTable, dataEnv, nextStep=NA)
 {
     ## Purpose: Retourne la liste des facteurs pertinents en fonction de la
     ##          table de métriques retenue.
@@ -236,6 +257,7 @@ champsReferentiels.f <- function(nomTable, nextStep=NA)
     ## Arguments: nomTable : nom de la table de métriques (chaîne de
     ##                       charactère)
     ##            nextStep : étape suivante, pas obligatoire.
+    ##            dataEnv : l'environnement des données.
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 12 août 2010, 10:18
 
@@ -254,7 +276,7 @@ champsReferentiels.f <- function(nomTable, nextStep=NA)
                       )
 
         ## Champs des unités d'observation :
-        cUnitobs <- champsUnitobs.f()
+        cUnitobs <- champsUnitobs.f(dataEnv=dataEnv)
 
         ## Champs du référentiel espèces :
         if (length(grep("\\.unitobs$", nextStep)) > 0)
@@ -262,26 +284,26 @@ champsReferentiels.f <- function(nomTable, nextStep=NA)
             cEspeces <- NA              # les champs du ref espèce n'ont pas de raison d'apparaitre dans les cas de
                                         # tables agrégées par unitobs.
         }else{
-            cEspeces <- champsRefEspeces.f(siteEtudie)
+            cEspeces <- champsRefEspeces.f(site=getOption("P.MPA"), dataEnv=dataEnv)
         }
 
-        casTables <- c("listespunit"="listespunit",
-                       "TablePresAbs"="listespunit",
-                       "TableOccurrences"="listespunit",
-                       "unitespta"="unitespta",
-                       "TableBiodiv"="TableBiodiv")
+        casTables <- c("unitSp"="unitSp",
+                       "TablePresAbs"="unitSp",
+                       "TableOccurrences"="unitSp",
+                       "unitSpSz"="unitSpSz",
+                       "unit"="unit")
 
         switch(casTables[nomTable],
-               TableBiodiv={
+               unit={
                    return(c("", sort(cPrincip[is.element(cPrincip, cUnitobs)]),   # champs principaux...
                             "", sort(cUnitobs[!is.element(cUnitobs, cPrincip)]))) # autres.
                },
-               listespunit={
+               unitSp={
                    return(c("", sort(cPrincip[is.element(cPrincip, c(cUnitobs, cEspeces))]), # champs principaux...
                             "", sort(c(cUnitobs[!is.element(cUnitobs, cPrincip)],            # autres.
                                        cEspeces[!is.element(cEspeces, cPrincip)]))))
                },
-               unitespta={
+               unitSpSz={
                    return(c("", "classe_taille",
                             "", sort(cPrincip[is.element(cPrincip, c(cUnitobs, cEspeces))]), # champs principaux...
                             "", sort(c(cUnitobs[!is.element(cUnitobs, cPrincip)],            # autres.
@@ -300,7 +322,8 @@ champsReferentiels.f <- function(nomTable, nextStep=NA)
 
 
 ########################################################################################################################
-subsetToutesTables.f <- function(metrique, facteurs, selections, tableMetrique="",
+subsetToutesTables.f <- function(metrique, facteurs, selections,
+                                 dataEnv, tableMetrique="",
                                  exclude=NULL, add=c("code_espece", "unite_observation"))
 {
     ## Purpose: Extraire les données utiles uniquement, d'après les métrique
@@ -316,29 +339,35 @@ subsetToutesTables.f <- function(metrique, facteurs, selections, tableMetrique="
     ##                      le subset.
     ##            add : champ(s) (de la table de métrique) à ajouter aux
     ##                  données.
+    ##            dataEnv : l'environnement des données.
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date:  6 août 2010, 16:46
+
+    ## Récupération des référentiels :
+    unitobs <- get("unitobs", envir=dataEnv)
+    refesp <- get("refesp", envir=dataEnv)
 
     ## Si pas de table de métrique disponible ou déjà calculée
     ## ("TableOcurrences" est calculée à partir de la sélection) :
     if (is.element(tableMetrique, c("", "TableOccurrences", "TablePresAbs")))
     {
-        tableMetrique <- "listespunit"
+        tableMetrique <- "unitSp"
     }else{}
+
+    casTables <- c("unitSp"="unitSp",
+                   "TablePresAbs"="unitSp",
+                   "unitSpSz"="unitSpSz")
+
+    ## Récupération de la table de métriques :
+    dataMetrique <- get(tableMetrique, envir=dataEnv)
 
     ## Si pas de métrique disponible ou déjà calculée ("freq.occurrence" est calculée à partir de la sélection) :
     if (is.element(metrique, c("", "freq.occurrence")))
     {
         metrique <- "tmp"
-        eval(parse(text=paste(tableMetrique, "$tmp <- 0", sep="")))
-        eval(parse(text=paste(tableMetrique, "$tmp[", tableMetrique, "$nombre > 0] <- 1", sep="")))
+        dataMetrique$tmp <- 0
+        dataMetrique$tmp[dataMetrique$nombre > 0] <- 1
     }else{}
-
-    casTables <- c("listespunit"="listespunit",
-                   "TablePresAbs"="listespunit",
-                   "unitespta"="unitespta")
-
-    dataMetrique <- eval(parse(text=tableMetrique))
 
     if (!is.null(add))
     {
@@ -350,25 +379,25 @@ subsetToutesTables.f <- function(metrique, facteurs, selections, tableMetrique="
     ## Subset en fonction de la table de métrique
     switch(casTables[tableMetrique],
            ## Cas de la table d'observation ou des tables de présence :
-           listespunit={
+           unitSp={
                 restmp <- cbind(dataMetrique[!is.na(dataMetrique[ , metrique]) , metriques, drop=FALSE],
                                 unitobs[match(dataMetrique$unite_observation[!is.na(dataMetrique[ , metrique])],
                                               unitobs$unite_observation), # ajout des colonnes sélectionnées d'unitobs
                                         facteurs[is.element(facteurs, colnames(unitobs))], drop=FALSE],
-                                especes[match(dataMetrique$code_espece[!is.na(dataMetrique[ , metrique])],
-                                              especes$code_espece),        # ajout des colonnes sélectionnées d'especes
-                                        facteurs[is.element(facteurs, colnames(especes))], drop=FALSE])
+                                refesp[match(dataMetrique$code_espece[!is.na(dataMetrique[ , metrique])],
+                                             refesp$code_espece),        # ajout des colonnes sélectionnées d'especes
+                                       facteurs[is.element(facteurs, colnames(refesp))], drop=FALSE])
             },
            ## Cas de la table d'observations par classes de taille :
-           unitespta={
+           unitSpSz={
                restmp <- cbind(dataMetrique[!is.na(dataMetrique[ , metrique]) ,
                                             c(metriques, "classe_taille"), drop=FALSE],
                                unitobs[match(dataMetrique$unite_observation[!is.na(dataMetrique[ , metrique])],
                                              unitobs$unite_observation), # ajout des colonnes sélectionnées d'unitobs
                                        facteurs[is.element(facteurs, colnames(unitobs))], drop=FALSE],
-                               especes[match(dataMetrique$code_espece[!is.na(dataMetrique[ , metrique])],
-                                             especes$code_espece),        # ajout des colonnes sélectionnées d'especes
-                                       facteurs[is.element(facteurs, colnames(especes))], drop=FALSE])
+                               refesp[match(dataMetrique$code_espece[!is.na(dataMetrique[ , metrique])],
+                                            refesp$code_espece),        # ajout des colonnes sélectionnées d'especes
+                                      facteurs[is.element(facteurs, colnames(refesp))], drop=FALSE])
            },
            ## Autres cas :
            restmp <- cbind(dataMetrique[!is.na(dataMetrique[ , metrique]) , metriques, drop=FALSE],
@@ -422,7 +451,7 @@ subsetToutesTables.f <- function(metrique, facteurs, selections, tableMetrique="
 
 
 ########################################################################################################################
-agregationTableParCritere.f <- function(Data, metrique, facteurs, listFact=NULL)
+agregationTableParCritere.f <- function(Data, metrique, facteurs, dataEnv, listFact=NULL)
 {
     ## Purpose: Agréger les données selon un ou plusieurs facteurs.
     ## ----------------------------------------------------------------------
@@ -431,9 +460,12 @@ agregationTableParCritere.f <- function(Data, metrique, facteurs, listFact=NULL)
     ##            facteurs : les facteurs
     ##            listFact : noms des facteurs supplémentaires (agrégés et
     ##                       ajoutés à la table de sortie).
+    ##            dataEnv : l'environnement des données.
     ## Output : une data.frame agrégée.
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 18 oct. 2010, 15:47
+
+    ## Récupération des données
 
     ## Informations (l'étape peut être longue) :
     WinInfo <- agregation.info.f()
@@ -466,20 +498,23 @@ agregationTableParCritere.f <- function(Data, metrique, facteurs, listFact=NULL)
     {
         if (is.element("classe_taille", colnames(Data)))
         {
+            unitSpSz <- get("unitSpSz", envir=dataEnv)
+
             Data <- merge(Data,
-                          unitespta[ , c("code_espece", "unite_observation", "classe_taille", "nombre")],
+                          unitSpSz[ , c("code_espece", "unite_observation", "classe_taille", "nombre")],
                           by=c("code_espece", "unite_observation", "classe_taille"))
 
             ## Ajout de l'abondance totale /espèce/unité d'observation :
-            nbTot <- tapply(unitespta$nombre,
-                            as.list(unitespta[ , c("code_espece", "unite_observation")]),
+            nbTot <- tapply(unitSpSz$nombre,
+                            as.list(unitSpSz[ , c("code_espece", "unite_observation")]),
                             sum, na.rm=TRUE)
 
             Data <- merge(Data,
                           as.data.frame(as.table(nbTot), responseName="nombre.tot"))
         }else{
+
             Data <- merge(Data,
-                          unitespta[ , c("code_espece", "unite_observation", "nombre")], # [!!!] unitespta ?
+                          get("unitSp", envir=dataEnv)[ , c("code_espece", "unite_observation", "nombre")], # [!!!] unitSpSz ?
                           by=c("code_espece", "unite_observation"))
         }
     }else{}
@@ -487,13 +522,19 @@ agregationTableParCritere.f <- function(Data, metrique, facteurs, listFact=NULL)
     ## Ajout du champ biomasse pour les proportions de biomasses par classe de taille :
     if (casMetrique[metrique] == "w.mean.prop.bio")
     {
+        unitSpSz <- get("unitSpSz", envir=dataEnv)
+
+        biomass <- colnames(unitSpSz)[is.element(colnames(unitSpSz),
+                                                 c("biomasse", "CPUEbiomasse"))][1]
+
         Data <- merge(Data,
-                      unitespta[ , c("code_espece", "unite_observation", "classe_taille", "biomasse")],
+                      unitSpSz[ , c("code_espece", "unite_observation", "classe_taille",
+                                    biomass)],
                       by=c("code_espece", "unite_observation", "classe_taille"))
 
         ## Ajout de la biomasse totale /espèce/unité d'observation :
-        biomTot <- tapply(unitespta$biomasse,
-                          as.list(unitespta[ , c("code_espece", "unite_observation")]),
+        biomTot <- tapply(unitSpSz[ , biomass],
+                          as.list(unitSpSz[ , c("code_espece", "unite_observation")]),
                           function(x)
                       {
                           ifelse(all(is.na(x)),
@@ -508,10 +549,10 @@ agregationTableParCritere.f <- function(Data, metrique, facteurs, listFact=NULL)
     ## Ajout du champ colonie pour le calcul des moyennes pondérées s'il est absent :
     if (casMetrique[metrique] == "w.mean.colonies" && ! is.element("colonie", colnames(Data)))
     {
-        Data$colonie <- listespunit$colonie[match(apply(Data[ , c("code_espece", "unite_observation")],
-                                                        1, paste, collapse="*"),
-                                                  apply(listespunit[ , c("code_espece", "unite_observation")],
-                                                        1, paste, collapse="*"))]
+        Data$colonie <- unitSp$colonie[match(apply(Data[ , c("code_espece", "unite_observation")],
+                                                   1, paste, collapse="*"),
+                                             apply(unitSp[ , c("code_espece", "unite_observation")],
+                                                   1, paste, collapse="*"))]
     }else{}
 
     ## Agrégation de la métrique selon les facteurs :
@@ -578,7 +619,7 @@ agregationTableParCritere.f <- function(Data, metrique, facteurs, listFact=NULL)
                                     NA,
                                     ifelse(all(na.omit(Data[ii, metrique]) == 0), # Pour ne pas avoir NaN.
                                            0,
-                                           (sum(Data[ii, "biomasse"][ !is.na(Data[ii, metrique])], na.rm=TRUE) /
+                                           (sum(Data[ii, biomass][ !is.na(Data[ii, metrique])], na.rm=TRUE) /
                                              sum(Data[ii, "biomasse.tot"], na.rm=TRUE)) *
                                            ## Correction si la classe de taille n'est pas un facteur d'agrégation
                                            ## (sinon valeur divisée par le nombre de classes présentes) :
@@ -736,15 +777,9 @@ calcBiodiv.f <- function(Data, refesp, MPA, unitobs="unite_observation", code.es
     {
         if (printInfo)
         {
-            infoLoading.f(msg = paste("Calculs de biodiversité impossibles !",
-                                      "\n   La table de contingence n'a pas été calculée."), icon = "warning")
-        }else{}
-
-        if (global)
-        {
-            stepInnerProgressBar.f(n=1, msg="Table de contingence")
-
-            tryCatch(rm(contingence, envir=.GlobalEnv), warning=function(w){invisible(NULL)})
+            infoLoading.f(msg = paste("Calculs de biodiversité impossibles !"## ,
+                                      ## "\n   La table de contingence n'a pas été calculée."
+                          ), icon = "warning")
         }else{}
 
         return(Data)
@@ -759,7 +794,7 @@ calcBiodiv.f <- function(Data, refesp, MPA, unitobs="unite_observation", code.es
         {
             nsup <- nlevels(DataTmp[ , code.especes]) - nlevels(Data[ , code.especes])
             infoLoading.f(msg=paste(nsup, " \"code_espece\" non identifié",
-                                    ifelse(nsup >1 , "s", ""),
+                                    ifelse(nsup > 1 , "s", ""),
                                     " au niveau de l'espèce (\"sp.\")\n   ",
                                     ifelse(nsup > 1, "ont été supprimés", "a été supprimé"),
                                     " pour le calcul des indices de biodiversité.",
@@ -767,42 +802,12 @@ calcBiodiv.f <- function(Data, refesp, MPA, unitobs="unite_observation", code.es
         }else{}
     }else{}
 
-    ## Exportation de la table de contingence :
-    if (global)
-    {
-        stepInnerProgressBar.f(n=1, msg="Table de contingence")
-
-        contingence <- tapply(Data$nombre,
-                          list(Data[ , unitobs], Data[ , code.especes]), sum, na.rm=TRUE)
-
-        contingence[is.na(contingence)] <- 0
-
-        ## Suppression des especes qui ne sont jamais vues
-        ## Sinon problemes pour les calculs d'indices de diversite.
-        a <- which(apply(contingence, 2, sum, na.rm=TRUE) == 0)
-        if (length(a) != 0)
-        {
-            contingence <- contingence[, -a, drop=FALSE]
-        }
-        rm(a)
-
-        ## idem unitobs :
-        b <- which(apply(contingence, 1, sum, na.rm=TRUE) == 0)
-        if (length(b) != 0)
-        {
-            contingence <- contingence[-b, , drop=FALSE]
-        }
-        rm(b)
-
-        assign("contingence", contingence, envir=.GlobalEnv)
-    }else{}
-
     ## Si les données ne sont pas encore agrégées /espèce/unitobs on le fait ici :
     if (nrow(Data) > nrow(expand.grid(unique(Data[ , unitobs]), unique(Data[ , code.especes]))))
     {
-        Data <- agregationTableParCritere.f(Data=Data, metrique=nombres,
-                                            facteurs=c(unitobs, code.especes),
-                                            listFact=NULL)
+        Data <- agregations.generic.f(Data=Data, metrics=nombres,
+                                      factors=c(unitobs, code.especes),
+                                      listFact=NULL)
     }else{}
 
     df.biodiv <- as.data.frame(as.table(tapply(Data[ , nombres],
@@ -980,9 +985,9 @@ calcBiodivTaxo.f <- function(Data, refesp, unitobs="unite_observation", code.esp
         ## Si les données ne sont pas encore agrégées /espèce/unitobs on le fait ici :
         if (nrow(Data) > nrow(expand.grid(unique(Data[ , unitobs]), unique(Data[ , code.especes]))))
         {
-            Data <- agregationTableParCritere.f(Data=Data, metrique=nombres,
-                                                facteurs=c(unitobs, code.especes),
-                                                listFact=NULL)
+            Data <- agregations.generic.f(Data=Data, metrics=nombres,
+                                          factors=c(unitobs, code.especes),
+                                          listFact=NULL)
         }else{}
 
         ## Table de contingence unitobs-espèces :

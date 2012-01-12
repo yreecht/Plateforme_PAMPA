@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: modeles_lineaires_unitobs_generiques.R
-### Time-stamp: <2011-05-12 13:47:22 yreecht>
+### Time-stamp: <2012-01-11 19:27:55 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -14,7 +14,7 @@
 
 
 ########################################################################################################################
-modeleLineaireWP2.unitobs.f <- function(metrique, factAna, factAnaSel, listFact, listFactSel, tableMetrique)
+modeleLineaireWP2.unitobs.f <- function(metrique, factAna, factAnaSel, listFact, listFactSel, tableMetrique, dataEnv)
 {
     ## Purpose: Gestions des différentes étapes des modèles linéaires.
     ## ----------------------------------------------------------------------
@@ -41,16 +41,16 @@ modeleLineaireWP2.unitobs.f <- function(metrique, factAna, factAnaSel, listFact,
     selections <- c(list(factAnaSel), listFactSel) # Concaténation des leurs listes de modalités sélectionnées
 
     ## Données pour la série d'analyses :
-    if (tableMetrique == "TableBiodiv")
+    if (tableMetrique == "unit")
     {
         ## Pour les indices de biodiversité, il faut travailler sur les nombres... :
         tmpData <- subsetToutesTables.f(metrique="nombre", facteurs=facteurs,
-                                        selections=selections, tableMetrique="listespunit",
+                                        selections=selections, dataEnv=dataEnv, tableMetrique="unitSp",
                                         exclude = NULL, add=c("unite_observation", "code_espece"))
     }else{
         ## ...sinon sur la métrique choisie :
         tmpData <- subsetToutesTables.f(metrique=metrique, facteurs=facteurs, selections=selections,
-                                        tableMetrique=tableMetrique, exclude = NULL,
+                                        dataEnv=dataEnv, tableMetrique=tableMetrique, exclude = NULL,
                                         add=c("unite_observation", "code_espece"))
     }
 
@@ -72,20 +72,28 @@ modeleLineaireWP2.unitobs.f <- function(metrique, factAna, factAnaSel, listFact,
     logExprML <- eval(parse(text=paste("log(", metrique, ") ~", paste(listFact, collapse=" * "))))
 
     ## Agrégation des observations / unité d'observation :
-    if (tableMetrique == "unitespta" && factAna != "classe_taille")
+    if (tableMetrique == "unitSpSz" && factAna != "classe_taille")
     {
         tmpData <- na.omit(agregationTableParCritere.f(Data=tmpData,
                                                        metrique=metrique,
                                                        facteurs=c("unite_observation", "classe_taille"),
+                                                       dataEnv=dataEnv,
                                                        listFact=listFact))
     }else{
-        if (tableMetrique == "TableBiodiv")
+        if (tableMetrique == "unit")
         {
             ## Calcul des indices de biodiversité sur sélection d'espèces :
-            tmp <- calcBiodiv.f(Data=tmpData,
-                                unitobs = "unite_observation", code.especes = "code_espece",
-                                nombres = "nombre",
-                                indices=metrique)
+            tmp <- do.call(rbind,
+                           lapply(getOption("P.MPA"),
+                                  function(MPA)
+                              {
+                                  calcBiodiv.f(Data=tmpData,
+                                               refesp=get("refesp", envir=dataEnv),
+                                               MPA=MPA,
+                                               unitobs = "unite_observation", code.especes = "code_espece",
+                                               nombres = "nombre",
+                                               indices=metrique)
+                              }))
 
             ## On rajoute les anciennes colonnes :
             tmpData <- cbind(tmp,
@@ -98,6 +106,7 @@ modeleLineaireWP2.unitobs.f <- function(metrique, factAna, factAnaSel, listFact,
             tmpData <- na.omit(agregationTableParCritere.f(Data=tmpData,
                                                            metrique=metrique,
                                                            facteurs=c("unite_observation"),
+                                                           dataEnv=dataEnv,
                                                            listFact=listFact))
         }
     }
@@ -136,8 +145,8 @@ modeleLineaireWP2.unitobs.f <- function(metrique, factAna, factAnaSel, listFact,
         ## Écriture des résultats formatés dans un fichier :
         tryCatch(sortiesLM.f(objLM=res, formule=formule, metrique=metrique,
                              factAna=factAna, modSel=iFactGraphSel, listFact=listFact,
-                             Data=tmpData, Log=Log,
-                             type=ifelse(tableMetrique == "unitespta" && factAna != "classe_taille",
+                             Data=tmpData, dataEnv=dataEnv, Log=Log,
+                             type=ifelse(tableMetrique == "unitSpSz" && factAna != "classe_taille",
                                          "CL_unitobs",
                                          "unitobs")),
                  error=errorLog.f)

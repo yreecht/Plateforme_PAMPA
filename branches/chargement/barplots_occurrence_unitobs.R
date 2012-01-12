@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: barplots_occurrence.R
-### Time-stamp: <2011-09-01 15:24:37 yreecht>
+### Time-stamp: <2012-01-10 18:13:34 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -12,7 +12,7 @@
 ### (utilise certaines fonctions de ./boxplot_generique_calc.R)
 ####################################################################################################
 
-barplotOccurrence.unitobs.f <- function(factGraph, factGraphSel, listFact, listFactSel)
+barplotOccurrence.unitobs.f <- function(factGraph, factGraphSel, listFact, listFactSel, dataEnv)
 {
     ## Purpose: création d'un barplot d'après les sélections de facteurs et
     ##          modalités, avec les présences/absences agrégées par unitobs.
@@ -41,7 +41,7 @@ barplotOccurrence.unitobs.f <- function(factGraph, factGraphSel, listFact, listF
 
     ## Données pour la série de boxplots :
     tmpData <- subsetToutesTables.f(metrique="pres_abs", facteurs=facteurs, selections=selections,
-                                    tableMetrique="TablePresAbs", exclude = NULL)
+                                    dataEnv=dataEnv, tableMetrique="TablePresAbs", exclude = NULL)
 
 
     ## Identification des différents modalités (espèces) du graphique à générer :
@@ -62,6 +62,7 @@ barplotOccurrence.unitobs.f <- function(factGraph, factGraphSel, listFact, listF
     tmpData <- na.omit(agregationTableParCritere.f(Data=tmpData,
                                                    metrique="pres_abs",
                                                    facteurs=c("unite_observation"),
+                                                   dataEnv=dataEnv,
                                                    listFact=listFact))
 
     ## Sauvegarde temporaire des données utilisées pour les graphiques (attention : écrasée à chaque nouvelle série de
@@ -87,6 +88,7 @@ barplotOccurrence.unitobs.f <- function(factGraph, factGraphSel, listFact, listF
                                   factGraph=factGraph,
                                   modSel=iFactGraphSel,
                                   listFact=listFact,
+                                  dataEnv=dataEnv,
                                   type="unitobs",
                                   typeGraph="barplot")
 

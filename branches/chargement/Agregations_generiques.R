@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: Agregations_generiques.R
-### Time-stamp: <2011-12-20 15:30:08 yreecht>
+### Time-stamp: <2012-01-09 15:45:43 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -117,7 +117,7 @@ agregation.f <- function(metric, Data, factors,casMetrique)
     return(reslong)
 }
 
-agregations.generic.f <- function(Data, metrics, factors, listFact=NULL, unitSpSz=NULL, unitSp=NULL)
+agregations.generic.f <- function(Data, metrics, factors, listFact=NULL, unitSpSz=NULL, unitSp=NULL, info=FALSE)
 {
     ## Purpose: Agréger les données selon un ou plusieurs facteurs.
     ## ----------------------------------------------------------------------
@@ -126,12 +126,15 @@ agregations.generic.f <- function(Data, metrics, factors, listFact=NULL, unitSpS
     ##            factors : les facteurs
     ##            listFact : noms des facteurs supplémentaires (agrégés et
     ##                       ajoutés à la table de sortie).
+    ##            unitSpSz : Table de métriques par unitobs/esp/CT.
+    ##            unitSp : Table de métriques par unitobs/esp
+    ##            info : affichage des infos ?
     ## Output : une data.frame agrégée.
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 18 oct. 2010, 15:47
 
     ## Informations (l'étape peut être longue) :
-    ## WinInfo <- agregation.info.f()
+    if (info) WinInfo <- agregation.info.f()
 
     ## traitements selon le type de métrique :
     casMetrique <- c("nombre"="sum",
@@ -281,7 +284,7 @@ agregations.generic.f <- function(Data, metrics, factors, listFact=NULL, unitSpS
 
 
     ## Fermeture de la fenêtre d'information
-    ## close.info.f(WinInfo)
+    if (info) close.info.f(WinInfo)
 
     ## Vérification des facteurs supplémentaires agrégés. Il ne doit pas y avoir d'élément nul (la fonction précédente
     ## renvoie NULL si plusieurs niveaux de facteurs, i.e. le facteur est un sous ensemble d'un des facteurs

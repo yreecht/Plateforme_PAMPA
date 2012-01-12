@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: demo_cartes.R
-### Time-stamp: <2011-08-23 10:45:30 yreecht>
+### Time-stamp: <2012-01-10 15:17:13 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -13,12 +13,12 @@
 ####################################################################################################
 
 ########################################################################################################################
-selectionVariablesCarte.f <- function()
+selectionVariablesCarte.f <- function(dataEnv)
 {
     ## Purpose: Sélection d'un variable pour démo de représentation
     ##          sur une carte (NC).
     ## ----------------------------------------------------------------------
-    ## Arguments: aucun.
+    ## Arguments: dataEnv : l'environnement des données.
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 25 mai 2011, 14:29
 
@@ -29,9 +29,9 @@ selectionVariablesCarte.f <- function()
     nextStep <- "boxplot.unitobs"       # Nécessaire pour la mise à jour des listes de métriques.
 
     ## Liste des métriques :
-    metriques <- champsMetriques.f("listespunit", nextStep)
+    metriques <- champsMetriques.f(nomTable="unitSp", nextStep=nextStep, dataEnv=dataEnv)
 
-    TableMetrique <- tclVar("listespunit")  # Table des métriques.
+    TableMetrique <- tclVar("unitSp")  # Table des métriques.
     MetriqueChoisie <- tclVar("")           # Métrique choisie
 
 
@@ -46,10 +46,10 @@ selectionVariablesCarte.f <- function()
     CB.metrique <- ttkcombobox(FrameMetrique, value=metriques, textvariable=MetriqueChoisie,
                                state="readonly")
 
-    RB.listespunit <- tkradiobutton(FrameMetrique, variable=TableMetrique,
-                                    value="listespunit", text="... / unité d'observation")
-    RB.TableBiodiv <- tkradiobutton(FrameMetrique, variable=TableMetrique,
-                                    value="TableBiodiv", text="...de biodiversité ( / unité d'observation)")
+    RB.unitSp <- tkradiobutton(FrameMetrique, variable=TableMetrique,
+                               value="unitSp", text="... / unité d'observation")
+    RB.unit <- tkradiobutton(FrameMetrique, variable=TableMetrique,
+                             value="unit", text="...de biodiversité ( / unité d'observation)")
 
     FrameBT <- tkframe(WinSelection)
     B.OK <- tkbutton(FrameBT, text="  Lancer  ", command=function(){tclvalue(Done) <- 1})
@@ -57,8 +57,8 @@ selectionVariablesCarte.f <- function()
 
     ## ############
     ## Évènements :
-    tkbind(RB.listespunit, "<Leave>", function(){updateMetrique.f(nomTable=tclvalue(TableMetrique), env=env)})
-    tkbind(RB.TableBiodiv, "<Leave>", function(){updateMetrique.f(nomTable=tclvalue(TableMetrique), env=env)})
+    tkbind(RB.unitSp, "<Leave>", function(){updateMetrique.f(nomTable=tclvalue(TableMetrique), env=env)})
+    tkbind(RB.unit, "<Leave>", function(){updateMetrique.f(nomTable=tclvalue(TableMetrique), env=env)})
 
     tkbind(WinSelection, "<Destroy>", function(){tclvalue(Done) <- 2})
 
@@ -66,8 +66,8 @@ selectionVariablesCarte.f <- function()
     ## Positionnement des éléments :
     tkgrid(tklabel(FrameMetrique, text="Métrique à représenter : "), sticky="w")
 
-    tkgrid(RB.listespunit, sticky="w")
-    tkgrid(RB.TableBiodiv, CB.metrique, tklabel(FrameMetrique, text=" \n"), sticky="w")
+    tkgrid(RB.unitSp, sticky="w")
+    tkgrid(RB.unit, CB.metrique, tklabel(FrameMetrique, text=" \n"), sticky="w")
 
     tkgrid(FrameMetrique, column=1, columnspan=3, sticky="w", padx=7, pady=7)
 
@@ -95,7 +95,8 @@ selectionVariablesCarte.f <- function()
                                         # suivante si les variables ne sont pas bonnes.
 
             boxplotCarte.f(metrique=tclvalue(MetriqueChoisie),
-                           tableMetrique=tclvalue(TableMetrique))
+                           tableMetrique=tclvalue(TableMetrique),
+                           dataEnv=dataEnv)
         }else{}
 
         if (tclvalue(Done) == "2") {break()} # statut d'exécution 'abandon' : on sort de la boucle.
@@ -105,7 +106,7 @@ selectionVariablesCarte.f <- function()
 }
 
 ########################################################################################################################
-boxplotCarte.f <- function(metrique, tableMetrique)
+boxplotCarte.f <- function(metrique, tableMetrique, dataEnv)
 {
     ## Purpose: Créer la carte avec des boxplots sur les sites
     ## ----------------------------------------------------------------------
@@ -117,25 +118,32 @@ boxplotCarte.f <- function(metrique, tableMetrique)
     pampaProfilingStart.f()
 
     ## Données pour la série de boxplots :
-    if (tableMetrique == "TableBiodiv")
+    if (tableMetrique == "unit")
     {
         ## Pour les indices de biodiversité, il faut travailler sur les nombres... :
         tmpData <- subsetToutesTables.f(metrique="nombre", facteurs=c("site", "statut_protection"),
-                                        selections=list(NA, NA), tableMetrique="listespunit",
+                                        selections=list(NA, NA), dataEnv=dataEnv, tableMetrique="unitSp",
                                         exclude = NULL, add=c("unite_observation", "code_espece"))
     }else{
         tmpData <- subsetToutesTables.f(metrique=metrique, facteurs=c("site", "statut_protection"),
-                                        selections=list(NA, NA), tableMetrique="listespunit",
+                                        selections=list(NA, NA), dataEnv=dataEnv, tableMetrique="unitSp",
                                         exclude = NULL, add=c("unite_observation", "code_espece"))
     }
 
-    if (tableMetrique == "TableBiodiv")
+    if (tableMetrique == "unit")
     {
         ## Calcul des indices de biodiversité sur sélection d'espèces :
-        tmp <- calcBiodiv.f(Data=tmpData,
-                            unitobs = "unite_observation", code.especes = "code_espece",
-                            nombres = "nombre",
-                            indices=metrique)
+        tmp <- do.call(rbind,
+                           lapply(getOption("P.MPA"),
+                                  function(MPA)
+                              {
+                                  calcBiodiv.f(Data=tmpData,
+                                               refesp=get("refesp", envir=dataEnv),
+                                               MPA=MPA,
+                                               unitobs = "unite_observation", code.especes = "code_espece",
+                                               nombres = "nombre",
+                                               indices=metrique)
+                              }))
 
         ## On rajoute les anciennes colonnes :
         tmpData <- cbind(tmp,
@@ -145,6 +153,7 @@ boxplotCarte.f <- function(metrique, tableMetrique)
         tmpData <- na.omit(agregationTableParCritere.f(Data=tmpData,
                                                        metrique=metrique,
                                                        facteurs=c("unite_observation"),
+                                                       dataEnv=dataEnv,
                                                        listFact=c("site", "statut_protection")))
     }
 

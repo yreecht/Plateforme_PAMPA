@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: barplots_occurrence.R
-### Time-stamp: <2011-09-01 15:36:43 yreecht>
+### Time-stamp: <2012-01-10 18:12:45 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -12,7 +12,7 @@
 ### (utilise certaines fonctions de ./boxplot_generique_calc.R)
 ####################################################################################################
 
-barplotOccurrence.f <- function(factGraph, factGraphSel, listFact, listFactSel)
+barplotOccurrence.f <- function(factGraph, factGraphSel, listFact, listFactSel, dataEnv)
 {
     ## Purpose: création des barplots d'après les sélections de facteurs et
     ##          modalités.
@@ -41,7 +41,7 @@ barplotOccurrence.f <- function(factGraph, factGraphSel, listFact, listFactSel)
 
     ## Données pour la série de boxplots :
     tmpData <- subsetToutesTables.f(metrique="pres_abs", facteurs=facteurs, selections=selections,
-                                    tableMetrique="TablePresAbs", exclude = NULL)
+                                    dataEnv=dataEnv, tableMetrique="TablePresAbs", exclude = NULL)
 
     ## Identification des différents graphiques à générer:
     if (factGraph == "")                # Pas de facteur de séparation des graphiques.
@@ -101,6 +101,7 @@ barplotOccurrence.f <- function(factGraph, factGraphSel, listFact, listFactSel)
                                      modGraphSel        # la modalité courante uniquement.
                                  },
                                      listFact=listFact,
+                                     dataEnv=dataEnv,
                                      type="espece",
                                      typeGraph="barplot")
 

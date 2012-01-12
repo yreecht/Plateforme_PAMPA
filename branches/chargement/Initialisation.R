@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: Initialisation.R
-### Time-stamp: <2011-12-13 16:43:01 yreecht>
+### Time-stamp: <2012-01-04 13:26:20 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -23,9 +23,9 @@ options(P.requiredVar=c(unitobs="fileNameUnitobs",
                         refesp="fileNameRefesp",
                         ws="nameWorkspace"))
 
-##################### Initialisation des variables globales ####################
-Jeuxdonnescoupe <- 0
-assign("Jeuxdonnescoupe", Jeuxdonnescoupe, envir=.GlobalEnv) # [!!!] Changer de system   [yr: 8/12/2011]
+## ##################### Initialisation des variables globales ####################
+## Jeuxdonnescoupe <- 0
+## assign("Jeuxdonnescoupe", Jeuxdonnescoupe, envir=.GlobalEnv) # [!!!] Changer de system   [yr: 8/12/2011]
 
 #### Logo :
 .fileimage <- "./Scripts_Biodiv/img/pampa2.GIF"

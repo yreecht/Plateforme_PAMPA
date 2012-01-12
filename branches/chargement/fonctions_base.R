@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: fonctions_base.R
-### Time-stamp: <2011-12-13 16:23:34 yreecht>
+### Time-stamp: <2012-01-11 18:44:51 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -103,11 +103,11 @@ is.peche.f <- function()
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 19 oct. 2010, 15:45
 
-    if (length(unique(unitobs$type)) > 1)
+    if (length(getOption("P.obsType")) > 1)
     {
         stop("Plusieurs types d'observations")
     }else{
-        return(is.element(as.character(unique(unitobs$type)),
+        return(is.element(as.character(getOption("P.obsType")),
                           c("EMB", "DEB", "PSCI", "PecRec")))
     }
 }
@@ -280,6 +280,40 @@ backupEnv.f <- function(envSource, envSink)
 
     return(invisible(envSink))
 }
+
+########################################################################################################################
+listInEnv.f <- function(list, env)
+{
+    ## Purpose: Copie les éléments d'une liste (nommée) dans un environnement
+    ##          (avec comme nom d'élément son nom dans la liste).
+    ## ----------------------------------------------------------------------
+    ## Arguments: list : la liste à copier.
+    ##            env : l'environnement dans lequel enregistrer les
+    ##                  éléments.
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date:  4 janv. 2012, 15:38
+
+    if (is.null(names(list)))
+    {
+        listNames <- paste("obj", seq(length.out=length(list)), sep="")
+
+        warning("Liste non nommée : les éléments ont été nommés \"obj1\", \"obj2\", etc.")
+    }else{
+        listNames <- names(list)
+    }
+
+    invisible(sapply(list,
+                     function(x, xN, env)
+                 {
+                     ## Numéro d'itération :
+                     i <- sys.call()[[2]][[3]]
+
+                     ## Assignement :
+                     assign(xN[i], x, envir=env)
+                 },
+                     xN=listNames, env=env))
+}
+
 
 
 

@@ -18,7 +18,7 @@ options(versionPAMPA = "1.1-8_chargement")
 ## Identification du dossier parent :
 fileCall <- sub("source\\([[:blank:]]*(file[[:blank:]]*=[[:blank:]]*)?(\"|\')([^\"\']*)(\"|\')[[:blank:]]*(,.*\\)|\\))",
                 "\\3",
-                deparse(sys.calls()[[1]]))
+                paste(deparse(sys.call(-2)), collapse=""))
 
 if(basename(fileCall) == "Global.r")
 {

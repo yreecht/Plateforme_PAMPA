@@ -145,26 +145,6 @@ add.logFrame.f <- function(msgID, env=.GlobalEnv,...)
                                 "\n", sep="")
                       }
                   },
-                  "dataLoading"={
-                      if (any(!is.element(c("workSpace", "fileObs", "fileUnitobs", "fileEsp"),
-                                          names(argsSup))))
-                      {
-                          stop("Arguments incorrects !")
-                      }else{
-                          paste("",
-                                paste(rep("=", 100), collapse=""),
-                                paste("Chargement de données  (",
-                                      format(Sys.time(), "%d/%m/%Y\t%H:%M:%S"),
-                                      ")", sep=""),
-
-                                paste("\n   Fichier d'observation :", argsSup$fileObs),
-                                paste("   Fichier d'unités d'observation :", argsSup$fileUnitobs),
-                                paste("   Fichier du référentiel espèces :", argsSup$fileEsp),
-                                paste("\n   Répertoire des résultats et des exports : ", argsSup$workSpace, "/FichiersSortie/",
-                                      sep=""),
-                                "\n", sep="\n")
-                      }
-                  },
                   "restauration"={
                       paste("",
                             paste(rep("-", 80), collapse=""),
@@ -174,58 +154,58 @@ add.logFrame.f <- function(msgID, env=.GlobalEnv,...)
                             "\n", sep="\n")
                   },
                   "selection"={
-                      if (any(!is.element(c("facteur", "selection", "workSpace", "referentiel"),
+                      if (any(!is.element(c("facteur", "selection", "results", "referentiel", "has.SzCl"),
                                           names(argsSup))))
                       {
                           stop("Arguments incorrects !")
                       }else{
-                          paste("",
+                          paste("\n",
                                 paste(rep("-", 100), collapse=""),
-                                paste("Sélection des observations selon un critère",
+                                paste("\nSélection des observations selon un critère",
                                       ifelse(argsSup$referentiel == "especes",
                                              " du référentiel espèces",
                                              " des unités d'observation"),
                                       " (",
                                       format(Sys.time(), "%d/%m/%Y\t%H:%M:%S"),
                                       ")", sep=""),
-                                paste("\n   Facteur :", argsSup$facteur),
-                                paste("   Modalités :",
+                                paste("\n\n   Facteur :", argsSup$facteur),
+                                paste("\n   Modalités :",
                                       paste(argsSup$selection, collapse=", ")),
-                                paste("\nFichiers exportés dans ", argsSup$workSpace, "/FichiersSortie/ :", sep=""),
-                                paste("   - métriques par unité d'observation / esp. / cl. de taille :",
-                                      "UnitobsEspeceClassetailleMetriques_selection.csv"),
-                                paste("   - métriques par unité d'observation / esp. :",
+                                paste("\n\nFichiers exportés dans ", argsSup$results, " :", sep=""),
+                                ifelse(isTRUE(argsSup$has.SzCl),
+                                       paste("\n   - métriques par unité d'observation / esp. / cl. de taille :",
+                                             "UnitobsEspeceClassetailleMetriques_selection.csv"),
+                                       ""),
+                                paste("\n   - métriques par unité d'observation / esp. :",
                                       "UnitobsEspeceMetriques_selection.csv"),
-                                paste("   - métriques par unité d'observation :",
+                                paste("\n   - métriques par unité d'observation :",
                                       "UnitobsMetriques_selection.csv"),
-                                paste("   - table contingence d'abondance code espèce / unité d'observation :",
-                                      "ContingenceUnitObsEspeces_selection.csv"),
-                                paste("   - plan d'échantillonnage basique (année - statut de protection) :",
+                                paste("\n   - plan d'échantillonnage basique (année - statut de protection) :",
                                       "PlanEchantillonnage_basique_selection.csv"),
-                                "\n", sep="\n")
+                                "\n\n", sep="")
                       }
                   },
                   "fichiers"={
-                      if (any(!is.element(c("workSpace"),
+                      if (any(!is.element(c("results", "has.SzCl"),
                                           names(argsSup))))
                       {
                           stop("Arguments incorrects !")
                       }else{
-                          paste("",
+                          paste("\n",
                                 paste(rep("-", 100), collapse=""),
-                                paste("Fichiers exportés dans ", argsSup$workSpace, "/FichiersSortie/", sep=""),
-                                paste("   (avant ", format(Sys.time(), "%d/%m/%Y\t%H:%M:%S"), ") :", sep=""),
-                                paste("   - métriques par unité d'observation / esp. / cl. de taille :",
-                                      "UnitobsEspeceClassetailleMetriques.csv"),
-                                paste("   - métriques par unité d'observation / esp. :",
+                                paste("\nFichiers exportés dans ", argsSup$results, sep=""),
+                                paste("\n   (avant ", format(Sys.time(), "%d/%m/%Y\t%H:%M:%S"), ") :", sep=""),
+                                ifelse(isTRUE(argsSup$has.SzCl),
+                                       paste("\n   - métriques par unité d'observation / esp. / cl. de taille :",
+                                             "UnitobsEspeceClassetailleMetriques.csv"),
+                                       ""),
+                                paste("\n   - métriques par unité d'observation / esp. :",
                                       "UnitobsEspeceMetriques.csv"),
-                                paste("   - métriques par unité d'observation :",
+                                paste("\n   - métriques par unité d'observation :",
                                       "UnitobsMetriques.csv"),
-                                paste("   - table contingence d'abondance code espèce / unité d'observation :",
-                                      "ContingenceUnitObsEspeces.csv"),
-                                paste("   - plan d'échantillonnage basique (année - statut de protection) :",
+                                paste("\n   - plan d'échantillonnage basique (année - statut de protection) :",
                                       "PlanEchantillonnage_basique.csv"),
-                                "\n", sep="\n")
+                                "\n\n", sep="")
                       }
                   },
                   "InfoRefSpeEnregistre"={

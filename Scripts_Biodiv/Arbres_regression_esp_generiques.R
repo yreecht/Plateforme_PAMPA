@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: arbres_regression_esp_generiques.R
-### Time-stamp: <2011-09-01 15:36:14 yreecht>
+### Time-stamp: <2012-01-10 18:11:47 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -388,7 +388,7 @@ text.rpart.new <- function (x, splits = TRUE, which = 4, label = "yval", FUN = t
 }
 
 ########################################################################################################################
-resFileMRT.f <- function(metrique, factAna, modSel, listFact,
+resFileMRT.f <- function(metrique, factAna, modSel, listFact, dataEnv,
                          prefix=NULL, ext="txt", sufixe=NULL, type="espece")
 {
     ## Purpose: Définit les noms du fichiers pour les résultats des arbres
@@ -415,7 +415,7 @@ resFileMRT.f <- function(metrique, factAna, modSel, listFact,
     }else{}
 
     ## Nom de fichier :
-    filename <- paste(nameWorkspace, "/FichiersSortie/", prefix, "_",
+    filename <- paste(get("filePathes", envir=dataEnv)["results"], prefix, "_",
                       ## Métrique analysée :
                       metrique, "_",
                       ## si facteur de séparation des analyses :
@@ -476,7 +476,7 @@ resFileMRT.f <- function(metrique, factAna, modSel, listFact,
 }
 
 ########################################################################################################################
-sortiesMRT.f <- function(objMRT, formule, metrique, factAna, modSel, listFact, Data,
+sortiesMRT.f <- function(objMRT, formule, metrique, factAna, modSel, listFact, Data, dataEnv=dataEnv,
                          sufixe=NULL, type="espece")
 {
     ## Purpose: Formater les résultats des MRT et les écrire dans un fichier
@@ -508,6 +508,7 @@ sortiesMRT.f <- function(objMRT, formule, metrique, factAna, modSel, listFact, D
     ## Chemin et nom de fichier :
     resFile <- resFileMRT.f(metrique=metrique, factAna=factAna,
                             modSel=modSel, listFact=listFact,
+                            dataEnv=dataEnv,
                             sufixe=sufixe, type=type)
     on.exit(close(resFile), add=TRUE)
 
@@ -532,7 +533,7 @@ sortiesMRT.f <- function(objMRT, formule, metrique, factAna, modSel, listFact, D
 }
 
 ########################################################################################################################
-WP2MRT.esp.f <- function(metrique, factGraph, factGraphSel, listFact, listFactSel, tableMetrique)
+WP2MRT.esp.f <- function(metrique, factGraph, factGraphSel, listFact, listFactSel, tableMetrique, dataEnv)
 {
     ## Purpose: Produire des arbres de régression multivariée en tenant
     ##          compte des options graphiques + Sorties texte.
@@ -563,7 +564,7 @@ WP2MRT.esp.f <- function(metrique, factGraph, factGraphSel, listFact, listFactSe
 
     ## Données pour la série de boxplots :
     tmpData <- subsetToutesTables.f(metrique=metrique, facteurs=facteurs, selections=selections,
-                                    tableMetrique=tableMetrique, exclude = NULL)
+                                    dataEnv=dataEnv, tableMetrique=tableMetrique, exclude = NULL)
 
     ## Formule du boxplot
     exprMRT <- eval(parse(text=paste(metrique, "~", paste(listFact, collapse=" + "))))
@@ -623,10 +624,11 @@ WP2MRT.esp.f <- function(metrique, factGraph, factGraphSel, listFact, listFactSe
                                      modGraphSel        # la modalité courante uniquement.
                                  },
                                      listFact=listFact,
+                                     dataEnv=dataEnv,
                                      type=switch(tableMetrique, # différents types de graphs en fonction de la table de
                                         # données.
-                                                 "listespunit"={"espece"},
-                                                 "unitespta"={"CL_espece"},
+                                                 "unitSp"={"espece"},
+                                                 "unitSpSz"={"CL_espece"},
                                                  "espece"),
                                      typeGraph="MRT")
 
@@ -641,9 +643,9 @@ WP2MRT.esp.f <- function(metrique, factGraph, factGraphSel, listFact, listFactSe
                                   listFact=listFact,
                                   type=switch(tableMetrique, # différents types de graphs en fonction de la table de
                                         # données.
-                                              "listespunit"={"espece"},
-                                              "unitespta"={"CL_espece"},
-                                              "TableBiodiv"={"biodiv"},
+                                              "unitSp"={"espece"},
+                                              "unitSpSz"={"CL_espece"},
+                                              "unit"={"biodiv"},
                                               "espece"),
                                   model="Arbre de régression multivariée")
 
@@ -660,8 +662,8 @@ WP2MRT.esp.f <- function(metrique, factGraph, factGraphSel, listFact, listFactSe
         tryCatch(sortiesMRT.f(objMRT=tmpMRT, formule=exprMRT,
                               metrique=metrique,
                               factAna=factGraph, modSel=modGraphSel, listFact=listFact,
-                              Data=tmpDataMod,
-                              type=ifelse(tableMetrique == "unitespta",
+                              Data=tmpDataMod, dataEnv=dataEnv,
+                              type=ifelse(tableMetrique == "unitSpSz",
                                           "CL_espece",
                                           "espece")),
                  error=errorLog.f)

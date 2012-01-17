@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: fonctions_base.R
-### Time-stamp: <2011-11-04 14:07:16 yreecht>
+### Time-stamp: <2012-01-11 18:44:51 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -103,24 +103,24 @@ is.peche.f <- function()
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 19 oct. 2010, 15:45
 
-    if (length(unique(unitobs$type)) > 1)
+    if (length(getOption("P.obsType")) > 1)
     {
         stop("Plusieurs types d'observations")
     }else{
-        return(is.element(as.character(unique(unitobs$type)),
+        return(is.element(as.character(getOption("P.obsType")),
                           c("EMB", "DEB", "PSCI", "PecRec")))
     }
 }
 
 
 ########################################################################################################################
-pampaProfilingStart.f <- function()
+pampaProfilingStart.f <- function(interval=0.1)
 {
     ## Purpose: Initialiser le profilage d'une portion de code. Le nom de
     ##          fichier est construit d'après le nom de la fonction
     ##          appelante.
     ## ----------------------------------------------------------------------
-    ## Arguments: aucun.
+    ## Arguments: interval : intervalle d'échantillonnage.
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 20 oct. 2010, 15:58
 
@@ -128,7 +128,7 @@ pampaProfilingStart.f <- function()
     {
         filename <- paste("logs/Rprof-", deparse(sys.call(-1)[[1]]), ".out", sep="")
 
-        Rprof(filename=filename, interval=0.1)
+        Rprof(filename=filename, interval=interval)
     }else{}
 }
 
@@ -245,6 +245,73 @@ errorLog.f <- function(error, niv=-3)
     close(logFile)
 
     message("\n\tIl y a eu une erreur.", "\n\tVoir le fichier log : ", logFileName, "\n")
+}
+
+
+########################################################################################################################
+backupEnv.f <- function(envSource, envSink)
+{
+    ## Purpose: Sauvegarde d'un environnement dans un autre
+    ## ----------------------------------------------------------------------
+    ## Arguments: envSource : l'environnement à sauvegarder (marche également
+    ##                        avec une liste).
+    ##            envSink : l'environnement de sauvegarde (peut être
+    ##                      manquant => nouvel environnement)
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date: 13 déc. 2011, 15:39
+
+    ## Test de l'environnement "puit" :
+    if (missing(envSink))
+    {
+        envSink <- new.env()            # Création s'il est manquant.
+    }else{
+        if (! is.environment(envSink)) stop("envSink n'est pas un environnement")
+    }
+
+    ## Copie des élements :
+    invisible(sapply(envSource,
+                     function(x, Nx, env)
+                 {
+                     i <- sys.call()[[2]][[3]]
+                     assign(Nx[i], x, envir=env)
+                 },
+                     Nx=names(as.list(envSource)),
+                     env=envSink))
+
+    return(invisible(envSink))
+}
+
+########################################################################################################################
+listInEnv.f <- function(list, env)
+{
+    ## Purpose: Copie les éléments d'une liste (nommée) dans un environnement
+    ##          (avec comme nom d'élément son nom dans la liste).
+    ## ----------------------------------------------------------------------
+    ## Arguments: list : la liste à copier.
+    ##            env : l'environnement dans lequel enregistrer les
+    ##                  éléments.
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date:  4 janv. 2012, 15:38
+
+    if (is.null(names(list)))
+    {
+        listNames <- paste("obj", seq(length.out=length(list)), sep="")
+
+        warning("Liste non nommée : les éléments ont été nommés \"obj1\", \"obj2\", etc.")
+    }else{
+        listNames <- names(list)
+    }
+
+    invisible(sapply(list,
+                     function(x, xN, env)
+                 {
+                     ## Numéro d'itération :
+                     i <- sys.call()[[2]][[3]]
+
+                     ## Assignement :
+                     assign(xN[i], x, envir=env)
+                 },
+                     xN=listNames, env=env))
 }
 
 

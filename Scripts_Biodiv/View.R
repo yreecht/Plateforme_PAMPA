@@ -93,13 +93,15 @@ Voirentableau <- function(Montclarray, title="", height=-1, width=-1, nrow=-1, n
 }
 
 ########################################################################################################################
-VoirPlanEchantillonnage.f <- function()
+VoirPlanEchantillonnage.f <- function(dataEnv)
 {
     runLog.f(msg=c("Affichage du plan d'échantillonnage :"))
 
-    myRarrayPE <- read.csv2(paste(NomDossierTravail,
+    resultsDir <- get("filePathes", envir=dataEnv)["results"]
+
+    myRarrayPE <- read.csv2(paste(resultsDir,
                                   "PlanEchantillonnage_basique",
-                                  ifelse(Jeuxdonnescoupe, "_selection", ""),
+                                  ifelse(getOption("P.selection"), "_selection", ""),
                                   ".csv", sep=""),
                             row.names=1)
 
@@ -143,83 +145,103 @@ VoirPlanEchantillonnage.f <- function()
 }
 
 ########################################################################################################################
-VoirInformationsDonneesEspeces.f <- function()
+VoirInformationsDonneesEspeces.f <- function(dataEnv)
 {
 
-    Nbesp <- length(unique(unitesp$code_espece))
-    message(paste(Nbesp, "espèces considérées dans ce jeux de données"))
+    unitSp <- get("unitSp", envir=dataEnv)
+    refesp <- get("refesp", envir=dataEnv)
+    unitobs <- get("unitobs", envir=dataEnv)
+    nombres <- ifelse(is.benthos.f(), "colonie", "nombre")
+
+    Nbesp <- length(unique(unitSp[ , "code_espece"]))
 
     tclarrayID <- tclArray()
-    tclarrayID[[0, 0]] <- "Espèce"               # Indexation étrange... [yr: 27/07/2010]
-    tclarrayID[[0, 1]] <- "Nb indiv min/unitobs" # -> non, habituelle pour tclarrays !
-    tclarrayID[[0, 2]] <- "Nb indiv max/unitobs" #
-    tclarrayID[[0, 3]] <- "Fréquence d'occurrence"     #
+    tclarrayID[[0, 0]] <- "Espèce"
+    tclarrayID[[0, 1]] <- paste("Nb ", ifelse(is.benthos.f(), "colonies", "indiv"),
+                                " min/unitobs", sep="")
+    tclarrayID[[0, 2]] <- paste("Nb ", ifelse(is.benthos.f(), "colonies", "indiv"),
+                                " max/unitobs", sep="")
+    tclarrayID[[0, 3]] <- "Fréquence d'occurrence"
 
-    mini <- tapply(unitesp$nombre, unitesp$code_espece, min, na.rm=TRUE)
-    maxi <- tapply(unitesp$nombre, unitesp$code_espece, max, na.rm=TRUE)
+    mini <- tapply(unitSp[ , nombres], unitSp[ , "code_espece"], min, na.rm=TRUE)
+    maxi <- tapply(unitSp[ , nombres], unitSp[ , "code_espece"], max, na.rm=TRUE)
 
     nbunitobs <- nrow(unique(unitobs))
-    pacha <- unitesp[, c("unite_observation", "code_espece", "nombre", "pres_abs"), drop=FALSE]
+    pacha <- unitSp[, c("unite_observation", "code_espece", nombres, "pres_abs"), drop=FALSE]
 
     for (i in (1:Nbesp))
     {
-        tclarrayID[[i, 0]] <- unique(as.character(unitesp$code_espece))[i]
+        tclarrayID[[i, 0]] <- unique(as.character(unitSp[ , "code_espece"]))[i]
         tclarrayID[[i, 1]] <- mini[i]
         tclarrayID[[i, 2]] <- maxi[i]
         tclarrayID[[i, 3]] <-
-            paste(round(length(pacha$unite_observation[pacha$pres_abs==1 &
-                                                       pacha$code_espece==unique(unitesp$code_espece)[i]]) /
-                        length(pacha$unite_observation[pacha$code_espece==unique(unitesp$code_espece)[i]]) * 100,
+            paste(round(length(pacha[(pacha[ , "pres_abs"] == 1 &
+                                      pacha[ , "code_espece"] == unique(unitSp[ , "code_espece"])[i]),
+                                     "unite_observation"]) /
+                        length(pacha[pacha[ , "code_espece"] == unique(unitSp[ , "code_espece"])[i],
+                                     "unite_observation"]) * 100,
                         digits=2), "%")
     }
 
     ## Pour informations sur le nombre d'espèces :
     tmp <- unique(cbind(pacha[ , "code_espece"],
-                        especes[match(pacha$code_espece, especes$code_espece),
-                                c("Phylum", "espece")]))
+                        refesp[match(pacha[ , "code_espece"], refesp[ , "code_espece"]),
+                               c("Phylum", "espece")]))
 
     tableInfodonnees <- Voirentableau(tclarrayID,
                                       title="Informations par espèce",
                                       infos=paste("Informations par espèce :",
                                                   " \n\n\t* nombre de catégories observées = ", nrow(tmp),
                                                   " \n\t* nombre de catégories taxinomiques (biotiques) observées = ",
-                                                  sum(!is.na(tmp$Phylum)),
+                                                  sum(!is.na(tmp[ , "Phylum"])),
                                                   " \n\t* nombre d'espèces observées = ",
-                                                  sum(!is.na(tmp$espece) & tmp$espece != "sp."),
+                                                  sum(!is.na(tmp[ , "espece"]) & tmp[ , "espece"] != "sp."),
                                                   " \n\nCes informations tiennent compte des sélections en cours.", sep=""),
                                       height=Nbesp, width=4, nrow=Nbesp + 1, ncol=4)
 }#fin VoirInformationsDonneesEspeces
 
 ########################################################################################################################
-VoirInformationsDonneesUnitobs.f <- function()
+VoirInformationsDonneesUnitobs.f <- function(dataEnv)
 {
+    obs <- get("obs", envir=dataEnv)
+    unitobs <- get("unitobs", envir=dataEnv)
+    unitSp <- get("unitSp", envir=dataEnv)
+    nombres <- ifelse(is.benthos.f(), "colonie", "nombre")
 
-    Nbunitobs <- nlevels(obs$unite_observation) ## length(unique(unitobs$unite_observation))
-    message(paste(Nbunitobs, "unités d'observations considérées dans ce jeux de données"))
+    Nbunitobs <- nlevels(obs[ , "unite_observation"]) ## length(unique(unitobs[ , "unite_observation"]))
+
     tclarrayID <- tclArray()
 
     tclarrayID[[0, 0]] <- "Unité d'observation"    #
     tclarrayID[[0, 1]] <- "Site"                   #
     tclarrayID[[0, 2]] <- "Biotope"                #
-    tclarrayID[[0, 3]] <- "Nb espèce"              #
-    tclarrayID[[0, 4]] <- "Nb indiv max/espèce"    #
+    tclarrayID[[0, 3]] <- "Nb \"espèces\""              #
+    tclarrayID[[0, 4]] <- paste("Nb ",
+                                ifelse(is.benthos.f(), "colonies", "indiv"),
+                                " max/espèce", sep="")    #
 
-    pacha <- unitesp[ , c("unite_observation", "code_espece", "nombre", "pres_abs"), drop=FALSE]
+    pacha <- unitSp[ , c("unite_observation", "code_espece", nombres, "pres_abs"), drop=FALSE]
 
-    mini <- tapply(unitesp$nombre, unitesp$unite_observation, min, na.rm=TRUE) # [!!!]
+    ## mini <- tapply(unitSp[ , nombres], unitSp[ , "unite_observation"], min, na.rm=TRUE) # [!!!]
 
-    maxi <- tapply(unitesp$nombre, unitesp$unite_observation, max, na.rm=TRUE) # [!!!]
+    maxi <- tapply(unitSp[ , nombres], unitSp[ , "unite_observation"], max, na.rm=TRUE) # [!!!]
 
     for (i in (1:Nbunitobs))
     {
-        tclarrayID[[i, 0]] <- levels(obs$unite_observation)[i]
-        tclarrayID[[i, 1]] <- as.character(unitobs$site[unitobs$unite_observation ==
-                                                        levels(obs$unite_observation)[i]])
-        tclarrayID[[i, 2]] <- as.character(unitobs$biotope[unitobs$unite_observation ==
-                                                        levels(obs$unite_observation)[i]])    #
+        tclarrayID[[i, 0]] <- levels(obs[ , "unite_observation"])[i]
+
+        tclarrayID[[i, 1]] <- as.character(unitobs[(unitobs[ , "unite_observation"] ==
+                                                    levels(obs[ , "unite_observation"])[i]),
+                                                   "site"])
+
+        tclarrayID[[i, 2]] <- as.character(unitobs[(unitobs[ , "unite_observation"] ==
+                                                    levels(obs[ , "unite_observation"])[i]),
+                                                   "biotope"])
         tclarrayID[[i, 3]] <-                                                                        #
-            length(pacha$code_espece[pacha$pres_abs==1 &
-                                     pacha$unite_observation == levels(obs$unite_observation)[i]])
+            length(pacha[(pacha[ , "pres_abs"]==1 &
+                          pacha[ , "unite_observation"] == levels(obs[ , "unite_observation"])[i]),
+                         "code_espece"])
+
         tclarrayID[[i, 4]] <- maxi[i]
     }
 

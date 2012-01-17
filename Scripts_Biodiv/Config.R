@@ -4,10 +4,9 @@
 ## Exemple : faites de même avec vos jeux de donnée (sans les commentaires -- "## " -- en début de ligne.) :
 
 ## #### RUN :
-## siteEtudie <- "RUN"
-## fileName1 <- "unitobspampaGCRMNpoisson-100810.txt"
-## fileName2 <- "obspampaGCRMNpoisson-100810.txt"
-## fileName3 <- "PAMPA-WP1-Meth-4-RefSpOM 110810.txt"
+## fileNameUnitobs <- "unitobspampaGCRMNpoisson-100810.txt"
+## fileNameObs <- "obspampaGCRMNpoisson-100810.txt"
+## fileNameRefesp <- "PAMPA-WP1-Meth-4-RefSpOM 110810.txt"
 ## nameWorkspace <- "C:/PAMPA"
 
 ## Vous pouvez également définir des options par défaut personnalisées (donne accès aux options "cachées") :

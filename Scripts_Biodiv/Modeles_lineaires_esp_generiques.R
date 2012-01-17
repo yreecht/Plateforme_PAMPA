@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: comparaison_distri_generique.R
-### Time-stamp: <2011-11-28 12:09:00 yreecht>
+### Time-stamp: <2012-01-10 18:09:24 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -74,7 +74,7 @@ tkrplot <- function(parent, fun, hscale = 1, vscale = 1,...)
     ## Périphérique graphique :
     .my.tkdev(hscale, vscale,...)
 
-    try(fun())
+    invisible(try(fun()))
     .Tcl(paste("image create Rplot", image))
 
     lab <- tklabel(parent, image = image)
@@ -1131,7 +1131,7 @@ modelType.f <- function(objLM, Log)
 
 
 ########################################################################################################################
-resFileLM.f <- function(objLM, metrique, factAna, modSel, listFact,
+resFileLM.f <- function(objLM, metrique, factAna, modSel, listFact, dataEnv,
                         Log=FALSE,  prefix=NULL, ext="txt", sufixe=NULL, type="espece")
 {
     ## Purpose: Définit les noms du fichiers pour les résultats des modèles
@@ -1159,7 +1159,7 @@ resFileLM.f <- function(objLM, metrique, factAna, modSel, listFact,
     }else{}
 
     ## Nom de fichier :
-    filename <- paste(nameWorkspace, "/FichiersSortie/", prefix, "_",
+    filename <- paste(get("filePathes", envir=dataEnv)["results"], prefix, "_",
                       ## Métrique analysée :
                       metrique, "_",
                       ## si facteur de séparation des analyses :
@@ -1552,7 +1552,7 @@ signifParamLM.f <- function(objLM, resFile)
 
 
 ########################################################################################################################
-sortiesLM.f <- function(objLM, formule, metrique, factAna, modSel, listFact, Data,
+sortiesLM.f <- function(objLM, formule, metrique, factAna, modSel, listFact, Data, dataEnv,
                         Log=FALSE, sufixe=NULL, type="espece")
 {
     ## Purpose: Formater les résultats de lm et les écrire dans un fichier
@@ -1599,7 +1599,7 @@ sortiesLM.f <- function(objLM, formule, metrique, factAna, modSel, listFact, Dat
 
     ## Chemin et nom de fichier :
     resFile <- resFileLM.f(objLM=objLM, metrique=metrique, factAna=factAna, modSel=modSel, listFact=listFact,
-                           Log=Log, sufixe=sufixe, type=type)
+                           dataEnv=dataEnv, Log=Log, sufixe=sufixe, type=type)
     on.exit(tryCatch(close(resFile), error=function(e){}), add=TRUE)
 
 
@@ -1776,7 +1776,7 @@ calcLM.f <- function(loiChoisie, formule, metrique, Data)
 
 
 ########################################################################################################################
-modeleLineaireWP2.esp.f <- function(metrique, factAna, factAnaSel, listFact, listFactSel, tableMetrique)
+modeleLineaireWP2.esp.f <- function(metrique, factAna, factAnaSel, listFact, listFactSel, tableMetrique, dataEnv)
 {
     ## Purpose: Gestions des différentes étapes des modèles linéaires.
     ## ----------------------------------------------------------------------
@@ -1804,7 +1804,7 @@ modeleLineaireWP2.esp.f <- function(metrique, factAna, factAnaSel, listFact, lis
 
     ## Données pour la série d'analyses :
     tmpData <- na.omit(subsetToutesTables.f(metrique=metrique, facteurs=facteurs, selections=selections,
-                                            tableMetrique=tableMetrique, exclude = NULL, add=NULL))
+                                            dataEnv=dataEnv, tableMetrique=tableMetrique, exclude = NULL, add=NULL))
 
     ## Identification des différents lots d'analyses à faire:
     if (factAna == "")                # Pas de facteur de séparation des graphiques.
@@ -1870,8 +1870,8 @@ modeleLineaireWP2.esp.f <- function(metrique, factAna, factAnaSel, listFact, lis
             ## Écriture des sorties :
             tryCatch(sortiesLM.f(objLM=res, formule=formule, metrique=metrique,
                                  factAna=factAna, modSel=modSel, listFact=listFact,
-                                 Data=tmpDataMod, Log=Log,
-                                 type=ifelse(tableMetrique == "unitespta",
+                                 Data=tmpDataMod, dataEnv=dataEnv, Log=Log,
+                                 type=ifelse(tableMetrique == "unitSpSz",
                                              "CL_espece",
                                              "espece")),
                      error=errorLog.f)
@@ -1897,8 +1897,8 @@ modeleLineaireWP2.esp.f <- function(metrique, factAna, factAnaSel, listFact, lis
 
                     tryCatch(sortiesLM.f(objLM=res.red, formule=formule, metrique=metrique,
                                          factAna=factAna, modSel=modSel, listFact=listFact,
-                                         Data=tmpDataMod, Log=Log, sufixe="(red)",
-                                         type=ifelse(tableMetrique == "unitespta",
+                                         Data=tmpDataMod, dataEnv=dataEnv, Log=Log, sufixe="(red)",
+                                         type=ifelse(tableMetrique == "unitSpSz",
                                                      "CL_espece",
                                                      "espece")),
                              error=errorLog.f)

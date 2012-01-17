@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: nombres_SVR.R
-### Time-stamp: <2011-08-09 18:31:08 yreecht>
+### Time-stamp: <2011-12-22 16:59:46 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -11,13 +11,14 @@
 ### Calculs deqs nombres pour les données vidéos rotatives.
 ####################################################################################################
 
-statRotation.basic.f <- function(facteurs)
+statRotation.basic.f <- function(facteurs, obs=obs, dataEnv=.GlobalEnv)
 {
     ## Purpose: Calcul des statistiques des abondances (max, sd) par rotation
     ##          en se basant sur des interpolations basiques.
     ## ----------------------------------------------------------------------
     ## Arguments: facteurs : vecteur des noms de facteurs d'agrégation
     ##                       (résolution à laquelle on travaille).
+    ##            obs : données d'observation.
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date:  9 déc. 2010, 10:01
 
@@ -79,22 +80,22 @@ statRotation.basic.f <- function(facteurs)
     ## Nombre de rotations valides :
     nombresRotations <- apply(rotations, 1, sum, na.rm=TRUE)
 
-    if (!is.element("classe_taille", facteurs))
-    {
-        ## Pour les calculs agrégés par unitobs :
-        tmpNombresSVR <- apply(nombresR,
-                               which(names(dimnames(nombresR)) != "code_espece"),
-                               sum, na.rm=TRUE)
+    ## if (!is.element("classe_taille", facteurs))
+    ## {
+    ## ## Pour les calculs agrégés par unitobs :
+    ## tmpNombresSVR <- apply(nombresR,
+    ##                        which(names(dimnames(nombresR)) != "code_espece"),
+    ##                        sum, na.rm=TRUE)
 
-        tmpNombresSVR[!rotations] <- NA
+    ## tmpNombresSVR[!rotations] <- NA
 
-        assign(".NombresSVR", tmpNombresSVR, envir=.GlobalEnv)
-        assign(".Rotations", rotations, envir=.GlobalEnv)
-    }else{}
+    assign(".NombresSVR", nombresR, envir=dataEnv)
+    assign(".Rotations", rotations, envir=dataEnv)
+    ## }else{}
 
     ## Retour des résultats sous forme de liste :
     return(list(nombresMean=nombresMean, nombresMax=nombresMax, nombresSD=nombresSD,
-                nombresRotations=nombresRotations))
+                nombresRotations=nombresRotations, nombresTot=nombresR))
 }
 
 ########################################################################################################################
@@ -168,13 +169,14 @@ interpSecteurs.f <- function(sectUnitobs)
 }
 
 ########################################################################################################################
-statRotation.extended.f <- function(facteurs)
+statRotation.extended.f <- function(facteurs, obs=obs, dataEnv=.GlobalEnv)
 {
     ## Purpose: Calcul des statistiques des abondances (max, sd) par
     ##          rotation, en utilisant des interpolations étendues.
     ## ----------------------------------------------------------------------
     ## Arguments: facteurs : vecteur des noms de facteurs d'agrégation
     ##                       (résolution à laquelle on travaille).
+    ##            obs : données d'observation.
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date:  9 nov. 2010, 09:25
 
@@ -253,9 +255,22 @@ statRotation.extended.f <- function(facteurs)
     ## Nombre de rotations valides :
     nombresRotations <- apply(rotations, 1, sum, na.rm=TRUE)
 
+    ## if (!is.element("classe_taille", facteurs))
+    ## {
+        ## ## Pour les calculs agrégés par unitobs :
+        ## tmpNombresSVR <- apply(nombresR,
+        ##                        which(names(dimnames(nombresR)) != "code_espece"),
+        ##                        sum, na.rm=TRUE)
+
+        ## tmpNombresSVR[!rotations] <- NA
+
+    assign(".NombresSVR", nombresR, envir=dataEnv)
+    assign(".Rotations", rotations, envir=dataEnv)
+    ## }else{}
+
     ## Retour des résultats sous forme de liste :
     return(list(nombresMean=nombresMean, nombresMax=nombresMax, nombresSD=nombresSD,
-                nombresRotations=nombresRotations))
+                nombresRotations=nombresRotations, nombresTot=nombresRS))
 }
 
 

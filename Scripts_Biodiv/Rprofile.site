@@ -19,5 +19,5 @@
 .First <- function()
 {
     .First.sys()
-    source("./Scripts_Biodiv/Global.r", encoding="latin1")
+    source("./Scripts_Biodiv/Main.R", encoding="latin1")
 }

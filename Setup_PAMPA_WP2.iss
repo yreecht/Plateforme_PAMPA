@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "PAMPA Ressources & Biodiversité"
-#define MyAppVersion "1.1-7"
+#define MyAppVersion "2.0-alpha1"
 #define MyAppPublisher "Ifremer"
 #define MyAppURL "http://wwz.ifremer.fr/pampa/"
 #define MyAppExeName "PAMPA WP2.bat"
@@ -26,6 +26,8 @@ DefaultGroupName={#MyAppName}
 AllowNoIcons=yes
 OutputDir=.
 OutputBaseFilename=setup_PAMPA_Ressources-Biodiv-{#MyAppVersion}
+LicenseFile=.\Scripts_Biodiv\LICENCE-GPL-3.0.fr.txt
+;; InfoBeforeFile=.\modele_copyright.txt
 ; SetupIconFile=Y:\tmp\1284538187_bluefish-icon.ico
 Compression=lzma
 SolidCompression=yes
@@ -43,43 +45,53 @@ Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescrip
 Source: ".\Scripts_Biodiv\PAMPA WP2.bat"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\Scripts_Biodiv\img\*"; DestDir: "{app}\img"; Flags: ignoreversion
 Source: ".\Scripts_Biodiv\Doc\*"; DestDir: "{app}\Doc"; Flags: ignoreversion
-Source: ".\Scripts_Biodiv\config.r"; DestDir: "{app}"; Flags: uninsneveruninstall
+Source: ".\Scripts_Biodiv\Config.R"; DestDir: "{app}"; Flags: uninsneveruninstall
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
+
+;; Scripts R :
+Source: "Scripts_Biodiv\Agregations_generiques.R"; DestDir: "{app}"
+Source: "Scripts_Biodiv\Arbres_regression_esp_generiques.R"; DestDir: "{app}"
+Source: "Scripts_Biodiv\Arbres_regression_unitobs_generiques.R"; DestDir: "{app}"
+Source: "Scripts_Biodiv\Barplots_occurrence.R"; DestDir: "{app}"
+Source: "Scripts_Biodiv\Barplots_occurrence_unitobs.R"; DestDir: "{app}"
+Source: "Scripts_Biodiv\Boxplots_esp_generiques.R"; DestDir: "{app}"
+Source: "Scripts_Biodiv\Boxplots_unitobs_generiques.R"; DestDir: "{app}"
+Source: "Scripts_Biodiv\Calcul_poids.R"; DestDir: "{app}"
+Source: "Scripts_Biodiv\Calcul_tables_metriques.R"; DestDir: "{app}"
+Source: "Scripts_Biodiv\Calcul_tables_metriques_LIT.R"; DestDir: "{app}"
+Source: "Scripts_Biodiv\Calcul_tables_metriques_SVR.R"; DestDir: "{app}"
+Source: "Scripts_Biodiv\Chargement_fichiers.R"; DestDir: "{app}"
+Source: "Scripts_Biodiv\Chargement_manuel_fichiers.R"; DestDir: "{app}"
+Source: "Scripts_Biodiv\Demo_cartes.R"; DestDir: "{app}"
+Source: "Scripts_Biodiv\Fonctions_base.R"; DestDir: "{app}"
+Source: "Scripts_Biodiv\Fonctions_graphiques.R"; DestDir: "{app}"
+Source: "Scripts_Biodiv\Gestionmessages.R"; DestDir: "{app}"
 Source: "Scripts_Biodiv\Initialisation.R"; DestDir: "{app}"
-Source: "Scripts_Biodiv\barplots_occurrence.R"; DestDir: "{app}"
-Source: "Scripts_Biodiv\barplots_occurrence_unitobs.R"; DestDir: "{app}"
-Source: "Scripts_Biodiv\fonctions_graphiques.R"; DestDir: "{app}"
-Source: "Scripts_Biodiv\boxplots_esp_generiques.R"; DestDir: "{app}"
-Source: "Scripts_Biodiv\boxplots_unitobs_generiques.R"; DestDir: "{app}"
-Source: "Scripts_Biodiv\calcul_simple.r"; DestDir: "{app}"
-Source: "Scripts_Biodiv\command.r"; DestDir: "{app}"
+Source: "Scripts_Biodiv\Interface_fonctions.R"; DestDir: "{app}"
+Source: "Scripts_Biodiv\Interface_principale.R"; DestDir: "{app}"
+Source: "Scripts_Biodiv\Load_packages.R"; DestDir: "{app}"
+Source: "Scripts_Biodiv\Main.R"; DestDir: "{app}"
+Source: "Scripts_Biodiv\Modeles_lineaires_esp_generiques.R"; DestDir: "{app}"
+Source: "Scripts_Biodiv\Modeles_lineaires_interface.R"; DestDir: "{app}"
+Source: "Scripts_Biodiv\Modeles_lineaires_unitobs_generiques.R"; DestDir: "{app}"
+Source: "Scripts_Biodiv\Nombres_SVR.R"; DestDir: "{app}"
+Source: "Scripts_Biodiv\Selection_donnees.R"; DestDir: "{app}"
+Source: "Scripts_Biodiv\Selection_variables_fonctions.R"; DestDir: "{app}"
+Source: "Scripts_Biodiv\Selection_variables_interface.R"; DestDir: "{app}"
+Source: "Scripts_Biodiv\Testfichier.R"; DestDir: "{app}"
+Source: "Scripts_Biodiv\View.R"; DestDir: "{app}"
+
+;; Autres fichiers de la plateforme :
 Source: "Scripts_Biodiv\corresp-cat-benth.csv"; DestDir: "{app}"
-Source: "Scripts_Biodiv\fonctions_base.R"; DestDir: "{app}"
-Source: "Scripts_Biodiv\gestionmessages.r"; DestDir: "{app}"
-Source: "Scripts_Biodiv\Global.r"; DestDir: "{app}"
-Source: "Scripts_Biodiv\import.r"; DestDir: "{app}"
-Source: "Scripts_Biodiv\importdefaut.r"; DestDir: "{app}"
-Source: "Scripts_Biodiv\interface.r"; DestDir: "{app}"
-Source: "Scripts_Biodiv\interface_fonctions.R"; DestDir: "{app}"
-Source: "Scripts_Biodiv\load_packages.R"; DestDir: "{app}"
-Source: "Scripts_Biodiv\mkfilegroupe.r"; DestDir: "{app}"
-Source: "Scripts_Biodiv\modeles_lineaires_esp_generiques.R"; DestDir: "{app}"
-Source: "Scripts_Biodiv\modeles_lineaires_unitobs_generiques.R"; DestDir: "{app}"
-Source: "Scripts_Biodiv\modeles_lineaires_interface.R"; DestDir: "{app}"
-Source: "Scripts_Biodiv\modifinterface.r"; DestDir: "{app}"
 Source: "Scripts_Biodiv\NomsVariables_fr.csv"; DestDir: "{app}"
 Source: "Scripts_Biodiv\NomsVariables_en.csv"; DestDir: "{app}"
-Source: "Scripts_Biodiv\PAMPA WP2.bat"; DestDir: "{app}"
-Source: "Scripts_Biodiv\requetes.r"; DestDir: "{app}"
 Source: "Scripts_Biodiv\Rprofile.site"; DestDir: "{app}"
-Source: "Scripts_Biodiv\selection_variables_fonctions.R"; DestDir: "{app}"
-Source: "Scripts_Biodiv\selection_variables_interface.R"; DestDir: "{app}"
-Source: "Scripts_Biodiv\testfichier.r"; DestDir: "{app}"
-Source: "Scripts_Biodiv\view.r"; DestDir: "{app}"
-Source: "Scripts_Biodiv\nombres_SVR.R"; DestDir: "{app}"
-Source: "Scripts_Biodiv\arbres_regression_unitobs_generiques.R"; DestDir: "{app}"
-Source: "Scripts_Biodiv\arbres_regression_esp_generiques.R"; DestDir: "{app}"
-Source: "Scripts_Biodiv\demo_cartes.R"; DestDir: "{app}"
+
+;; Fichiers de licence :
+Source: "Scripts_Biodiv\LICENCE-GPL-2.fr.txt"; DestDir: "{app}"
+Source: "Scripts_Biodiv\LICENCE-GPL-2.txt"; DestDir: "{app}"
+Source: "Scripts_Biodiv\LICENCE-GPL-3.0.fr.txt"; DestDir: "{app}"
+Source: "Scripts_Biodiv\LICENCE-GPL-3.0.txt"; DestDir: "{app}"
 
 [Icons]
 ;; IconFilename: "{app}\img\Pampa.ico" pour définir l'icone d'un raccourci.

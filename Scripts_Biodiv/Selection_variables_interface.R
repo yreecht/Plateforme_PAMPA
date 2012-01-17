@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: Selection_variables_interface.R
-### Time-stamp: <2011-11-17 17:14:28 yreecht>
+### Time-stamp: <2012-01-13 15:49:54 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -396,7 +396,7 @@ selectModWindow.f <- function(champ, data, selectmode="multiple", sort=TRUE, pre
 
 
 ########################################################################################################################
-selectModalites.f <- function(factor, tableMetrique, env, nextStep, level=0)
+selectModalites.f <- function(factor, tableMetrique, env, nextStep, dataEnv, level=0)
 {
     ## Purpose: Sélection et stockage des modalités d'un facteur
     ## ----------------------------------------------------------------------
@@ -416,7 +416,7 @@ selectModalites.f <- function(factor, tableMetrique, env, nextStep, level=0)
                     get("listFactSel", envir=env))
 
     preselect <- NULL                   # sélections persistantes d'une fois sur l'autre
-    if (!is.na(selection[level + 1]))
+    if (!is.na(selections[level + 1]))
     {
         preselect <- selections[[level + 1]]
     }
@@ -424,16 +424,16 @@ selectModalites.f <- function(factor, tableMetrique, env, nextStep, level=0)
     ## Table réduite :
     metrique <- tclvalue(get("MetriqueChoisie" , envir=env))
 
-    ## Pour les indices de biodiversité recalculés, il faut utiliser "listespunit" et une métrique adaptée.
+    ## Pour les indices de biodiversité recalculés, il faut utiliser "unitSp" et une métrique adaptée.
     if (is.element(nextStep, c("boxplot.unitobs", "modele_lineaire.unitobs", "MRT.unitobs")) &&
-        tableMetrique == "TableBiodiv")
+        tableMetrique == "unit")
     {
-        tableMetrique <- "listespunit"
+        tableMetrique <- "unitSp"
         metrique <- "nombre"
     }else{}
 
     tmp <- subsetToutesTables.f(metrique=metrique, facteurs=facts, selections=selections,
-                                tableMetrique=tableMetrique , exclude=level + 1)
+                                dataEnv=dataEnv, tableMetrique=tableMetrique , exclude=level + 1)
 
     ## Sélection des modalités
     sel <- selectModWindow.f(champ=factor, data=tmp, selectmode="extended", preselect=preselect)
@@ -456,7 +456,7 @@ selectModalites.f <- function(factor, tableMetrique, env, nextStep, level=0)
 
 
 ########################################################################################################################
-verifVariables.f <- function(metrique, factGraph, factGraphSel, listFact, listFactSel, tableMetrique, nextStep,
+verifVariables.f <- function(metrique, factGraph, factGraphSel, listFact, listFactSel, tableMetrique, nextStep, dataEnv,
                              ParentWin=NULL)
 {
     ## Purpose: Vérification du choix des métrique et facteur(s) et retourne
@@ -470,6 +470,7 @@ verifVariables.f <- function(metrique, factGraph, factGraphSel, listFact, listFa
     ##                          dernier(s)
     ##            tableMetrique : nom de la table des métriques.
     ##            nextStep : nom de l'étape suivante.
+    ##            dataEnv : l'environnement des données.
     ##            ParentWin : Fenêtre parente.
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date:  6 août 2010, 15:07
@@ -491,11 +492,11 @@ verifVariables.f <- function(metrique, factGraph, factGraphSel, listFact, listFa
         return.val <- 0
     }else{}
 
-    ## Pour les indices de biodiversité recalculés, il faut utiliser "listespunit" et une métrique adaptée.
+    ## Pour les indices de biodiversité recalculés, il faut utiliser "unitSp" et une métrique adaptée.
     if (is.element(nextStep, c("boxplot.unitobs", "modele_lineaire.unitobs", "MRT.unitobs")) &&
-        tableMetrique == "TableBiodiv")
+        tableMetrique == "unit")
     {
-        tableMetrique <- "listespunit"
+        tableMetrique <- "unitSp"
         metrique <- "nombre"
     }else{}
 
@@ -524,7 +525,7 @@ verifVariables.f <- function(metrique, factGraph, factGraphSel, listFact, listFa
 
     ## Champs vides :
     champsVide <- sapply(subsetToutesTables.f(metrique=metrique, facteurs=facts, selections=selections,
-                                tableMetrique=tableMetrique , exclude=NULL),
+                                              dataEnv=dataEnv, tableMetrique=tableMetrique , exclude=NULL),
                          function(x) {all(is.na(x))})
 
     if (sum(champsVide) > 0)
@@ -538,7 +539,7 @@ verifVariables.f <- function(metrique, factGraph, factGraphSel, listFact, listFa
     }else{}
 
     ## Métrique par classe de taille mais facteur "classe_taille" pas retenu :
-    if (tableMetrique == "unitespta" & !is.element("classe_taille", facts))
+    if (tableMetrique == "unitSpSz" & !is.element("classe_taille", facts))
     {
         infoLoading.f(msg=paste("Attention : représentation d'une métrique par classes de taille\n",
                                 "mais 'classe_taille' n'est pas utilisée comme facteur"),
@@ -572,20 +573,24 @@ verifVariables.f <- function(metrique, factGraph, factGraphSel, listFact, listFa
     if (is.element(nextStep, c("boxplot.unitobs", "modele_lineaire.unitobs", "MRT.unitobs")) &&
         return.val)                     # Inutile si déjà des erreurs (risque de plantage).
     {
-        if (is.null(agregationTableParCritere.f(Data=subsetToutesTables.f(metrique=metrique,
-                                                                          facteurs=facts,
-                                                                          selections=selections,
-                                                                          tableMetrique=tableMetrique,
-                                                                          add=c("unite_observation", "code_espece")),
-                                                metrique=metrique,
-                                                facteurs=if(tableMetrique == "unitespta" &&
-                                                            factGraph != "classe_taille")
-                                                         {
-                                                             c("unite_observation", "classe_taille")
-                                                         }else{
-                                                             c("unite_observation")
-                                                         },
-                                                listFact=listFact[unlist(listFact) != ""])))
+        if (is.null(agregations.generic.f(Data=subsetToutesTables.f(metrique=metrique,
+                                                                    facteurs=facts,
+                                                                    selections=selections,
+                                                                    dataEnv=dataEnv,
+                                                                    tableMetrique=tableMetrique,
+                                                                    add=c("unite_observation", "code_espece")),
+                                          metrics=metrique,
+                                          factors=if(tableMetrique == "unitSpSz" &&
+                                          factGraph != "classe_taille")
+                                      {
+                                          c("unite_observation", "classe_taille")
+                                      }else{
+                                          c("unite_observation")
+                                      },
+                                          listFact=listFact[unlist(listFact) != ""],
+                                          unitSpSz=get("unitSpSz", envir=dataEnv),
+                                          unitSp=get("unitSp", envir=dataEnv),
+                                          info=TRUE)))
         {
             infoLoading.f(msg=paste("Un des facteurs de regroupement est une sous-catégorie",
                                     "\nd'un des facteurs d'agrégation (e.g. espèce -> Famille).",
@@ -601,7 +606,7 @@ verifVariables.f <- function(metrique, factGraph, factGraphSel, listFact, listFa
     if (is.element(nextStep, c("modele_lineaire", "modele_lineaire.unitobs")))
     {
         data <- subsetToutesTables.f(metrique=metrique, facteurs=facts, selections=selections,
-                                     tableMetrique=tableMetrique, add=NULL)
+                                     dataEnv=dataEnv, tableMetrique=tableMetrique, add=NULL)
 
         ## Les facteurs doivent avoir au moins deux niveaux :
         if (any(sapply(data[ , !is.element(colnames(data), c(metrique, factGraph)), drop=FALSE],
@@ -680,10 +685,14 @@ updateMetrique.f <- function(nomTable, env)
     ## Traitements spécifiques au choix d'une table de métrique.
     switch(nomTable,
 
-           ## Si table listespunit (métriques d'observation) :
-           listespunit={
-               evalq(tkconfigure(CB.metrique, value=champsMetriques.f("listespunit", nextStep)), envir=env)
-               evalq(if (!is.element(tclvalue(MetriqueChoisie), champsMetriques.f("listespunit", nextStep)))
+           ## Si table unitSp (métriques d'observation) :
+           unitSp={
+               evalq(tkconfigure(CB.metrique,
+                                 value=champsMetriques.f(nomTable="unitSp", nextStep=nextStep, dataEnv=dataEnv)),
+                     envir=env)
+
+               evalq(if (!is.element(tclvalue(MetriqueChoisie),
+                                     champsMetriques.f(nomTable="unitSp", nextStep=nextStep, dataEnv=dataEnv)))
                  {
                      tclvalue(MetriqueChoisie) <- ""                           # réinitialisation
                      tryCatch(tkconfigure(RB.factGraphRefesp, state="normal"), # réactivation du référentiel
@@ -691,10 +700,14 @@ updateMetrique.f <- function(nomTable, env)
                  }, envir=env)
 
            },
-           ## Si table unitespta (métriques d'observation) :
-           unitespta={
-               evalq(tkconfigure(CB.metrique, value=champsMetriques.f("unitespta", nextStep)), envir=env)
-               evalq(if (!is.element(tclvalue(MetriqueChoisie), champsMetriques.f("unitespta", nextStep)))
+           ## Si table unitSpSz (métriques d'observation) :
+           unitSpSz={
+               evalq(tkconfigure(CB.metrique,
+                                 value=champsMetriques.f(nomTable="unitSpSz", nextStep=nextStep, dataEnv=dataEnv)),
+                     envir=env)
+
+               evalq(if (!is.element(tclvalue(MetriqueChoisie),
+                                     champsMetriques.f(nomTable="unitSpSz", nextStep=nextStep, dataEnv=dataEnv)))
                  {
                      tclvalue(MetriqueChoisie) <- ""                           # réinitialisation
                      tryCatch(tkconfigure(RB.factGraphRefesp, state="normal"), # réactivation du référentiel
@@ -702,9 +715,13 @@ updateMetrique.f <- function(nomTable, env)
                  }, envir=env)
            },
            ## Si table TabbleBiodiv (indices de biodiversité) :
-           TableBiodiv={
-               evalq(tkconfigure(CB.metrique, value=champsMetriques.f("TableBiodiv", nextStep)), envir=env)
-               evalq(if (!is.element(tclvalue(MetriqueChoisie), champsMetriques.f("TableBiodiv", nextStep)))
+           unit={
+               evalq(tkconfigure(CB.metrique,
+                                 value=champsMetriques.f(nomTable="unit", nextStep=nextStep, dataEnv=dataEnv)),
+                     envir=env)
+
+               evalq(if (!is.element(tclvalue(MetriqueChoisie),
+                                     champsMetriques.f(nomTable="unit", nextStep=nextStep, dataEnv=dataEnv)))
                  {
                      tclvalue(MetriqueChoisie) <- "" # réinitialisation
                  }, envir=env)
@@ -733,12 +750,14 @@ updateMetrique.f <- function(nomTable, env)
         eval(parse(text=
                    eval(substitute(paste("tkconfigure(CB.fact", level,
                                          ", value=champsReferentiels.f(nomTable=tclvalue(TableMetrique),",
+                                         " dataEnv=dataEnv,",
                                          " nextStep=nextStep))", sep=""),
                                    list(level=1:length(listFacteurs))))), envir=env)
 
         eval(parse(text=
                    eval(substitute(paste("if (!is.element(tclvalue(listFacteurs[[", level,
                                          "]]), champsReferentiels.f(nomTable=tclvalue(TableMetrique),",
+                                         " dataEnv=dataEnv,",
                                          " nextStep=nextStep)))",
                                          "{ tclvalue(listFacteurs[[", level, "]]) <- '' ; ",
                                          "updateFact.f(level=", level,", env=env)}", sep=""),
@@ -765,12 +784,14 @@ updateFactGraph.f <- function(nomTable, env)
            ## Si table "référentiel d'espèce" :
            refesp={
                evalq(tkconfigure(CB.factGraph,
-                                 value=champsRefEspeces.f(siteEtudie, ordered=TRUE,
+                                 value=champsRefEspeces.f(site=getOption("P.MPA"),
+                                                          dataEnv=dataEnv, ordered=TRUE,
                                                           tableMetrique=tclvalue(TableMetrique),
                                                           nextStep=nextStep)),
                      envir=env)
                evalq(if (!is.element(tclvalue(FacteurGraph),
-                                     champsRefEspeces.f(siteEtudie, tableMetrique=tclvalue(TableMetrique),
+                                     champsRefEspeces.f(site=getOption("P.MPA"),
+                                                        dataEnv=dataEnv, tableMetrique=tclvalue(TableMetrique),
                                                         nextStep=nextStep)))
                  {
                      tclvalue(FacteurGraph) <- "" # réinitialisation de la sélection.
@@ -779,9 +800,11 @@ updateFactGraph.f <- function(nomTable, env)
            ## Si table des "unités d'observation" :
            unitobs={
                evalq(tkconfigure(CB.factGraph,
-                                 value=champsUnitobs.f(ordered=TRUE, tableMetrique=tclvalue(TableMetrique))),
+                                 value=champsUnitobs.f(dataEnv=dataEnv, ordered=TRUE, tableMetrique=tclvalue(TableMetrique))),
                      envir=env)
-               evalq(if (!is.element(tclvalue(FacteurGraph), champsUnitobs.f(tableMetrique=tclvalue(TableMetrique))))
+
+               evalq(if (!is.element(tclvalue(FacteurGraph),
+                                     champsUnitobs.f(dataEnv=dataEnv, tableMetrique=tclvalue(TableMetrique))))
                  {
                      tclvalue(FacteurGraph) <- "" # réinitialisation de la sélection.
                  }, envir=env)
@@ -853,6 +876,7 @@ nouvChoixFact.f <- function(level, env)
 
         exprCB <- paste("CB.fact", level + 1, " <- ttkcombobox(FrameFact,",
                         " value=champsReferentiels.f(nomTable=tclvalue(TableMetrique),",
+                        " dataEnv=dataEnv,",
                         " nextStep=nextStep),",
                         " textvariable=listFacteurs[[", level + 1, "]], state='readonly')", sep="")
         ## Création d'un bouton de sélection des modalités supplémentaire :
@@ -860,7 +884,8 @@ nouvChoixFact.f <- function(level, env)
                          " <- tkbutton(FrameFact, text=' Sélection... ', command=function()",
                          " { selectModalites.f(tclvalue(listFacteurs[[", level + 1, "]]), ",
                          "tableMetrique=tclvalue(TableMetrique), env=env, level=",
-                         level + 1, ", nextStep=nextStep) ; winRaise.f(WinSelection) })", sep="")
+                         level + 1, ", nextStep=nextStep, dataEnv=dataEnv) ; winRaise.f(WinSelection) })",
+                         sep="")
         ## Affichage de la combobox et du bouton :
         exprGrid <- paste("tkgrid(tklabel(FrameFact, text='Facteur ",
                           level + 1, " '), CB.fact", level + 1, ", B.factSel", level + 1,
@@ -958,7 +983,7 @@ titreSelVar.f <- function(type, nextStep)
 
 
 ########################################################################################################################
-selectionVariables.f <- function(nextStep)
+selectionVariables.f <- function(nextStep, dataEnv)
 {
     ## Purpose: * Sélection des métrique et facteur(s) ainsi que leur(s)
     ##            modalité(s).
@@ -970,7 +995,8 @@ selectionVariables.f <- function(nextStep)
     ##                       "freq_occurrence", "freq_occurrence.unitobs",
     ##                       "boxplot.unitobs", "modele_lineaire.unitobs",
     ##                       "MRT.unitobs", "MRT.esp",...
-    ##                       [appelé à s'étoffer])
+    ##                       [appelé à s'étoffer]).
+    ##            dataEnv : l'environnement des données.
     ## Note : les arguments de cette fonction peuvent changer à l'avenir
     ##        (ajouts)
     ## ----------------------------------------------------------------------
@@ -1012,21 +1038,21 @@ selectionVariables.f <- function(nextStep)
                  "MRT.esp"="MRT.esp")
 
     ## Liste des métriques :
-    metriques <- champsMetriques.f("listespunit", nextStep)
+    metriques <- champsMetriques.f(nomTable="unitSp", nextStep=nextStep, dataEnv=dataEnv)
 
-    TableMetrique <- tclVar("listespunit")  # Table des métriques.
-    MetriqueChoisie <- tclVar("")           # Métrique choisieb
+    TableMetrique <- tclVar("unitSp")   # Table des métriques.
+    MetriqueChoisie <- tclVar("")       # Métrique choisie.
 
-    FacteurGraph <- tclVar("")              # Facteur de séparation des graphiques/sélection d'espèces.
-    FacteurGraph.old <- ""                  # Stockage de l'encien facteur (pour réinitialiser les modalités
+    FacteurGraph <- tclVar("")          # Facteur de séparation des graphiques/sélection d'espèces.
+    FacteurGraph.old <- ""              # Stockage de l'encien facteur (pour réinitialiser les modalités
                                         # sélectionnées si besoin).
-    FactGraphTbl <- tclVar("refesp")        # Table (ref espèce ou unitobs) à laquel il appartient
-    factGraphSel <- NA                      # Modalités sélectionnées
+    FactGraphTbl <- tclVar("refesp")    # Table (ref espèce ou unitobs) à laquel il appartient
+    factGraphSel <- NA                  # Modalités sélectionnées
 
-    listFacteurs <- list(tclVar(""))        # Liste des facteurs de regroupement
-    listFacteurs.old <- list("")            # Stockage des enciens facteurs (pour réinitialiser les modalités
+    listFacteurs <- list(tclVar(""))    # Liste des facteurs de regroupement
+    listFacteurs.old <- list("")        # Stockage des enciens facteurs (pour réinitialiser les modalités
                                         # sélectionnées si besoin).
-    listFactSel <- list(NA)                 # Liste des modalités sélectionnées
+    listFactSel <- list(NA)             # Liste des modalités sélectionnées
 
     ## ########################
     ## Éléments graphiques :
@@ -1051,12 +1077,12 @@ selectionVariables.f <- function(nextStep)
 
         CB.metrique <- ttkcombobox(FrameMetrique, value=metriques, textvariable=MetriqueChoisie,
                                    state="readonly")
-        RB.unitespta <- tkradiobutton(FrameMetrique, variable=TableMetrique,
-                                      value="unitespta", text=titreSelVar.f(type="tabListespCT", nextStep))
-        RB.listespunit <- tkradiobutton(FrameMetrique, variable=TableMetrique,
-                                        value="listespunit", text=titreSelVar.f(type="tabListesp", nextStep))
-        RB.TableBiodiv <- tkradiobutton(FrameMetrique, variable=TableMetrique,
-                                        value="TableBiodiv", text="...de biodiversité ( / unité d'observation)")
+        RB.unitSpSz <- tkradiobutton(FrameMetrique, variable=TableMetrique,
+                                      value="unitSpSz", text=titreSelVar.f(type="tabListespCT", nextStep))
+        RB.unitSp <- tkradiobutton(FrameMetrique, variable=TableMetrique,
+                                        value="unitSp", text=titreSelVar.f(type="tabListesp", nextStep))
+        RB.unit <- tkradiobutton(FrameMetrique, variable=TableMetrique,
+                                        value="unit", text="...de biodiversité ( / unité d'observation)")
     }
 
     ## Choix du facteur de séparation des graphs + modalités :
@@ -1069,19 +1095,21 @@ selectionVariables.f <- function(nextStep)
     CB.factGraph <- ttkcombobox(FrameGB, value="", textvariable=FacteurGraph, state="readonly")
     B.factGraphSel <- tkbutton(FrameGB, text=" Sélection... ", command=function()
                            {
-                               selectModalites.f(tclvalue(FacteurGraph), tableMetrique=tclvalue(TableMetrique),
-                                                 env=env, level=0, nextStep=nextStep)
+                               selectModalites.f(factor=tclvalue(FacteurGraph), tableMetrique=tclvalue(TableMetrique),
+                                                 env=env, level=0, nextStep=nextStep, dataEnv=dataEnv)
                                winRaise.f(WinSelection)
                            })
 
     ## Choix des facteurs de regroupement + modalités :
     FrameFact <- tkframe(WinSelection, borderwidth=2, relief="groove")
-    CB.fact1 <- ttkcombobox(FrameFact, value=champsReferentiels.f(nomTable=tclvalue(TableMetrique), nextStep=nextStep),
+    CB.fact1 <- ttkcombobox(FrameFact,
+                            value=champsReferentiels.f(nomTable=tclvalue(TableMetrique), dataEnv=dataEnv,
+                                                       nextStep=nextStep),
                             textvariable=listFacteurs[[1]], state="readonly")
     B.factSel1 <- tkbutton(FrameFact, text=" Sélection... ", command=function()
                        {
                            selectModalites.f(tclvalue(listFacteurs[[1]]), tableMetrique=tclvalue(TableMetrique),
-                                             env=env, level=1, nextStep=nextStep)
+                                             env=env, level=1, nextStep=nextStep, dataEnv=dataEnv)
                            winRaise.f(WinSelection)
                        })
 
@@ -1104,9 +1132,9 @@ selectionVariables.f <- function(nextStep)
     ## Évènements :
     if (! is.element(nextStep, nextStepMetriqueFixe)) # Uniquement si choix de métrique possible.
     {
-        tkbind(RB.listespunit, "<Leave>", function(){updateMetrique.f(nomTable=tclvalue(TableMetrique), env=env)})
-        tkbind(RB.unitespta, "<Leave>", function(){updateMetrique.f(nomTable=tclvalue(TableMetrique), env=env)})
-        tkbind(RB.TableBiodiv, "<Leave>", function(){updateMetrique.f(nomTable=tclvalue(TableMetrique), env=env)})
+        tkbind(RB.unitSp, "<Leave>", function(){updateMetrique.f(nomTable=tclvalue(TableMetrique), env=env)})
+        tkbind(RB.unitSpSz, "<Leave>", function(){updateMetrique.f(nomTable=tclvalue(TableMetrique), env=env)})
+        tkbind(RB.unit, "<Leave>", function(){updateMetrique.f(nomTable=tclvalue(TableMetrique), env=env)})
     }else{}
 
     tkbind(RB.factGraphUnitobs, "<Leave>", function(){updateFactGraph.f(nomTable=tclvalue(FactGraphTbl), env=env)})
@@ -1129,26 +1157,26 @@ selectionVariables.f <- function(nextStep)
 
         if (!is.benthos.f() && !is.element(nextStep, nextStepSansCT)) # Table pas pertinente pour benthos
         {
-            tkgrid(RB.unitespta, sticky="w")
-            if (nrow(unitespta) == 0)           # désactivation si pas de classe de taille dispo.
+            tkgrid(RB.unitSpSz, sticky="w")
+            if (nrow(get("unitSpSz", envir=dataEnv)) == 0) # désactivation si pas de classe de taille dispo.
             {
-                tkconfigure(RB.unitespta, state="disabled")
+                tkconfigure(RB.unitSpSz, state="disabled")
             }else{}
         }else{}
 
 
         if (is.element(nextStep, c(nextStepBiodiv)))
         {
-            tkgrid(RB.listespunit, sticky="w")
-            tkgrid(RB.TableBiodiv, CB.metrique, tklabel(FrameMetrique, text=" \n"), sticky="w")
+            tkgrid(RB.unitSp, sticky="w")
+            tkgrid(RB.unit, CB.metrique, tklabel(FrameMetrique, text=" \n"), sticky="w")
         }else{
-            tkgrid(RB.listespunit, CB.metrique, tklabel(FrameMetrique, text=" \n"), sticky="w")
+            tkgrid(RB.unitSp, CB.metrique, tklabel(FrameMetrique, text=" \n"), sticky="w")
         }
 
         ## if (is.element(nextStep, nextStepUnitobs)) # Désactivation temporaire de la biodiversité (en attendant fonctions
         ##                                 # de recalcul).
         ## {
-        ##     tkconfigure(RB.TableBiodiv, state="disabled")
+        ##     tkconfigure(RB.unit, state="disabled")
         ## }else{}
     }else{}
 
@@ -1167,7 +1195,8 @@ selectionVariables.f <- function(nextStep)
     tkgrid(tklabel(WinSelection), column=4)
 
     tkconfigure(CB.factGraph,
-                value=champsRefEspeces.f(siteEtudie, ordered=TRUE, tableMetrique=tclvalue(TableMetrique),
+                value=champsRefEspeces.f(site=getOption("P.MPA"), dataEnv=dataEnv,
+                                         ordered=TRUE, tableMetrique=tclvalue(TableMetrique),
                                          nextStep=nextStep))
     ## tkconfigure(CB.metrique, value=champsMetriques.f(tclvalue(TableMetrique), nextStep)) # inutile
 
@@ -1209,7 +1238,7 @@ selectionVariables.f <- function(nextStep)
                                                factGraph=tclvalue(FacteurGraph), factGraphSel=factGraphSel,
                                                listFact=sapply(listFacteurs, tclvalue), listFactSel=listFactSel,
                                                tableMetrique=tclvalue(TableMetrique),
-                                               nextStep=nextStep,
+                                               nextStep=nextStep, dataEnv=dataEnv,
                                                ParentWin=WinSelection)
 
             if (tclvalue(Done) != "1") {next()} # traitement en fonction du statut : itération
@@ -1223,7 +1252,7 @@ selectionVariables.f <- function(nextStep)
                        WP2boxplot.f(metrique=tclvalue(MetriqueChoisie),
                                     factGraph=tclvalue(FacteurGraph), factGraphSel=factGraphSel,
                                     listFact=sapply(listFacteurs, tclvalue), listFactSel=listFactSel,
-                                    tableMetrique=tclvalue(TableMetrique))
+                                    tableMetrique=tclvalue(TableMetrique), dataEnv=dataEnv)
                    },
                    modele_lineaire={
 
@@ -1231,33 +1260,35 @@ selectionVariables.f <- function(nextStep)
                        modeleLineaireWP2.esp.f(metrique=tclvalue(MetriqueChoisie),
                                                factAna=tclvalue(FacteurGraph), factAnaSel=factGraphSel,
                                                listFact=sapply(listFacteurs, tclvalue), listFactSel=listFactSel,
-                                               tableMetrique=tclvalue(TableMetrique))
+                                               tableMetrique=tclvalue(TableMetrique), dataEnv=dataEnv)
                    },
                    freq_occurrence={
                        barplotOccurrence.f(factGraph=tclvalue(FacteurGraph), factGraphSel=factGraphSel,
-                                           listFact=sapply(listFacteurs, tclvalue), listFactSel=listFactSel)
+                                           listFact=sapply(listFacteurs, tclvalue), listFactSel=listFactSel,
+                                           dataEnv=dataEnv)
                    },
                    freq_occurrence.unitobs={
                        barplotOccurrence.unitobs.f(factGraph=tclvalue(FacteurGraph), factGraphSel=factGraphSel,
-                                           listFact=sapply(listFacteurs, tclvalue), listFactSel=listFactSel)
+                                                   listFact=sapply(listFacteurs, tclvalue), listFactSel=listFactSel,
+                                                   dataEnv=dataEnv)
                    },
                    boxplot.unitobs={
                        WP2boxplot.unitobs.f(metrique=tclvalue(MetriqueChoisie),
                                             factGraph=tclvalue(FacteurGraph), factGraphSel=factGraphSel,
                                             listFact=sapply(listFacteurs, tclvalue), listFactSel=listFactSel,
-                                            tableMetrique=tclvalue(TableMetrique))
+                                            tableMetrique=tclvalue(TableMetrique), dataEnv=dataEnv)
                    },
                    modele_lineaire.unitobs={
                         modeleLineaireWP2.unitobs.f(metrique=tclvalue(MetriqueChoisie),
                                                     factAna=tclvalue(FacteurGraph), factAnaSel=factGraphSel,
                                                     listFact=sapply(listFacteurs, tclvalue), listFactSel=listFactSel,
-                                                    tableMetrique=tclvalue(TableMetrique))
+                                                    tableMetrique=tclvalue(TableMetrique), dataEnv=dataEnv)
                    },
                    MRT.unitobs={
                        WP2MRT.unitobs.f(metrique=tclvalue(MetriqueChoisie),
                                         factGraph=tclvalue(FacteurGraph), factGraphSel=factGraphSel,
                                         listFact=sapply(listFacteurs, tclvalue), listFactSel=listFactSel,
-                                        tableMetrique=tclvalue(TableMetrique))
+                                        tableMetrique=tclvalue(TableMetrique), dataEnv=dataEnv)
                    },
                    MRT.esp={
 
@@ -1265,7 +1296,7 @@ selectionVariables.f <- function(nextStep)
                        WP2MRT.esp.f(metrique=tclvalue(MetriqueChoisie),
                                     factGraph=tclvalue(FacteurGraph), factGraphSel=factGraphSel,
                                     listFact=sapply(listFacteurs, tclvalue), listFactSel=listFactSel,
-                                    tableMetrique=tclvalue(TableMetrique))
+                                    tableMetrique=tclvalue(TableMetrique), dataEnv=dataEnv)
                    },
                    tkmessageBox(message=paste("Aucune action (option '", nextStep, "' pas implémentée).", sep=""),
                                 icon="warning"))

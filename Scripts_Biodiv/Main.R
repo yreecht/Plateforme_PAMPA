@@ -1,0 +1,124 @@
+#-*- coding: latin-1 -*-
+
+### File: Main.R
+### Time-stamp: <2012-01-16 18:13:00 yreecht>
+###
+### Author: Yves Reecht
+###
+####################################################################################################
+### Description:
+###
+### Objet            : Programme de calcul des métriques "ressources & biodiversité".
+### Date de création : Février 2008
+###
+####################################################################################################
+
+## ** Version **
+options(versionPAMPA = "2.0-alpha1")
+
+## Platform-specific treatment:
+## Identification du dossier parent (d'installation) :
+fileCall <- sub("source\\([[:blank:]]*(file[[:blank:]]*=[[:blank:]]*)?(\"|\')([^\"\']*)(\"|\')[[:blank:]]*(,.*\\)|\\))",
+                "\\3",
+                paste(deparse(sys.call(-2)), collapse=""))
+
+## Réglage du dossier de travail de R :
+if(basename(fileCall) == "Main.R")
+{
+    setwd(paste(dirname(fileCall), "/../", sep=""))
+}else{
+    message("Dossier non-trouvé")
+    setwd("C:/PAMPA/")
+}
+
+## Récupéré dans une variable globale (beurk !) :
+basePath <- getwd()
+
+## Répertoire de travail par défaut (si pas configuré par ailleurs) :
+nameWorkspace <- basePath
+
+########################################################################################################################
+## Chargement des fonctions de la plateforme pour :
+                                                                                       # Mise en forme du code :
+## ...les fonctions communes de base :                                                 # -----------------------
+source("./Scripts_Biodiv/Load_packages.R", encoding="latin1")                          # OK
+source("./Scripts_Biodiv/Fonctions_base.R", encoding="latin1")                         # OK
+
+## ...la création de l'interface :
+source("./Scripts_Biodiv/Interface_fonctions.R", encoding="latin1")                    # OK
+source("./Scripts_Biodiv/Interface_principale.R", encoding="latin1")                   # OK
+
+## anciennes fonctions annexes de visualisation des données (corrigées) :
+source("./Scripts_Biodiv/Gestionmessages.R", encoding="latin1")                        # faite
+source("./Scripts_Biodiv/Testfichier.R", encoding="latin1")                            # faite
+source("./Scripts_Biodiv/View.R", encoding="latin1")                                   # faite
+
+## ...le chargement des données :
+source("./Scripts_Biodiv/Chargement_fichiers.R", encoding="latin1")                    # OK
+source("./Scripts_Biodiv/Chargement_manuel_fichiers.R", encoding="latin1")             # OK
+source("./Scripts_Biodiv/Calcul_poids.R", encoding="latin1")                           # OK
+
+## ...les calculs de tables de métriques :
+source("./Scripts_Biodiv/Agregations_generiques.R", encoding="latin1")                 # OK
+source("./Scripts_Biodiv/Calcul_tables_metriques.R", encoding="latin1")                # OK
+source("./Scripts_Biodiv/Calcul_tables_metriques_LIT.R", encoding="latin1")            # OK
+source("./Scripts_Biodiv/Nombres_SVR.R", encoding="latin1")                            # OK
+source("./Scripts_Biodiv/Calcul_tables_metriques_SVR.R", encoding="latin1")            # OK
+
+## ...la sélection des données :
+source("./Scripts_Biodiv/Selection_donnees.R", encoding="latin1")                      # OK
+
+##################################################
+## Analyses et graphiques :
+
+## ...l'interface de sélection des variables :
+source("./Scripts_Biodiv/Selection_variables_fonctions.R", encoding="latin1")          # OK
+source("./Scripts_Biodiv/Selection_variables_interface.R", encoding="latin1")          # OK
+
+## ...la création de boxplots (...) :
+source("./Scripts_Biodiv/Fonctions_graphiques.R", encoding="latin1")                   # OK
+source("./Scripts_Biodiv/Boxplots_esp_generiques.R", encoding="latin1")                # OK
+source("./Scripts_Biodiv/Boxplots_unitobs_generiques.R", encoding="latin1")            # OK
+## ...dont démonstartions sur des cartes :
+source("./Scripts_Biodiv/Demo_cartes.R", encoding="latin1")                            # OK
+
+## ...les analyses statistiques :
+source("./Scripts_Biodiv/Modeles_lineaires_interface.R", encoding="latin1")            # OK
+source("./Scripts_Biodiv/Modeles_lineaires_esp_generiques.R", encoding="latin1")       # OK
+source("./Scripts_Biodiv/Modeles_lineaires_unitobs_generiques.R", encoding="latin1")   # OK
+source("./Scripts_Biodiv/Arbres_regression_unitobs_generiques.R", encoding="latin1")   # OK
+source("./Scripts_Biodiv/Arbres_regression_esp_generiques.R", encoding="latin1")       # OK
+
+## ...les barplots sur les fréquences d'occurrence :
+source("./Scripts_Biodiv/Barplots_occurrence.R", encoding="latin1")                    # OK
+source("./Scripts_Biodiv/Barplots_occurrence_unitobs.R", encoding="latin1")            # OK
+
+
+########################################################################################################################
+## Configuration :
+source("./Scripts_Biodiv/Initialisation.R", encoding="latin1")
+
+## Initialisation des options graphiques (nouveau système) :
+if (is.null(getOption("GraphPAMPA")))   # uniquement si pas déjà initialisées (cas de lancement multiple)
+{
+    initialiseGraphOptions.f()
+}
+
+## On lance l'interface :
+mainInterface.create.f()
+
+#################### Tags de développement ####################
+## [!!!] : construction dangereuse, capilo-tractée ou erreur possible.
+## [imb] : fonctions imbriquées dans d'autres fonctions (à corriger)
+## [sll] : sans longueur des lignes (mise en forme du code pas terminée)
+## [inc] : expression/fonction incomplète.
+## [OK]  : problème corrigé.
+## [???] : comprend pas !
+## [sup] : supprimé.
+## [dep] : déplacé (menu).
+
+
+### Local Variables:
+### ispell-local-dictionary: "english"
+### fill-column: 120
+### End:

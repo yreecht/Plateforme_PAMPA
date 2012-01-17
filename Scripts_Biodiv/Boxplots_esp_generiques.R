@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: Boxplot_generique_calc.R
-### Time-stamp: <2011-09-01 15:34:41 yreecht>
+### Time-stamp: <2012-01-10 18:13:48 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -327,7 +327,7 @@ plotPetitsEffectifs.f <- function(objBP, nbmin=20)
 
 
 ########################################################################################################################
-WP2boxplot.f <- function(metrique, factGraph, factGraphSel, listFact, listFactSel, tableMetrique)
+WP2boxplot.f <- function(metrique, factGraph, factGraphSel, listFact, listFactSel, tableMetrique, dataEnv)
 {
     ## Purpose: Produire les boxplots en tenant compte des options graphiques
     ## ----------------------------------------------------------------------
@@ -357,7 +357,7 @@ WP2boxplot.f <- function(metrique, factGraph, factGraphSel, listFact, listFactSe
 
     ## Données pour la série de boxplots :
     tmpData <- subsetToutesTables.f(metrique=metrique, facteurs=facteurs, selections=selections,
-                                    tableMetrique=tableMetrique, exclude = NULL)
+                                    dataEnv=dataEnv, tableMetrique=tableMetrique, exclude = NULL)
 
     ## Formule du boxplot
     exprBP <- eval(parse(text=paste(metrique, "~", paste(listFact, collapse=" + "))))
@@ -421,11 +421,12 @@ WP2boxplot.f <- function(metrique, factGraph, factGraphSel, listFact, listFactSe
                                      modGraphSel        # la modalité courante uniquement.
                                  },
                                      listFact=listFact,
+                                     dataEnv=dataEnv,
                                      type=switch(tableMetrique, # différents types de graphs en fonction de la table de
                                         # données.
-                                                 "listespunit"={"espece"},
-                                                 "unitespta"={"CL_espece"},
-                                                 "TableBiodiv"={"unitobs"},
+                                                 "unitSp"={"espece"},
+                                                 "unitSpSz"={"CL_espece"},
+                                                 "unit"={"unitobs"},
                                                  "espece"),
                                      typeGraph="boxplot")
 
@@ -440,8 +441,8 @@ WP2boxplot.f <- function(metrique, factGraph, factGraphSel, listFact, listFactSe
                                   listFact=listFact,
                                   type=switch(tableMetrique, # différents types de graphs en fonction de la table de
                                         # données.
-                                              "listespunit"={"espece"},
-                                              "unitespta"={"CL_espece"},
+                                              "unitSp"={"espece"},
+                                              "unitSpSz"={"CL_espece"},
                                               "espece"))
 
         ## Label axe y :

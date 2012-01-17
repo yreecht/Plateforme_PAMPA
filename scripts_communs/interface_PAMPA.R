@@ -1,23 +1,23 @@
 #-*- coding: latin-1 -*-
 
 ### File: interface_PAMPA.R
-### Time-stamp: <2011-11-21 14:41:02 yreecht>
+### Time-stamp: <2011-11-23 15:43:56 yreecht>
 ###
 ### Author: Yves Reecht
 ###
 ####################################################################################################
 ### Description:
 ###
-### Script d'interface d'accueil commune pour les interfaces "Usages & fréquentation" et
+### Script d'interface d'accueil commune pour les interfaces "Usages" et
 ### "Ressources & biodiversité".
 ####################################################################################################
 
-source("Exec/interface_fonctions.R", encoding="latin1")
+source("Scripts_Biodiv/interface_fonctions.R", encoding="latin1")
 
 interface.PAMPA.f <- function()
 {
     ## Purpose: Crée une interface commune qui redirige l'utilisateur au
-    ##          choix vers l'interface "Usages & Fréquentation" ou
+    ##          choix vers l'interface "Usages" ou
     ##          "Ressources & Biodiversité".
     ## ----------------------------------------------------------------------
     ## Arguments: aucun
@@ -50,7 +50,7 @@ interface.PAMPA.f <- function()
                          ## tkwm.iconify(F.main)
                          tkdestroy(F.main)
 
-                         source("./Exec/Global.r", encoding="latin1")
+                         source("./Scripts_Biodiv/Global.r", encoding="latin1")
                      },
                          ## height=300,
                          text="Ressources & Biodiversité",
@@ -62,7 +62,7 @@ interface.PAMPA.f <- function()
                          ## tkwm.iconify(F.main)
                          tkdestroy(F.main)
 
-                         source("./SCRIPTS WP3/TopMenu.r"## , encoding="latin1"
+                         source("./SCRIPTS WP3/TopMenu.r"##, encoding="latin1"
                                 )
                      },
                          text="Usages & Perception",
@@ -109,9 +109,12 @@ interface.PAMPA.f <- function()
            function()
        {
            tkconfigure(L.info,
-                       text=paste("Calcul d'indicateurs relatifs aux usages et à la perception.",
-                                  "\n\nTraitement de données d'enquêtes.",
-                                  "\n\n\n\n",
+                       text=paste("Calcul d'indicateurs relatifs aux usages.",
+                                  "\n\nTraitement de données d'enquêtes :",
+                                  "\n\t* de fréquentation.",
+                                  "\n\t* de perception.",
+                                  "\n\t* auprès des pêcheurs (captures).",
+                                  "\n\t* ...",
                                   sep=""),
                        anchor="e")
        })

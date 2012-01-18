@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: Calcul_poids.R
-### Time-stamp: <2011-12-21 11:41:27 yreecht>
+### Time-stamp: <2012-01-17 23:20:25 yves>
 ###
 ### Author: Yves Reecht
 ###
@@ -227,6 +227,8 @@ calcWeightMPA.f <- function(Data, refesp, MPA,
     ##                  passant cet argument, on peut travailler sur une
     ##                  partie d'un jeu de données multi-sites.
     ##            vars : nom des colonnes de différents types dans Data.
+    ##
+    ## Output: Data avec les poids calculés dans la colonne "poids".
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date:  6 déc. 2010, 11:57
 

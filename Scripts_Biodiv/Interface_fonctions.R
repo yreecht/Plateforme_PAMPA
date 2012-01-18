@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: interface_fonctions.R
-### Time-stamp: <2012-01-15 17:55:49 yves>
+### Time-stamp: <2012-01-17 14:24:57 yves>
 ###
 ### Author: Yves Reecht
 ###
@@ -901,9 +901,12 @@ updateSummaryTable.f <- function(tclarray, fileNames, Data, table1)
 ########################################################################################################################
 updateInterface.load.f <- function(baseEnv, tabObs)
 {
-    ## Purpose:
+    ## Purpose: Mise à jour de l'interface principale après chargement des
+    ##          données. Indique les nombres effectifs d'unités d'observation
+    ##          et de codes d'espèces dans la table d'observations.
     ## ----------------------------------------------------------------------
-    ## Arguments:
+    ## Arguments: baseEnv : environnement de l'interface.
+    ##            tabObs : table des observation
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date:  3 janv. 2012, 15:55
 
@@ -991,7 +994,11 @@ updateInterface.load.f <- function(baseEnv, tabObs)
 ########################################################################################################################
 updateInterface.select.f <- function(criterion, tabObs, baseEnv)
 {
-    ## Purpose:
+    ## Purpose: Mise à jour de l'interface principale après sélection des
+    ##          données. Ajoute le critère de sélection à un éventuel critère
+    ##          existant dans l'espace d'information et
+    ##          indique les nombres effectifs restant d'unités d'observation
+    ##          et de codes d'espèces dans la table d'observations.
     ## ----------------------------------------------------------------------
     ## Arguments: criterion : le critère de sélection.
     ##            tabObs : la table des observations (après sélection).
@@ -1074,11 +1081,17 @@ updateInterface.select.f <- function(criterion, tabObs, baseEnv)
 }
 
 ########################################################################################################################
-updateInterface.restore.f <- function(Critere="Aucun", tabObs, baseEnv)
+updateInterface.restore.f <- function(criterion="Tout", tabObs, baseEnv)
 {
-    ## Purpose:
+    ## Purpose: Mise à jour de l'interface principale après restauration des
+    ##          données originales (avant sélection). Réinitialise les
+    ##          informations sur les critères de sélection et indique les
+    ##          nombres effectifs d'unités d'observation et de codes
+    ##          d'espèces dans la table d'observations.
     ## ----------------------------------------------------------------------
-    ## Arguments:
+    ## Arguments: criterion : le critère de sélection.
+    ##            tabObs : la table des observations (après sélection).
+    ##            baseEnv : l'environnement de l'interface.
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date:  4 janv. 2012, 13:50
 
@@ -1095,14 +1108,17 @@ updateInterface.restore.f <- function(Critere="Aucun", tabObs, baseEnv)
     ResumerSituationUnitobsSelectionnees <- get("ResumerSituationUnitobsSelectionnees", envir=baseEnv)
     selection <- get("selection", envir=baseEnv)
 
+    ## Suppression de la dernière colonne du tableau d'information :
     tkdelete(table1, "cols", "end", 1)
 
     tclarray[[0, 4]] <- ""
     tclarray[[2, 4]] <- nrow(tabObs)
 
+    ## Largeur automatique des colonnes du tableau :
     ColAutoWidth.f(table1)
 
-    tkconfigure(MonCritere, text=Critere)
+    ## Réinitialisation des critères de sélection :
+    tkconfigure(MonCritere, text=criterion)
 
     ## Titre du cadre de sélection en non-gras :
     tkconfigure(L.criteres, font=tkfont.create(size=8))

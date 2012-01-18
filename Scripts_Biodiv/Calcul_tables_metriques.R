@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: Calcul_tables_metriques.R
-### Time-stamp: <2012-01-16 18:47:24 yreecht>
+### Time-stamp: <2012-01-17 23:18:34 yves>
 ###
 ### Author: Yves Reecht
 ###
@@ -371,6 +371,8 @@ calc.unitSpSz.f <- function(obs, unitobs, refesp, dataEnv)
 
     runLog.f(msg=c("Calcul des métriques par unité d'observation, espèce et classe de taille :"))
 
+    pampaProfilingStart.f()
+
     ## Informations :
     stepInnerProgressBar.f(n=1, msg="Calcul des métriques par unité d'observation, espèce et classe de taille...")
 
@@ -416,6 +418,8 @@ calc.unitSpSz.f <- function(obs, unitobs, refesp, dataEnv)
                                "an"=NULL, "statut_protection"=NULL)
     }
 
+    pampaProfilingEnd.f()
+
     return(unitSpSz)
 }
 
@@ -454,6 +458,8 @@ calc.unitSp.f <- function(unitSpSz, obs, unitobs, dataEnv)
 
     ## Informations :
     stepInnerProgressBar.f(n=1, msg="Calcul des métriques par unité d'observation et espèce...")
+
+    pampaProfilingStart.f()
 
     if (FALSE) ## ! is.null(unitSpSz) && nrow(unitSpSz))
     {
@@ -505,6 +511,8 @@ calc.unitSp.f <- function(unitSpSz, obs, unitobs, dataEnv)
                          NULL
                      })
     }
+
+    pampaProfilingEnd.f()
 
     return(unitSp)
 }
@@ -569,6 +577,8 @@ calc.unit.f <- function(unitSp, obs, refesp, unitobs, dataEnv)
     ## Informations :
     stepInnerProgressBar.f(n=1, msg="Calcul des métriques par unité d'observation...")
 
+    pampaProfilingStart.f()
+
     casObsType <- c("SVR"="SVR",
                     "EMB"="Fishing", "DEB"="Fishing", "PSCI"="Fishing", "PecRec"="Fishing",
                     "LIT"="LIT",
@@ -593,6 +603,7 @@ calc.unit.f <- function(unitSp, obs, refesp, unitobs, dataEnv)
         unit <- NULL
     }
 
+    pampaProfilingEnd.f()
     return(unit)
 }
 
@@ -601,9 +612,13 @@ calc.unit.f <- function(unitSp, obs, refesp, unitobs, dataEnv)
 ########################################################################################################################
 calcTables.f <- function(obs, unitobs, refesp, dataEnv)
 {
-    ## Purpose:
+    ## Purpose: Lance le calcul des tables de métriques à divers niveaux
+    ##          d'agrégation.
     ## ----------------------------------------------------------------------
-    ## Arguments:
+    ## Arguments: obs : table des observations (data.frame).
+    ##            unitobs : table des unités d'observation (data.frame).
+    ##            refesp : référentiel espèces.
+    ##            dataEnv : environnement des données.
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 15 déc. 2011, 10:33
 
@@ -611,10 +626,13 @@ calcTables.f <- function(obs, unitobs, refesp, dataEnv)
 
     runLog.f(msg=c("Création des tables de base (calcul de métriques) :"))
 
+    ## Métriques par classe de taille par espèce par unité d'observation :
     unitSpSz <- calc.unitSpSz.f(obs=obs, unitobs=unitobs, refesp=refesp, dataEnv=dataEnv)
 
+    ## Métriques par espèce par unité d'observation :
     unitSp <- calc.unitSp.f(unitSpSz=unitSpSz, obs=obs, unitobs=unitobs, dataEnv=dataEnv)
 
+    ## Métriques par unité d'observation (dont biodiversité) :
     unit <- calc.unit.f(unitSp=unitSp, obs=obs, refesp=refesp, unitobs=unitobs, dataEnv=dataEnv)
 
     pampaProfilingEnd.f()

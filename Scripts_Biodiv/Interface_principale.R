@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: Interface_principale.R
-### Time-stamp: <2012-01-13 14:35:42 yreecht>
+### Time-stamp: <2012-01-17 19:32:44 yves>
 ###
 ### Author: Yves Reecht
 ###
@@ -114,21 +114,15 @@ mainInterface.create.f <- function()
           accelerator="CTRL+N",
           command = function()
       {
-
-          tryCatchLoad.f(assign("Data",            # [!!!] temporaire  [yr: 13/12/2011]
-                                loadManual.f(baseEnv=.baseEnv, dataEnv=.dataEnv),
-                                envir=.GlobalEnv),
+          tryCatchLoad.f(expr=loadManual.f(baseEnv=.baseEnv, dataEnv=.dataEnv),
                          baseEnv=.baseEnv)
       },
           background=.MenuBackground)
 
-    tkadd(import, "command", label="Dossiers et fichiers par defaut", accelerator="CTRL+A",
+    tkadd(import, "command", label="Dossiers et fichiers par défaut", accelerator="CTRL+A",
           command = function()
       {
-
-          tryCatchLoad.f(assign("Data",            # [!!!] temporaire  [yr: 13/12/2011]
-                                loadDefault.f(baseEnv=.baseEnv, dataEnv=.dataEnv),
-                                envir=.GlobalEnv),
+          tryCatchLoad.f(expr=loadDefault.f(baseEnv=.baseEnv, dataEnv=.dataEnv),
                          baseEnv=.baseEnv)
       },
           background=.MenuBackground)
@@ -478,7 +472,7 @@ mainInterface.create.f <- function()
     F.titreSelect <- tkframe(frameOverall, relief="groove", borderwidth=0, background="#FFEE70")
     ## tkgrid.propagate(frameOverall, "1")
 
-    ## Restauration des données originales :
+    ## Bouton de restauration des données originales :
     B.DataRestore <- tkbutton(F.titreSelect, text="Restaurer les données",
                               command=function()
                           {

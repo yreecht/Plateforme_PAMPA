@@ -107,14 +107,15 @@ gestionMSGaide.f <- function (namemsg, env=.GlobalEnv)
 }
 
 ########################################################################################################################
-add.logFrame.f <- function(msgID, env=.GlobalEnv,...)
+add.logFrame.f <- function(msgID, env=dataEnv,...)
 {
     ## Purpose: Ajout de messages dans le cadre d'info sur les chargements
     ##          et sélections.
     ## ----------------------------------------------------------------------
     ## Arguments: msgID : identifiant du type de message.
-    ##            env : environnement où est définit le cadre d'information.
-    ##            ... : arguments supplémentaires (dont l'existance est
+    ##            env : environnement où est définit le cadre d'information
+    ##                  (interface).
+    ##            ... : arguments supplémentaires (dont l'existence est
     ##                  testée en fonction du type de message choisi.)
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date:  9 nov. 2011, 16:01

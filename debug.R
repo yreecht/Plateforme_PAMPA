@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: debug.R
-### Time-stamp: <2012-01-15 20:36:22 yves>
+### Time-stamp: <2012-01-17 23:15:09 yves>
 ###
 ### Author: Yves Reecht
 ###
@@ -29,8 +29,10 @@ init.debug.f <- function(loadMain=FALSE)
         devDir <- "/media/ifremer/PAMPA/PAMPA/Scripts/packPAMPA-WP2/Exec/"
     }
 
-    source(paste(devDir, "Scripts_Biodiv/Chargement_fichiers.R", sep=""), encoding="latin1")
-    source(paste(devDir, "Scripts_Biodiv/Initialisation.R", sep=""), encoding="latin1")
+    source(paste(devDir, "Scripts_Biodiv/Agregations_generiques.R", sep=""), encoding="latin1")
+    source(paste(devDir, "Scripts_Biodiv/Calcul_tables_metriques.R", sep=""), encoding="latin1")
+    ## source(paste(devDir, "Scripts_Biodiv/Chargement_fichiers.R", sep=""), encoding="latin1")
+    ## source(paste(devDir, "Scripts_Biodiv/Initialisation.R", sep=""), encoding="latin1")
 
     ## source(paste(devDir, "Scripts_Biodiv/Fonctions_base.R", sep=""), encoding="latin1")
     ## source(paste(devDir, "Scripts_Biodiv/Gestionmessages.R", sep=""), encoding="latin1")
@@ -38,7 +40,6 @@ init.debug.f <- function(loadMain=FALSE)
     ## source(paste(devDir, "Scripts_Biodiv/Interface_fonctions.R", sep=""), encoding="latin1")
     ## source(paste(devDir, "Scripts_Biodiv/Chargement_manuel_fichiers.R", sep=""), encoding="latin1")
     ## source(paste(devDir, "Scripts_Biodiv/Calcul_poids.R", sep=""), encoding="latin1")
-    ## source(paste(devDir, "Scripts_Biodiv/Calcul_tables_metriques.R", sep=""), encoding="latin1")
     ## source(paste(devDir, "Scripts_Biodiv/Agregations_generiques.R", sep=""), encoding="latin1")
     ## source(paste(devDir, "Scripts_Biodiv/Selection_variables_fonctions.R", sep=""), encoding="latin1")
     ## source(paste(devDir, "Scripts_Biodiv/Selection_variables_interface.R", sep=""), encoding="latin1")

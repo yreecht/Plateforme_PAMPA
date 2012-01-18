@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: selection_donnees.R
-### Time-stamp: <2012-01-12 15:09:13 yreecht>
+### Time-stamp: <2012-01-17 15:27:21 yves>
 ###
 ### Author: Yves Reecht
 ###
@@ -165,9 +165,11 @@ selectionEsp.f <- function(refesp, obs)
 ########################################################################################################################
 selectionOnRefesp.f <- function(dataEnv, baseEnv)
 {
-    ## Purpose:
+    ## Purpose: Sélection des données (dans les observations) selon un
+    ##          critère du référentiel espèces.
     ## ----------------------------------------------------------------------
-    ## Arguments:
+    ## Arguments: baseEnv : environnement de l'interface principale.
+    ##            dataEnv : environnement des données.
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date:  4 janv. 2012, 14:54
 
@@ -254,7 +256,7 @@ selectionOnRefesp.f <- function(dataEnv, baseEnv)
         ## creationTablesCalcul.f()
 
         updateInterface.select.f(criterion=paste(selection[["facteur"]], ":",
-                                                paste(selection[["selection"]], collapse=", ")),
+                                                 paste(selection[["selection"]], collapse=", ")),
                                  tabObs=obs,
                                  baseEnv=baseEnv)
 
@@ -411,9 +413,11 @@ selectionUnitobs.f <- function(unitobs, obs)
 ########################################################################################################################
 selectionOnUnitobs.f <- function(dataEnv, baseEnv)
 {
-    ## Purpose:
+    ## Purpose: Sélection des données (dans les observations) selon un
+    ##          critère du référentiel d'unités d'observation.
     ## ----------------------------------------------------------------------
-    ## Arguments:
+    ## Arguments: baseEnv : environnement de l'interface principale.
+    ##            dataEnv : environnement des données.
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date:  5 janv. 2012, 21:02
 
@@ -517,15 +521,17 @@ selectionOnUnitobs.f <- function(dataEnv, baseEnv)
 ########################################################################################################################
 restoreData.f <- function(baseEnv, dataEnv)
 {
-    ## Purpose:
+    ## Purpose: Restauration des données originales (avant sélection selon un
+    ##          ou plusieurs critères).
     ## ----------------------------------------------------------------------
-    ## Arguments:
+    ## Arguments: baseEnv : environnement de l'interface principale.
+    ##            dataEnv : environnement des données.
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date:  6 janv. 2012, 15:44
 
     listInEnv.f(list=get("backup", envir=dataEnv), env=dataEnv)
 
-    updateInterface.restore.f(Critere = "Tout",
+    updateInterface.restore.f(criterion = "Tout",
                               tabObs=get("obs", envir=dataEnv),
                               baseEnv=baseEnv)
 

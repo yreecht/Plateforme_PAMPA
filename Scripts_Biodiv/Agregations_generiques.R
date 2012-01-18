@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: Agregations_generiques.R
-### Time-stamp: <2012-01-09 15:45:43 yreecht>
+### Time-stamp: <2012-01-17 22:53:24 yves>
 ###
 ### Author: Yves Reecht
 ###
@@ -11,6 +11,40 @@
 ###
 ####################################################################################################
 
+betterCbind <- function(..., dfList=NULL, deparse.level = 1)
+{
+    ## Purpose: Appliquer un cbind à des data.frames qui ont des colonnes
+    ##          communes en supprimant les redondances (comme un merge mais
+    ##          les lignes doivent être en mêmes nombres et
+    ##          dans le même ordre)
+    ## ----------------------------------------------------------------------
+    ## Arguments: ceux de cbind...
+    ##            dfList : une liste de data.frames (evite un do.call
+    ##                     supplémentaire).
+    ##                     ... est utilisé à la place si NULL.
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date: 17 janv. 2012, 21:10
+
+    if (is.null(dfList))
+    {
+        dfList <- list(...)
+    }else{}
+
+    return(do.call(cbind,
+                   c(list(dfList[[1]][ , c(tail(colnames(dfList[[1]]), -1),
+                                           head(colnames(dfList[[1]]), 1))]),
+                     lapply(dfList[-1],
+                            function(x, colDel)
+                        {
+                            return(x[ , !is.element(colnames(x),
+                                                    colDel),
+                                     drop=FALSE])
+                        },
+                            colDel=colnames(dfList[[1]])),
+                     deparse.level=deparse.level)))
+}
+
+########################################################################################################################
 agregation.f <- function(metric, Data, factors,casMetrique)
 {
     ## Purpose:
@@ -223,12 +257,16 @@ agregations.generic.f <- function(Data, metrics, factors, listFact=NULL, unitSpS
 
 
     ## Agrégation de la métrique selon les facteurs
-    ## (Reduce applique récursivement le merge() sur les résultats d'agrégation) :
-    reslong <- Reduce(function(x,y) {merge(x,y)},
-                      sapply(metrics,
-                             agregation.f,
-                             Data=Data, factors=factors, casMetrique=casMetrique,
-                             simplify=FALSE))
+    ## ## (Reduce applique récursivement le merge() sur les résultats d'agrégation) :
+    ## reslong <- Reduce(function(x,y) {merge(x,y)},
+    ##                   sapply(metrics,   # sapply utilisé pour avoir les noms.
+    ##                          agregation.f,
+    ##                          Data=Data, factors=factors, casMetrique=casMetrique,
+    ##                          simplify=FALSE))
+
+    reslong <- betterCbind(dfList=lapply(metrics,   # sapply utilisé pour avoir les noms.
+                                         agregation.f,
+                                         Data=Data, factors=factors, casMetrique=casMetrique))
 
     ## Agrégation et ajout des facteurs supplémentaires :
     if (!is.null(listFact))
@@ -298,10 +336,6 @@ agregations.generic.f <- function(Data, metrics, factors, listFact=NULL, unitSpS
         return(reslong)
     }
 }
-
-
-
-
 
 
 

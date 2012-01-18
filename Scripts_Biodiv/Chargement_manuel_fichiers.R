@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: Chargement_manuel_fichiers.R
-### Time-stamp: <2012-01-13 14:18:16 yreecht>
+### Time-stamp: <2012-01-17 23:20:24 yves>
 ###
 ### Author: Yves Reecht
 ###
@@ -30,7 +30,7 @@ loadManual.f <- function(baseEnv, dataEnv)
     ## Choix des fichiers et dossiers :
     fileNames <- chooseFiles.f(dataEnv = dataEnv)
 
-
+    ## ...après chooseFiles.f car utilise une éventuelle valeur préalable de l'espace de travail.
     suppressWarnings(rm(list=ls(envir=dataEnv)[!is.element(ls(envir=dataEnv), "fileNames")],
                         envir=dataEnv)) # [!!!] revoir  [yr: 13/12/2011]
 

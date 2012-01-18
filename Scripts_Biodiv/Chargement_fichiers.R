@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: Chargement_fichiers.R
-### Time-stamp: <2012-01-16 15:26:39 yreecht>
+### Time-stamp: <2012-01-17 23:20:23 yves>
 ###
 ### Author: Yves Reecht
 ###
@@ -413,7 +413,7 @@ testConfig.f <- function(requiredVar, fileNames=NULL, dataEnv=NULL)
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 08 dec. 2011, 15:10
 
-    ## Récupération de fileNames :
+    ## Récupération de fileNames (si NULL) :
     if (all(is.null(c(fileNames, dataEnv))))
     {                                   # Erreur si pas définit
         stop("\"fileNames\" ou \"dataEnv\" doit être défini !")
@@ -1085,6 +1085,7 @@ loadDefault.f <- function(baseEnv, dataEnv)
     {
         Data <- loadData.f(filePathes=filePathes, dataEnv=dataEnv, baseEnv = baseEnv)
 
+        ## MàJ du tableau d'informations de l'interface principale :
         updateSummaryTable.f(get("tclarray", envir=baseEnv),
                              fileNames, Data,
                              get("table1", envir=baseEnv))
@@ -1106,8 +1107,7 @@ loadDefault.f <- function(baseEnv, dataEnv)
     ## Assignement des tables de métriques dans l'environnement adéquat :
     listInEnv.f(list=metrics, env=dataEnv)
 
-    ## assign("metrics", metrics, envir=.GlobalEnv) # [tmp]  [yr: 20/12/2011]
-
+    ## Sauvegarde pour restauration ultérieure :
     assign("backup", c(metrics, list(obs=Data$obs)), envir=dataEnv)
 
     ## Export des tables de métriques :

@@ -1,7 +1,24 @@
 #-*- coding: latin-1 -*-
 
+## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
+##   Copyright (C) 2008-2010 Ifremer - Tous droits réservés.
+##
+##   Ce programme est un logiciel libre ; vous pouvez le redistribuer ou le
+##   modifier suivant les termes de la "GNU General Public License" telle que
+##   publiée par la Free Software Foundation : soit la version 2 de cette
+##   licence, soit (à votre gré) toute version ultérieure.
+##
+##   Ce programme est distribué dans l'espoir qu'il vous sera utile, mais SANS
+##   AUCUNE GARANTIE : sans même la garantie implicite de COMMERCIALISABILITÉ
+##   ni d'ADÉQUATION À UN OBJECTIF PARTICULIER. Consultez la Licence Générale
+##   Publique GNU pour plus de détails.
+##
+##   Vous devriez avoir reçu une copie de la Licence Générale Publique GNU avec
+##   ce programme ; si ce n'est pas le cas, consultez :
+##   <http://www.gnu.org/licenses/>.
+
 ### File: Main.R
-### Time-stamp: <2012-01-16 18:13:00 yreecht>
+### Time-stamp: <2012-02-24 20:36:47 Yves>
 ###
 ### Author: Yves Reecht
 ###
@@ -14,13 +31,15 @@
 ####################################################################################################
 
 ## ** Version **
-options(versionPAMPA = "2.0-alpha1")
+options(versionPAMPA = "2.0")
 
 ## Platform-specific treatment:
 ## Identification du dossier parent (d'installation) :
 fileCall <- sub("source\\([[:blank:]]*(file[[:blank:]]*=[[:blank:]]*)?(\"|\')([^\"\']*)(\"|\')[[:blank:]]*(,.*\\)|\\))",
                 "\\3",
-                paste(deparse(sys.call(-2)), collapse=""))
+                paste(deparse(tryCatch(sys.call(-2),
+                                       error=function(e) {NULL})),
+                      collapse=""))
 
 ## Réglage du dossier de travail de R :
 if(basename(fileCall) == "Main.R")
@@ -28,7 +47,10 @@ if(basename(fileCall) == "Main.R")
     setwd(paste(dirname(fileCall), "/../", sep=""))
 }else{
     message("Dossier non-trouvé")
-    setwd("C:/PAMPA/")
+    if (.Platform$OS.type == "windows")
+    {
+        setwd("C:/PAMPA/")
+    }else{}                             # Rien !
 }
 
 ## Récupéré dans une variable globale (beurk !) :

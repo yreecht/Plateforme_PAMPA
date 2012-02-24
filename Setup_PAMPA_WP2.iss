@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "PAMPA Ressources & Biodiversité"
-#define MyAppVersion "2.0-alpha1"
+#define MyAppVersion "2.0"
 #define MyAppPublisher "Ifremer"
 #define MyAppURL "http://wwz.ifremer.fr/pampa/"
 #define MyAppExeName "PAMPA WP2.bat"
@@ -119,9 +119,9 @@ begin
   case CurStep of    
     ssInstall:
       begin
-        OldFile := ExpandConstant('{app}\config.r');
+        OldFile := ExpandConstant('{app}\Config.R');
         if FileExists(OldFile) then
-          RenameFile(OldFile, ExpandConstant('{app}\config.bak.r'));
+          RenameFile(OldFile, ExpandConstant('{app}\Config.bak.R'));
       end;
   end;
 end;

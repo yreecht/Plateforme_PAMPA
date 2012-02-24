@@ -1,7 +1,24 @@
 #-*- coding: latin-1 -*-
 
+## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
+##   Copyright (C) 2008-2010 Ifremer - Tous droits réservés.
+##
+##   Ce programme est un logiciel libre ; vous pouvez le redistribuer ou le
+##   modifier suivant les termes de la "GNU General Public License" telle que
+##   publiée par la Free Software Foundation : soit la version 2 de cette
+##   licence, soit (à votre gré) toute version ultérieure.
+##
+##   Ce programme est distribué dans l'espoir qu'il vous sera utile, mais SANS
+##   AUCUNE GARANTIE : sans même la garantie implicite de COMMERCIALISABILITÉ
+##   ni d'ADÉQUATION À UN OBJECTIF PARTICULIER. Consultez la Licence Générale
+##   Publique GNU pour plus de détails.
+##
+##   Vous devriez avoir reçu une copie de la Licence Générale Publique GNU avec
+##   ce programme ; si ce n'est pas le cas, consultez :
+##   <http://www.gnu.org/licenses/>.
+
 ### File: Calcul_poids.R
-### Time-stamp: <2012-01-17 23:20:25 yves>
+### Time-stamp: <2012-01-18 17:06:02 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -289,8 +306,8 @@ calcWeightMPA.f <- function(Data, refesp, MPA,
     ## (permet le calcul / poids moyen de classe si les coefs a et b sont inconnus) :
     Data <- sizeClasses.f(Data=Data, refesp=refesp, vars = vars)
 
-    ## if (isTRUE(casSite[MPA] == "Med"))
-    ## {
+    if (isTRUE(MPA == "BO"))
+    {
         ## Poids d'après les classes de taille lorsque la taille n'est pas renseignée :
         tmpNb <- sum(!is.na(res))           # nombre de poids disponibles avant.
 
@@ -298,7 +315,7 @@ calcWeightMPA.f <- function(Data, refesp, MPA,
                             Data[ , vars["nb"]])[is.na(res)]
 
         nbObsType["poids.moy"] <- sum(!is.na(res)) - tmpNb # nombre de poids ajoutés.
-    ## }
+    }else{}
 
     ## Récapitulatif :
     summarize.calcWeight.f(x=nbObsType, MPA=MPA)

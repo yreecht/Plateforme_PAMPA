@@ -1,7 +1,24 @@
 #-*- coding: latin-1 -*-
 
+## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
+##   Copyright (C) 2008-2010 Ifremer - Tous droits réservés.
+##
+##   Ce programme est un logiciel libre ; vous pouvez le redistribuer ou le
+##   modifier suivant les termes de la "GNU General Public License" telle que
+##   publiée par la Free Software Foundation : soit la version 2 de cette
+##   licence, soit (à votre gré) toute version ultérieure.
+##
+##   Ce programme est distribué dans l'espoir qu'il vous sera utile, mais SANS
+##   AUCUNE GARANTIE : sans même la garantie implicite de COMMERCIALISABILITÉ
+##   ni d'ADÉQUATION À UN OBJECTIF PARTICULIER. Consultez la Licence Générale
+##   Publique GNU pour plus de détails.
+##
+##   Vous devriez avoir reçu une copie de la Licence Générale Publique GNU avec
+##   ce programme ; si ce n'est pas le cas, consultez :
+##   <http://www.gnu.org/licenses/>.
+
 ### File: Calcul_tables_metriques.R
-### Time-stamp: <2012-01-17 23:18:34 yves>
+### Time-stamp: <2012-02-24 19:58:32 Yves>
 ###
 ### Author: Yves Reecht
 ###
@@ -14,9 +31,13 @@
 calcNumber.default.f <- function(obs,
                                  factors=c("unite_observation", "code_espece", "classe_taille"))
 {
-    ## Purpose:
+    ## Purpose: Calcul des nombres au niveau d'agrégation souhaité.
     ## ----------------------------------------------------------------------
-    ## Arguments:
+    ## Arguments: obs : table des observations (data.frame).
+    ##            factors : les facteurs d'agrégation.
+    ##
+    ## Output : un array avec autant de dimensions que de facteurs
+    ##          d'agrégation.
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 19 déc. 2011, 13:38
 
@@ -34,9 +55,14 @@ calcNumber.default.f <- function(obs,
 ########################################################################################################################
 calc.numbers.f <- function(nbr)
 {
-    ## Purpose:
+    ## Purpose: Produit la data.frame qui va servir de table, à partir du
+    ##          tableau de nombres produit par calcNumber.default.f().
     ## ----------------------------------------------------------------------
-    ## Arguments:
+    ## Arguments: nbr : array de nombres avec autant de dimensions que de
+    ##                  facteurs d'agrégations.
+    ##
+    ## Output: une data.frame avec (nombre de facteurs d'agrégation + 1)
+    ##         colonnes.
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 19 déc. 2011, 13:46
 
@@ -61,9 +87,13 @@ calc.numbers.f <- function(nbr)
 calc.meanSize.f <- function(obs,
                             factors=c("unite_observation", "code_espece", "classe_taille"))
 {
-    ## Purpose:
+    ## Purpose: Calcul des tailles moyennes pondérées (par le nombre
+    ##          d'individus)
     ## ----------------------------------------------------------------------
-    ## Arguments:
+    ## Arguments: obs : table des observations (data.frame).
+    ##            factors : les facteurs d'agrégation.
+    ##
+    ## Output: vecteur des tailles moyennes.
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 19 déc. 2011, 13:51
 
@@ -79,9 +109,13 @@ calc.meanSize.f <- function(obs,
 calc.weight.f <- function(obs, Data,
                               factors=c("unite_observation", "code_espece", "classe_taille"))
 {
-    ## Purpose:
+    ## Purpose: Calcul des poids totaux.
     ## ----------------------------------------------------------------------
-    ## Arguments:
+    ## Arguments: obs : table des observations (data.frame).
+    ##            Data : la table de métrique (temporaire).
+    ##            factors : les facteurs d'agrégation.
+    ##
+    ## Output: vecteur des poids.
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 19 déc. 2011, 14:12
 
@@ -94,23 +128,25 @@ calc.weight.f <- function(obs, Data,
                                       sum(x, na.rm=TRUE))
                            }))
 
-
-
-    ## Certains NAs correspondent à des vrai zéros :
-    if (!all(is.na(obs[ , "poids"])))
+    ## Cohérence des zéros avec la calculabilité des poids par espèce :
+    if (is.element("code_espece", factors))
     {
-        weight[is.na(weight) & Data[ , "nombre"] == 0] <- 0
-    }
+        ## Certains NAs correspondent à des vrai zéros :
+        if (!all(is.na(obs[ , "poids"])))
+        {
+            weight[is.na(weight) & Data[ , "nombre"] == 0] <- 0
+        }
 
-    ## Especes pour lesquelles aucune biomasse n'est calculée.
-    noWeightSp <- tapply(weight, Data[ , "code_espece"],
-                       function(x)all(is.na(x) | x == 0))
+        ## Especes pour lesquelles aucune biomasse n'est calculée.
+        noWeightSp <- tapply(weight, Data[ , "code_espece"],
+                             function(x)all(is.na(x) | x == 0))
 
-    noWeightSp <- names(noWeightSp)[noWeightSp]
+        noWeightSp <- names(noWeightSp)[noWeightSp]
 
-    ## Données non disponibles
-    ## (évite d'avoir des zéros pour des espèces pour lesquelles le poids ne peut être estimé) :
-    weight[is.element(Data[ , "code_espece"], noWeightSp)] <- NA
+        ## Données non disponibles
+        ## (évite d'avoir des zéros pour des espèces pour lesquelles le poids ne peut être estimé) :
+        weight[is.element(Data[ , "code_espece"], noWeightSp)] <- NA
+    }else{}
 
     return(weight)
 }
@@ -118,9 +154,11 @@ calc.weight.f <- function(obs, Data,
 ########################################################################################################################
 calc.meanWeight.f <- function(Data)
 {
-    ## Purpose:
+    ## Purpose: Calcul des poids moyens (d'individus).
     ## ----------------------------------------------------------------------
-    ## Arguments:
+    ## Arguments: Data : la table de métrique (temporaire).
+    ##
+    ## Output: vecteur des poids moyens.
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 19 déc. 2011, 14:17
 
@@ -142,9 +180,13 @@ calc.meanWeight.f <- function(Data)
 ########################################################################################################################
 calc.density.f <- function(Data, unitobs)
 {
-    ## Purpose:
+    ## Purpose: Calcul généric des densités (également utilisable pour des
+    ##          CPUE).
     ## ----------------------------------------------------------------------
-    ## Arguments:
+    ## Arguments: Data : la table de métrique (temporaire).
+    ##            unitobs : table des unités d'observation (data.frame).
+    ##
+    ## Output: vecteur des densités.
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 19 déc. 2011, 15:47
 
@@ -154,6 +196,7 @@ calc.density.f <- function(Data, unitobs)
         unitobs[ , "fraction_echantillonnee"] <- as.numeric(as.character(unitobs[ , "fraction_echantillonnee"]))
     }else{}
 
+    ## Calculs :
     return(Data[ , "nombre"] /
            ## Surface/unité d'effort :
            (unitobs[(idx <- match(Data[ , "unite_observation"],
@@ -169,9 +212,13 @@ calc.density.f <- function(Data, unitobs)
 ########################################################################################################################
 calc.biomass.f <- function(Data, unitobs)
 {
-    ## Purpose:
+    ## Purpose: Calcul généric des biomasses (également utilisable pour des
+    ##          CPUEbiomasse).
     ## ----------------------------------------------------------------------
-    ## Arguments:
+    ## Arguments: Data : la table de métrique (temporaire).
+    ##            unitobs : table des unités d'observation (data.frame).
+    ##
+    ## Output: vecteur des biomasses.
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 20 déc. 2011, 11:05
 
@@ -179,18 +226,22 @@ calc.biomass.f <- function(Data, unitobs)
     {
         ## ##################################################
         ## poids :
-
         weight <- Data[ , "poids"]
 
-        ## Especes pour lesquelles aucune biomasse n'est calculée.
-        noBiomSp <- tapply(weight, Data[ , "code_espece"],
-                           function(x)all(is.na(x) | x == 0))
+        ## Cohérence des zéros avec la calculabilité des poids par espèce (en principe inutile car fait précédemment sur
+        ## le poids mais mis en sécurité si autre utilisation que l'originale) :
+        if (is.element("code_espece", colnames(Data)))
+        {
+            ## Especes pour lesquelles aucune biomasse n'est calculée.
+            noBiomSp <- tapply(weight, Data[ , "code_espece"],
+                               function(x)all(is.na(x) | x == 0))
 
-        noBiomSp <- names(noBiomSp)[noBiomSp]
+            noBiomSp <- names(noBiomSp)[noBiomSp]
 
-        ## Données non disponibles
-        ## (évite d'avoir des zéros pour des espèces pour lesquelles le poids ne peut être estimé) :
-        weight[is.element(Data[ , "code_espece"], noBiomSp)] <- NA
+            ## Données non disponibles
+            ## (évite d'avoir des zéros pour des espèces pour lesquelles le poids ne peut être estimé) :
+            weight[is.element(Data[ , "code_espece"], noBiomSp)] <- NA
+        }else{}
 
         ## Poids / surface ou unité d'effort :
         return(as.numeric(weight) /
@@ -216,13 +267,15 @@ calc.biomass.f <- function(Data, unitobs)
 ########################################################################################################################
 calc.presAbs.f <- function(Data)
 {
-    ## Purpose:
+    ## Purpose: Calcul des présences/absences à partir des abondances.
     ## ----------------------------------------------------------------------
-    ## Arguments:
+    ## Arguments: Data : la table de métrique (temporaire).
+    ##
+    ## Output: vecteur des présences/absences (0 ou 1).
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 20 déc. 2011, 12:04
 
-    ## Presence - absence
+    ## Presence - absence :
     presAbs <- integer(nrow(Data))
     presAbs[Data[ , "nombre"] > 0] <- as.integer(1) # pour avoir la richesse spécifique en 'integer'.1
     presAbs[Data[ , "nombre"] == 0] <- as.integer(0) # pour avoir la richesse spécifique en 'integer'.0
@@ -231,54 +284,70 @@ calc.presAbs.f <- function(Data)
 }
 
 ########################################################################################################################
-unitSpSz.propAb.f <- function(unitSpSz)
+unitSpSz.propAb.f <- function(unitSpSz, factors)
 {
-    ## Purpose:
+    ## Purpose: Calcul des proportions d'abondance par classe de taille (au
+    ##          sein des croisements d'autres facteurs que "classe_taille",
+    ##          i.e. par unité d'observation par espèce en général).
     ## ----------------------------------------------------------------------
-    ## Arguments:
+    ## Arguments: Data : la table de métrique (temporaire).
+    ##            factors : les facteurs d'agrégation.
+    ##
+    ## Output: vecteur des proportions d'abondance.
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 20 déc. 2011, 12:11
 
     ## ##################################################
     ## Proportion d'abondance par classe de taille :
-    abondance <- with(unitSpSz,
-                      tapply(densite, list(unite_observation, code_espece, classe_taille),
-                             function(x){x})) # -> tableau à 3D.
+    abondance <- tapply(unitSpSz$densite,
+                        as.list(unitSpSz[ , factors]),
+                        function(x){x}) # -> tableau à 3D.
+
+    ## Autres facteurs que "classe_taille" :
+    factRed <- which(!is.element(factors, "classe_taille"))
 
     ## Sommes d'abondances pour chaque unitobs pour chaque espèce :
-    sumsCT <- apply(abondance, c(1, 2), sum, na.rm=TRUE)
+    sumsCT <- apply(abondance, factRed, sum, na.rm=TRUE)
 
     ## Calcul des proportions d'abondance -> tableau 3D :
-    propAbondance <- sweep(abondance, c(1, 2), sumsCT, FUN="/")
-    names(dimnames(propAbondance)) <- c("unite_observation", "code_espece", "classe_taille")
+    propAbondance <- sweep(abondance, factRed, sumsCT, FUN="/")
+    names(dimnames(propAbondance)) <- factors
 
-    ## Mise au format colonne + % :
+    ## Mise au format colonne + % : [!!!] vérif ordre !  [yr: 18/1/2012]
     return(100 * as.data.frame(as.table(propAbondance),
                                responseName="prop.abondance.SC",
                                stringsAsFactors=FALSE)$prop.abondance.SC)
 }
 
 ########################################################################################################################
-unitSpSz.propBiom.f <- function(unitSpSz)
+unitSpSz.propBiom.f <- function(unitSpSz, factors)
 {
-    ## Purpose:
+    ## Purpose: Calcul des proportions de biomasse par classe de taille (au
+    ##          sein des croisements d'autres facteurs que "classe_taille",
+    ##          i.e. par unité d'observation par espèce en général).
     ## ----------------------------------------------------------------------
-    ## Arguments:
+    ## Arguments: Data : la table de métrique (temporaire).
+    ##            factors : les facteurs d'agrégation.
+    ##
+    ## Output: vecteur des proportions de biomasse.
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 20 déc. 2011, 12:17
 
     if (!is.null(unitSpSz[ , "biomasse"]))
     {
-        biomasses <- with(unitSpSz, tapply(biomasse,
-                                           list(unite_observation, code_espece, classe_taille),
-                                           function(x){x})) # -> tableau à 3D.
+        biomasses <- tapply(unitSpSz$biomasse,
+                            as.list(unitSpSz[ , factors]),
+                            function(x){x}) # -> tableau à 3D.
+
+        ## Autres facteurs que "classe_taille" :
+        factRed <- which(!is.element(factors, "classe_taille"))
 
         ## Sommes de biomasses pour chaque unitobs pour chaque espèce :
-        sumsCT <- apply(biomasses, c(1, 2), sum, na.rm=TRUE)
+        sumsCT <- apply(biomasses, factRed, sum, na.rm=TRUE)
 
         ## Calcul des proportions de biomasse -> tableau 3D :
-        propBiomass <- sweep(biomasses, c(1, 2), sumsCT, FUN="/")
-        names(dimnames(propBiomass)) <- c("unite_observation", "code_espece", "classe_taille")
+        propBiomass <- sweep(biomasses, factRed, sumsCT, FUN="/")
+        names(dimnames(propBiomass)) <- factors
 
         ## Mise au format colonne + % :
         return(100 * as.data.frame(as.table(propBiomass),
@@ -294,9 +363,12 @@ unitSpSz.propBiom.f <- function(unitSpSz)
 calc.tables.Transect.f <- function(obs, unitobs, dataEnv,
                                    factors=c("unite_observation", "code_espece", "classe_taille"))
 {
-    ## Purpose:
+    ## Purpose: Calcul de tables de métriques pour les transects par défaut.
     ## ----------------------------------------------------------------------
-    ## Arguments:
+    ## Arguments: obs : table des observations (data.frame).
+    ##            unitobs : table des unités d'observation (data.frame).
+    ##            dataEnv : environnement des données.
+    ##            factors : les facteurs d'agrégation.
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 19 déc. 2011, 12:18
 
@@ -327,10 +399,12 @@ calc.tables.Transect.f <- function(obs, unitobs, dataEnv,
     if (is.element("classe_taille", factors))
     {
         ## Proportions d'abondance par classe de taille :
-        res[ , "prop.abondance.CL"] <- unitSpSz.propAb.f(unitSpSz=res)
+        res[ , "prop.abondance.CL"] <- unitSpSz.propAb.f(unitSpSz=res,
+                                                         factors=factors)
 
         ## Proportions de biomasse par classe de taille :
-        res[ , "prop.biomasse.CL"] <- unitSpSz.propBiom.f(unitSpSz=res)
+        res[ , "prop.biomasse.CL"] <- unitSpSz.propBiom.f(unitSpSz=res,
+                                                          factors=factors)
     }else{}
 
     return(res)
@@ -363,9 +437,13 @@ calc.tables.Fishing.f <- function(obs, unitobs, dataEnv,
 ########################################################################################################################
 calc.unitSpSz.f <- function(obs, unitobs, refesp, dataEnv)
 {
-    ## Purpose:
+    ## Purpose: Calcul de la table de métriques par  unité d'observation par
+    ##          espèce par classe de taille.
     ## ----------------------------------------------------------------------
-    ## Arguments:
+    ## Arguments: obs : table des observations (data.frame).
+    ##            unitobs : table des unités d'observation (data.frame).
+    ##            refesp : référentiel espèces.
+    ##            dataEnv : environnement des données.
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 16 déc. 2011, 11:51
 
@@ -374,13 +452,15 @@ calc.unitSpSz.f <- function(obs, unitobs, refesp, dataEnv)
     pampaProfilingStart.f()
 
     ## Informations :
-    stepInnerProgressBar.f(n=1, msg="Calcul des métriques par unité d'observation, espèce et classe de taille...")
+    stepInnerProgressBar.f(n=2, msg="Calcul des métriques par unité d'observation, espèce et classe de taille...")
 
+    ## Définition des types d'observation nécessitant les mêmes méthodes de calcul :
     casObsType <- c("SVR"="SVR",
                     "EMB"="Fishing", "DEB"="Fishing", "PSCI"="Fishing", "PecRec"="Fishing",
                     "LIT"="LIT",
                     "PIT"="PIT",
-                    "TRUVC"="Transect", "UVC"="Transect", "TRVID"="Transect",
+                    "TRUVC"="Transect", "UVC"="Transect",
+                    "TRVID"="Transect", "Q"="Transect",
                     "PFUVC"="Fixe")
 
     ## Calcul des métriques selon cas d'observation :
@@ -396,10 +476,10 @@ calc.unitSpSz.f <- function(obs, unitobs, refesp, dataEnv)
                                calc.tables.Fishing.f(obs=obs, unitobs=unitobs, dataEnv=dataEnv, factors=factors)
                            },
                            "LIT"={
-                               ## calc.unitSpSz.LIT.f()
+                               ## Pas calculé par classe de taille
                            },
                            "PIT"={
-                               ## calc.unitSpSz.PIT.f()
+                               ## Pas calculé par classe de taille
                            },
                            "Transect"={
                                calc.tables.Transect.f(obs=obs, unitobs=unitobs, dataEnv=dataEnv, factors=factors)
@@ -482,7 +562,8 @@ calc.unitSp.f <- function(unitSpSz, obs, unitobs, dataEnv)
                         "EMB"="Fishing", "DEB"="Fishing", "PSCI"="Fishing", "PecRec"="Fishing",
                         "LIT"="LIT",
                         "PIT"="PIT",
-                        "TRUVC"="Transect", "UVC"="Transect", "TRVID"="Transect",
+                        "TRUVC"="Transect", "UVC"="Transect",
+                        "TRVID"="Transect", "Q"="Transect",
                         "PFUVC"="Fixe")
 
         unitSp <- switch(casObsType[getOption("P.obsType")],
@@ -571,6 +652,10 @@ calc.unit.f <- function(unitSp, obs, refesp, unitobs, dataEnv)
     ## Purpose:
     ## ----------------------------------------------------------------------
     ## Arguments:
+    ##            obs : table des observations (data.frame).
+    ##            unitobs : table des unités d'observation (data.frame).
+    ##            refesp : référentiel espèces.
+    ##            dataEnv : environnement des données.
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 21 déc. 2011, 10:08
 
@@ -583,7 +668,8 @@ calc.unit.f <- function(unitSp, obs, refesp, unitobs, dataEnv)
                     "EMB"="Fishing", "DEB"="Fishing", "PSCI"="Fishing", "PecRec"="Fishing",
                     "LIT"="LIT",
                     "PIT"="PIT",
-                    "TRUVC"="Transect", "UVC"="Transect", "TRVID"="Transect",
+                    "TRUVC"="Transect", "UVC"="Transect",
+                    "TRVID"="Transect", "Q"="Transect",
                     "PFUVC"="Fixe")
 
     ##

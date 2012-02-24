@@ -1,7 +1,24 @@
 #-*- coding: latin-1 -*-
 
+## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
+##   Copyright (C) 2008-2010 Ifremer - Tous droits réservés.
+##
+##   Ce programme est un logiciel libre ; vous pouvez le redistribuer ou le
+##   modifier suivant les termes de la "GNU General Public License" telle que
+##   publiée par la Free Software Foundation : soit la version 2 de cette
+##   licence, soit (à votre gré) toute version ultérieure.
+##
+##   Ce programme est distribué dans l'espoir qu'il vous sera utile, mais SANS
+##   AUCUNE GARANTIE : sans même la garantie implicite de COMMERCIALISABILITÉ
+##   ni d'ADÉQUATION À UN OBJECTIF PARTICULIER. Consultez la Licence Générale
+##   Publique GNU pour plus de détails.
+##
+##   Vous devriez avoir reçu une copie de la Licence Générale Publique GNU avec
+##   ce programme ; si ce n'est pas le cas, consultez :
+##   <http://www.gnu.org/licenses/>.
+
 ### File: Chargement_manuel_fichiers.R
-### Time-stamp: <2012-01-17 23:20:24 yves>
+### Time-stamp: <2012-02-24 20:23:01 Yves>
 ###
 ### Author: Yves Reecht
 ###
@@ -53,7 +70,10 @@ loadManual.f <- function(baseEnv, dataEnv)
     }
 
     ## Calculs des poids (faits par AMP) :
-    Data <- calcWeight.f(Data=Data)
+    if ( ! is.benthos.f())
+    {
+        Data <- calcWeight.f(Data=Data)
+    }else{}
 
     ## Assignement des données dans l'environnement adéquat :
     listInEnv.f(list=Data, env=dataEnv)
@@ -63,6 +83,8 @@ loadManual.f <- function(baseEnv, dataEnv)
     ## Calcul des tables de métriques :
     metrics <- calcTables.f(obs=Data$obs, unitobs=Data$unitobs, refesp=Data$refesp, dataEnv=dataEnv)
 
+    stepInnerProgressBar.f(n=2, msg="Finalisation du calcul des tables de métriques")
+
     ## Assignement des tables de métriques dans l'environnement adéquat :
     listInEnv.f(list=metrics, env=dataEnv)
 
@@ -71,6 +93,8 @@ loadManual.f <- function(baseEnv, dataEnv)
     assign("backup", c(metrics, list(obs=Data$obs)), envir=dataEnv)
 
     ## Export des tables de métriques :
+    stepInnerProgressBar.f(n=1, msg="Export des tables de métriques dans des fichiers")
+
     exportMetrics.f(unitSpSz=metrics$unitSpSz, unitSp=metrics$unitSp, unit=metrics$unit,
                     obs=Data$obs, unitobs=Data$unitobs, refesp=Data$refesp,
                     filePathes=filePathes, baseEnv=baseEnv)
@@ -82,7 +106,7 @@ loadManual.f <- function(baseEnv, dataEnv)
                              prod(dim(metrics$unitSpSz))))
 
     ## Fin des informations de chargement (demande de confirmation utilisateur) :
-    stepInnerProgressBar.f(n=0, msg="Fin de chargement !",
+    stepInnerProgressBar.f(n=2, msg="Fin de chargement !",
                            font=tkfont.create(weight="bold", size=9), foreground="darkred")
 
     infoLoading.f(button=TRUE, WinRaise=get("W.main", envir=baseEnv))
@@ -372,7 +396,7 @@ chooseFiles.f <- function(dataEnv)
                            },
                                justify="left")
 
-    button.widget4 <- tkbutton(tt, text="Référentiel spatial",
+    button.widget4 <- tkbutton(tt, text="Référentiel spatial (optionnel)",
                                command=function()
                            {
                                if ( ! is.null(refspaTmp <- chooseRefspa.f(dir=workSpaceTmp, env=env)))

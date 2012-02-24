@@ -1,7 +1,24 @@
 #-*- coding: latin-1 -*-
 
+## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
+##   Copyright (C) 2008-2010 Ifremer - Tous droits réservés.
+##
+##   Ce programme est un logiciel libre ; vous pouvez le redistribuer ou le
+##   modifier suivant les termes de la "GNU General Public License" telle que
+##   publiée par la Free Software Foundation : soit la version 2 de cette
+##   licence, soit (à votre gré) toute version ultérieure.
+##
+##   Ce programme est distribué dans l'espoir qu'il vous sera utile, mais SANS
+##   AUCUNE GARANTIE : sans même la garantie implicite de COMMERCIALISABILITÉ
+##   ni d'ADÉQUATION À UN OBJECTIF PARTICULIER. Consultez la Licence Générale
+##   Publique GNU pour plus de détails.
+##
+##   Vous devriez avoir reçu une copie de la Licence Générale Publique GNU avec
+##   ce programme ; si ce n'est pas le cas, consultez :
+##   <http://www.gnu.org/licenses/>.
+
 ### File: Selection_variables_interface.R
-### Time-stamp: <2012-01-13 15:49:54 yreecht>
+### Time-stamp: <2012-01-18 15:55:46 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -402,7 +419,7 @@ selectModalites.f <- function(factor, tableMetrique, env, nextStep, dataEnv, lev
     ## ----------------------------------------------------------------------
     ## Arguments: factor : le nom du facteur sélectionné.
     ##            tableMetrique : nom de la table des métriques.
-    ##            nextStep : étape suivante.
+    ##            nextStep : étape suivante.                     [!!!] on devrait pouvoir s'en passer  [yr: 18/1/2012]
     ##            level : l'ordre du facteur (0 pour celui de séparation des
     ##                    graphiques, 1, 2,... pour les suivants).
     ##            env : environnement de la fonction appelante.
@@ -482,6 +499,7 @@ verifVariables.f <- function(metrique, factGraph, factGraphSel, listFact, listFa
     selections <- c(list(factGraphSel), listFactSel) # listes des leurs modalités sélectionnées.
     selections <- selections[idxFacts]               #
 
+    ## Définir [!!!]
     return.val <- 2
 
     ## Métrique pas sélectionnée :
@@ -870,15 +888,17 @@ nouvChoixFact.f <- function(level, env)
         ## ########## Expressions ##########
         ## Ajout d'une entrée à la liste des facteurs :
         exprTclvar <- paste("listFacteurs[[", level + 1, "]] <- tclVar('')", sep="")
+
         ## Ajout d'une entrée à la liste des modalités sélectionnées :
         exprModSel <- paste("listFactSel[[", level + 1, "]] <- NA", sep="")
-        ## Création d'une combobox supplémentaire :
 
+        ## Création d'une combobox supplémentaire :
         exprCB <- paste("CB.fact", level + 1, " <- ttkcombobox(FrameFact,",
                         " value=champsReferentiels.f(nomTable=tclvalue(TableMetrique),",
                         " dataEnv=dataEnv,",
                         " nextStep=nextStep),",
                         " textvariable=listFacteurs[[", level + 1, "]], state='readonly')", sep="")
+
         ## Création d'un bouton de sélection des modalités supplémentaire :
         exprSel <- paste("B.factSel", level + 1,
                          " <- tkbutton(FrameFact, text=' Sélection... ', command=function()",
@@ -886,10 +906,12 @@ nouvChoixFact.f <- function(level, env)
                          "tableMetrique=tclvalue(TableMetrique), env=env, level=",
                          level + 1, ", nextStep=nextStep, dataEnv=dataEnv) ; winRaise.f(WinSelection) })",
                          sep="")
+
         ## Affichage de la combobox et du bouton :
         exprGrid <- paste("tkgrid(tklabel(FrameFact, text='Facteur ",
                           level + 1, " '), CB.fact", level + 1, ", B.factSel", level + 1,
                           ", sticky='')", sep="")
+
         ## Ajout d'un évènement à la combobox :
         exprBind <- paste("tkbind(CB.fact", level + 1,
                           ", '<FocusIn>', function() {nouvChoixFact.f(level=", level + 1,
@@ -1027,7 +1049,9 @@ selectionVariables.f <- function(nextStep, dataEnv)
     ## Étapes avec biodiversité (généralement pour les métriques agrégées par unité d'observation) :
     nextStepBiodiv <- c("boxplot.unitobs", "modele_lineaire.unitobs", "MRT.unitobs")
 
-    ## Le même traitement des variables peut être appliqué pour différents "nextStep" :
+    ## Le même traitement des variables peut être appliqué pour différents "nextStep"
+    ## (Permet de lancer une fonction qui ne correspond pas à nextStep ; cas non rencontré pour l'instant, i.e.
+    ## casStep[nextStep] == nextStep) :
     casStep <- c("modele_lineaire"="modele_lineaire",
                  "boxplot.esp"="boxplot.esp",
                  "freq_occurrence"="freq_occurrence",
@@ -1057,7 +1081,8 @@ selectionVariables.f <- function(nextStep, dataEnv)
     ## ########################
     ## Éléments graphiques :
     WinSelection <- tktoplevel()          # Fenêtre principale
-    tkwm.title(WinSelection, paste("Sélection des variables pour les ", titreSelVar.f(type="winTitle", nextStep), sep=""))
+    tkwm.title(WinSelection,
+               paste("Sélection des variables pour les ", titreSelVar.f(type="winTitle", nextStep), sep=""))
 
     ## Métriques :
     FrameMetrique <- tkframe(WinSelection, borderwidth=2, relief="groove")
@@ -1106,6 +1131,7 @@ selectionVariables.f <- function(nextStep, dataEnv)
                             value=champsReferentiels.f(nomTable=tclvalue(TableMetrique), dataEnv=dataEnv,
                                                        nextStep=nextStep),
                             textvariable=listFacteurs[[1]], state="readonly")
+
     B.factSel1 <- tkbutton(FrameFact, text=" Sélection... ", command=function()
                        {
                            selectModalites.f(tclvalue(listFacteurs[[1]]), tableMetrique=tclvalue(TableMetrique),

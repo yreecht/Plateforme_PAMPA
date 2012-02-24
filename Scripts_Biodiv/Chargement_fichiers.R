@@ -1,7 +1,24 @@
 #-*- coding: latin-1 -*-
 
+## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
+##   Copyright (C) 2008-2010 Ifremer - Tous droits réservés.
+##
+##   Ce programme est un logiciel libre ; vous pouvez le redistribuer ou le
+##   modifier suivant les termes de la "GNU General Public License" telle que
+##   publiée par la Free Software Foundation : soit la version 2 de cette
+##   licence, soit (à votre gré) toute version ultérieure.
+##
+##   Ce programme est distribué dans l'espoir qu'il vous sera utile, mais SANS
+##   AUCUNE GARANTIE : sans même la garantie implicite de COMMERCIALISABILITÉ
+##   ni d'ADÉQUATION À UN OBJECTIF PARTICULIER. Consultez la Licence Générale
+##   Publique GNU pour plus de détails.
+##
+##   Vous devriez avoir reçu une copie de la Licence Générale Publique GNU avec
+##   ce programme ; si ce n'est pas le cas, consultez :
+##   <http://www.gnu.org/licenses/>.
+
 ### File: Chargement_fichiers.R
-### Time-stamp: <2012-01-17 23:20:23 yves>
+### Time-stamp: <2012-02-24 20:34:02 Yves>
 ###
 ### Author: Yves Reecht
 ###
@@ -23,6 +40,11 @@ reorderStatus.f <- function(Data, which="statut_protection")
     ##            which : l'indice de la colonne (de préférence un nom).
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date:  1 juin 2011, 14:10
+
+    if ( ! is.factor(Data[ , which]))
+    {
+        Data[ , which] <- as.factor(Data[ , which])
+    }else{}
 
     if (is.factor(Data[ , which]))
     {
@@ -158,18 +180,44 @@ scaleMetrics.f <- function(Data, unitobs, refesp,
 ########################################################################################################################
 exportMetrics.f <- function(unitSpSz, unitSp, unit, obs, unitobs, refesp, filePathes, baseEnv)
 {
-    ## Purpose:
+    ## Purpose: Exporter
+    ##            * les tables de métriques avec des colonnes supplémentaires
+    ##              dans l'environnement global + les sauvegarder dans des
+    ##              fichiers.
+    ##            * exporter les tables de données dans l'environnement
+    ##              global.
+    ##          Les noms utilisés dans l'environnement global ne doivent
+    ##          pas être les noms internes pour éviter des bugs
+    ##          in-déboguables.
     ## ----------------------------------------------------------------------
-    ## Arguments:
+    ## Arguments: unitSpSz : table de métriques /CT/esp/unitobs.
+    ##            unitSp : table de métriques /esp/unitobs.
+    ##            unit : table de métriques /unitobs.
+    ##            obs : table des données d'observation.
+    ##            unitobs : référentiel des unités d'observation.
+    ##            refesp : référentiel espèces.
+    ##            filePathes : chemins des fichiers/dossiers.
+    ##            baseEnv : environnement de l'interface principale.
+    ##
+    ## Output: Rien !
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date:  4 janv. 2012, 20:08
 
     PlanEchantillonnageBasic.f(tabUnitobs=unitobs, tabObs=obs, filePathes=filePathes)
 
-    ## Certaines métriques (densités) sont ramenées à /100m² :
+    ## Certaines métriques (densités) sont ramenées à /100m² (avec ajout des colonnes par défaut) :
     unitSpSz <- scaleMetrics.f(Data=unitSpSz, unitobs=unitobs, refesp=refesp, scale = TRUE)
     unitSp <- scaleMetrics.f(Data=unitSp, unitobs=unitobs, refesp=refesp, scale = TRUE)
     unit <- scaleMetrics.f(Data=unit, unitobs=unitobs, refesp=refesp, scale = TRUE)
+
+    ## Export des principales tables dans l'environnement global :
+    assign("TableUnitSpSz", unitSpSz, envir=.GlobalEnv)
+    assign("TableUnitSp", unitSp, envir=.GlobalEnv)
+    assign("TableUnit", unit, envir=.GlobalEnv)
+    assign("DataObs", obs, envir=.GlobalEnv)
+    assign("DataUnitobs", unitobs, envir=.GlobalEnv)
+    assign("DataRefesp", refesp, envir=.GlobalEnv)
+
 
     ## Sauvegardes dans des fichiers :
     if ( ! is.null(unitSpSz) &&
@@ -223,8 +271,6 @@ exportMetrics.f <- function(unitSpSz, unitSp, unit, obs, unitobs, refesp, filePa
 
              errorLog.f(error=e, niv=-4)
          })
-
-    ## [!!!] Ajouter l'exportation des tables (.GlobalEnv)  [yr: 5/1/2012]
 }
 
 
@@ -856,7 +902,7 @@ mergeSpaUnitobs.f <- function(unitobs, refspa)
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date:  7 déc. 2011, 17:23
 
-    res <- merge(unitobs, refspa, by.x="station", by.y="code_zone", all.x=TRUE, all.y=FALSE,
+    res <- merge(unitobs, refspa, by.x="site", by.y="code_zone", all.x=TRUE, all.y=FALSE,
                  suffixes = c(".KEEP",".SUPR"))
 
     res <- res[ , ! grepl("\\.SUPR$", colnames(res))]
@@ -988,7 +1034,7 @@ loadData.f <- function(filePathes, dataEnv, baseEnv=.GlobalEnv)
                   waitCursor=TRUE,
                   font=tkfont.create(weight="bold", size=9), foreground="darkred")
 
-    initInnerTkProgressBar.f(initial=0, max=25, width=450)
+    initInnerTkProgressBar.f(initial=0, max=22, width=450)
 
 
     ## ##################################################
@@ -1003,7 +1049,7 @@ loadData.f <- function(filePathes, dataEnv, baseEnv=.GlobalEnv)
     switch(getOption("P.obsType"),
            "SVR"={},                    # rien à faire.
            "LIT"={
-               reconfigureInnerProgressBar.f(max=10)
+               reconfigureInnerProgressBar.f(max=12)
            },                           # Pour le benthos on ne calcule pas les métriques / classe de taille.
            {
                reconfigureInnerProgressBar.f(max=13) # Dans tous les autres cas : 12
@@ -1094,7 +1140,10 @@ loadDefault.f <- function(baseEnv, dataEnv)
     }
 
     ## Calculs des poids (faits par AMP) :
-    Data <- calcWeight.f(Data=Data)
+    if ( ! is.benthos.f())
+    {
+        Data <- calcWeight.f(Data=Data)
+    }else{}
 
     ## Assignement des données dans l'environnement adéquat :
     listInEnv.f(list=Data, env=dataEnv)
@@ -1104,6 +1153,8 @@ loadDefault.f <- function(baseEnv, dataEnv)
     ## Calcul des tables de métriques :
     metrics <- calcTables.f(obs=Data$obs, unitobs=Data$unitobs, refesp=Data$refesp, dataEnv=dataEnv)
 
+    stepInnerProgressBar.f(n=2, msg="Finalisation du calcul des tables de métriques")
+
     ## Assignement des tables de métriques dans l'environnement adéquat :
     listInEnv.f(list=metrics, env=dataEnv)
 
@@ -1111,6 +1162,8 @@ loadDefault.f <- function(baseEnv, dataEnv)
     assign("backup", c(metrics, list(obs=Data$obs)), envir=dataEnv)
 
     ## Export des tables de métriques :
+    stepInnerProgressBar.f(n=1, msg="Export des tables de métriques dans des fichiers")
+
     exportMetrics.f(unitSpSz=metrics$unitSpSz, unitSp=metrics$unitSp, unit=metrics$unit,
                     obs=Data$obs, unitobs=Data$unitobs, refesp=Data$refesp,
                     filePathes=filePathes, baseEnv=baseEnv)
@@ -1122,7 +1175,7 @@ loadDefault.f <- function(baseEnv, dataEnv)
                              prod(dim(metrics$unitSpSz))))
 
     ## Fin des informations de chargement (demande de confirmation utilisateur) :
-    stepInnerProgressBar.f(n=0, msg="Fin de chargement !",
+    stepInnerProgressBar.f(n=2, msg="Fin de chargement !",
                            font=tkfont.create(weight="bold", size=9), foreground="darkred")
 
     infoLoading.f(button=TRUE, WinRaise=get("W.main", envir=baseEnv))

@@ -1,7 +1,24 @@
 #-*- coding: latin-1 -*-
 
+## Plateforme PAMPA de calcul d'indicateurs (scripts communs)
+##   Copyright (C) 2008-2010 Ifremer - Tous droits réservés.
+##
+##   Ce programme est un logiciel libre ; vous pouvez le redistribuer ou le
+##   modifier suivant les termes de la "GNU General Public License" telle que
+##   publiée par la Free Software Foundation : soit la version 2 de cette
+##   licence, soit (à votre gré) toute version ultérieure.
+##
+##   Ce programme est distribué dans l'espoir qu'il vous sera utile, mais SANS
+##   AUCUNE GARANTIE : sans même la garantie implicite de COMMERCIALISABILITÉ
+##   ni d'ADÉQUATION À UN OBJECTIF PARTICULIER. Consultez la Licence Générale
+##   Publique GNU pour plus de détails.
+##
+##   Vous devriez avoir reçu une copie de la Licence Générale Publique GNU avec
+##   ce programme ; si ce n'est pas le cas, consultez :
+##   <http://www.gnu.org/licenses/>.
+
 ### File: interface_PAMPA.R
-### Time-stamp: <2011-11-23 15:43:56 yreecht>
+### Time-stamp: <2012-02-24 19:05:15 Yves>
 ###
 ### Author: Yves Reecht
 ###
@@ -50,7 +67,7 @@ interface.PAMPA.f <- function()
                          ## tkwm.iconify(F.main)
                          tkdestroy(F.main)
 
-                         source("./Scripts_Biodiv/Global.r", encoding="latin1")
+                         source("./Scripts_Biodiv/Main.R", encoding="latin1")
                      },
                          ## height=300,
                          text="Ressources & Biodiversité",
@@ -62,7 +79,7 @@ interface.PAMPA.f <- function()
                          ## tkwm.iconify(F.main)
                          tkdestroy(F.main)
 
-                         source("./SCRIPTS WP3/TopMenu.r"##, encoding="latin1"
+                         source("./Scripts_Usages/TopMenu.r"##, encoding="latin1"
                                 )
                      },
                          text="Usages & Perception",

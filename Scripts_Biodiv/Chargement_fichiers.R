@@ -218,6 +218,14 @@ exportMetrics.f <- function(unitSpSz, unitSp, unit, obs, unitobs, refesp, filePa
     assign("DataUnitobs", unitobs, envir=.GlobalEnv)
     assign("DataRefesp", refesp, envir=.GlobalEnv)
 
+    infoLoading.f(msg=paste("Des tables supplémentaires (pour calculs aditionnels) on été créées :",
+                            ifelse(! is.null(unitSpSz) && prod(dim(unitSpSz)),
+                                   "\n\t* TableUnitSpSz : métriques par classe de taille/espèce/unité d'observation.",
+                                   ""),
+                            "\n\t* TableUnitSp : métriques par espèce/unité d'observation.",
+                            "\n\t* TableUnit : métriques (dont biodiversité) par unité d'observation.",
+                            "\n\t* DataObs, DataUnitobs, DataRefesp : tables de données.", sep=""),
+                  icon="info")
 
     ## Sauvegardes dans des fichiers :
     if ( ! is.null(unitSpSz) &&
@@ -1178,9 +1186,11 @@ loadDefault.f <- function(baseEnv, dataEnv)
     stepInnerProgressBar.f(n=2, msg="Fin de chargement !",
                            font=tkfont.create(weight="bold", size=9), foreground="darkred")
 
-    infoLoading.f(button=TRUE, WinRaise=get("W.main", envir=baseEnv))
-
     updateInterface.load.f(baseEnv=baseEnv, tabObs=Data$obs)
+
+    gestionMSGaide.f(namemsg="SelectionOuTraitement", env=baseEnv)
+
+    infoLoading.f(button=TRUE, WinRaise=get("W.main", envir=baseEnv))
 
     ## [!!!] ajouter réinitialisation des menus si échec  [yr: 14/12/2011]
     ## return(Data)

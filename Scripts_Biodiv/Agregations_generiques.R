@@ -62,11 +62,15 @@ betterCbind <- function(..., dfList=NULL, deparse.level = 1)
 }
 
 ########################################################################################################################
-agregation.f <- function(metric, Data, factors,casMetrique)
+agregation.f <- function(metric, Data, factors, casMetrique)
 {
-    ## Purpose:
+    ## Purpose: Agrégation d'une métrique.
     ## ----------------------------------------------------------------------
-    ## Arguments:
+    ## Arguments: metric: nom de la colonne de la métrique.
+    ##            Data: table de données non-agrégées.
+    ##            factors: vecteur des noms de facteurs d'agrégation.
+    ##            casMetrique: vecteur nommé des types d'observation en
+    ##                         fonction de la métrique choisie.
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 20 déc. 2011, 14:29
 
@@ -273,14 +277,7 @@ agregations.generic.f <- function(Data, metrics, factors, listFact=NULL, unitSpS
     }else{}
 
 
-    ## Agrégation de la métrique selon les facteurs
-    ## ## (Reduce applique récursivement le merge() sur les résultats d'agrégation) :
-    ## reslong <- Reduce(function(x,y) {merge(x,y)},
-    ##                   sapply(metrics,   # sapply utilisé pour avoir les noms.
-    ##                          agregation.f,
-    ##                          Data=Data, factors=factors, casMetrique=casMetrique,
-    ##                          simplify=FALSE))
-
+    ## Agrégation de la métrique selon les facteurs :
     reslong <- betterCbind(dfList=lapply(metrics,   # sapply utilisé pour avoir les noms.
                                          agregation.f,
                                          Data=Data, factors=factors, casMetrique=casMetrique))

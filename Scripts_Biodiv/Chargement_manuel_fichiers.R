@@ -109,9 +109,11 @@ loadManual.f <- function(baseEnv, dataEnv)
     stepInnerProgressBar.f(n=2, msg="Fin de chargement !",
                            font=tkfont.create(weight="bold", size=9), foreground="darkred")
 
-    infoLoading.f(button=TRUE, WinRaise=get("W.main", envir=baseEnv))
-
     updateInterface.load.f(baseEnv=baseEnv, tabObs=Data$obs)
+
+    gestionMSGaide.f(namemsg="SelectionOuTraitement", env=baseEnv)
+
+    infoLoading.f(button=TRUE, WinRaise=get("W.main", envir=baseEnv))
 
     ## [!!!] ajouter réinitialisation des menus si échec  [yr: 14/12/2011]
     ## return(Data)

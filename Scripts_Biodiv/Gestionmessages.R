@@ -107,10 +107,11 @@ gestionMSGaide.f <- function (namemsg, env=.GlobalEnv)
                          "  * commencer les traitements standards (graphiques & analyses statistiques).",
                          "\n", sep="")
                },
-               "startsansficher"={
-                   paste("Si les fichiers par défauts paramétrés dans 'Config.R'- ", fileNameUnitobs, " - ", fileNameObs, " - ",
-                         fileNameRefesp, " ne sont pas les bons, Veuillez les modifier\n", sep="")
-               },
+               ## "startsansficher"={
+               ##     paste("Si les fichiers par défauts paramétrés dans 'Config.R'- ", fileNameUnitobs, " - ",
+               ##           fileNameObs, " - ",
+               ##           fileNameRefesp, " ne sont pas les bons, Veuillez les modifier\n", sep="")
+               ## },
                "etapeselected"={
                    paste("  * restaurer les données originales (sans sélection) :",
                          " menu \"Sélection et recalcul\" ou bouton ci-dessous à droite.",

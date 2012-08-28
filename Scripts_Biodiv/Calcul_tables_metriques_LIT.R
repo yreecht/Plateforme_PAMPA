@@ -31,9 +31,12 @@
 
 calc.unitSp.LIT.f <- function(obs, unitobs, dataEnv)
 {
-    ## Purpose:
+    ## Purpose: Calcul de la table de métrique par unité d'observation par
+    ##          espèce pour le protocole benthos LIT
     ## ----------------------------------------------------------------------
-    ## Arguments:
+    ## Arguments: obs : table des observations (data.frame).
+    ##            unitobs : table des unités d'observation (data.frame).
+    ##            dataEnv : environnement des données.
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 23 déc. 2011, 18:22
 

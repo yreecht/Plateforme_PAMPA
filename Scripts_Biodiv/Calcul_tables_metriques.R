@@ -412,13 +412,16 @@ calc.tables.Transect.f <- function(obs, unitobs, dataEnv,
 
 ########################################################################################################################
 calc.tables.Fishing.f <- function(obs, unitobs, dataEnv,
-                                    factors=c("unite_observation", "code_espece", "classe_taille"))
+                                  factors=c("unite_observation", "code_espece", "classe_taille"))
 {
     ## Purpose: Calcul des métriques par unité d'observation, par espèce et
     ##          par classe de taille pour la pêche (seules des noms de
     ##          colonnes changent par rapport aux transects par defaut).
     ## ----------------------------------------------------------------------
-    ## Arguments:
+    ## Arguments: obs : table des observations (data.frame).
+    ##            unitobs : table des unités d'observation (data.frame).
+    ##            dataEnv : environnement des données.
+    ##            factors : les facteurs d'agrégation.
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 21 déc. 2011, 13:20
 
@@ -506,9 +509,11 @@ calc.unitSpSz.f <- function(obs, unitobs, refesp, dataEnv)
 ########################################################################################################################
 calc.unitSp.default.f <- function(unitSpSz)
 {
-    ## Purpose:
+    ## Purpose: Calcul de la table de métriques par unité d'observation par
+    ##          espèce, cas général (à l'aide d'agrégations).
     ## ----------------------------------------------------------------------
-    ## Arguments:
+    ## Arguments: unitSpSz : table de métriques par unité d'observation, par
+    ##                       espèce par classe de taille.
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 20 déc. 2011, 15:31
 
@@ -530,9 +535,15 @@ calc.unitSp.default.f <- function(unitSpSz)
 ########################################################################################################################
 calc.unitSp.f <- function(unitSpSz, obs, unitobs, dataEnv)
 {
-    ## Purpose:
+    ## Purpose: Calcul de la table de métriques par unité d'observation par
+    ##          espèce (choix de la méthode adéquate en fonction du
+    ##          protocole).
     ## ----------------------------------------------------------------------
-    ## Arguments:
+    ## Arguments: unitSpSz : table de métriques par unité d'observation, par
+    ##                       espèce par classe de taille.
+    ##            obs : table des observations (data.frame).
+    ##            unitobs : table des unités d'observation (data.frame).
+    ##            dataEnv : environnement des données.
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 21 déc. 2011, 10:04
 

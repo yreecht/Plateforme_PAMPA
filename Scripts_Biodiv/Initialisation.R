@@ -120,7 +120,8 @@ init.GraphLang.f <- function()
            read.csv(paste(basePath, "/Scripts_Biodiv/NomsVariables_",
                           tolower(getOption("P.lang")), ".csv",
                           sep=""),
-                    header=TRUE, row.names=1, stringsAsFactors=FALSE),
+                    header=TRUE, row.names=1, stringsAsFactors=FALSE,
+                    fileEncoding="latin1"),
            envir=.GlobalEnv)
 }
 

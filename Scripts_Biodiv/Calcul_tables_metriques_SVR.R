@@ -306,7 +306,7 @@ calc.unitSp.SVR.f <- function(unitSpSz, obs, dataEnv)
                                 ifelse(all(is.na(x)), NA, mean(x,...))
                             }, na.rm=TRUE)))
 
-    if ( ! all.equal(unitSp$nombre, nbTest)) stop("Problème dans le calcul des statistiques SVR !")
+    if ( ! isTRUE(all.equal(unitSp$nombre, nbTest))) stop("Problème dans le calcul des statistiques SVR !")
 
     ## nombre max :
     unitSp[ , "nombreMax"] <- as.vector(t(apply(nbTmp,
@@ -352,6 +352,17 @@ calc.unit.SVR.f <- function(unitSp, obs, refesp, unitobs, dataEnv,
     ## (calcul à partir des données extrapolées brutes pour les statistiques) :
     nbInterp <- get(".NombresSVR", envir=dataEnv)
 
+    ## Réduction de la liste d'espèces si besoin (si sélection sur les espèces) :
+    if (dim(nbInterp)[names(dimnames(nbInterp)) == "code_espece"] > nlevels(unitSp[ , "code_espece"]))
+    {
+        if (which(names(dimnames(nbInterp)) == "code_espece") != 2) stop("Problème de dimension SVR !")
+
+
+        nbInterp <- nbInterp[ ,
+                             is.element(dimnames(nbInterp)[["code_espece"]],
+                                        levels(unitSp[ , "code_espece"])), ]
+    }else{}
+
     nbTmp <- apply(nbInterp,
                    which( ! is.element(names(dimnames(nbInterp)), c("classe_taille", "code_espece"))),
                    function(x,...)
@@ -367,7 +378,7 @@ calc.unit.SVR.f <- function(unitSp, obs, refesp, unitobs, dataEnv,
                                 ifelse(all(is.na(x)), NA, mean(x,...))
                             }, na.rm=TRUE)))
 
-    if ( ! all.equal(unit$nombre, nbTest)) stop("Problème dans le calcul des statistiques SVR !")
+    if ( ! isTRUE(all.equal(unit$nombre, nbTest))) stop("Problème dans le calcul des statistiques SVR !")
 
     ## nombre max :
     unit[ , "nombreMax"] <- as.vector(t(apply(nbTmp,

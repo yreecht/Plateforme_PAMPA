@@ -31,7 +31,7 @@
 ####################################################################################################
 
 ## ** Version **
-options(versionPAMPA = "2.0-2")
+options(versionPAMPA = "2.0-4")
 
 ## Platform-specific treatment:
 ## Identification du dossier parent (d'installation) :
@@ -115,6 +115,9 @@ source("./Scripts_Biodiv/Arbres_regression_esp_generiques.R", encoding="latin1")
 source("./Scripts_Biodiv/Barplots_occurrence.R", encoding="latin1")                    # OK
 source("./Scripts_Biodiv/Barplots_occurrence_unitobs.R", encoding="latin1")            # OK
 
+## ...barplots génériques :
+source("./Scripts_Biodiv/Barplots_esp_generiques.R", encoding="latin1")                # OK
+source("./Scripts_Biodiv/Barplots_unitobs_generiques.R", encoding="latin1")            # OK
 
 ########################################################################################################################
 ## Configuration :

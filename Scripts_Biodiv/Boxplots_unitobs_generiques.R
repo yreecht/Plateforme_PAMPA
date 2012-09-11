@@ -28,41 +28,9 @@
 ###
 ####################################################################################################
 
-
 ########################################################################################################################
-graphTitle.unitobs.f <- function(metrique, modGraphSel, factGraph, listFact, model=NULL)
-{
-    ## Purpose:
-    ## ----------------------------------------------------------------------
-    ## Arguments:
-    ## ----------------------------------------------------------------------
-    ## Author: Yves Reecht, Date: 14 oct. 2010, 15:44
-
-    return(paste(ifelse(is.null(model),
-                        "valeurs de ",
-                        paste(model, " pour ", varNames[metrique, "article"], sep="")),
-                 varNames[metrique, "nom"], " agrégé",
-                 switch(varNames[metrique, "genre"], # Accord de "agrégé".
-                        f="e", fp="es", mp="s", ""),
-                 " par unité d'observation",
-                 ifelse(modGraphSel[1] == "", # Facteur de séparation uniquement si défini.
-                        "\npour toutes les espèces",
-                        paste(switch(factGraph,
-                                     "classe_taille"="\npour les individus correspondant à '", # Cas des classes de
-                                        # tailles.
-                                     "\npour les espèces correspondant à '"),
-                              factGraph, "' = (",
-                              paste(modGraphSel, collapse=", "), ")", sep="")),
-                 "\n selon ",
-                 paste(sapply(listFact[length(listFact):1],
-                              function(x)paste(varNames[x, c("article", "nom")], collapse="")),
-                       collapse=" et "),
-                 "\n", sep=""))
-}
-
-
-########################################################################################################################
-WP2boxplot.unitobs.f <- function(metrique, factGraph, factGraphSel, listFact, listFactSel, tableMetrique, dataEnv)
+WP2boxplot.unitobs.f <- function(metrique, factGraph, factGraphSel, listFact, listFactSel, tableMetrique, dataEnv,
+                                 baseEnv=.GlobalEnv)
 {
     ## Purpose: Produire les boxplots en tenant compte des options graphiques
     ## ----------------------------------------------------------------------
@@ -73,6 +41,8 @@ WP2boxplot.unitobs.f <- function(metrique, factGraph, factGraphSel, listFact, li
     ##            listFactSel : liste des modalités sélectionnées pour ce(s)
     ##                          dernier(s)
     ##            tableMetrique : nom de la table de métriques.
+    ##            dataEnv : environnement de stockage des données.
+    ##            baseEnv : environnement de l'interface.
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date:  6 août 2010, 16:34
 
@@ -144,10 +114,12 @@ WP2boxplot.unitobs.f <- function(metrique, factGraph, factGraphSel, listFact, li
                                                indices=metrique)
                               }))
 
+
             ## On rajoute les anciennes colonnes :
-            tmpData <- cbind(tmp,
+            tmpData <- cbind(tmp[ , colnames(tmp) != "nombre"], # Colonne "nombre" désormais inutile.
                              tmpData[match(tmp$unite_observation, tmpData$unite_observation),
-                                     !is.element(colnames(tmpData), colnames(tmp))])
+                                     !is.element(colnames(tmpData),
+                                                 c(colnames(tmp), "nombre", "code_espece"))])
         }else{
             tmpData <- na.omit(agregationTableParCritere.f(Data=tmpData,
                                                            metrique=metrique,
@@ -167,14 +139,6 @@ WP2boxplot.unitobs.f <- function(metrique, factGraph, factGraphSel, listFact, li
         warning("Nombre d'observations pour (", paste(iFactGraphSel, collapse=", "), ") < ", getOption("P.MinNbObs"),
                 " : Graphique non créé !\n")
     }else{
-
-        ## ## Suppression des valeurs supérieures à X% du maximum (pour plus de lisibilité) :
-        ## if (getOption("P.maxExclu"))
-        ## {
-        ##     tmpData <- tmpData[which(tmpData[, metrique] <=
-        ##                                 getOption("P.GraphPartMax") * max(tmpData[, metrique],
-        ##                                                                   na.rm=TRUE)), ]
-        ## }else{}
 
         ## Suppression des 'levels' non utilisés :
         tmpData <- dropLevels.f(tmpData)
@@ -277,8 +241,25 @@ WP2boxplot.unitobs.f <- function(metrique, factGraph, factGraphSel, listFact, li
                  col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5,
                  mgp=c(2, 0.5, 0))
 
-            legend("topleft", "Nombre d'enregistrements par boite à moustache",
+            legend("topleft", "Nombre d'enregistrements par boîte à moustache",
                    cex =0.9, col=getOption("P.NbObsCol"), text.col="orange", merge=FALSE)
+        }else{}
+
+        ## ##################################################
+        ## Sauvegarde des données :
+        if (getOption("P.saveData"))
+        {
+            writeData.f(filename=graphFile, Data=tmpData,
+                        cols=NULL)
+        }else{}
+
+        ## Sauvegarde des infos sur les données et statistiques :
+        if (getOption("P.saveStats"))
+        {
+            infoStats.f(filename=graphFile, Data=tmpData, agregLevel="unitobs", type="graph",
+                        metrique=metrique, factGraph=factGraph, factGraphSel=factGraphSel,
+                        listFact=rev(listFact), listFactSel=rev(listFactSel), # On les remets dans un ordre intuitif.
+                        dataEnv=dataEnv, baseEnv=baseEnv)
         }else{}
 
         ## On ferme les périphériques PDF :
@@ -289,7 +270,11 @@ WP2boxplot.unitobs.f <- function(metrique, factGraph, factGraphSel, listFact, li
             ## Inclusion des fontes dans le pdf si souhaité :
             if (getOption("P.graphPDF") && getOption("P.pdfEmbedFonts"))
             {
-                embedFonts(file=graphFile)
+                tryCatch(embedFonts(file=graphFile),
+                         error=function(e)
+                     {
+                         warning("Impossible d'inclure les fontes dans le PDF !")
+                     })
             }
 
         }else{

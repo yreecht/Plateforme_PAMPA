@@ -30,7 +30,7 @@
 
 ########################################################################################################################
 WP2MRT.unitobs.f <- function(metrique, factGraph, factGraphSel, listFact, listFactSel, tableMetrique,
-                             dataEnv=dataEnv)
+                             dataEnv=dataEnv, baseEnv=.GlobalEnv)
 {
     ## Purpose:
     ## ----------------------------------------------------------------------
@@ -41,6 +41,8 @@ WP2MRT.unitobs.f <- function(metrique, factGraph, factGraphSel, listFact, listFa
     ##            listFactSel : liste des modalités sélectionnées pour ce(s)
     ##                          dernier(s)
     ##            tableMetrique : nom de la table de métriques.
+    ##            dataEnv : environnement de stockage des données.
+    ##            baseEnv : environnement de l'interface.
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 10 mai 2011, 14:24
 
@@ -167,11 +169,13 @@ WP2MRT.unitobs.f <- function(metrique, factGraph, factGraphSel, listFact, listFa
     ## Écriture des résultats formatés dans un fichier :
     tryCatch(sortiesMRT.f(objMRT=tmpMRT, formule=exprMRT,
                           metrique=metrique,
-                          factAna=factGraph, modSel=iFactGraphSel, listFact=listFact,
+                          factAna=factGraph, modSel=iFactGraphSel,
+                          listFact=listFact, listFactSel=listFactSel,
                           Data=tmpData, dataEnv=dataEnv,
                           type=ifelse(tableMetrique == "unitSpSz" && factGraph != "classe_taille",
                                       "CL_unitobs",
-                                      "unitobs")),
+                                      "unitobs"),
+                          baseEnv=baseEnv),
              error=errorLog.f)
 
 
@@ -183,7 +187,11 @@ WP2MRT.unitobs.f <- function(metrique, factGraph, factGraphSel, listFact, listFa
         ## Inclusion des fontes dans le pdf si souhaité :
         if (getOption("P.graphPDF") && getOption("P.pdfEmbedFonts"))
         {
-            embedFonts(file=graphFile)
+            tryCatch(embedFonts(file=graphFile),
+                     error=function(e)
+                 {
+                     warning("Impossible d'inclure les fontes dans le PDF !")
+                 })
         }else{}
     }else{
         if (.Platform$OS.type == "windows" && isTRUE(getOption("P.graphWMF")))

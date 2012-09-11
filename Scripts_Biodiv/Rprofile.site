@@ -33,6 +33,8 @@
 #       r["CRAN"] <- "http://my.local.cran"
 #       options(repos=r)})
 
+message("Configuration pour PAMPA")
+
 .First <- function()
 {
     .First.sys()

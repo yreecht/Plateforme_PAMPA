@@ -254,7 +254,7 @@ plotValMoyennes.f <- function(moyennes, objBP,
 ########################################################################################################################
 plotPetitsEffectifs.f <- function(objBP, nbmin=20)
 {
-    ## Purpose:
+    ## Purpose: Affichage des warnings sur les graphiques
     ## ----------------------------------------------------------------------
     ## Arguments:
     ## ----------------------------------------------------------------------
@@ -344,7 +344,8 @@ plotPetitsEffectifs.f <- function(objBP, nbmin=20)
 
 
 ########################################################################################################################
-WP2boxplot.f <- function(metrique, factGraph, factGraphSel, listFact, listFactSel, tableMetrique, dataEnv)
+WP2boxplot.f <- function(metrique, factGraph, factGraphSel, listFact, listFactSel, tableMetrique, dataEnv,
+                         baseEnv=.GlobalEnv)
 {
     ## Purpose: Produire les boxplots en tenant compte des options graphiques
     ## ----------------------------------------------------------------------
@@ -355,6 +356,8 @@ WP2boxplot.f <- function(metrique, factGraph, factGraphSel, listFact, listFactSe
     ##            listFactSel : liste des modalités sélectionnées pour ce(s)
     ##                          dernier(s)
     ##            tableMetrique : nom de la table de métriques.
+    ##            dataEnv : environnement de stockage des données.
+    ##            baseEnv : environnement de l'interface principale.
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date:  6 août 2010, 16:34
 
@@ -534,22 +537,63 @@ WP2boxplot.f <- function(metrique, factGraph, factGraphSel, listFact, listFactSe
                  col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5,
                  mgp=c(2, 0.5, 0))
 
-            legend("topleft", "Nombre d'enregistrements par boite à moustache",
+            legend("topleft", "Nombre d'enregistrements par boîte à moustache",
                    cex =0.9, col=getOption("P.NbObsCol"), text.col="orange", merge=FALSE)
         }else{}
+
+        ## ###################################################
+        ## Fermeture de graphiques et sauvegarde de fichiers :
 
         ## On ferme les périphériques PNG en mode fichier individuel :
         if (isTRUE(getOption("P.graphPNG")))
         {
             if ((! getOption("P.plusieursGraphPage") || length(iFactGraphSel) <= 1) && plotted)
+            {
                 dev.off()
+
+                ## Sauvegarde des données :
+                if (getOption("P.saveData"))
+                {
+                    writeData.f(filename=graphFile, Data=tmpData,
+                                cols=NULL)
+                }else{}
+
+                ## Sauvegarde des statistiques :
+                if (getOption("P.saveStats"))
+                {
+                    infoStats.f(filename=graphFile, Data=tmpData, agregLevel="species", type="graph",
+                                metrique=metrique, factGraph=factGraph, factGraphSel=modGraphSel,
+                                listFact=rev(listFact), listFactSel=rev(listFactSel), # On les remets dans un ordre
+                                        # intuitif.
+                                dataEnv=dataEnv, baseEnv=baseEnv)
+                }else{}
+            }
         }else{
             ## Sauvegarde en wmf si pertinent et souhaité :
-            if (.Platform$OS.type == "windows" && isTRUE(getOption("P.graphWMF")) &&
-                (! getOption("P.plusieursGraphPage") || length(iFactGraphSel) <= 1) &&
-                plotted && !getOption("P.graphPDF"))
+            if (( ! getOption("P.plusieursGraphPage") || length(iFactGraphSel) <= 1) &&
+                plotted && ! getOption("P.graphPDF"))
             {
-                savePlot(graphFile, type="wmf", device=dev.cur())
+                if (.Platform$OS.type == "windows" && isTRUE(getOption("P.graphWMF")))
+                {
+                    savePlot(graphFile, type="wmf", device=dev.cur())
+                }else{}
+
+                ## Sauvegarde des données :
+                if (getOption("P.saveData"))
+                {
+                    writeData.f(filename=graphFile, Data=tmpData,
+                                cols=NULL)
+                }else{}
+
+                ## Sauvegarde des statistiques :
+                if (getOption("P.saveStats"))
+                {
+                    infoStats.f(filename=graphFile, Data=tmpData, agregLevel="species", type="graph",
+                                metrique=metrique, factGraph=factGraph, factGraphSel=modGraphSel,
+                                listFact=rev(listFact), listFactSel=rev(listFactSel), # On les remets dans un ordre
+                                        # intuitif.
+                                dataEnv=dataEnv, baseEnv=baseEnv)
+                }else{}
             }else{}
         }
 
@@ -560,22 +604,71 @@ WP2boxplot.f <- function(metrique, factGraph, factGraphSel, listFact, listFactSe
         (isTRUE(getOption("P.graphPNG")) && getOption("P.plusieursGraphPage") && length(iFactGraphSel) > 1)
          && plotted)
     {
-            dev.off()
+        dev.off()
 
-            ## Inclusion des fontes dans le pdf si souhaité :
-            if (getOption("P.graphPDF") && getOption("P.pdfEmbedFonts"))
+        ## Sauvegarde des données :
+        if (getOption("P.saveData"))
+        {
+            writeData.f(filename=sub("\\%03d", "00X", graphFile),
+                        Data=DataBackup, cols=NULL)
+        }else{}
+
+        ## Sauvegarde des statistiques :
+        if (getOption("P.saveStats"))
+        {
+            infoStats.f(filename=sub("\\%03d", "00X", graphFile), Data=DataBackup,
+                        agregLevel="species", type="graph",
+                        metrique=metrique, factGraph=factGraph, factGraphSel=factGraphSel,
+                        listFact=rev(listFact), listFactSel=rev(listFactSel), # On les remets dans un ordre intuitif.
+                        dataEnv=dataEnv, baseEnv=baseEnv)
+        }else{}
+
+        ## Inclusion des fontes dans le pdf si souhaité :
+        if (getOption("P.graphPDF") && getOption("P.pdfEmbedFonts"))
+        {
+            i <- 1
+
+            ## On parcours tous les fichiers qui correspondent au motif :
+            while (is.element(basename(tmpFile <- sub("\\%03d", formatC(i, width=3, flag="0"), graphFile)),
+                              dir(dirname(graphFile))))
             {
-                embedFonts(file=graphFile)
-            }else{}
+                tryCatch(embedFonts(file=tmpFile),
+                         error=function(e)
+                     {
+                         warning("Impossible d'inclure les fontes dans le PDF !")
+                     })
+
+                i <- i + 1
+            }
+        }else{}
     }else{}
 
-    ## Sauvegarde en wmf restants si pertinent et souhaité :
-    if (.Platform$OS.type == "windows" && isTRUE(getOption("P.graphWMF")) &&
-        !(getOption("P.graphPNG") || getOption("P.graphPDF")) && # Si pas d'autre sortie fichier.
+    ## Sauvegarde en wmf + données restants si pertinent et souhaité :
+    if ( ! (getOption("P.graphPNG") || getOption("P.graphPDF")) && # Si pas d'autre sortie fichier.
         getOption("P.plusieursGraphPage") && length(iFactGraphSel) > 1
         && plotted)
     {
-        savePlot(graphFile, type="wmf", device=dev.cur())
+        if (.Platform$OS.type == "windows" && isTRUE(getOption("P.graphWMF")))
+        {
+            savePlot(graphFile, type="wmf", device=dev.cur())
+        }else{}
+
+        ## Sauvegarde des données :
+        if (getOption("P.saveData"))
+        {
+            writeData.f(filename=sub("\\%03d", "00X", graphFile),
+                        Data=DataBackup, cols=NULL)
+        }else{}
+
+        ## Sauvegarde des statistiques :
+        if (getOption("P.saveStats"))
+        {
+            infoStats.f(filename=sub("\\%03d", "00X", graphFile), Data=DataBackup,
+                        agregLevel="species", type="graph",
+                        metrique=metrique, factGraph=factGraph, factGraphSel=factGraphSel,
+                        listFact=rev(listFact), listFactSel=rev(listFactSel), # On les remets dans un ordre intuitif.
+                        dataEnv=dataEnv, baseEnv=baseEnv)
+        }else{}
     }else{}
 
     pampaProfilingEnd.f()

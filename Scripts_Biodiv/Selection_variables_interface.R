@@ -69,14 +69,18 @@ initialiseGraphOptions.f <- function()
                               "Z3", "I3",
                               "HR", "OUT",
                               "Z4"),
-            P.graphPaper = FALSE,
-            P.warnings = TRUE,
-            P.pointMoyenneCex = 1,
-            P.pointMoyennePch = 18,
-            P.cex = 1,
-            P.graphWMF = FALSE,
-            P.pdfEmbedFonts = TRUE,
-            P.lang = "fr",
+            P.graphPaper = FALSE,               # Graphiques adaptés pour la publication (pas de titre, format plus
+                                                # petit,...) ?
+            P.warnings = TRUE,                  # Affichage des avertissement (graph tronqué, petits effectifs) ?
+            P.pointMoyenneCex = 1,              # Taille des points pour affichage de la moyenne.
+            P.pointMoyennePch = 18,             # Type de point pour affichage de la moyenne.
+            P.cex = 1,                          # Taille générale des caractères.
+            P.graphWMF = FALSE,                 # Sauvegarde des graphiques affichés à l'écran en WMF (Windows) ?
+            P.pdfEmbedFonts = TRUE,             # Inclusion des polices dans les pdfs ?
+            P.lang = "fr",                      # Langue des graphiques ("fr" ou "en")... n'affecte que les axes.
+            P.barplotStat="mean",               # Statistique des barplots ("mean" ou "median").
+            P.saveData=TRUE,                    # Sauvegarde des données de graphiques et analyses ?
+            P.saveStats=TRUE,                   # Sauvegarde des informations sur les données (stats incluses) ?
             ## ####################################################################################################
             ## Classe des options (pour conversion depuis les variables tcl) :
             P.optionsClass = c(P.maxExclu="logical", P.NbObs="logical", P.NbObsCol="character",
@@ -90,7 +94,8 @@ initialiseGraphOptions.f <- function()
                                P.graphPaper="logical", P.warnings="logical",
                                P.pointMoyenneCex="numeric", P.pointMoyennePch="integer", P.cex="numeric",
                                P.graphWMF="logical", P.pdfEmbedFonts="logical",
-                               P.lang="character")
+                               P.lang="character", P.barplotStat="character", P.saveData="logical",
+                               P.saveStats="logical")
             )
 
     ## On crée la pallette de couleurs par défaut :
@@ -442,7 +447,8 @@ selectModalites.f <- function(factor, tableMetrique, env, nextStep, dataEnv, lev
     metrique <- tclvalue(get("MetriqueChoisie" , envir=env))
 
     ## Pour les indices de biodiversité recalculés, il faut utiliser "unitSp" et une métrique adaptée.
-    if (is.element(nextStep, c("boxplot.unitobs", "modele_lineaire.unitobs", "MRT.unitobs")) &&
+    if (is.element(nextStep, c("boxplot.unitobs", "modele_lineaire.unitobs",
+                               "MRT.unitobs", "barplot.unitobs")) &&
         tableMetrique == "unit")
     {
         tableMetrique <- "unitSp"
@@ -511,7 +517,9 @@ verifVariables.f <- function(metrique, factGraph, factGraphSel, listFact, listFa
     }else{}
 
     ## Pour les indices de biodiversité recalculés, il faut utiliser "unitSp" et une métrique adaptée.
-    if (is.element(nextStep, c("boxplot.unitobs", "modele_lineaire.unitobs", "MRT.unitobs")) &&
+    if (is.element(nextStep,
+                   c("boxplot.unitobs", "modele_lineaire.unitobs",
+                     "MRT.unitobs", "barplot.unitobs")) &&
         tableMetrique == "unit")
     {
         tableMetrique <- "unitSp"
@@ -568,7 +576,8 @@ verifVariables.f <- function(metrique, factGraph, factGraphSel, listFact, listFa
 
     ## Métrique par espèce mais facteur 'espece', 'Identifiant' ou 'code_espece' non retenu :
     if (is.element(nextStep, c("boxplot.esp", "modele_lineaire",
-                               "freq_occurrence", "MRT.esp")) &
+                               "freq_occurrence", "MRT.esp",
+                               "barplot.esp")) &
         !any(is.element(c("espece", "code_espece", "Identifiant"), facts)))
     {
         infoLoading.f(msg=paste("Attention : représentation d'une métrique par espèce\n",
@@ -580,7 +589,9 @@ verifVariables.f <- function(metrique, factGraph, factGraphSel, listFact, listFa
 
 
     ## Fréquences d'occurrence... pas plus de deux facteurs de regroupement :
-    if (is.element(nextStep, c("freq_occurrence", "freq_occurrence.unitobs")) &&
+    if (is.element(nextStep,
+                   c("freq_occurrence", "freq_occurrence.unitobs",
+                     "barplot.esp", "barplot.unitobs")) &&
         length(listFact[unlist(listFact) != ""]) > 2)
     {
         infoLoading.f(msg="Utilisez 2 facteurs de regroupement au plus", icon="error", titleType="check")
@@ -588,7 +599,8 @@ verifVariables.f <- function(metrique, factGraph, factGraphSel, listFact, listFa
     }else{}
 
     ## Agrégé toutes espèces... vérification de la pertinence des facteurs :
-    if (is.element(nextStep, c("boxplot.unitobs", "modele_lineaire.unitobs", "MRT.unitobs")) &&
+    if (is.element(nextStep, c("boxplot.unitobs", "modele_lineaire.unitobs",
+                               "MRT.unitobs", "barplot.unitobs")) &&
         return.val)                     # Inutile si déjà des erreurs (risque de plantage).
     {
         if (is.null(agregations.generic.f(Data=subsetToutesTables.f(metrique=metrique,
@@ -744,7 +756,9 @@ updateMetrique.f <- function(nomTable, env)
                      tclvalue(MetriqueChoisie) <- "" # réinitialisation
                  }, envir=env)
                ## Le seul référentiel pertinent est celui des unités d'observations...
-               if (is.element(evalq(nextStep, envir=env), c("boxplot.esp", "modele_lineaire")))
+               if (is.element(evalq(nextStep, envir=env),
+                              c("boxplot.esp", "modele_lineaire",
+                                "barplot.esp")))
                {                        # ... si l'on travaille uniquement sur *toutes les espèces* !
                    evalq(tclvalue(FactGraphTbl) <- "unitobs", envir=env)
                    tryCatch(evalq(tkconfigure(RB.factGraphRefesp, state="disabled"), envir=env), # désactivation du
@@ -951,7 +965,9 @@ titreSelVar.f <- function(type, nextStep)
                              boxplot.unitobs="boxplots (métrique agrégée/unité d'observation)",
                              modele_lineaire.unitobs="modèles linéaires (métrique/unité d'observation)",
                              MRT.unitobs="Arbres de régression (métrique/unité d'observation)",
-                             MRT.esp="Arbres de régression (métrique/espèce/unité d'observation)"),
+                             MRT.esp="Arbres de régression (métrique/espèce/unité d'observation)",
+                             barplot.unitobs="barplots (métrique agrégée/unité d'observation)",
+                             barplot.esp="barplots (métrique/espèce/unité d'observation)"),
                   ## Texte pour le choix métrique :
                   metrique=c(boxplot.esp="Métrique à représenter : ",
                              modele_lineaire="Métrique expliquée : ",
@@ -960,34 +976,42 @@ titreSelVar.f <- function(type, nextStep)
                              boxplot.unitobs="Métrique à représenter",
                              modele_lineaire.unitobs="Métrique expliquée : ",
                              MRT.unitobs="Métrique expliquée :",
-                             MRT.esp="Métrique expliquée : "),
+                             MRT.esp="Métrique expliquée : ",
+                             barplot.unitobs="Métrique à représenter",
+                             barplot.esp="Métrique à représenter : "),
                   ## Texte pour le choix d'un facteur de séparation :
-                  factSep=c(boxplot.esp="Créer un graphique par facteur...  (optionnel, 'code_espece' conseillé)" ,
+                  factSep=c(boxplot.esp="Créer un graphique par facteur...  (optionnel, 'code_espece' conseillé)",
                             modele_lineaire="Séparer les analyses par facteur...  (optionnel)",
                             freq_occurrence="Séparer les graphiques par facteur...  (optionnel, 'code_espece' conseillé)",
                             freq_occurrence.unitobs="Sélection d'espèce(s) selon un critère...  (optionnel)",
                             boxplot.unitobs="Sélection d'espèce(s) selon un critère...  (optionnel)",
                             modele_lineaire.unitobs="Sélection d'espèce(s) selon un critère...  (optionnel)",
                             MRT.unitobs="Sélection d'espèce(s) selon un critère...  (optionnel)",
-                            MRT.esp="Séparer les graphiques/analyses par facteur...  (optionnel, 'code_espece' conseillé)"),
+                            MRT.esp="Séparer les graphiques/analyses par facteur...  (optionnel, 'code_espece' conseillé)",
+                            barplot.unitobs="Sélection d'espèce(s) selon un critère...  (optionnel)",
+                            barplot.esp="Créer un graphique par facteur...  (optionnel, 'code_espece' conseillé)"),
                   ## Texte pour le choix du(des) facteur(s) explicatif(s) :
-                  facteurs=c(boxplot.esp="Choix du (des) facteur(s) de regroupement (sur un même graphique)" ,
+                  facteurs=c(boxplot.esp="Choix du (des) facteur(s) de regroupement (sur un même graphique)",
                              modele_lineaire="Choix du(des) facteur(s) explicatif(s)",
                              freq_occurrence="Choix du(des) facteur(s) explicatif(s)/de regroupement",
                              freq_occurrence.unitobs="Choix du(des) facteur(s) explicatif(s)/de regroupement",
                              boxplot.unitobs="Choix du (des) facteur(s) de regroupement (sur un même graphique)",
                              modele_lineaire.unitobs="Choix du(des) facteur(s) explicatif(s)",
                              MRT.unitobs="Choix du(des) facteur(s) explicatif(s) (l'ordre n'a pas d'influence)",
-                             MRT.esp="Choix du(des) facteur(s) explicatif(s) (l'ordre n'a pas d'influence)"),
+                             MRT.esp="Choix du(des) facteur(s) explicatif(s) (l'ordre n'a pas d'influence)",
+                             barplot.unitobs="Choix du (des) facteur(s) de regroupement (sur un même graphique)",
+                             barplot.esp="Choix du (des) facteur(s) de regroupement (sur un même graphique)"),
                   ## Niveau d'agrégation pour table / espèce :
-                  tabListesp=c(boxplot.esp=".../ unité d'observation / espèce" ,
+                  tabListesp=c(boxplot.esp=".../ unité d'observation / espèce",
                                modele_lineaire=".../ unité d'observation / espèce",
                                freq_occurrence=".../ unité d'observation / espèce",
                                freq_occurrence.unitobs=".../ unité d'observation",
                                boxplot.unitobs=".../ unité d'observation",
                                modele_lineaire.unitobs=".../ unité d'observation",
                                MRT.unitobs=".../ unité d'observation",
-                               MRT.esp=".../ unité d'observation / espèce"),
+                               MRT.esp=".../ unité d'observation / espèce",
+                               barplot.unitobs=".../ unité d'observation",
+                               barplot.esp=".../ unité d'observation / espèce"),
                   ## Niveau d'agrégation pour table / classe de taille :
                   tabListespCT=c(boxplot.esp=".../ unité d'observation / espèce / classes de taille",
                                  modele_lineaire=".../ unité d'observation / espèce / classes de taille",
@@ -996,7 +1020,9 @@ titreSelVar.f <- function(type, nextStep)
                                  boxplot.unitobs=".../ unité d'observation / classes de taille",
                                  modele_lineaire.unitobs=".../ unité d'observation / classes de taille",
                                  MRT.unitobs=".../ unité d'observation / classes de taille",
-                                 MRT.esp=".../ unité d'observation / espèce / classes de taille")
+                                 MRT.esp=".../ unité d'observation / espèce / classes de taille",
+                                 barplot.unitobs=".../ unité d'observation / classes de taille",
+                                 barplot.esp=".../ unité d'observation / espèce / classes de taille")
                   ## =c(boxplot= , modele_lineaire=),
                   )
 
@@ -1005,7 +1031,7 @@ titreSelVar.f <- function(type, nextStep)
 
 
 ########################################################################################################################
-selectionVariables.f <- function(nextStep, dataEnv)
+selectionVariables.f <- function(nextStep, dataEnv, baseEnv)
 {
     ## Purpose: * Sélection des métrique et facteur(s) ainsi que leur(s)
     ##            modalité(s).
@@ -1016,7 +1042,8 @@ selectionVariables.f <- function(nextStep, dataEnv)
     ##                       "boxplot.esp", "modele_lineaire",
     ##                       "freq_occurrence", "freq_occurrence.unitobs",
     ##                       "boxplot.unitobs", "modele_lineaire.unitobs",
-    ##                       "MRT.unitobs", "MRT.esp",...
+    ##                       "MRT.unitobs", "MRT.esp",
+    ##                       "barplot.unitobs", "barplot.esp",...
     ##                       [appelé à s'étoffer]).
     ##            dataEnv : l'environnement des données.
     ## Note : les arguments de cette fonction peuvent changer à l'avenir
@@ -1036,7 +1063,7 @@ selectionVariables.f <- function(nextStep, dataEnv)
 
     ## Étapes "graphiques" (besoin d'options graphiques) :
     nextStepGraph <- c("boxplot.esp", "freq_occurrence", "boxplot.unitobs", "freq_occurrence.unitobs",
-                       "MRT.unitobs", "MRT.esp")
+                       "MRT.unitobs", "MRT.esp", "barplot.unitobs", "barplot.esp")
 
     ## Étapes sans possibilité d'agrégation par classes de taille :
     nextStepSansCT <- c("")
@@ -1044,10 +1071,10 @@ selectionVariables.f <- function(nextStep, dataEnv)
     ## Étapes avec agrégation par unitobs :
     nextStepUnitobs <- c("boxplot.unitobs", "modele_lineaire.unitobs", ## "freq_occurrence",
                          "freq_occurrence.unitobs",
-                         "MRT.unitobs")
+                         "MRT.unitobs", "barplot.unitobs")
 
     ## Étapes avec biodiversité (généralement pour les métriques agrégées par unité d'observation) :
-    nextStepBiodiv <- c("boxplot.unitobs", "modele_lineaire.unitobs", "MRT.unitobs")
+    nextStepBiodiv <- c("boxplot.unitobs", "modele_lineaire.unitobs", "MRT.unitobs", "barplot.unitobs")
 
     ## Le même traitement des variables peut être appliqué pour différents "nextStep"
     ## (Permet de lancer une fonction qui ne correspond pas à nextStep ; cas non rencontré pour l'instant, i.e.
@@ -1059,7 +1086,9 @@ selectionVariables.f <- function(nextStep, dataEnv)
                  "boxplot.unitobs"="boxplot.unitobs",
                  "modele_lineaire.unitobs"="modele_lineaire.unitobs",
                  "MRT.unitobs"="MRT.unitobs",
-                 "MRT.esp"="MRT.esp")
+                 "MRT.esp"="MRT.esp",
+                 "barplot.unitobs"="barplot.unitobs",
+                 "barplot.esp"="barplot.esp")
 
     ## Liste des métriques :
     metriques <- champsMetriques.f(nomTable="unitSp", nextStep=nextStep, dataEnv=dataEnv)
@@ -1278,7 +1307,7 @@ selectionVariables.f <- function(nextStep, dataEnv)
                        WP2boxplot.f(metrique=tclvalue(MetriqueChoisie),
                                     factGraph=tclvalue(FacteurGraph), factGraphSel=factGraphSel,
                                     listFact=sapply(listFacteurs, tclvalue), listFactSel=listFactSel,
-                                    tableMetrique=tclvalue(TableMetrique), dataEnv=dataEnv)
+                                    tableMetrique=tclvalue(TableMetrique), dataEnv=dataEnv, baseEnv=baseEnv) # OK
                    },
                    modele_lineaire={
 
@@ -1286,35 +1315,36 @@ selectionVariables.f <- function(nextStep, dataEnv)
                        modeleLineaireWP2.esp.f(metrique=tclvalue(MetriqueChoisie),
                                                factAna=tclvalue(FacteurGraph), factAnaSel=factGraphSel,
                                                listFact=sapply(listFacteurs, tclvalue), listFactSel=listFactSel,
-                                               tableMetrique=tclvalue(TableMetrique), dataEnv=dataEnv)
+                                               tableMetrique=tclvalue(TableMetrique), dataEnv=dataEnv, baseEnv=baseEnv) #
                    },
                    freq_occurrence={
                        barplotOccurrence.f(factGraph=tclvalue(FacteurGraph), factGraphSel=factGraphSel,
                                            listFact=sapply(listFacteurs, tclvalue), listFactSel=listFactSel,
-                                           dataEnv=dataEnv)
+                                           dataEnv=dataEnv, baseEnv=baseEnv)
                    },
                    freq_occurrence.unitobs={
                        barplotOccurrence.unitobs.f(factGraph=tclvalue(FacteurGraph), factGraphSel=factGraphSel,
                                                    listFact=sapply(listFacteurs, tclvalue), listFactSel=listFactSel,
-                                                   dataEnv=dataEnv)
+                                                   dataEnv=dataEnv, baseEnv=baseEnv) #
                    },
                    boxplot.unitobs={
                        WP2boxplot.unitobs.f(metrique=tclvalue(MetriqueChoisie),
                                             factGraph=tclvalue(FacteurGraph), factGraphSel=factGraphSel,
                                             listFact=sapply(listFacteurs, tclvalue), listFactSel=listFactSel,
-                                            tableMetrique=tclvalue(TableMetrique), dataEnv=dataEnv)
+                                            tableMetrique=tclvalue(TableMetrique), dataEnv=dataEnv, baseEnv=baseEnv) # OK
                    },
                    modele_lineaire.unitobs={
                         modeleLineaireWP2.unitobs.f(metrique=tclvalue(MetriqueChoisie),
                                                     factAna=tclvalue(FacteurGraph), factAnaSel=factGraphSel,
                                                     listFact=sapply(listFacteurs, tclvalue), listFactSel=listFactSel,
-                                                    tableMetrique=tclvalue(TableMetrique), dataEnv=dataEnv)
+                                                    tableMetrique=tclvalue(TableMetrique),
+                                                    dataEnv=dataEnv, baseEnv=baseEnv) #
                    },
                    MRT.unitobs={
                        WP2MRT.unitobs.f(metrique=tclvalue(MetriqueChoisie),
                                         factGraph=tclvalue(FacteurGraph), factGraphSel=factGraphSel,
                                         listFact=sapply(listFacteurs, tclvalue), listFactSel=listFactSel,
-                                        tableMetrique=tclvalue(TableMetrique), dataEnv=dataEnv)
+                                        tableMetrique=tclvalue(TableMetrique), dataEnv=dataEnv, baseEnv=baseEnv) #
                    },
                    MRT.esp={
 
@@ -1322,7 +1352,21 @@ selectionVariables.f <- function(nextStep, dataEnv)
                        WP2MRT.esp.f(metrique=tclvalue(MetriqueChoisie),
                                     factGraph=tclvalue(FacteurGraph), factGraphSel=factGraphSel,
                                     listFact=sapply(listFacteurs, tclvalue), listFactSel=listFactSel,
-                                    tableMetrique=tclvalue(TableMetrique), dataEnv=dataEnv)
+                                    tableMetrique=tclvalue(TableMetrique), dataEnv=dataEnv, baseEnv=baseEnv) #
+                   },
+                   barplot.esp={
+
+                       ## tkmessageBox(message="BarPlots")
+                       WP2barplot.esp.f(metrique=tclvalue(MetriqueChoisie),
+                                    factGraph=tclvalue(FacteurGraph), factGraphSel=factGraphSel,
+                                    listFact=sapply(listFacteurs, tclvalue), listFactSel=listFactSel,
+                                    tableMetrique=tclvalue(TableMetrique), dataEnv=dataEnv, baseEnv=baseEnv) #
+                   },
+                   barplot.unitobs={
+                       WP2barplot.unitobs.f(metrique=tclvalue(MetriqueChoisie),
+                                            factGraph=tclvalue(FacteurGraph), factGraphSel=factGraphSel,
+                                            listFact=sapply(listFacteurs, tclvalue), listFactSel=listFactSel,
+                                            tableMetrique=tclvalue(TableMetrique), dataEnv=dataEnv, baseEnv=baseEnv) #
                    },
                    tkmessageBox(message=paste("Aucune action (option '", nextStep, "' pas implémentée).", sep=""),
                                 icon="warning"))

@@ -56,7 +56,8 @@ has.no.pres.abs <- function(nextStep, tableMetrique, dataEnv)
     ##            dataEnv : l'environnement des données.
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 12 oct. 2010, 09:07
-    if (is.element(nextStep, c("boxplot.esp", "boxplot.unitobs")) |     # pas proposé si on fait des boxplots.
+    if (is.element(nextStep, c("boxplot.esp", "boxplot.unitobs",
+                               "barplot.esp", "barplot.unitobs")) |     # pas proposé si on fait des boxplots.
         length(unique(na.omit(get(tableMetrique, # "            " une seule modalité.
                                   envir=dataEnv)$pres_abs))) < 2)
     {
@@ -211,7 +212,9 @@ champsRefEspeces.f <- function(site, dataEnv, ordered=FALSE, tableMetrique="", n
 
     ## Champs principaux (externaliser par la suite) :
     if (is.element(tableMetrique, c("unitSp", "TableOccurrences", "unitSpSz")) &&
-        is.element(nextStep, c("boxplot.esp", "modele_lineaire", "freq_occurrence", "MRT.esp")))
+        is.element(nextStep,
+                   c("boxplot.esp", "modele_lineaire", "freq_occurrence",
+                     "MRT.esp", "barplot.esp")))
     {
         cPrincip <- c("code_espece", "espece", "Identifiant")
     }else{

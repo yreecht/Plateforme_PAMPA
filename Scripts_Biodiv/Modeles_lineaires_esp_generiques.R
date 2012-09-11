@@ -1569,8 +1569,8 @@ signifParamLM.f <- function(objLM, resFile)
 
 
 ########################################################################################################################
-sortiesLM.f <- function(objLM, formule, metrique, factAna, modSel, listFact, Data, dataEnv,
-                        Log=FALSE, sufixe=NULL, type="espece")
+sortiesLM.f <- function(objLM, formule, metrique, factAna, modSel, listFact, listFactSel, Data, dataEnv,
+                        Log=FALSE, sufixe=NULL, type="espece", baseEnv=.GlobalEnv)
 {
     ## Purpose: Formater les résultats de lm et les écrire dans un fichier
     ## ----------------------------------------------------------------------
@@ -1728,7 +1728,26 @@ sortiesLM.f <- function(objLM, formule, metrique, factAna, modSel, listFact, Dat
     plot.lm.fr(objLM, which=2, cex.caption=0.8)
     plot.lm.fr(objLM, which=c(1, 4), cex.caption=0.8)
 
-    close(resFile)
+    ## ##################################################
+    ## Sauvegarde des données :
+    filename <- summary(resFile)$description
+
+    close(resFile)                      # Maintenant seulement on peut fermer ce fichier.
+
+    if (getOption("P.saveData") &&  ! isTRUE(sufixe == "(red)"))
+    {
+        writeData.f(filename=filename, Data=Data,
+                    cols=NULL)
+    }else{}
+
+    ## Sauvegarde des infos sur les données et statistiques :
+    if (getOption("P.saveStats") &&  ! isTRUE(sufixe == "(red)"))
+    {
+        infoStats.f(filename=filename, Data=Data, agregLevel=type, type="stat",
+                    metrique=metrique, factGraph=factAna, factGraphSel=modSel,
+                    listFact=listFact, listFactSel=listFactSel,
+                    dataEnv=dataEnv, baseEnv=baseEnv)
+    }else{}
 
     ## flush.console()
 }
@@ -1747,8 +1766,6 @@ calcLM.f <- function(loiChoisie, formule, metrique, Data)
             ## Modèle linéaire :
             NO={
                 res <- lm(formule, data=Data)
-                ## Mise en forme :
-                ## sortiesLM.f(lm=res, formule=formule, metrique, factAna, modSel, listFact)
             },
             ## Modèle linéaire, données log-transformées :
             LOGNO={
@@ -1760,8 +1777,6 @@ calcLM.f <- function(loiChoisie, formule, metrique, Data)
                 }else{}
 
                 res <- lm(formule, data=Data)
-                ## Mise en forme :
-                ## sortiesLM.f(lm=res, formule=formule, metrique, factAna, modSel, listFact, Log=TRUE)
             },
             ## GLM, distribution Gamma :
             GA={
@@ -1793,7 +1808,8 @@ calcLM.f <- function(loiChoisie, formule, metrique, Data)
 
 
 ########################################################################################################################
-modeleLineaireWP2.esp.f <- function(metrique, factAna, factAnaSel, listFact, listFactSel, tableMetrique, dataEnv)
+modeleLineaireWP2.esp.f <- function(metrique, factAna, factAnaSel, listFact, listFactSel, tableMetrique, dataEnv,
+                                    baseEnv=.GlobalEnv)
 {
     ## Purpose: Gestions des différentes étapes des modèles linéaires.
     ## ----------------------------------------------------------------------
@@ -1804,6 +1820,8 @@ modeleLineaireWP2.esp.f <- function(metrique, factAna, factAnaSel, listFact, lis
     ##            listFactSel : liste des modalités sélectionnées pour ce(s)
     ##                          dernier(s)
     ##            tableMetrique : nom de la table de métriques.
+    ##            dataEnv : environnement de stockage des données.
+    ##            baseEnv : environnement de l'interface.
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 18 août 2010, 15:59
 
@@ -1886,11 +1904,13 @@ modeleLineaireWP2.esp.f <- function(metrique, factAna, factAnaSel, listFact, lis
 
             ## Écriture des sorties :
             tryCatch(sortiesLM.f(objLM=res, formule=formule, metrique=metrique,
-                                 factAna=factAna, modSel=modSel, listFact=listFact,
+                                 factAna=factAna, modSel=modSel,
+                                 listFact=listFact, listFactSel=listFactSel,
                                  Data=tmpDataMod, dataEnv=dataEnv, Log=Log,
                                  type=ifelse(tableMetrique == "unitSpSz",
                                              "CL_espece",
-                                             "espece")),
+                                             "espece"),
+                                 baseEnv=baseEnv),
                      error=errorLog.f)
 
             ## Estimation des résidus "annormaux" :
@@ -1913,11 +1933,13 @@ modeleLineaireWP2.esp.f <- function(metrique, factAna, factAnaSel, listFact, lis
                     resLM.red <<- res.red
 
                     tryCatch(sortiesLM.f(objLM=res.red, formule=formule, metrique=metrique,
-                                         factAna=factAna, modSel=modSel, listFact=listFact,
+                                         factAna=factAna, modSel=modSel,
+                                         listFact=listFact, listFactSel=listFactSel,
                                          Data=tmpDataMod, dataEnv=dataEnv, Log=Log, sufixe="(red)",
                                          type=ifelse(tableMetrique == "unitSpSz",
                                                      "CL_espece",
-                                                     "espece")),
+                                                     "espece"),
+                                         baseEnv=baseEnv),
                              error=errorLog.f)
                 }else{}
 

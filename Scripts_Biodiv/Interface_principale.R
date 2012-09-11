@@ -232,16 +232,25 @@ mainInterface.create.f <- function()
           background=.MenuBackground,
           command=function ()
       {
-          selectionVariables.f(nextStep="boxplot.esp", dataEnv=.dataEnv)
+          selectionVariables.f(nextStep="boxplot.esp", dataEnv=.dataEnv, baseEnv=.baseEnv)
           winRaise.f(W.main)
       })
 
     ## Barplots espèces :
+    tkadd(traitement, "command", label="Barplots, métrique /espèce/unité d'observation...",
+          background=.MenuBackground,
+          command=function ()
+      {
+          selectionVariables.f(nextStep="barplot.esp", dataEnv=.dataEnv, baseEnv=.baseEnv)
+          winRaise.f(W.main)
+      })
+
+    ## Barplots d'occurrence par espèces :
     tkadd(traitement, "command", label="Fréquences d'occurrence (/espèce sur des unité d'observation)...",
           background=.MenuBackground,
           command=function ()
       {
-          selectionVariables.f(nextStep="freq_occurrence", dataEnv=.dataEnv)
+          selectionVariables.f(nextStep="freq_occurrence", dataEnv=.dataEnv, baseEnv=.baseEnv)
           winRaise.f(W.main)
       })
 
@@ -258,16 +267,25 @@ mainInterface.create.f <- function()
           background=.MenuBackground,
           command=function ()
       {
-          selectionVariables.f(nextStep="boxplot.unitobs", dataEnv=.dataEnv)
+          selectionVariables.f(nextStep="boxplot.unitobs", dataEnv=.dataEnv, baseEnv=.baseEnv)
           winRaise.f(W.main)
       })
 
     ## Barplots unitobs :
+    tkadd(traitement, "command", label="Barplots, métrique /unité d'observation (dont biodiversité)...",
+          background=.MenuBackground,
+          command=function ()
+      {
+          selectionVariables.f(nextStep="barplot.unitobs", dataEnv=.dataEnv, baseEnv=.baseEnv)
+          winRaise.f(W.main)
+      })
+
+    ## Barplots d'occurrence par unitobs :
     tkadd(traitement, "command", label="Fréquences d'occurrence (/facteurs d'unité d'observation)...",
           background=.MenuBackground,
           command=function ()
       {
-          selectionVariables.f(nextStep="freq_occurrence.unitobs", dataEnv=.dataEnv)
+          selectionVariables.f(nextStep="freq_occurrence.unitobs", dataEnv=.dataEnv, baseEnv=.baseEnv)
           winRaise.f(W.main)
       })
 
@@ -298,7 +316,7 @@ mainInterface.create.f <- function()
           background=.MenuBackground,
           command=function ()
       {
-          selectionVariables.f(nextStep="modele_lineaire", dataEnv=.dataEnv)
+          selectionVariables.f(nextStep="modele_lineaire", dataEnv=.dataEnv, baseEnv=.baseEnv)
           winRaise.f(W.main)
       })
 
@@ -308,7 +326,7 @@ mainInterface.create.f <- function()
           background=.MenuBackground,
           command=function ()
       {
-          selectionVariables.f(nextStep="MRT.esp", dataEnv=.dataEnv)
+          selectionVariables.f(nextStep="MRT.esp", dataEnv=.dataEnv, baseEnv=.baseEnv)
           winRaise.f(W.main)
       })
 
@@ -325,7 +343,7 @@ mainInterface.create.f <- function()
           background=.MenuBackground,
           command=function ()
       {
-          selectionVariables.f(nextStep="modele_lineaire.unitobs", dataEnv=.dataEnv)
+          selectionVariables.f(nextStep="modele_lineaire.unitobs", dataEnv=.dataEnv, baseEnv=.baseEnv)
           winRaise.f(W.main)
       })
 
@@ -335,13 +353,16 @@ mainInterface.create.f <- function()
           background=.MenuBackground,
           command=function ()
       {
-          selectionVariables.f(nextStep="MRT.unitobs", dataEnv=.dataEnv)
+          selectionVariables.f(nextStep="MRT.unitobs", dataEnv=.dataEnv, baseEnv=.baseEnv)
           winRaise.f(W.main)
       })
 
 
     ## ######################################
     ## Menu deroulant des outils :
+
+    tkadd(outils, "command", label="Options générales...", command = generalOptions.f, state="normal",
+          background=.MenuBackground)
 
     tkadd(outils, "command", label="Options graphiques...", command = choixOptionsGraphiques.f, state="normal",
           background=.MenuBackground)

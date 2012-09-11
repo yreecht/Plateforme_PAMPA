@@ -29,16 +29,19 @@
 ### (utilise certaines fonctions de ./boxplot_generique_calc.R)
 ####################################################################################################
 
-barplotOccurrence.f <- function(factGraph, factGraphSel, listFact, listFactSel, dataEnv)
+barplotOccurrence.f <- function(factGraph, factGraphSel, listFact, listFactSel, dataEnv,
+                                baseEnv=.GlobalEnv)
 {
     ## Purpose: création des barplots d'après les sélections de facteurs et
     ##          modalités.
     ## ----------------------------------------------------------------------
     ## Arguments: factGraph : le facteur de séparation des graphiques.
-    ##            factGraphSel : la sélection de modalités pour ce dernier
-    ##            listFact : liste du (des) facteur(s) de regroupement
+    ##            factGraphSel : la sélection de modalités pour ce dernier.
+    ##            listFact : liste du (des) facteur(s) de regroupement.
     ##            listFactSel : liste des modalités sélectionnées pour ce(s)
-    ##                          dernier(s)
+    ##                          dernier(s).
+    ##            dataEnv : environnement de stockage des données.
+    ##            baseEnv : environnement de l'interface principale.
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 14 oct. 2010, 10:51
 
@@ -157,10 +160,10 @@ barplotOccurrence.f <- function(factGraph, factGraphSel, listFact, listFactSel, 
                   ## Marge de gauche dynamique :
                   tmp2 <- ifelse((tmp <- lineInchConvert.f()$H * cex * unlist(par("lheight")) * (1.4 +0.4 + 0.9) + # marge
                                         # supplémentaire.
-                              max(strDimRotation.f(as.graphicsAnnot(pretty(range(heights, na.rm=TRUE))),
-                                                   srt=0,
-                                                   unit="inches",
-                                                   cex=cex)$width, na.rm=TRUE)) > 0.7 * unlist(par("pin"))[1],
+                                  max(strDimRotation.f(as.graphicsAnnot(pretty(range(heights, na.rm=TRUE))),
+                                                       srt=0,
+                                                       unit="inches",
+                                                       cex=cex)$width, na.rm=TRUE)) > 0.7 * unlist(par("pin"))[1],
                                  0.7 * unlist(par("pin"))[1],
                                  tmp),
                   ## Marge supérieure augmentée s'il y a un titre :
@@ -223,18 +226,59 @@ barplotOccurrence.f <- function(factGraph, factGraphSel, listFact, listFactSel, 
 
         }else{}
 
+        ## ###################################################
+        ## Fermeture de graphiques et sauvegarde de fichiers :
+
         ## On ferme les périphériques PNG en mode fichier individuel :
         if (isTRUE(getOption("P.graphPNG")))
         {
             if ((! getOption("P.plusieursGraphPage") || length(iFactGraphSel) <= 1))
+            {
                 dev.off()
+
+                ## Sauvegarde des données :
+                if (getOption("P.saveData"))
+                {
+                    writeData.f(filename=graphFile, Data=tmpData,
+                                cols=NULL)
+                }else{}
+
+                ## Sauvegarde des statistiques :
+                if (getOption("P.saveStats"))
+                {
+                    infoStats.f(filename=graphFile, Data=tmpData, agregLevel="species", type="graph",
+                                metrique="pres_abs", factGraph=factGraph, factGraphSel=modGraphSel,
+                                listFact=rev(listFact), listFactSel=rev(listFactSel), # On les remets dans un ordre
+                                        # intuitif.
+                                dataEnv=dataEnv, baseEnv=baseEnv)
+                }else{}
+            }
         }else{
             ## Sauvegarde en wmf si pertinent et souhaité :
-            if (.Platform$OS.type == "windows" && isTRUE(getOption("P.graphWMF")) &&
-                (! getOption("P.plusieursGraphPage") || length(iFactGraphSel) <= 1) &&
+            if ((! getOption("P.plusieursGraphPage") || length(iFactGraphSel) <= 1) &&
                 !getOption("P.graphPDF"))
             {
-                savePlot(graphFile, type="wmf", device=dev.cur())
+                if (.Platform$OS.type == "windows" && isTRUE(getOption("P.graphWMF")))
+                {
+                    savePlot(graphFile, type="wmf", device=dev.cur())
+                }else{}
+
+                ## Sauvegarde des données :
+                if (getOption("P.saveData"))
+                {
+                    writeData.f(filename=graphFile, Data=tmpData,
+                                cols=NULL)
+                }else{}
+
+                ## Sauvegarde des statistiques :
+                if (getOption("P.saveStats"))
+                {
+                    infoStats.f(filename=graphFile, Data=tmpData, agregLevel="species", type="graph",
+                                metrique="pres_abs", factGraph=factGraph, factGraphSel=modGraphSel,
+                                listFact=rev(listFact), listFactSel=rev(listFactSel), # On les remets dans un ordre
+                                        # intuitif.
+                                dataEnv=dataEnv, baseEnv=baseEnv)
+                }else{}
             }else{}
         }
     }                                   # Fin de boucle graphique
@@ -244,21 +288,70 @@ barplotOccurrence.f <- function(factGraph, factGraphSel, listFact, listFactSel, 
     if (getOption("P.graphPDF") ||
         (isTRUE(getOption("P.graphPNG")) && getOption("P.plusieursGraphPage") && length(iFactGraphSel) > 1))
     {
-            dev.off()
+        dev.off()
 
-            ## Inclusion des fontes dans le pdf si souhaité :
-            if (getOption("P.graphPDF") && getOption("P.pdfEmbedFonts"))
+        ## Sauvegarde des données :
+        if (getOption("P.saveData"))
+        {
+            writeData.f(filename=sub("\\%03d", "00X", graphFile),
+                        Data=DataBackup, cols=NULL)
+        }else{}
+
+        ## Sauvegarde des statistiques :
+        if (getOption("P.saveStats"))
+        {
+            infoStats.f(filename=sub("\\%03d", "00X", graphFile), Data=DataBackup,
+                        agregLevel="species", type="graph",
+                        metrique="pres_abs", factGraph=factGraph, factGraphSel=factGraphSel,
+                        listFact=rev(listFact), listFactSel=rev(listFactSel), # On les remets dans un ordre intuitif.
+                        dataEnv=dataEnv, baseEnv=baseEnv)
+        }else{}
+
+        ## Inclusion des fontes dans le pdf si souhaité :
+        if (getOption("P.graphPDF") && getOption("P.pdfEmbedFonts"))
+        {
+           i <- 1
+
+            ## On parcours tous les fichiers qui correspondent au motif :
+            while (is.element(basename(tmpFile <- sub("\\%03d", formatC(i, width=3, flag="0"), graphFile)),
+                              dir(dirname(graphFile))))
             {
-                embedFonts(file=graphFile)
-            }else{}
+                tryCatch(embedFonts(file=tmpFile),
+                         error=function(e)
+                     {
+                         warning("Impossible d'inclure les fontes dans le PDF !")
+                     })
+
+                i <- i + 1
+            }
+        }else{}
     }else{}
 
     ## Sauvegarde en wmf restants si pertinent et souhaité :
-    if (.Platform$OS.type == "windows" && isTRUE(getOption("P.graphWMF")) &&
-        !(getOption("P.graphPNG") || getOption("P.graphPDF")) &&
+    if (!(getOption("P.graphPNG") || getOption("P.graphPDF")) &&
         getOption("P.plusieursGraphPage") && length(iFactGraphSel) > 1)
     {
-        savePlot(graphFile, type="wmf", device=dev.cur())
+        if (.Platform$OS.type == "windows" && isTRUE(getOption("P.graphWMF")))
+        {
+            savePlot(graphFile, type="wmf", device=dev.cur())
+        }else{}
+
+        ## Sauvegarde des données :
+        if (getOption("P.saveData"))
+        {
+            writeData.f(filename=sub("\\%03d", "00X", graphFile),
+                        Data=DataBackup, cols=NULL)
+        }else{}
+
+        ## Sauvegarde des statistiques :
+        if (getOption("P.saveStats"))
+        {
+            infoStats.f(filename=sub("\\%03d", "00X", graphFile), Data=DataBackup,
+                        agregLevel="species", type="graph",
+                        metrique="pres_abs", factGraph=factGraph, factGraphSel=factGraphSel,
+                        listFact=rev(listFact), listFactSel=rev(listFactSel), # On les remets dans un ordre intuitif.
+                        dataEnv=dataEnv, baseEnv=baseEnv)
+        }else{}
     }else{}
 }
 

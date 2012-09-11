@@ -29,16 +29,19 @@
 ### (utilise certaines fonctions de ./boxplot_generique_calc.R)
 ####################################################################################################
 
-barplotOccurrence.unitobs.f <- function(factGraph, factGraphSel, listFact, listFactSel, dataEnv)
+barplotOccurrence.unitobs.f <- function(factGraph, factGraphSel, listFact, listFactSel, dataEnv,
+                                        baseEnv=.GlobalEnv)
 {
     ## Purpose: création d'un barplot d'après les sélections de facteurs et
     ##          modalités, avec les présences/absences agrégées par unitobs.
     ## ----------------------------------------------------------------------
     ## Arguments: factGraph : le facteur de séparation des graphiques.
-    ##            factGraphSel : la sélection de modalités pour ce dernier
-    ##            listFact : liste du (des) facteur(s) de regroupement
+    ##            factGraphSel : la sélection de modalités pour ce dernier.
+    ##            listFact : liste du (des) facteur(s) de regroupement.
     ##            listFactSel : liste des modalités sélectionnées pour ce(s)
-    ##                          dernier(s)
+    ##                          dernier(s).
+    ##            dataEnv : environnement de stockage des données.
+    ##            baseEnv : environnement de l'interface.
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 14 oct. 2010, 10:51
 
@@ -208,6 +211,23 @@ barplotOccurrence.unitobs.f <- function(factGraph, factGraphSel, listFact, listF
 
         }else{}
 
+        ## ##################################################
+        ## Sauvegarde des données :
+        if (getOption("P.saveData"))
+        {
+            writeData.f(filename=graphFile, Data=tmpData,
+                        cols=NULL)
+        }else{}
+
+        ## Sauvegarde des infos sur les données et statistiques :
+        if (getOption("P.saveStats"))
+        {
+            infoStats.f(filename=graphFile, Data=tmpData, agregLevel="unitobs", type="graph",
+                        metrique="pres_abs", factGraph=factGraph, factGraphSel=factGraphSel,
+                        listFact=rev(listFact), listFactSel=rev(listFactSel), # On les remets dans un ordre intuitif.
+                        dataEnv=dataEnv, baseEnv=baseEnv)
+        }else{}
+
     }                                   # Fin de boucle graphique
 
     ## On ferme les périphériques PDF :
@@ -218,7 +238,11 @@ barplotOccurrence.unitobs.f <- function(factGraph, factGraphSel, listFact, listF
         ## Inclusion des fontes dans le pdf si souhaité :
         if (getOption("P.graphPDF") && getOption("P.pdfEmbedFonts"))
         {
-            embedFonts(file=graphFile)
+            tryCatch(embedFonts(file=graphFile),
+                     error=function(e)
+                 {
+                     warning("Impossible d'inclure les fontes dans le PDF !")
+                 })
         }else{}
     }else{
         if (.Platform$OS.type == "windows" && isTRUE(getOption("P.graphWMF")))

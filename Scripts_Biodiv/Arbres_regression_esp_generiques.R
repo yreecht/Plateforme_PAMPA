@@ -48,7 +48,7 @@ print.rpart.fr <- function (x, minlength = 0, spaces = 2, cp, digits = getOption
     frame <- x$frame
     ylevel <- attr(x, "ylevels")
     node <- as.numeric(row.names(frame))
-    depth <- tree.depth(node)
+    depth <- mvpart:::tree.depth(node)
     indent <- paste(rep(" ", spaces * 32), collapse = "")
     if (length(node) > 1)
     {
@@ -321,7 +321,7 @@ text.rpart.new <- function (x, splits = TRUE, which = 4, label = "yval", FUN = t
         cxy <- rev(cxy)
     }else{}
 
-    xy <- rpartco(x)
+    xy <- mvpart:::rpartco(x)
     node <- as.numeric(row.names(x$frame))
     is.left <- (node%%2 == 0)
     node.left <- node[is.left]
@@ -493,8 +493,8 @@ resFileMRT.f <- function(metrique, factAna, modSel, listFact, dataEnv,
 }
 
 ########################################################################################################################
-sortiesMRT.f <- function(objMRT, formule, metrique, factAna, modSel, listFact, Data, dataEnv=dataEnv,
-                         sufixe=NULL, type="espece")
+sortiesMRT.f <- function(objMRT, formule, metrique, factAna, modSel, listFact, listFactSel, Data, dataEnv=dataEnv,
+                         sufixe=NULL, type="espece", baseEnv=.GlobalEnv)
 {
     ## Purpose: Formater les résultats des MRT et les écrire dans un fichier
     ## ----------------------------------------------------------------------
@@ -504,10 +504,13 @@ sortiesMRT.f <- function(objMRT, formule, metrique, factAna, modSel, listFact, D
     ##            factAna : le facteur de séparation des analyses.
     ##            modSel : la modalité courante.
     ##            listFact : liste du (des) facteur(s) de regroupement.
+    ##            listFactSel : liste des modalités sélectionnées pour ce(s)
+    ##                          dernier(s).
     ##            Data : les données utilisées.
     ##            sufixe : un sufixe pour le nom de fichier.
     ##            type : type d'analyse, pour traitement conditionnel des
     ##                   titres et noms de fichiers.
+    ##            baseEnv : environnement de l'interface.
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 25 août 2010, 16:19
 
@@ -547,21 +550,45 @@ sortiesMRT.f <- function(objMRT, formule, metrique, factAna, modSel, listFact, D
     cat("\nDétails :\n\n", file=resFile, append=TRUE)
 
     capture.output(summary.rpart.fr(objMRT), file=resFile, append=TRUE)
+
+    ## ##################################################
+    ## Sauvegarde des données :
+    filename <- summary(resFile)$description
+
+    ## close(resFile)                      # Maintenant seulement on peut fermer ce fichier.
+
+    if (getOption("P.saveData") &&  ! isTRUE(sufixe == "(red)"))
+    {
+        writeData.f(filename=filename, Data=Data,
+                    cols=NULL)
+    }else{}
+
+    ## Sauvegarde des infos sur les données et statistiques :
+    if (getOption("P.saveStats") &&  ! isTRUE(sufixe == "(red)"))
+    {
+        infoStats.f(filename=filename, Data=Data, agregLevel=type, type="stat",
+                    metrique=metrique, factGraph=factAna, factGraphSel=modSel,
+                    listFact=listFact, listFactSel=listFactSel,
+                    dataEnv=dataEnv, baseEnv=baseEnv)
+    }else{}
 }
 
 ########################################################################################################################
-WP2MRT.esp.f <- function(metrique, factGraph, factGraphSel, listFact, listFactSel, tableMetrique, dataEnv)
+WP2MRT.esp.f <- function(metrique, factGraph, factGraphSel, listFact, listFactSel, tableMetrique, dataEnv,
+                         baseEnv=.GlobalEnv)
 {
     ## Purpose: Produire des arbres de régression multivariée en tenant
     ##          compte des options graphiques + Sorties texte.
     ## ----------------------------------------------------------------------
     ## Arguments: metrique : la métrique choisie.
     ##            factGraph : le facteur de séparation des graphiques.
-    ##            factGraphSel : la sélection de modalités pour ce dernier
-    ##            listFact : liste du (des) facteur(s) de regroupement
+    ##            factGraphSel : la sélection de modalités pour ce dernier.
+    ##            listFact : liste du (des) facteur(s) de regroupement.
     ##            listFactSel : liste des modalités sélectionnées pour ce(s)
-    ##                          dernier(s)
+    ##                          dernier(s).
     ##            tableMetrique : nom de la table de métriques.
+    ##            dataEnv : environnement de stockage des données.
+    ##            baseEnv : environnement de l'interface.
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 11 mai 2011, 10:09
 
@@ -669,8 +696,8 @@ WP2MRT.esp.f <- function(metrique, factGraph, factGraphSel, listFact, listFactSe
         ## Boxplot !
         tmpMRT <- rpart(exprMRT, data=tmpDataMod)
 
-        plot(tmpMRT, main=mainTitle)
-        text(tmpMRT, use.n=TRUE, pretty=1, all=TRUE, xpd=NA, bars=TRUE)
+        ## plot(tmpMRT, main=mainTitle)
+        ## text(tmpMRT, use.n=TRUE, pretty=1, all=TRUE, xpd=NA, bars=TRUE)
 
         plot(tmpMRT, main=mainTitle)
         text.rpart.new(tmpMRT, use.n=TRUE, pretty=0, all=TRUE, xpd=NA)
@@ -678,11 +705,13 @@ WP2MRT.esp.f <- function(metrique, factGraph, factGraphSel, listFact, listFactSe
         ## Écriture des résultats formatés dans un fichier :
         tryCatch(sortiesMRT.f(objMRT=tmpMRT, formule=exprMRT,
                               metrique=metrique,
-                              factAna=factGraph, modSel=modGraphSel, listFact=listFact,
+                              factAna=factGraph, modSel=modGraphSel,
+                              listFact=listFact, listFactSel=listFactSel,
                               Data=tmpDataMod, dataEnv=dataEnv,
                               type=ifelse(tableMetrique == "unitSpSz",
                                           "CL_espece",
-                                          "espece")),
+                                          "espece"),
+                              baseEnv=baseEnv),
                  error=errorLog.f)
 
         ## On ferme les périphériques PNG en mode fichier individuel :
@@ -710,7 +739,20 @@ WP2MRT.esp.f <- function(metrique, factGraph, factGraphSel, listFact, listFactSe
             ## Inclusion des fontes dans le pdf si souhaité :
             if (getOption("P.graphPDF") && getOption("P.pdfEmbedFonts"))
             {
-                embedFonts(file=graphFile)
+                i <- 1
+
+                ## On parcours tous les fichiers qui correspondent au motif :
+                while (is.element(basename(tmpFile <- sub("\\%03d", formatC(i, width=3, flag="0"), graphFile)),
+                                  dir(dirname(graphFile))))
+                {
+                    tryCatch(embedFonts(file=tmpFile),
+                             error=function(e)
+                         {
+                             warning("Impossible d'inclure les fontes dans le PDF !")
+                         })
+
+                    i <- i + 1
+                }
             }else{}
     }else{}
 

@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
-##   Copyright (C) 2008-2010 Ifremer - Tous droits réservés.
+##   Copyright (C) 2008-2012 Ifremer - Tous droits réservés.
 ##
 ##   Ce programme est un logiciel libre ; vous pouvez le redistribuer ou le
 ##   modifier suivant les termes de la "GNU General Public License" telle que
@@ -330,6 +330,275 @@ listInEnv.f <- function(list, env)
                  },
                      xN=listNames, env=env))
 }
+
+########################################################################################################################
+writeData.f <- function(filename, Data, cols=NULL)
+{
+    ## Purpose: Écrire les données des graphiques ou analyses dans des
+    ##          fichiers csv (format français).
+    ## ----------------------------------------------------------------------
+    ## Arguments: filename : nom du fichier à créer.
+    ##            Data : jeu de données à sauvegarder.
+    ##            cols : colonnes à sauvegarder (toutes si NULL).
+    ##            filePathes : chemin des dossiers.
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date:  6 sept. 2012, 11:37
+
+    ## Ajout de l'extension si besoin :
+    if ( ! grepl("\\.csv$", filename[1], ignore.case=TRUE))
+    {
+        filename <- paste(filename, ".csv", sep="")
+    }else{}
+
+    ## Si l'argument est une liste de data.frame, elles sont agrégées :
+    if (class(Data) == "list")
+    {
+        if (all(sapply(Data, class) == "data.frame"))
+        {
+            Data <- do.call(rbind, Data)
+        }else{
+            warning("Sauvegarde de données : erreur de programmation !")
+        }
+
+    }else{}
+
+    ## Colonnes retenues :
+    if (is.null(cols)) cols <- colnames(Data)
+
+    cols <- cols[is.element(cols, colnames(Data))]
+
+
+    ## Écriture du fichier
+    tryCatch(write.csv2(Data[ , cols],
+                        file=filename,
+                        row.names = FALSE),
+             error=function(e)
+         {
+             message("Impossible d'écrire dans :", filename)
+             errorLog.f(error=e, niv=-4)
+         })
+}
+
+########################################################################################################################
+printGeneralDataInfo.f <- function(dataEnv, baseEnv, File)
+{
+    ## Purpose: Écrire dans un fichier les informations générales sur le jeu
+    ##          de données (inclue les sélections au niveau de la
+    ##          plateforme).
+    ## ----------------------------------------------------------------------
+    ## Arguments: dataEnv : environnement des données.
+    ##            baseEnv : environnement de l'interface principale.
+    ##            File : connection du fichier où écrire les informations.
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date: 11 sept. 2012, 10:36
+
+    ## Informations sur les fichiers de données :
+    cat(paste("################\nJeu de données :\n",
+              "\n  * Identification de l'AMP : ", paste(getOption("P.MPA"), collapse=", "),
+              "\n  * Répertoire de données : ", dataEnv$fileNames["ws"], "/Data/",
+              "\n  * Données d'observation : ", dataEnv$fileNames["obs"],
+              "\n  * Référentiel espèces : ", dataEnv$fileNames["refesp"],
+              "\n  * Réf. unités d'observation :) : ", dataEnv$fileNames["unitobs"],
+              "\n  * Référentiel spatial : ", dataEnv$fileNames["refspa"], "\n",
+              sep=""),
+        file=File)
+
+    ## Sélections au niveau de la plateforme :
+    cat(ifelse((tmp <- evalq(tclvalue(tkcget(MonCritere, "-text")), envir=.baseEnv)) == "Tout",
+               "\nPas de sélection générale sur les données.\n",
+               paste("\nSélection(s) générale(s):\n\n", tmp, "\n", sep="")),
+        file=File)
+}
+
+########################################################################################################################
+printSelectionInfo.f <- function(metrique, factGraph, factGraphSel, listFact, listFactSel,
+                                 File,
+                                 agregLevel=c("species", "unitobs"), type=c("graph", "stat"))
+{
+    ## Purpose: Écrire dans un fichier les informations sur la sélection de
+    ##          données (obtenue par l'interface standard de sélection).
+    ## ----------------------------------------------------------------------
+    ## Arguments: metrique : la métrique choisie.
+    ##            factGraph : le facteur sélection des espèces.
+    ##            factGraphSel : la sélection de modalités pour ce dernier
+    ##            listFact : liste du (des) facteur(s) de regroupement
+    ##            listFactSel : liste des modalités sélectionnées pour ce(s)
+    ##                          dernier(s)
+    ##            File : connection du fichier où écrire les informations.
+    ##            agregLevel : niveau d'agrégation de la fonction appelante.
+    ##            type : type de fonction appelante (grapique ou analyse).
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date: 11 sept. 2012, 10:41
+
+    cat("\n##################################################\n",
+        "Métrique et facteurs (et éventuelles sélections) :\n",
+        sep="", file=File)
+
+    ## Informations sur la métrique :
+    cat("\n Métrique :", varNames[metrique, "nom"],
+        paste("(", varNames[metrique, "unite"],")", sep=""),
+        "\n", file=File)
+
+    ## Facteurs de séparation de graphiques/analyses ou sélection d'observations :
+    switch(agregLevel,
+           "species"=,"CL_espece"=,"espece"={ # Adapté également pour les LMs.
+               cat("\nFacteur de séparation des ",
+                   switch(type,
+                          "graph"="graphiques",
+                          "stat"="analyses"),
+                   " : ",
+                   ifelse(factGraph == "", "aucun !",
+                          ifelse(is.na(factGraphSel[1]),
+                                 paste(varNames[factGraph, "nom"], "(attention, aucune sélection !!!)"),
+                                 paste(varNames[factGraph, "nom"], " (",
+                                       paste(factGraphSel, collapse=", "), ")", sep=""))), "\n",
+                   sep="", file=File)
+           },
+           "unitobs"=,"CL_unitobs"={
+               cat("\nFacteur de sélection des observations à agréger : ",
+                   ifelse(factGraph == "", "aucun (toutes les espèces/classes de taille) !",
+                          ifelse(is.na(factGraphSel[1]),
+                                 paste(varNames[factGraph, "nom"], "(aucune sélection)"),
+                                 paste(varNames[factGraph, "nom"], " (",
+                                       paste(factGraphSel, collapse=", "), ")", sep=""))), "\n",
+                   sep="", file=File)
+           })
+
+    ## Facteurs de regroupements :
+    cat(switch(type,
+               "graph"="\nFacteur(s) de regroupement : ",
+               "stat"="\nFacteur(s) de l'analyse : "), "\n",
+        file=File)
+
+    invisible(sapply(1:length(listFact),
+                     function(i)
+                 {
+                     cat("\n  * ",
+                         ifelse(is.na(listFactSel[[i]][1]),
+                                       paste(varNames[listFact[i], "nom"], "(aucune sélection)"),
+                                       paste(varNames[listFact[i], "nom"], " (",
+                                             paste(listFactSel[[i]], collapse=", "), ")", sep="")), "\n",
+                         sep="", file=File)
+                 }))
+}
+
+
+########################################################################################################################
+printStats.f <- function(Data, metrique, listFact, File, headline=NULL)
+{
+    ## Purpose: Écrire les tableaux de statistiques générales et par
+    ##          croisement de facteur dans un fichier.
+    ## ----------------------------------------------------------------------
+    ## Arguments: Data : les données du graphique/de l'analyse.
+    ##            metrique : nom de la métrique.
+    ##            listFact : liste des facteurs de regroupement/de l'analyse.
+    ##            File : la connection du fichier où écrire.
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date: 11 sept. 2012, 10:09
+
+    ## Ligne d'en-tête (si besoin : traitement par espèces uniquement) :
+    if ( ! is.null(headline))
+    {
+        cat("\n", rep("#", nchar(headline) + 3), "\n",
+            "## ", headline, "\n",
+            sep="", file=File)
+    }else{}
+
+    cat("\n########################\nStatistiques générales :\n\n", file=File)
+
+    capture.output(print(summary(Data[ , metrique])), file=File, append=TRUE)
+
+    cat("\n#########################################",
+        "\nStatistiques par croisement de facteurs :\n\n", file=File, sep="")
+
+    ## Calcul du summary pour chaque croisement (existant) de facteur :
+    res <- with(Data,
+                tapply(eval(parse(text=metrique)),
+                       INDEX=do.call(paste,
+                                     c(lapply(listFact,
+                                              function(y)eval(parse(text=y))),
+                                       sep=".")),
+                       FUN=summary))
+
+    ## Assemblage du résultat dans un tableau
+    capture.output(print(do.call(rbind, res)),
+                   file=File, append=TRUE)
+
+    ## Ligne vide (pour l'esthétique) :
+    cat("\n", file=File)
+}
+
+
+########################################################################################################################
+infoStats.f <- function(filename, Data, agregLevel=c("species", "unitobs"), type=c("graph", "stat"),
+                        metrique, factGraph, factGraphSel, listFact, listFactSel,
+                        dataEnv, baseEnv=.GlobalEnv)
+{
+    ## Purpose: Écrire les infos et statistique sur les données associées à
+    ##          un graphique ou analyse.
+    ## ----------------------------------------------------------------------
+    ## Arguments: filename : chemin du fichier de résultats.
+    ##            Data : données du graphique/de l'analyse.
+    ##            agregLevel : niveau d'agrégation de la fonction appelante.
+    ##            type : type de fonction appelante (grapique ou analyse).
+    ##            metrique : la métrique choisie.
+    ##            factGraph : le facteur sélection des espèces.
+    ##            factGraphSel : la sélection de modalités pour ce dernier
+    ##            listFact : liste du (des) facteur(s) de regroupement
+    ##            listFactSel : liste des modalités sélectionnées pour ce(s)
+    ##                          dernier(s)
+    ##            dataEnv : environnement de stockage des données.
+    ##            baseEnv : environnement de l'interface.
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date: 10 sept. 2012, 15:26
+
+    ## Ajout de l'extension si besoin :
+    if ( ! grepl("\\.stats$", filename[1], ignore.case=TRUE))
+    {
+        filename <- paste(filename, ".stats", sep="")
+    }else{}
+
+    ## Ouverture du fichier :
+    File <- file(description=filename,
+                 open="w", encoding="latin1")
+
+    ## Si erreur, on referme le fichier à la sortie de fonction :
+    on.exit(if (exists("filename") &&
+                tryCatch(isOpen(File),
+                         error=function(e)return(FALSE))) close(File))
+
+    ## Informations générales sur les données :
+    printGeneralDataInfo.f(dataEnv=dataEnv, baseEnv=baseEnv, File=File)
+
+    ## Informations sur les métriques et facteurs du graphique :
+    printSelectionInfo.f(metrique=metrique, factGraph=factGraph, factGraphSel=factGraphSel,
+                         listFact=listFact, listFactSel=listFactSel, File=File,
+                         agregLevel=agregLevel, type=type)
+
+    ## Statistiques :
+    if (class(Data) == "list")
+    {
+        cat("\n###################################################",
+            "\nStatistiques par niveaux de facteur de séparation :\n",
+            sep="", file=File)
+
+        invisible(sapply(1:length(Data),
+                         function(i)
+                     {
+                         printStats.f(Data=Data[[i]], metrique=metrique, listFact=listFact, File=File,
+                                      headline=factGraphSel[i])
+                     }))
+    }else{
+        printStats.f(Data=Data, metrique=metrique, listFact=listFact, File=File,
+                     headline=NULL)
+    }
+
+    ## Fermeture du fichier :
+    close(File)
+
+}
+
+
 
 
 

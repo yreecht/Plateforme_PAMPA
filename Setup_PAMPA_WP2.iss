@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "PAMPA Ressources & Biodiversité"
-#define MyAppVersion "2.0-1"
+#define MyAppVersion "2.0-4"
 #define MyAppPublisher "Ifremer"
 #define MyAppURL "http://wwz.ifremer.fr/pampa/"
 #define MyAppExeName "PAMPA WP2.bat"
@@ -56,6 +56,8 @@ Source: "Scripts_Biodiv\Barplots_occurrence.R"; DestDir: "{app}"
 Source: "Scripts_Biodiv\Barplots_occurrence_unitobs.R"; DestDir: "{app}"
 Source: "Scripts_Biodiv\Boxplots_esp_generiques.R"; DestDir: "{app}"
 Source: "Scripts_Biodiv\Boxplots_unitobs_generiques.R"; DestDir: "{app}"
+Source: "Scripts_Biodiv\Barplots_esp_generiques.R"; DestDir: "{app}"
+Source: "Scripts_Biodiv\Barplots_unitobs_generiques.R"; DestDir: "{app}"
 Source: "Scripts_Biodiv\Calcul_poids.R"; DestDir: "{app}"
 Source: "Scripts_Biodiv\Calcul_tables_metriques.R"; DestDir: "{app}"
 Source: "Scripts_Biodiv\Calcul_tables_metriques_LIT.R"; DestDir: "{app}"

@@ -33,7 +33,7 @@ makeColorPalette.f <- function()
 {
     ## Purpose: Créer la palette de couleur pour les graphiques
     ## ----------------------------------------------------------------------
-    ## Arguments:
+    ## Arguments: aucun !
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 31 mai 2011, 17:02
 
@@ -199,8 +199,8 @@ openDevice.f <- function(noGraph, metrique, factGraph, modSel, listFact, dataEnv
                 {
                     ## [!!!] Limiter aux cas nécessaires... (cf. plus haut).
                     eval(call(winFUN,
-                              width=ifelse(large, 80, 60),
-                              height=ifelse(large, 45, 35),
+                              width=ifelse(large, 40, 30),  # 80, 60
+                              height=ifelse(large, 26, 20), # 45, 35
                               pointsize=ifelse(isTRUE(getOption("P.graphPaper")), 14, 10)))
 
                     par(mfrow=c(getOption("P.nrowGraph"), getOption("P.ncolGraph")))
@@ -208,10 +208,10 @@ openDevice.f <- function(noGraph, metrique, factGraph, modSel, listFact, dataEnv
                 }
             }else{                      # Pas plusieurs graphs par page.
                 eval(call(winFUN,
-                          width=ifelse(large, 70,
-                                       ifelse(isTRUE(getOption("P.graphPaper")), 10, 50)),
-                          height=ifelse(large, 30,
-                                        ifelse(isTRUE(getOption("P.graphPaper")), 6, 20)),
+                          width=ifelse(large, 35,
+                                       ifelse(isTRUE(getOption("P.graphPaper")), 10, 25)), # 10, 50
+                          height=ifelse(large, 15,
+                                        ifelse(isTRUE(getOption("P.graphPaper")), 6, 12)), # 6, 20
                           pointsize=ifelse(isTRUE(getOption("P.graphPaper")), 14, 10)))
             }
 
@@ -269,7 +269,11 @@ boxplotPAMPA.f <- function(exprBP, data, main=NULL, cex=getOption("P.cex"),...)
 {
     ## Purpose: Boxplot avec un formatage pour pampa
     ## ----------------------------------------------------------------------
-    ## Arguments:
+    ## Arguments: exprBP : expression décrivant le modèle du boxplot.
+    ##            data : les données à utiliser.
+    ##            main : titre du graphique.
+    ##            cex : taille des caractères.
+    ##            ... : arguments optionnels (passés à la fonction boxplot).
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 10 févr. 2011, 17:05
 

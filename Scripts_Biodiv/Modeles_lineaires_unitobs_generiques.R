@@ -31,7 +31,8 @@
 
 
 ########################################################################################################################
-modeleLineaireWP2.unitobs.f <- function(metrique, factAna, factAnaSel, listFact, listFactSel, tableMetrique, dataEnv)
+modeleLineaireWP2.unitobs.f <- function(metrique, factAna, factAnaSel, listFact, listFactSel, tableMetrique, dataEnv,
+                                        baseEnv=.GlobalEnv)
 {
     ## Purpose: Gestions des différentes étapes des modèles linéaires.
     ## ----------------------------------------------------------------------
@@ -42,6 +43,8 @@ modeleLineaireWP2.unitobs.f <- function(metrique, factAna, factAnaSel, listFact,
     ##            listFactSel : liste des modalités sélectionnées pour ce(s)
     ##                          dernier(s)
     ##            tableMetrique : nom de la table de métriques.
+    ##            dataEnv : environnement de stockage des données.
+    ##            baseEnv : environnement de l'interface.
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 18 août 2010, 15:59
 
@@ -161,11 +164,13 @@ modeleLineaireWP2.unitobs.f <- function(metrique, factAna, factAnaSel, listFact,
 
         ## Écriture des résultats formatés dans un fichier :
         tryCatch(sortiesLM.f(objLM=res, formule=formule, metrique=metrique,
-                             factAna=factAna, modSel=iFactGraphSel, listFact=listFact,
+                             factAna=factAna, modSel=iFactGraphSel,
+                             listFact=listFact, listFactSel=listFactSel,
                              Data=tmpData, dataEnv=dataEnv, Log=Log,
                              type=ifelse(tableMetrique == "unitSpSz" && factAna != "classe_taille",
                                          "CL_unitobs",
-                                         "unitobs")),
+                                         "unitobs"),
+                             baseEnv=baseEnv),
                  error=errorLog.f)
 
         resid.out <- boxplot(residuals(res), plot=FALSE)$out
@@ -187,13 +192,17 @@ modeleLineaireWP2.unitobs.f <- function(metrique, factAna, factAnaSel, listFact,
                 resLM.red <<- res.red
 
                 tryCatch(sortiesLM.f(objLM=res.red, formule=formule, metrique=metrique,
-                                     factAna=factAna, modSel=iFactGraphSel, listFact=listFact,
-                                     Data=tmpData, Log=Log, sufixe="(red)", type="unitobs"),
+                                     factAna=factAna, modSel=iFactGraphSel,
+                                     listFact=listFact, listFactSel=listFactSel,
+                                     Data=tmpData, Log=Log, sufixe="(red)",
+                                     type=ifelse(tableMetrique == "unitSpSz" && factAna != "classe_taille",
+                                                 "CL_unitobs",
+                                                 "unitobs"),
+                                     dataEnv=dataEnv, baseEnv=baseEnv),
                          error=errorLog.f)
             }else{}
 
         }else{}
-
 
     }else{
         message("Annulé !")

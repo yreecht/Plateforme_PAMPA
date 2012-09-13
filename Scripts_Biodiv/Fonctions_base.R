@@ -397,8 +397,8 @@ printGeneralDataInfo.f <- function(dataEnv, baseEnv, File)
               "\n  * Identification de l'AMP : ", paste(getOption("P.MPA"), collapse=", "),
               "\n  * Répertoire de données : ", dataEnv$fileNames["ws"], "/Data/",
               "\n  * Données d'observation : ", dataEnv$fileNames["obs"],
+              "\n  * Données unités d'observation :) : ", dataEnv$fileNames["unitobs"],
               "\n  * Référentiel espèces : ", dataEnv$fileNames["refesp"],
-              "\n  * Réf. unités d'observation :) : ", dataEnv$fileNames["unitobs"],
               "\n  * Référentiel spatial : ", dataEnv$fileNames["refspa"], "\n",
               sep=""),
         file=File)
@@ -482,6 +482,27 @@ printSelectionInfo.f <- function(metrique, factGraph, factGraphSel, listFact, li
                  }))
 }
 
+########################################################################################################################
+summary.fr <- function(object,...)
+{
+    ## Purpose: Franciser les sorties d'un summary (numeric uniquement).
+    ## ----------------------------------------------------------------------
+    ## Arguments: object : objet à résumer.
+    ##            ... : argument supplémentaires passés à summary().
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date: 13 sept. 2012, 15:47
+
+    if ( ! is.numeric(object)) stop("Erreur de programmation")
+
+    ## Calcul du résumé :
+    res <- summary(object=object, ...)
+
+    ## Changement des noms d'éléments :
+    names(res) <- c("Min.", "1er.Quart.", "Médiane", "Moyenne", "3e.Quart.", "Max")
+
+    return(res)
+}
+
 
 ########################################################################################################################
 printStats.f <- function(Data, metrique, listFact, File, headline=NULL)
@@ -506,7 +527,7 @@ printStats.f <- function(Data, metrique, listFact, File, headline=NULL)
 
     cat("\n########################\nStatistiques générales :\n\n", file=File)
 
-    capture.output(print(summary(Data[ , metrique])), file=File, append=TRUE)
+    capture.output(print(summary.fr(Data[ , metrique])), file=File, append=TRUE)
 
     cat("\n#########################################",
         "\nStatistiques par croisement de facteurs :\n\n", file=File, sep="")
@@ -518,7 +539,7 @@ printStats.f <- function(Data, metrique, listFact, File, headline=NULL)
                                      c(lapply(listFact,
                                               function(y)eval(parse(text=y))),
                                        sep=".")),
-                       FUN=summary))
+                       FUN=summary.fr))
 
     ## Assemblage du résultat dans un tableau
     capture.output(print(do.call(rbind, res)),

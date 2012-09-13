@@ -242,8 +242,34 @@ colnames(calendrierGeneral) <- c("AnneeCalendaire" , "periodEchant" , "semestre"
     freqtot$nbBatAct<-freqtot$nbBat
     freqtot$nbBatAct[!is.na(freqtot$act1) & !is.na(freqtot$act2)] <- freqtot$nbBatAct[!is.na(freqtot$act1) & !is.na(freqtot$act2)]/2 # à vérifier sur un fichier avec doubles activités    
 
+    # cas spécifique de Banyuls
+    if (siteEtudie=="BA") {
+      for (i in 1 : nrow(freqtot)) {
+          freqtot$sens1[i] = unlist(strsplit(as.character(freqtot$numSortie[i]), "\\_"))[3]
+          freqtot$sens2[i] = paste(unlist(strsplit(as.character(freqtot$numSortie[i]), "\\_"))[1], "_", 
+                                       unlist(strsplit(as.character(freqtot$numSortie[i]), "\\_"))[2], sep="")
+      }
+      freqtotBA <- freqtot[1,]
+      freqtotBA <- rbind (freqtotBA, freqtot[!is.element (freqtot$sens1, c("am", "pm")) ,])
+      
+      freqtotam <- subset(freqtot, freqtot$sens1=="am") 
+      freqtotam1 <- freqtotam[is.element(freqtotam$act1, c("ACTTou", "CHAL", "CR", "ED", "EXCU", "JS", "PE", "PL", "PLCom", "PM", "POC", "PRO", "PS", NA) ),]
+      
+      freqtotpm <- subset(freqtot, freqtot$sens1=="pm") 
+      freqtotpm1 <- freqtotam[is.element(freqtotam$act1, c("AUC", "BA", "CA", "CH", "KY", NA, "PB", "KS", "PI", "PR", "PV", "RE", "SF", "SN", "SSM") ),]
+      
+      freqtot <- rbind (freqtotBA, freqtotam1, freqtotpm1)
+      levels(freqtot$numSortie) <- c(levels(freqtot$numSortie),levels(freqtot$sens2))
+      freqtot$numSortie <- freqtot$sens2
+      freqtot <- freqtot[-1,]
+    }
+    
+
+
+
+
     # cas spécifique de La Réunion
-    if (siteEtudie=="RUN") {
+    if (siteEtudie=="RUN") {                                                        
       for (i in 1 : nrow(freqtot)){
         if (freqtot$act1[i]=="PE" | freqtot$act1[i]=="PL" | freqtot$act1[i]=="ACTTou" | freqtot$act1[i]=="PS" | freqtot$act1[i]=="JS"){
           freqtot$nbPersAct[i]=NA

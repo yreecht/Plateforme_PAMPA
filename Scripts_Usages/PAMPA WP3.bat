@@ -60,7 +60,7 @@ echo %cmdpath% trouvé !
 ::::::::::::::::::::::::::::::::
 
 rem set R_PROFILE=Rprofile.site
-start "PAMPA WP2" "%cmdpath%" R_PROFILE="SCRIPTS WP3/Rprofile.site" --no-restore --no-save --sdi
+start "PAMPA WP2" "%cmdpath%" R_PROFILE="Scripts_Usages/Rprofile.site" --no-restore --no-save --sdi
 
 goto:finconsole
 rem Qitter l'invite de commande :

@@ -198,14 +198,14 @@ barplotPAMPA.f <- function(metrique, listFact, Data, main=NULL, cex=getOption("P
     ## Intervalle de confiance :
     CIplus <- switch(getOption("P.barplotStat"),
                       "mean"={
-                          SD * qt(0.975, df=N) / sqrt(N)
+                          SD * qt(0.975, df=N-1) / sqrt(N)
                       },
                       "median"={
                           quantH - heights
                       })
     CIminus <- switch(getOption("P.barplotStat"),
                       "mean"={
-                          SD * qt(0.975, df=N) / sqrt(N)
+                          SD * qt(0.975, df=N-1) / sqrt(N)
                       },
                       "median"={
                            heights - quantL

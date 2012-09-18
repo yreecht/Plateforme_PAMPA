@@ -116,7 +116,7 @@ WP2barplot.unitobs.f <- function(metrique, factGraph, factGraphSel, listFact, li
             tmpData <- cbind(tmp[ , colnames(tmp) != "nombre"], # Colonne "nombre" désormais inutile.
                              tmpData[match(tmp$unite_observation, tmpData$unite_observation),
                                      !is.element(colnames(tmpData),
-                                                 c(colnames(tmp), "nombre", "code_espece"))])
+                                                 c(colnames(tmp), "nombre", "code_espece")), drop=FALSE])
         }else{
             tmpData <- na.omit(agregationTableParCritere.f(Data=tmpData,
                                                            metrique=metrique,

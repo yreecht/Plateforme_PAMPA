@@ -31,7 +31,7 @@
 ####################################################################################################
 
 ## ** Version **
-options(versionPAMPA = "2.1-1")
+options(versionPAMPA = "2.1-2")
 
 ## Platform-specific treatment:
 ## Identification du dossier parent (d'installation) :

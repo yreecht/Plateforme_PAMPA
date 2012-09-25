@@ -246,8 +246,10 @@ barplotPAMPA.f <- function(metrique, listFact, Data, main=NULL, cex=getOption("P
           control=list(abstol=0.01))    # Tolérance.
 
     ylims <- c(0,
-               1.1 * max(heights + CIplus, na.rm=TRUE)) # max des ordonnées tenant compte de l'intervalle de confiance
-                                                    # paramétrique.
+               1.13 * max(heights +
+                          replace(CIplus, is.na(CIplus), 0), # Éviter d'avoir NA si IC non calculable.
+                          na.rm=TRUE)) # max des ordonnées tenant compte de l'intervalle de confiance
+                                        # paramétrique.
 
     barPlotTmp <- barplot(heights,
                           beside=TRUE,

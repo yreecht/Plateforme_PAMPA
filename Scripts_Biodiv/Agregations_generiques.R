@@ -62,7 +62,7 @@ betterCbind <- function(..., dfList=NULL, deparse.level = 1)
 }
 
 ########################################################################################################################
-agregation.f <- function(metric, Data, factors, casMetrique)
+agregation.f <- function(metric, Data, factors, casMetrique, dataEnv)
 {
     ## Purpose: Agrégation d'une métrique.
     ## ----------------------------------------------------------------------
@@ -71,6 +71,7 @@ agregation.f <- function(metric, Data, factors, casMetrique)
     ##            factors: vecteur des noms de facteurs d'agrégation.
     ##            casMetrique: vecteur nommé des types d'observation en
     ##                         fonction de la métrique choisie.
+    ##            dataEnv: environnement des données.
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 20 déc. 2011, 14:29
 
@@ -159,6 +160,86 @@ agregation.f <- function(metric, Data, factors, casMetrique)
                                            0))
                          })
            },
+           "nbMax"={
+               ## Récupération des nombres brutes avec sélections :
+               nbTmp <- getReducedSVRdata.f(dataName=".NombresSVR", data=Data, dataEnv=dataEnv)
+
+               ## Somme par croisement de facteur / rotation :
+               nbTmp2 <- apply(nbTmp,
+                             which(is.element(names(dimnames(nbTmp)), c(factors, "rotation"))),
+                             function(x)
+                         {
+                             ifelse(all(is.na(x)), NA, sum(x, na.rm=TRUE))
+                         })
+
+               ## Somme par croisement de facteur :
+               res <- as.array(apply(nbTmp2,
+                                     which(is.element(names(dimnames(nbTmp)), factors)),
+                                     function(x)
+                                 {
+                                     ifelse(all(is.na(x)), NA, max(x, na.rm=TRUE))
+                                 }))
+           },
+           "nbSD"={
+               ## Récupération des nombres brutes avec sélections :
+               nbTmp <- getReducedSVRdata.f(dataName=".NombresSVR", data=Data, dataEnv=dataEnv)
+
+               ## Somme par croisement de facteur / rotation :
+               nbTmp2 <- apply(nbTmp,
+                             which(is.element(names(dimnames(nbTmp)), c(factors, "rotation"))),
+                             function(x)
+                         {
+                             ifelse(all(is.na(x)), NA, sum(x, na.rm=TRUE))
+                         })
+
+               ## Somme par croisement de facteur :
+               res <- as.array(apply(nbTmp2,
+                                     which(is.element(names(dimnames(nbTmp)), factors)),
+                                     function(x)
+                                 {
+                                     ifelse(all(is.na(x)), NA, sd(x, na.rm=TRUE))
+                                 }))
+           },
+           "densMax"={
+               ## Récupération des nombres brutes avec sélections :
+               densTmp <- getReducedSVRdata.f(dataName=".DensitesSVR", data=Data, dataEnv=dataEnv)
+
+               ## Somme par croisement de facteur / rotation :
+               densTmp2 <- apply(densTmp,
+                                 which(is.element(names(dimnames(densTmp)), c(factors, "rotation"))),
+                                 function(x)
+                             {
+                                 ifelse(all(is.na(x)), NA, sum(x, na.rm=TRUE))
+                             })
+
+               ## Somme par croisement de facteur :
+               res <- as.array(apply(densTmp2,
+                                     which(is.element(names(dimnames(densTmp)), factors)),
+                                     function(x)
+                                 {
+                                     ifelse(all(is.na(x)), NA, max(x, na.rm=TRUE))
+                                 }))
+           },
+           "densSD"={
+               ## Récupération des nombres brutes avec sélections :
+               densTmp <- getReducedSVRdata.f(dataName=".DensitesSVR", data=Data, dataEnv=dataEnv)
+
+               ## Somme par croisement de facteur / rotation :
+               densTmp2 <- apply(densTmp,
+                                 which(is.element(names(dimnames(densTmp)), c(factors, "rotation"))),
+                                 function(x)
+                             {
+                                 ifelse(all(is.na(x)), NA, sum(x, na.rm=TRUE))
+                             })
+
+               ## Somme par croisement de facteur :
+               res <- as.array(apply(densTmp2,
+                                     which(is.element(names(dimnames(densTmp)), factors)),
+                                     function(x)
+                                 {
+                                     ifelse(all(is.na(x)), NA, sd(x, na.rm=TRUE))
+                                 }))
+           },
            stop("Pas implémenté !")
            )
 
@@ -172,7 +253,8 @@ agregation.f <- function(metric, Data, factors, casMetrique)
     return(reslong)
 }
 
-agregations.generic.f <- function(Data, metrics, factors, listFact=NULL, unitSpSz=NULL, unitSp=NULL, info=FALSE)
+agregations.generic.f <- function(Data, metrics, factors, listFact=NULL, unitSpSz=NULL, unitSp=NULL, info=FALSE,
+                                  dataEnv=.GlobalEnv)
 {
     ## Purpose: Agréger les données selon un ou plusieurs facteurs.
     ## ----------------------------------------------------------------------
@@ -209,9 +291,10 @@ agregations.generic.f <- function(Data, metrics, factors, listFact=NULL, unitSpS
                      "recouvrement"="sum",
                      "taille.moy.colonies"="w.mean.colonies",
                      ## SVR (expérimental) :
-                     "nombreMax"="sum",
-                     "nombreSD"="",
-                     "densiteMax"="sum",
+                     "nombreMax"="nbMax",
+                     "nombreSD"="nbSD",
+                     "densiteMax"="densMax",
+                     "densiteSD"="densSD",
                      "biomasseMax"="sum")
 
     ## Ajout du champ nombre pour le calcul des moyennes pondérées s'il est absent :
@@ -280,7 +363,7 @@ agregations.generic.f <- function(Data, metrics, factors, listFact=NULL, unitSpS
     ## Agrégation de la métrique selon les facteurs :
     reslong <- betterCbind(dfList=lapply(metrics,   # sapply utilisé pour avoir les noms.
                                          agregation.f,
-                                         Data=Data, factors=factors, casMetrique=casMetrique))
+                                         Data=Data, factors=factors, casMetrique=casMetrique, dataEnv=dataEnv))
 
     ## Agrégation et ajout des facteurs supplémentaires :
     if (!is.null(listFact))

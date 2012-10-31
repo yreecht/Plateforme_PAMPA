@@ -112,7 +112,8 @@ modeleLineaireWP2.unitobs.f <- function(metrique, factAna, factAnaSel, listFact,
                                                MPA=MPA,
                                                unitobs = "unite_observation", code.especes = "code_espece",
                                                nombres = "nombre",
-                                               indices=metrique)
+                                               indices=metrique,
+                                               dataEnv=dataEnv)
                               }))
 
             ## On rajoute les anciennes colonnes :

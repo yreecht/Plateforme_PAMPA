@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "PAMPA Ressources & Biodiversité"
-#define MyAppVersion "2.1-2"
+#define MyAppVersion "2.2-0"
 #define MyAppPublisher "Ifremer"
 #define MyAppURL "http://wwz.ifremer.fr/pampa/"
 #define MyAppExeName "PAMPA WP2.bat"
@@ -76,7 +76,6 @@ Source: "Scripts_Biodiv\Main.R"; DestDir: "{app}"
 Source: "Scripts_Biodiv\Modeles_lineaires_esp_generiques.R"; DestDir: "{app}"
 Source: "Scripts_Biodiv\Modeles_lineaires_interface.R"; DestDir: "{app}"
 Source: "Scripts_Biodiv\Modeles_lineaires_unitobs_generiques.R"; DestDir: "{app}"
-Source: "Scripts_Biodiv\Nombres_SVR.R"; DestDir: "{app}"
 Source: "Scripts_Biodiv\Selection_donnees.R"; DestDir: "{app}"
 Source: "Scripts_Biodiv\Selection_variables_fonctions.R"; DestDir: "{app}"
 Source: "Scripts_Biodiv\Selection_variables_interface.R"; DestDir: "{app}"

@@ -76,7 +76,7 @@ colBoxplot.f <- function(terms, data)
         n <- length(terms)
 
         ## Définition des couleurs :
-        col <- rep(.ColorPalette(n=length(unique(na.omit(data[ , terms[n - 1]])))),
+        col <- rep(PAMPAcolors.f(n=length(unique(na.omit(data[ , terms[n - 1]])))),
                    each=ifelse(n == 2,
                                1,            # Pas de facteur imbriqué.
                                prod(sapply(data[ , terms[1:(n-2)], drop=FALSE], # nombres de niveaux du (des) facteur(s)
@@ -478,12 +478,6 @@ WP2boxplot.f <- function(metrique, factGraph, factGraphSel, listFact, listFactSe
 
 
         ## #################### Informations supplémentaires sur les graphiques ####################
-
-        ## Label si un seul groupe :
-        if (length(tmpBP$names) == 1)
-        {
-            axis(1, at=1, labels=tmpBP$names)
-        }else{}
 
         ## Séparateurs de facteur de premier niveau :
         if (getOption("P.sepGroupes"))

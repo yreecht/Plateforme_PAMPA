@@ -28,6 +28,118 @@
 ### Fonctions spécifiques aux vidéos rotatives pour le calcul des tables de métriques :
 ####################################################################################################
 
+
+########################################################################################################################
+statRotations.f <- function(facteurs, obs, dataEnv=.GlobalEnv)
+{
+    ## Purpose: Calcul des statistiques des abondances (max, sd) par rotation
+    ##          en se basant sur des données déjà interpolées.
+    ## ----------------------------------------------------------------------
+    ## Arguments: facteurs : vecteur des noms de facteurs d'agrégation
+    ##                       (résolution à laquelle on travaille).
+    ##            obs : données d'observation.
+    ##            dataEnv : environnement des données (pour sauvegarde de
+    ##                      résultats intermédiaires).
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date: 29 oct. 2012, 16:01
+
+    ## Identification des rotations valides :
+    if (is.element("unite_observation", facteurs))
+    {
+        ## Rotations valides (les vides doivent tout de même être renseignés) :
+        rotations <- tapply(obs$rotation,
+                            as.list(obs[ , c("unite_observation", "rotation"), drop=FALSE]),
+                            function(x)length(x) > 0)
+
+        ## Les rotations non renseignés apparaissent en NA et on veut FALSE :
+        rotations[is.na(rotations)] <- FALSE
+    }else{
+        stop("\n\tL'unité d'observation doit faire partie des facteurs d'agrégation !!\n")
+    }
+
+    ## ###########################################################
+    ## Nombres par rotation avec le niveau d'agrégation souhaité :
+    nombresR <- tapply(obs$nombre,
+                       as.list(obs[ , c(facteurs, "rotation"), drop=FALSE]),
+                       function(x,...){ifelse(all(is.na(x)), NA, sum(x,...))},
+                       na.rm = TRUE)
+
+    ## Les NAs sont considérés comme des vrais zéros lorsque la rotation est valide :
+    nombresR <- sweep(nombresR,
+                      match(names(dimnames(rotations)), names(dimnames(nombresR)), nomatch=NULL),
+                      rotations,        # Tableau des secteurs valides (booléens).
+                      function(x, y)
+                  {
+                      x[is.na(x) & y] <- 0 # Lorsque NA et secteur valide => 0.
+                      return(x)
+                  })
+
+    ## ##################################################
+    ## Statistiques :
+
+    ## Moyennes :
+    nombresMean <- apply(nombresR, which(is.element(names(dimnames(nombresR)), facteurs)),
+                         function(x,...){ifelse(all(is.na(x)), NA, mean(x,...))}, na.rm=TRUE)
+
+    ## Maxima :
+    nombresMax <- apply(nombresR, which(is.element(names(dimnames(nombresR)), facteurs)),
+                        function(x,...){ifelse(all(is.na(x)), NA, max(x,...))}, na.rm=TRUE)
+
+    ## Déviation standard :
+    nombresSD <- apply(nombresR, which(is.element(names(dimnames(nombresR)), facteurs)),
+                       function(x,...){ifelse(all(is.na(x)), NA, sd(x,...))}, na.rm=TRUE)
+
+    ## Nombre de rotations valides :
+    nombresRotations <- apply(rotations, 1, sum, na.rm=TRUE)
+
+    if (is.element("classe_taille", facteurs))
+    {
+    ## ## Pour les calculs agrégés par unitobs :
+    ## tmpNombresSVR <- apply(nombresR,
+    ##                        which(names(dimnames(nombresR)) != "code_espece"),
+    ##                        sum, na.rm=TRUE)
+
+    ## tmpNombresSVR[!rotations] <- NA
+
+        ## #### Densités brutes (pour agrégations) :
+        ## on réduit les facteurs (calcul de rayon par espèce) :
+        factors2 <- facteurs[ ! is.element(facteurs, "classe_taille")]
+
+
+        ## rayons par espèce / unitobs :
+        rayons <- as.table(tapply(obs[obs[ , "nombre"] > 0 , "dmin"],
+                                  as.list(obs[obs[ , "nombre"] > 0,
+                                              factors2, drop=FALSE]),
+                                  max, na.rm=TRUE))
+
+        densitesR <- sweep(nombresR,
+                           match(names(dimnames(rayons)), names(dimnames(nombresR))),
+                           pi * rayons ^ 2,
+                           "/")
+
+        ## Les NAs sont considérés comme des vrais zéros lorsque la rotation est valide :
+        densitesR <- sweep(densitesR,
+                          match(names(dimnames(rotations)), names(dimnames(densitesR)), nomatch=NULL),
+                          rotations,        # Tableau des secteurs valides (booléens).
+                          function(x, y)
+                      {
+                          x[is.na(x) & y] <- 0 # Lorsque NA et secteur valide => 0.
+                          return(x)
+                      })
+
+        ## Sauvegardes dans l'environnement des données :
+        assign(".NombresSVR", nombresR, envir=dataEnv)
+        assign(".DensitesSVR", densitesR, envir=dataEnv)
+        assign(".Rotations", rotations, envir=dataEnv)
+    }else{}
+
+    ## Retour des résultats sous forme de liste :
+    return(list(nombresMean=nombresMean, nombresMax=nombresMax, nombresSD=nombresSD,
+                nombresRotations=nombresRotations, nombresTot=nombresR))
+}
+
+
+########################################################################################################################
 calc.density.SVR.f <- function(Data, obs, metric="densite",
                                factors=c("unite_observation", "code_espece"))
 {
@@ -173,55 +285,21 @@ calc.tables.SVR.f <- function(obs,
                               dataEnv,
                               factors=c("unite_observation", "code_espece", "classe_taille"))
 {
-    ## Purpose:
+    ## Purpose: Calcul générique d'une table de métriques pour les vidéos
+    ##          rotatives.
     ## ----------------------------------------------------------------------
-    ## Arguments:
+    ## Arguments: obs : table des observations (data.frame).
+    ##            dataEnv : environnement des données.
+    ##            factors : les facteurs d'agrégation.
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 21 déc. 2011, 14:33
 
-    stepInnerProgressBar.f(n=1, msg="Interpolations pour vidéos rotatives (étape longue)")
+    stepInnerProgressBar.f(n=1, msg="Statistiques pour vidéos rotatives (étape longue)")
 
-    switch(getOption("PAMPA.SVR.interp"),
-           "extended"={
-               statRotations <- statRotation.extended.f(facteurs=factors,
-                                                        obs=obs,
-                                                        dataEnv=dataEnv)
-           },
-           "basic"={
-               statRotations <- statRotation.basic.f(facteurs=factors,
-                                                     obs=obs,
-                                                     dataEnv=dataEnv)
-           },
-           stop(paste("Y'a un truc qui cloche dans les options d'interpolations : ",
-                      "\n\tcontactez le support technique !", sep=""))
-           )
-
-    ## Correction (locale) des nombres dans les observations :
-    corNb <- as.data.frame(as.table(statRotations$nombresTot), responseName="Nb.cor")
-
-    obs$Nb.cor <- NULL                  # Pour le cas où ça aurait déjà été calculé.
-
-    corNb[ , "Nb.obs"] <- as.data.frame(as.table(tapply(obs[ , "nombre"],
-                                                        as.list(obs[ , colnames(corNb)[is.element(colnames(corNb),
-                                                                                                  colnames(obs))]]),
-                                                        function(x){ifelse(all(is.na(x)),
-                                                                           NA,
-                                                                           sum(x, na.rm=TRUE))})),
-                                        responseName="Nb.obs")[ , "Nb.obs"]
-
-    ## Facteur de correction :
-    corNb[ , "fact"] <- corNb[ , "Nb.cor"] /corNb[ , "Nb.obs"]
-
-    ## Ajout de la colonne avec le facteur de correction :
-    obs <- merge(obs, corNb)
-
-    ## Correction de poids et nombres :
-    obs[ , "nombre"] <- obs[ , "nombre"] * obs[ , "fact"]
-    obs[ , "poids"] <- obs[ , "poids"] * obs[ , "fact"]
-
-    ## Libération de la mémoire :
-    rm(corNb)
-    gc()
+    ## Calcul des statistiques de nombres :
+    statRotations <- statRotations.f(facteurs=factors,
+                                             obs=obs,
+                                             dataEnv=dataEnv)
 
     ## Moyenne pour les vidéos rotatives (habituellement 3 rotation) :
     nbr <- statRotations[["nombresMean"]]
@@ -286,7 +364,7 @@ calc.unitSp.SVR.f <- function(unitSpSz, obs, dataEnv)
     ## Author: Yves Reecht, Date: 23 déc. 2011, 09:43
 
     ## Agrégation pour les métriques par défaut (idem cas général) :
-    unitSp <- calc.unitSp.default.f(unitSpSz)
+    unitSp <- calc.unitSp.default.f(unitSpSz, dataEnv=dataEnv)
 
     ## Calcul à partir des données extrapolées brutes pour les statistiques :
     nbInterp <- get(".NombresSVR", envir=dataEnv)
@@ -346,7 +424,7 @@ calc.unit.SVR.f <- function(unitSp, obs, refesp, unitobs, dataEnv,
     ## Author: Yves Reecht, Date: 23 déc. 2011, 10:36
 
     ## Agrégation des métriques par défaut :
-    unit <- calc.unit.default.f(unitSp=unitSp, refesp=refesp, unitobs=unitobs, colNombres="nombre")
+    unit <- calc.unit.default.f(unitSp=unitSp, refesp=refesp, unitobs=unitobs, colNombres="nombre", dataEnv=dataEnv)
 
     ## Ajout des statistiques sur les rotations
     ## (calcul à partir des données extrapolées brutes pour les statistiques) :
@@ -355,12 +433,13 @@ calc.unit.SVR.f <- function(unitSp, obs, refesp, unitobs, dataEnv,
     ## Réduction de la liste d'espèces si besoin (si sélection sur les espèces) :
     if (dim(nbInterp)[names(dimnames(nbInterp)) == "code_espece"] > nlevels(unitSp[ , "code_espece"]))
     {
-        if (which(names(dimnames(nbInterp)) == "code_espece") != 2) stop("Problème de dimension SVR !")
+        species <- dimnames(nbInterp)[["code_espece"]]
 
+        nbInterp <- extract(nbInterp,
+                            indices=list(species[is.element(species,
+                                                            levels(unitSp[ , "code_espece"]))]),
+                            dims=which(is.element(names(dimnames(nbInterp)), "code_espece")))
 
-        nbInterp <- nbInterp[ ,
-                             is.element(dimnames(nbInterp)[["code_espece"]],
-                                        levels(unitSp[ , "code_espece"])), ]
     }else{}
 
     nbTmp <- apply(nbInterp,

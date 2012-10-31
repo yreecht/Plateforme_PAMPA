@@ -109,7 +109,8 @@ WP2barplot.unitobs.f <- function(metrique, factGraph, factGraphSel, listFact, li
                                                MPA=MPA,
                                                unitobs = "unite_observation", code.especes = "code_espece",
                                                nombres = "nombre",
-                                               indices=metrique)
+                                               indices=metrique,
+                                               dataEnv=dataEnv)
                               }))
 
             ## On rajoute les anciennes colonnes :

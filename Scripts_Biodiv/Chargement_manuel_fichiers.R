@@ -90,7 +90,12 @@ loadManual.f <- function(baseEnv, dataEnv)
 
     ## assign("metrics", metrics, envir=.GlobalEnv) # [tmp]  [yr: 20/12/2011]
 
-    assign("backup", c(metrics, list(obs=Data$obs)), envir=dataEnv)
+    assign("backup", c(metrics,
+                       list(obs=Data$obs),
+                       tryCatch(list(".NombresSVR"=get(".NombresSVR", envir=dataEnv),
+                                     ".DensitesSVR"=get(".DensitesSVR", envir=dataEnv)),
+                                error=function(e){NULL})),
+           envir=dataEnv)
 
     ## Export des tables de métriques :
     stepInnerProgressBar.f(n=1, msg="Export des tables de métriques dans des fichiers")

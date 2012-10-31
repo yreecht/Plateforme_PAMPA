@@ -61,7 +61,7 @@ initialiseGraphOptions.f <- function()
             P.PDFunFichierPage = FALSE,         # Créer un fichier par page pour les sorties PDF ?
             P.NbDecimal = 2,                    # Nombre de décimales à afficher sur les graphiques
             P.legendeCouleurs = TRUE,           # Afficher la légende pour le facteur identifié par une des couleurs ?
-            P.colPalette = "heat",              # Type de palette de couleur.
+            P.colPalette = "default",              # Type de palette de couleur.
             P.statusOrder = c("RE", "IN",       # Ordre des nivaux de protection pour les graphiques et analyses.
                               "Z1", "I1",
                               "PP", "RP",
@@ -100,6 +100,8 @@ initialiseGraphOptions.f <- function()
 
     ## On crée la pallette de couleurs par défaut :
     makeColorPalette.f()
+    ## ...et les palettes de couleurs :
+    makeColorPalettes.f()
 
     ## Initialisation de la langue des variables de graphiques :
     init.GraphLang.f()
@@ -620,7 +622,8 @@ verifVariables.f <- function(metrique, factGraph, factGraphSel, listFact, listFa
                                           listFact=listFact[unlist(listFact) != ""],
                                           unitSpSz=get("unitSpSz", envir=dataEnv),
                                           unitSp=get("unitSp", envir=dataEnv),
-                                          info=TRUE)))
+                                          info=TRUE,
+                                          dataEnv=dataEnv)))
         {
             infoLoading.f(msg=paste("Un des facteurs de regroupement est une sous-catégorie",
                                     "\nd'un des facteurs d'agrégation (e.g. espèce -> Famille).",

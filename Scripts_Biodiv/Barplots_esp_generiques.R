@@ -245,9 +245,14 @@ barplotPAMPA.f <- function(metrique, listFact, Data, main=NULL, cex=getOption("P
       },
           control=list(abstol=0.01))    # Tolérance.
 
+
+    ## Suppression des valeurs infinies (plante ylims les graphiques) :
+    tmpHeights <- replace(heights, is.infinite(heights), NA)
+    tmpCIplus <- replace(CIplus, is.infinite(CIplus), NA)
+
     ylims <- c(0,
-               1.13 * max(heights +
-                          replace(CIplus, is.na(CIplus), 0), # Éviter d'avoir NA si IC non calculable.
+               1.13 * max(tmpHeights +
+                          replace(tmpCIplus, is.na(tmpCIplus), 0), # Éviter d'avoir NA si IC non calculable.
                           na.rm=TRUE)) # max des ordonnées tenant compte de l'intervalle de confiance
                                         # paramétrique.
 

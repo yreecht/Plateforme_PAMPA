@@ -469,6 +469,51 @@ subsetToutesTables.f <- function(metrique, facteurs, selections,
     return(restmp)
 }
 
+########################################################################################################################
+getReducedSVRdata.f <- function(dataName, data, dataEnv)
+{
+    ## Purpose: Récupérer des données brutes SVR (nombres, densités) réduites
+    ##  aux sélections.
+    ## ----------------------------------------------------------------------
+    ## Arguments: dataName : nom de tableau à récupérer.
+    ##            data : données associées (avec sélections).
+    ##            dataEnv : environnement des données.
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date: 31 oct. 2012, 12:21
+
+    res <- get(dataName, envir=dataEnv)
+
+    ## Limitations au classes de tailles, espèces et unité d'observations sélectionnées :
+    if (is.element("code_espece", colnames(data)) &&
+        is.element("code_espece", names(dimnames(res))))
+    {
+        species <- dimnames(res)[["code_espece"]]
+        res <- extract(res,
+                       indices=list(species[is.element(species, data[ , "code_espece"])]),
+                       dims=which(is.element(names(dimnames(res)), "code_espece")))
+    }else{}
+
+    if (is.element("unite_observation", colnames(data)) &&
+        is.element("unite_observation", names(dimnames(res))))
+    {
+        unitObs <- dimnames(res)[["unite_observation"]]
+        res <- extract(res,
+                       indices=list(unitObs[is.element(unitObs, data[ , "unite_observation"])]),
+                       dims=which(is.element(names(dimnames(res)), "unite_observation")))
+    }else{}
+
+    if (is.element("classe_taille", colnames(data)) &&
+        is.element("classe_taille", names(dimnames(res))))
+    {
+        CL <- dimnames(res)[["classe_taille"]]
+        res <- extract(res,
+                       indices=list(CL[is.element(CL, data[ , "classe_taille"])]),
+                       dims=which(is.element(names(dimnames(res)), "classe_taille")))
+    }else{}
+
+    return(res)
+}
+
 
 ########################################################################################################################
 agregationTableParCritere.f <- function(Data, metrique, facteurs, dataEnv, listFact=NULL)
@@ -508,9 +553,10 @@ agregationTableParCritere.f <- function(Data, metrique, facteurs, dataEnv, listF
                      "recouvrement"="sum",
                      "taille.moy.colonies"="w.mean.colonies",
                      ## SVR (expérimental) :
-                     "nombreMax"="sum",
-                     "nombreSD"="",
-                     "densiteMax"="sum",
+                     "nombreMax"="nbMax",
+                     "nombreSD"="nbSD",
+                     "densiteMax"="densMax",
+                     "densiteSD"="densSD",
                      "biomasseMax"="sum")
 
     ## Ajout du champ nombre pour le calcul des moyennes pondérées s'il est absent :
@@ -661,6 +707,86 @@ agregationTableParCritere.f <- function(Data, metrique, facteurs, dataEnv, listF
                                            0))
                          })
            },
+           "nbMax"={
+               ## Récupération des nombres brutes avec sélections :
+               nbTmp <- getReducedSVRdata.f(dataName=".NombresSVR", data=Data, dataEnv=dataEnv)
+
+               ## Somme par croisement de facteur / rotation :
+               nbTmp2 <- apply(nbTmp,
+                             which(is.element(names(dimnames(nbTmp)), c(facteurs, "rotation"))),
+                             function(x)
+                         {
+                             ifelse(all(is.na(x)), NA, sum(x, na.rm=TRUE))
+                         })
+
+               ## Somme par croisement de facteur :
+               res <- as.array(apply(nbTmp2,
+                                     which(is.element(names(dimnames(nbTmp)), facteurs)),
+                                     function(x)
+                                 {
+                                     ifelse(all(is.na(x)), NA, max(x, na.rm=TRUE))
+                                 }))
+           },
+           "nbSD"={
+               ## Récupération des nombres brutes avec sélections :
+               nbTmp <- getReducedSVRdata.f(dataName=".NombresSVR", data=Data, dataEnv=dataEnv)
+
+               ## Somme par croisement de facteur / rotation :
+               nbTmp2 <- apply(nbTmp,
+                             which(is.element(names(dimnames(nbTmp)), c(facteurs, "rotation"))),
+                             function(x)
+                         {
+                             ifelse(all(is.na(x)), NA, sum(x, na.rm=TRUE))
+                         })
+
+               ## Somme par croisement de facteur :
+               res <- as.array(apply(nbTmp2,
+                                     which(is.element(names(dimnames(nbTmp)), facteurs)),
+                                     function(x)
+                                 {
+                                     ifelse(all(is.na(x)), NA, sd(x, na.rm=TRUE))
+                                 }))
+           },
+           "densMax"={
+               ## Récupération des nombres brutes avec sélections :
+               densTmp <- getReducedSVRdata.f(dataName=".DensitesSVR", data=Data, dataEnv=dataEnv)
+
+               ## Somme par croisement de facteur / rotation :
+               densTmp2 <- apply(densTmp,
+                                 which(is.element(names(dimnames(densTmp)), c(facteurs, "rotation"))),
+                                 function(x)
+                             {
+                                 ifelse(all(is.na(x)), NA, sum(x, na.rm=TRUE))
+                             })
+
+               ## Somme par croisement de facteur :
+               res <- as.array(apply(densTmp2,
+                                     which(is.element(names(dimnames(densTmp)), facteurs)),
+                                     function(x)
+                                 {
+                                     ifelse(all(is.na(x)), NA, max(x, na.rm=TRUE))
+                                 }))
+           },
+           "densSD"={
+               ## Récupération des nombres brutes avec sélections :
+               densTmp <- getReducedSVRdata.f(dataName=".DensitesSVR", data=Data, dataEnv=dataEnv)
+
+               ## Somme par croisement de facteur / rotation :
+               densTmp2 <- apply(densTmp,
+                                 which(is.element(names(dimnames(densTmp)), c(facteurs, "rotation"))),
+                                 function(x)
+                             {
+                                 ifelse(all(is.na(x)), NA, sum(x, na.rm=TRUE))
+                             })
+
+               ## Somme par croisement de facteur :
+               res <- as.array(apply(densTmp2,
+                                     which(is.element(names(dimnames(densTmp)), facteurs)),
+                                     function(x)
+                                 {
+                                     ifelse(all(is.na(x)), NA, sd(x, na.rm=TRUE))
+                                 }))
+           },
            stop("Pas implémenté !")
            )
 
@@ -768,7 +894,7 @@ presAbs.f <- function(nombres, logical=FALSE)
 
 ########################################################################################################################
 calcBiodiv.f <- function(Data, refesp, MPA, unitobs="unite_observation", code.especes="code_espece", nombres="nombre",
-                         indices="all", global=FALSE, printInfo=FALSE)
+                         indices="all", global=FALSE, printInfo=FALSE, dataEnv=.GlobalEnv)
 {
     ## Purpose: calcul des indices de biodiversité
     ## ----------------------------------------------------------------------
@@ -787,6 +913,7 @@ calcBiodiv.f <- function(Data, refesp, MPA, unitobs="unite_observation", code.es
     ##            global : est-ce que les résultats doivent être exportés
     ##                     globalement (booléen).
     ##            printInfo : affichage des infos (chargement) ? (booléen).
+    ##            dataEnv : environnement des données
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 29 oct. 2010, 08:58
 
@@ -828,7 +955,7 @@ calcBiodiv.f <- function(Data, refesp, MPA, unitobs="unite_observation", code.es
     {
         Data <- agregations.generic.f(Data=Data, metrics=nombres,
                                       factors=c(unitobs, code.especes),
-                                      listFact=NULL)
+                                      listFact=NULL, dataEnv=dataEnv)
     }else{}
 
     df.biodiv <- as.data.frame(as.table(tapply(Data[ , nombres],
@@ -942,7 +1069,8 @@ calcBiodiv.f <- function(Data, refesp, MPA, unitobs="unite_observation", code.es
                                       refesp=refesp,
                                       unitobs = unitobs, code.especes = code.especes, nombres = nombres,
                                       global = global, printInfo = printInfo,
-                                      indices=indices)
+                                      indices=indices,
+                                      dataEnv=dataEnv)
 
     if (!is.null(dim(df.biodivTaxo)))
     {
@@ -964,7 +1092,7 @@ calcBiodiv.f <- function(Data, refesp, MPA, unitobs="unite_observation", code.es
 ########################################################################################################################
 calcBiodivTaxo.f <- function(Data, refesp, unitobs="unite_observation", code.especes="code_espece", nombres="nombre",
                              global=FALSE, printInfo=FALSE,
-                             indices="all")
+                             indices="all", dataEnv=.GlobalEnv)
 {
     ## Purpose: Calcul des indices de biodiversité basés sur la taxonomie.
     ## ----------------------------------------------------------------------
@@ -982,6 +1110,7 @@ calcBiodivTaxo.f <- function(Data, refesp, unitobs="unite_observation", code.esp
     ##            printInfo : affichage des infos ? (booléen).
     ##            indices : liste des indices à calculer
     ##                      (vecteur de caractères), tous par défaut.
+    ##            dataEnv : environnement des données
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 29 oct. 2010, 14:30
 
@@ -1008,7 +1137,7 @@ calcBiodivTaxo.f <- function(Data, refesp, unitobs="unite_observation", code.esp
         {
             Data <- agregations.generic.f(Data=Data, metrics=nombres,
                                           factors=c(unitobs, code.especes),
-                                          listFact=NULL)
+                                          listFact=NULL, dataEnv=dataEnv)
         }else{}
 
         ## Table de contingence unitobs-espèces :

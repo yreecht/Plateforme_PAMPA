@@ -28,79 +28,18 @@
 ### Script destiné à recevoir les initialisations précédemment faites dans Config.R
 ####################################################################################################
 
-
-## ## Vérification de l'existances de la configuration :
-## assign(".requiredVar",
-##        c(## "siteEtudie",
-##          unitobs="fileNameUnitobs", obs="fileNameObs", refesp="fileNameRefesp", ws="nameWorkspace"),
-##        envir=.GlobalEnv)
-
+## Variables de fichiers requises:
 options(P.requiredVar=c(unitobs="fileNameUnitobs",
                         obs="fileNameObs",
                         refesp="fileNameRefesp",
                         ws="nameWorkspace"))
 
 ## ##################### Initialisation des variables globales ####################
-## Jeuxdonnescoupe <- 0
-## assign("Jeuxdonnescoupe", Jeuxdonnescoupe, envir=.GlobalEnv) # [!!!] Changer de system   [yr: 8/12/2011]
 
 #### Logo :
 .fileimage <- "./Scripts_Biodiv/img/pampa2.GIF"
 assign(".fileimage", .fileimage, envir=.GlobalEnv)
 
-
-########################################################################################################################
-## testVar.f <- function(requiredVar, env=.GlobalEnv)
-## {
-##     ## Purpose: Test l'existence des variables requises (noms de fichiers)
-##     ##          et crée les chemins le cas échéant.
-##     ## ----------------------------------------------------------------------
-##     ## Arguments:
-##     ## ----------------------------------------------------------------------
-##     ## Author: Yves Reecht, Date: 21 nov. 2011, 15:39
-
-##     existVar <- sapply(requiredVar, exists, envir=env)
-
-##     if (any(! existVar))                    # Si au moins une des variables n'est pas définie.
-##     {
-##         pluriel <- sum(! existVar) > 1
-
-##         ## Demande pour l'ouverture du fichier de configuration :
-##         if(tclvalue(tkmessageBox(message=paste(ifelse(pluriel,
-##                                                       "Les variables suivantes ne sont pas définies ",
-##                                                       "La variable suivante n'est pas définie "),
-##                                                "dans votre fichier \"", basePath, "/Scripts_Biodiv/Config.R\" :\n\n\t*  ",
-##                                                paste(requiredVar[! existVar], collapse="\n\t*  "),
-##                                                "\n\nVoulez-vous éditer ce fichier ?",
-##                                                "\n\t(ouverture automatiquement de la sauvegarde également, si elle existe).",
-##                                                sep=""),
-##                                  icon="warning", type="yesno", title="Configuration imcomplète",
-##                                  default="no")) == "yes")
-##         {
-##             if (exists("shell.exec", mode="function"))
-##             {
-##                 shell.exec(paste(basePath, "/Scripts_Biodiv/Config.R", sep=""))
-
-##                 if (file.exists(fileTmp <- paste(basePath, "/Scripts_Biodiv/Config.bak.R", sep="")))
-##                 {
-##                     shell.exec(fileTmp)
-##                 }else{}
-##             }else{
-##                 edit(paste(basePath, "/Scripts_Biodiv/Config.R", sep=""))
-
-##                 if (file.exists(fileTmp <- paste(basePath, "/Scripts_Biodiv/Config.bak.R", sep="")))
-##                 {
-##                     edit(fileTmp)
-##                 }else{}
-##             }
-##         }else{}
-##     }else{
-##         pathMaker.f(nameWorkspace=get(requiredVar["ws"], envir=env),
-##                     fileNameUnitobs=get(requiredVar["unitobs"], envir=env),
-##                     fileNameObs=get(requiredVar["obs"], envir=env),
-##                     fileNameRefesp=get(requiredVar["esp"], envir=env))
-##     }
-## }
 
 ########################################################################################################################
 ## Ajouts pour les graphs génériques [yr: 13/08/2010] :

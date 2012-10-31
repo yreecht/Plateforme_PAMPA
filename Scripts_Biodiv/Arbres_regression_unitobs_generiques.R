@@ -111,7 +111,8 @@ WP2MRT.unitobs.f <- function(metrique, factGraph, factGraphSel, listFact, listFa
                                                MPA=MPA,
                                                unitobs = "unite_observation", code.especes = "code_espece",
                                                nombres = "nombre",
-                                               indices=metrique)
+                                               indices=metrique,
+                                               dataEnv=dataEnv)
                               }))
 
             ## On rajoute les anciennes colonnes :

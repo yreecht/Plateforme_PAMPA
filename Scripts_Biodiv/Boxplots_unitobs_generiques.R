@@ -111,7 +111,8 @@ WP2boxplot.unitobs.f <- function(metrique, factGraph, factGraphSel, listFact, li
                                                MPA=MPA,
                                                unitobs = "unite_observation", code.especes = "code_espece",
                                                nombres = "nombre",
-                                               indices=metrique)
+                                               indices=metrique,
+                                               dataEnv=dataEnv)
                               }))
 
 
@@ -182,12 +183,6 @@ WP2boxplot.unitobs.f <- function(metrique, factGraph, factGraphSel, listFact, li
 
 
         ## #################### Informations supplémentaires sur les graphiques ####################
-
-        ## Label si un seul groupe :
-        if (length(tmpBP$names) == 1)
-        {
-            axis(1, at=1, labels=tmpBP$names)
-        }else{}
 
         ## Séparateurs de facteur de premier niveau :
         if (getOption("P.sepGroupes"))

@@ -86,7 +86,7 @@ loadPackages.f <- function()
     }else{}                             # rien sinon.
 
     ## Packages nécessaires au bon fonctionnement de la plateforme PAMPA WP2 :
-    requiredPack <- c("tcltk", "tkrplot", "vegan", "MASS",
+    requiredPack <- c("R.utils", "tcltk", "tkrplot", "vegan", "MASS",
                       "mvpart", "multcomp", "gamlss", "maps", "maptools", ## "Hmisc"
                       "TeachingDemos")
 

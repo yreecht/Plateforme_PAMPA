@@ -40,8 +40,87 @@ makeColorPalette.f <- function()
     assign(".ColorPalette",
            colorRampPalette(switch(getOption("P.colPalette"),
                                    "heat"=heat.colors(5),
-                                   "gray"=c("#787878", "#dddddd"))),
+                                   "gray"=c("#787878", "#dddddd"),
+                                   1)),
            envir=.GlobalEnv)
+}
+
+makeColorPalettes.f <- function()
+{
+    ## Purpose: Créer les palettes de couleurs pour les graphiques
+    ## ----------------------------------------------------------------------
+    ## Arguments: aucun !
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date: 26 oct. 2012, 17:19
+
+    ## default:
+    assign(".ColorPaletteDefault",
+           colorRampPalette(c("#66FFFF", "#215968", "#9966FF", "#CC3399", "#FFCC99",
+                              "#FFFF99", "#CCFF99", "#CC9900", "#C0504D", "#FF99CC")),
+           envir=.GlobalEnv)
+
+    ## blue:
+    assign(".ColorPaletteBlue",
+           colorRampPalette(c("#66FFFF", "#215968", "#33CCCC", "#003366", "#CCFFFF",
+                              "#009999", "#99CCFF", "#66FFFF", "#215968", "#33CCCC")),
+           envir=.GlobalEnv)
+
+    ## heat:
+    assign(".ColorPaletteHeat",
+           colorRampPalette(heat.colors(5)),
+           envir=.GlobalEnv)
+
+    ## gray:
+    assign(".ColorPaletteGray",
+           colorRampPalette(c("#787878", "#dddddd")),
+           envir=.GlobalEnv)
+}
+
+
+PAMPAcolors.f <- function(n, palette=getOption("P.colPalette"))
+{
+    ## Purpose: retourner n couleurs de la palette "palette".
+    ## ----------------------------------------------------------------------
+    ## Arguments: n : nombre de couleurs.
+    ##            palette : une des palettes de couleurs prédéfinies
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date: 26 oct. 2012, 17:08
+
+    if (is.element(palette,
+                   c("default", "defaut", "blue", "bleu", "heat", "gray", "grey")) &&
+        ! exists(palette, envir=.GlobalEnv))
+    {
+        makeColorPalettes.f()
+    }else{}
+
+    res <- switch(palette,
+                  "default"=,
+                  "defaut"={
+                      if (n <= 10)
+                      {
+                          .ColorPaletteDefault(10)[1:n]
+                      }else{
+                          .ColorPaletteDefault(n)
+                      }
+                  },
+                  "bleu"=,
+                  "blue"={
+                      if (n <= 10)
+                      {
+                          .ColorPaletteBlue(10)[1:n]
+                      }else{
+                          .ColorPaletteBlue(n)
+                      }
+                  },
+                  "heat"={
+                      .ColorPaletteHeat(n)
+                  },
+                  "grey"=,
+                  "gray"={
+                      .ColorPaletteGray(n)
+                  })
+
+    return(res)
 }
 
 
@@ -283,13 +362,16 @@ boxplotPAMPA.f <- function(exprBP, data, main=NULL, cex=getOption("P.cex"),...)
     ## Les couleurs pour l'identification des modalités du facteur de second niveau :
     colors <- colBoxplot.f(terms=attr(terms(exprBP), "term.labels"), data=data)
 
+    ## Suppression des valeurs infinies (plante ylims les graphiques) :
+    tmpMetric <- replace(data[ , metrique], is.infinite(data[ , metrique]), NA)
+
     ## ylims :
-    ylim <- c(min(data[ , metrique], na.rm=TRUE),
+    ylim <- c(min(tmpMetric, na.rm=TRUE),
               ifelse(getOption("P.maxExclu") && getOption("P.GraphPartMax") < 1,
-                     getOption("P.GraphPartMax") * max(data[ , metrique], na.rm=TRUE),
-                     max(data[ , metrique], na.rm=TRUE) +
-                     0.1*(max(data[ , metrique], na.rm=TRUE) -
-                          min(data[ , metrique], na.rm=TRUE))))
+                     getOption("P.GraphPartMax") * max(tmpMetric, na.rm=TRUE),
+                     max(tmpMetric, na.rm=TRUE) +
+                     0.1*(max(tmpMetric, na.rm=TRUE) -
+                          min(tmpMetric, na.rm=TRUE))))
 
     ## Plot sans affichage pour récupérer l'objet :
     tmpBP <- boxplot(exprBP, data=data,

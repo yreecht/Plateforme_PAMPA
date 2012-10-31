@@ -337,14 +337,14 @@ selectionObs.SVR.f <- function()
     tkbind(E.supprLevel, "<Return>", onOK.selectionObs.SVR.f)
 
     ## Placement des éléments graphiques :
-    tkgrid(tklabel(WinSVR, text=""))
+    ## tkgrid(tklabel(WinSVR, text=""))
 
-    tkgrid(FrameInfo, column=2, columnspan=2, sticky="we")
-    tkgrid(tklabel(FrameInfo,
-                   text=paste("Information\n\n Types d'interpolations : ",
-                   ifelse(getOption("PAMPA.SVR.interp") == "extended",
-                          "étendues !",
-                          "simples !"), "\n", sep=""), justify="left"), sticky="w")
+    ## tkgrid(FrameInfo, column=2, columnspan=2, sticky="we")
+    ## tkgrid(tklabel(FrameInfo,
+    ##                text=paste("Information\n\n Types d'interpolations : ",
+    ##                ifelse(getOption("PAMPA.SVR.interp") == "extended",
+    ##                       "étendues !",
+    ##                       "simples !"), "\n", sep=""), justify="left"), sticky="w")
 
     tkgrid(tklabel(WinSVR, text=""))
 
@@ -843,20 +843,17 @@ loadObservations.f <- function(pathObs)
     }else{
         ## On renomme les colonnes + identification du type d'interpolation :
         switch(as.character(ncol(obs)),
-               "11"={
-                   colnames(obs) <- c("unite_observation", "rotation", "secteur", "code_espece", "sexe", "taille",
-                                      "classe_taille", "poids", "nombre", "dmin", "dmax")
-
-                   options(PAMPA.SVR.interp="extended")
+               "10"={
+                   colnames(obs) <- c("unite_observation", "rotation", "code_espece", "sexe", "taille", "classe_taille",
+                                      "poids", "nombre", "dmin", "dmax")
                },
-               "14"={
-                   colnames(obs) <- c("unite_observation", "rotation", "sec.valides", "sec.ciel", "sec.sol",
-                                      "sec.obstrue", "code_espece", "sexe", "taille",
-                                      "classe_taille", "poids", "nombre", "dmin", "dmax")
+               {
+                   infoLoading.f(msg=paste("Le fichier d'observations n'a pas le bon nombre de colonnes !",
+                                           "\n(Attention, les interpolations sont maintenant externalisées)", sep=""),
+                                 icon="error")
 
-                   options(PAMPA.SVR.interp="basic")
-               },
-               stop("Le fichier d'observations ne contient pas le bon nombre de colonnes"))
+                   stop("Le fichier d'observations ne contient pas le bon nombre de colonnes")
+               })
 
         obs$rotation <- as.numeric(obs$rotation)
 
@@ -1167,7 +1164,12 @@ loadDefault.f <- function(baseEnv, dataEnv)
     listInEnv.f(list=metrics, env=dataEnv)
 
     ## Sauvegarde pour restauration ultérieure :
-    assign("backup", c(metrics, list(obs=Data$obs)), envir=dataEnv)
+    assign("backup", c(metrics,
+                       list(obs=Data$obs),
+                       tryCatch(list(".NombresSVR"=get(".NombresSVR", envir=dataEnv),
+                                     ".DensitesSVR"=get(".DensitesSVR", envir=dataEnv)),
+                                error=function(e){NULL})),
+           envir=dataEnv)
 
     ## Export des tables de métriques :
     stepInnerProgressBar.f(n=1, msg="Export des tables de métriques dans des fichiers")

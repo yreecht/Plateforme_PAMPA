@@ -299,6 +299,8 @@ unitSpSz.propAb.f <- function(unitSpSz, factors)
 
     ## ##################################################
     ## Proportion d'abondance par classe de taille :
+
+    ## Mise sous forme de tableau multi-dimensionel :
     abondance <- tapply(unitSpSz$densite,
                         as.list(unitSpSz[ , factors]),
                         function(x){x}) # -> tableau à 3D.
@@ -313,10 +315,18 @@ unitSpSz.propAb.f <- function(unitSpSz, factors)
     propAbondance <- sweep(abondance, factRed, sumsCT, FUN="/")
     names(dimnames(propAbondance)) <- factors
 
-    ## Mise au format colonne + % : [!!!] vérif ordre !  [yr: 18/1/2012]
-    return(100 * as.data.frame(as.table(propAbondance),
-                               responseName="prop.abondance.SC",
-                               stringsAsFactors=FALSE)$prop.abondance.SC)
+    ## Extraction des résultats et remise en ordre :
+    tmp <- as.data.frame(as.table(propAbondance),
+                         responseName="prop.abondance.SC",
+                         stringsAsFactors=FALSE)
+
+    row.names(tmp) <- apply(tmp[ , factors], 1, paste, collapse=":")
+
+    ## Même ordre que unitSpSz :
+    tmp <- tmp[apply(unitSpSz[ , factors], 1, paste, collapse=":") , ]
+
+    ## Mise au format colonne + % : ordre [OK]  [yr: 30/10/2012]
+    return(100 * tmp$prop.abondance.SC)
 }
 
 ########################################################################################################################
@@ -349,10 +359,18 @@ unitSpSz.propBiom.f <- function(unitSpSz, factors)
         propBiomass <- sweep(biomasses, factRed, sumsCT, FUN="/")
         names(dimnames(propBiomass)) <- factors
 
-        ## Mise au format colonne + % :
-        return(100 * as.data.frame(as.table(propBiomass),
-                                   responseName="prop.biomasse.SC",
-                                   stringsAsFactors=FALSE)$prop.biomasse.SC)
+        ## Extraction des résultats et remise en ordre :
+        tmp <- as.data.frame(as.table(propBiomass),
+                             responseName="prop.biomasse.SC",
+                             stringsAsFactors=FALSE)
+
+        row.names(tmp) <- apply(tmp[ , factors], 1, paste, collapse=":")
+
+        ## Même ordre que unitSpSz :
+        tmp <- tmp[apply(unitSpSz[ , factors], 1, paste, collapse=":") , ]
+
+        ## Mise au format colonne + % : ordre [OK]  [yr: 30/10/2012]
+        return(100 * tmp$prop.biomasse.SC)
     }else{
         return(NULL)
     }
@@ -507,7 +525,7 @@ calc.unitSpSz.f <- function(obs, unitobs, refesp, dataEnv)
 }
 
 ########################################################################################################################
-calc.unitSp.default.f <- function(unitSpSz)
+calc.unitSp.default.f <- function(unitSpSz, dataEnv=.GlobalEnv)
 {
     ## Purpose: Calcul de la table de métriques par unité d'observation par
     ##          espèce, cas général (à l'aide d'agrégations).
@@ -529,7 +547,8 @@ calc.unitSp.default.f <- function(unitSpSz)
                                  factors=c("unite_observation", "code_espece"),
                                  listFact = NULL,
                                  unitSpSz = unitSpSz,
-                                 unitSp = NULL))
+                                 unitSp = NULL,
+                                 dataEnv=dataEnv))
 }
 
 ########################################################################################################################
@@ -565,7 +584,7 @@ calc.unitSp.f <- function(unitSpSz, obs, unitobs, dataEnv)
 
                              calc.unitSp.LIT.f(obs=obs, unitobs=unitobs, dataEnv=dataEnv)
                          },
-                         calc.unitSp.default.f(unitSpSz=unitSpSz))
+                         calc.unitSp.default.f(unitSpSz=unitSpSz, dataEnv=dataEnv))
     }else{
         factors <- c("unite_observation", "code_espece")
 
@@ -610,7 +629,7 @@ calc.unitSp.f <- function(unitSpSz, obs, unitobs, dataEnv)
 }
 
 ########################################################################################################################
-calc.unit.default.f <- function(unitSp, refesp, unitobs, colNombres="nombre")
+calc.unit.default.f <- function(unitSp, refesp, unitobs, colNombres="nombre", dataEnv=.GlobalEnv)
 {
     ## Purpose:
     ## ----------------------------------------------------------------------
@@ -632,7 +651,8 @@ calc.unit.default.f <- function(unitSp, refesp, unitobs, colNombres="nombre")
                                       factors=c("unite_observation"),
                                       listFact = NULL,
                                       unitSpSz = NULL,
-                                      unitSp = unitSp)
+                                      unitSp = unitSp,
+                                      dataEnv=dataEnv)
 
         tmp <- do.call(rbind,
                        lapply(unique(as.character(unitobs[ , "AMP"])),
@@ -645,7 +665,8 @@ calc.unit.default.f <- function(unitSp, refesp, unitobs, colNombres="nombre")
                                            MPA=MPA,
                                            unitobs = "unite_observation",
                                            code.especes = "code_espece", nombres = colNombres, indices = "all",
-                                           printInfo=TRUE, global=TRUE)
+                                           printInfo=TRUE, global=TRUE,
+                                           dataEnv=dataEnv)
                           }))
 
         unit <- merge(unit, tmp[ , colnames(tmp) != colNombres],
@@ -693,9 +714,11 @@ calc.unit.f <- function(unitSp, obs, refesp, unitobs, dataEnv)
                        },
                        "LIT"={        # Pour les types d'observation qui ont une colonne "colonie" à la place de
                                       # "nombre" :
-                           calc.unit.default.f(unitSp=unitSp, refesp=refesp, unitobs=unitobs, colNombres="colonie")
+                           calc.unit.default.f(unitSp=unitSp, refesp=refesp, unitobs=unitobs, colNombres="colonie",
+                                               dataEnv=dataEnv)
                        },
-                       calc.unit.default.f(unitSp=unitSp, refesp=refesp, unitobs=unitobs, colNombres="nombre"))
+                       calc.unit.default.f(unitSp=unitSp, refesp=refesp, unitobs=unitobs, colNombres="nombre",
+                                           dataEnv=dataEnv))
     }else{
         unit <- NULL
     }

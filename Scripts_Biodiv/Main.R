@@ -31,7 +31,7 @@
 ####################################################################################################
 
 ## ** Version **
-options(versionPAMPA = "2.1-2")
+options(versionPAMPA = "2.2-0")
 
 ## Platform-specific treatment:
 ## Identification du dossier parent (d'installation) :
@@ -84,7 +84,6 @@ source("./Scripts_Biodiv/Calcul_poids.R", encoding="latin1")                    
 source("./Scripts_Biodiv/Agregations_generiques.R", encoding="latin1")                 # OK
 source("./Scripts_Biodiv/Calcul_tables_metriques.R", encoding="latin1")                # OK
 source("./Scripts_Biodiv/Calcul_tables_metriques_LIT.R", encoding="latin1")            # OK
-source("./Scripts_Biodiv/Nombres_SVR.R", encoding="latin1")                            # OK
 source("./Scripts_Biodiv/Calcul_tables_metriques_SVR.R", encoding="latin1")            # OK
 
 ## ...la sélection des données :

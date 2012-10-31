@@ -199,6 +199,13 @@ selectionOnRefesp.f <- function(dataEnv, baseEnv)
     unitobs <- get("unitobs", envir=dataEnv)
     refesp <- get("refesp", envir=dataEnv)
 
+    if (exists(".NombresSVR", envir=dataEnv)) # SVR !
+    {
+        .NombresSVR <- get(".NombresSVR", envir=dataEnv)
+
+        .DensitesSVR <- get(".DensitesSVR", envir=dataEnv)
+    }
+
     if (exists("unitSpSz", envir=dataEnv))
     {
         unitSpSz <- get("unitSpSz", envir=dataEnv)
@@ -228,6 +235,19 @@ selectionOnRefesp.f <- function(dataEnv, baseEnv)
                                            "code_espece"])
 
         ## Réduction des tables de données (au espèces sélectionnées) :
+        if (exists(".NombresSVR"))
+        {
+            species <- dimnames(.NombresSVR)[["code_espece"]]
+
+            .NombresSVR <- extract(.NombresSVR,
+                                   indices=list(species[is.element(species, keptEspeces)]),
+                                   dims=which(is.element(names(dimnames(.NombresSVR)), "code_espece")))
+
+            .DensitesSVR <- extract(.DensitesSVR,
+                                    indices=list(species[is.element(species, keptEspeces)]),
+                                    dims=which(is.element(names(dimnames(.DensitesSVR)), "code_espece")))
+        }else{}
+
         if (exists("unitSpSz") && ncol(unitSpSz)) # [!!!]  [yr: 4/1/2012]
         {
             unitSpSz <- dropLevels.f(unitSpSz[is.element(unitSpSz[ , "code_espece"],
@@ -250,7 +270,9 @@ selectionOnRefesp.f <- function(dataEnv, baseEnv)
         listInEnv.f(list("obs"=obs,
                          "unitSpSz"=unitSpSz,
                          "unitSp"=unitSp,
-                         "unit"=unit),
+                         "unit"=unit,
+                         ".NombresSVR"=.NombresSVR,
+                         ".DensitesSVR"=.DensitesSVR),
                     env=dataEnv)
 
         ## Plan d'échantillonnage basic :
@@ -449,6 +471,13 @@ selectionOnUnitobs.f <- function(dataEnv, baseEnv)
 
     filePathes <- get("filePathes", envir=dataEnv)
 
+    if (exists(".NombresSVR", envir=dataEnv)) # SVR !
+    {
+        .NombresSVR <- get(".NombresSVR", envir=dataEnv)
+
+         .DensitesSVR <- get(".DensitesSVR", envir=dataEnv)
+    }
+
     ## ...et des tables de métriques :
     if (exists("unitSpSz", envir=dataEnv))
     {
@@ -475,7 +504,20 @@ selectionOnUnitobs.f <- function(dataEnv, baseEnv)
                                                        selection[["selection"]]),
                                             "unite_observation"])
 
-        ## Réduction des tables de données (au espèces sélectionnées) :
+        ## Réduction des tables de données (aux unitobs sélectionnées) :
+        if (exists(".NombresSVR"))
+        {
+            unitObs <- dimnames(.NombresSVR)[["unite_observation"]]
+
+            .NombresSVR <- extract(.NombresSVR,
+                                   indices=list(unitObs[is.element(unitObs, keptUnitobs)]),
+                                   dims=which(is.element(names(dimnames(.NombresSVR)), "unite_observation")))
+
+            .DensitesSVR <- extract(.DensitesSVR,
+                                    indices=list(unitObs[is.element(unitObs, keptUnitobs)]),
+                                    dims=which(is.element(names(dimnames(.DensitesSVR)), "unite_observation")))
+        }else{}
+
         if (exists("unitSpSz") && ncol(unitSpSz))
         {
             unitSpSz <- dropLevels.f(unitSpSz[is.element(unitSpSz[ , "unite_observation"],
@@ -498,7 +540,9 @@ selectionOnUnitobs.f <- function(dataEnv, baseEnv)
         listInEnv.f(list("obs"=obs,
                          "unitSpSz"=unitSpSz,
                          "unitSp"=unitSp,
-                         "unit"=unit),
+                         "unit"=unit,
+                         ".NombresSVR"=.NombresSVR,
+                         ".DensitesSVR"=.DensitesSVR),
                     env=dataEnv)
 
         ## Plan d'échantillonnage basic :

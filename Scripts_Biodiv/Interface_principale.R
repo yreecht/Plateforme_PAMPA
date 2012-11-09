@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
-##   Copyright (C) 2008-2010 Ifremer - Tous droits réservés.
+##   Copyright (C) 2008-2012 Ifremer - Tous droits réservés.
 ##
 ##   Ce programme est un logiciel libre ; vous pouvez le redistribuer ou le
 ##   modifier suivant les termes de la "GNU General Public License" telle que
@@ -361,10 +361,10 @@ mainInterface.create.f <- function()
     ## ######################################
     ## Menu deroulant des outils :
 
-    tkadd(outils, "command", label="Options générales...", command = generalOptions.f, state="normal",
+    tkadd(outils, "command", label="Options d'export...", command = generalOptions.f, state="normal",
           background=.MenuBackground)
 
-    tkadd(outils, "command", label="Options graphiques...", command = choixOptionsGraphiques.f, state="normal",
+    tkadd(outils, "command", label="Options graphiques...", command = tuneGraphOptions.f, state="normal",
           background=.MenuBackground)
     tkadd(outils, "separator", background=.MenuBackground)
 

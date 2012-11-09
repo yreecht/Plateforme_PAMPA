@@ -156,11 +156,13 @@ barplotPAMPA.f <- function(metrique, listFact, Data, main=NULL, cex=getOption("P
     ## Calcul des moyennes/médianes :
 
     heights <- switch(getOption("P.barplotStat"),
+                      "moyenne"=,
                       "mean"={
                           with(Data,
                                tapply(eval(parse(text=metrique)), lapply(listFact, function(y)eval(parse(text=y))),
                                       mean, na.rm=TRUE))
                       },
+                      "médiane"=,
                       "median"={
                            with(Data,
                                tapply(eval(parse(text=metrique)), lapply(listFact, function(y)eval(parse(text=y))),
@@ -168,14 +170,14 @@ barplotPAMPA.f <- function(metrique, listFact, Data, main=NULL, cex=getOption("P
                       })
 
     ## Calcul des écarts types (pour IC paramétriques) :
-    if (getOption("P.barplotStat") == "mean")
+    if (is.element(getOption("P.barplotStat"), c("mean", "moyenne")))
     {
         SD <- with(Data,
                    tapply(eval(parse(text=metrique)), lapply(listFact, function(y)eval(parse(text=y))),
                           sd, na.rm=TRUE))
     }else{}
     ## ... ou des quantiles :
-    if (getOption("P.barplotStat") == "median")
+    if (is.element(getOption("P.barplotStat"), c("median", "médiane")))
     {
         ## Lower:
         quantL <- with(Data,
@@ -197,16 +199,20 @@ barplotPAMPA.f <- function(metrique, listFact, Data, main=NULL, cex=getOption("P
 
     ## Intervalle de confiance :
     CIplus <- switch(getOption("P.barplotStat"),
-                      "mean"={
+                     "moyenne"=,
+                     "mean"={
                           SD * qt(0.975, df=N-1) / sqrt(N)
-                      },
-                      "median"={
+                     },
+                     "médiane"=,
+                     "median"={
                           quantH - heights
-                      })
+                     })
     CIminus <- switch(getOption("P.barplotStat"),
+                      "moyenne"=,
                       "mean"={
                           SD * qt(0.975, df=N-1) / sqrt(N)
                       },
+                      "médiane"=,
                       "median"={
                            heights - quantL
                       })
@@ -262,7 +268,7 @@ barplotPAMPA.f <- function(metrique, listFact, Data, main=NULL, cex=getOption("P
                           xlab="",
                           ylim=ylims,
                           las=1,
-                          col=.ColorPalette(nrow(heights)),
+                          col=PAMPAcolors.f(n=nrow(heights)),
                           cex.lab=cex,
                           cex.axis=cex,
                           legend.text=ifelse(length(listFact) > 1, TRUE, FALSE),
@@ -273,22 +279,29 @@ barplotPAMPA.f <- function(metrique, listFact, Data, main=NULL, cex=getOption("P
     errbar(x=barPlotTmp, y=heights, yplus=heights + CIplus, yminus=heights - CIminus,
            add=TRUE, pch=NA)
 
-    mtext(Capitalize.f(varNames[tail(listFact, 1), "nom"]),
-          side=1, line=2.3, cex=cex)
+    if (getOption("P.axesLabels"))
+    {
+        mtext(Capitalize.f(varNames[tail(listFact, 1), "nom"]),
+              side=1, line=2.3, cex=cex)
+    }else{}
 
     ## Précision du type de statistique :
     if ( ! isTRUE(getOption("P.graphPaper")))
     {
         mtext(switch(paste(getOption("P.lang"), getOption("P.barplotStat"), sep="-"),
+                     "fr-moyenne"=,
                      "fr-mean"={
                          expression((italic("moyenne")~+~italic("intervalle de confiance à 95%")))
                      },
+                     "fr-médiane"=,
                      "fr-median"={
                          expression((italic("médiane")~+~italic("écart interquartile")))
                      },
+                     "en-moyenne"=,
                      "en-mean"={
                          expression((italic("mean")~+~italic("95% confidence interval")))
                      },
+                     "en-médiane"=,
                      "en-median"={
                          expression((italic("median")~+~italic("interquartile range")))
                      }),
@@ -432,11 +445,13 @@ WP2barplot.esp.f <- function(metrique,
                                               "espece"))
 
         ## Label axe y :
-        ylab <- parse(text=paste("'", Capitalize.f(varNames[metrique, "nom"]), "'",
-                      ifelse(varNames[metrique, "unite"] != "",
-                             paste("~~(", varNames[metrique, "unite"], ")", sep=""),
-                             ""),
-                      sep=""))
+        ylab <- ifelse(getOption("P.axesLabels"),
+                       parse(text=paste("'", Capitalize.f(varNames[metrique, "nom"]), "'",
+                             ifelse(varNames[metrique, "unite"] != "",
+                                    paste("~~(", varNames[metrique, "unite"], ")", sep=""),
+                                    ""),
+                             sep="")),
+                       "")
 
         ## Barplot !
         tmpBaP <- barplotPAMPA.f(metrique=metrique, listFact=listFact, Data=tmpDataMod,
@@ -459,11 +474,12 @@ WP2barplot.esp.f <- function(metrique,
 
             ## Nombres sur l'axe supérieur :
             axis(3, as.vector(nbObs), at=as.vector(tmpBaP$x),
-                 col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5,
+                 col.ticks=getOption("P.NbObsCol"), col.axis = getOption("P.NbObsCol"),
+                 lty = 2, lwd = 0.5,
                  mgp=c(2, 0.5, 0))
 
             legend("topleft", "Nombre d'enregistrements par barre",
-                   cex =0.9, col=getOption("P.NbObsCol"), text.col="orange", merge=FALSE)
+                   cex =0.9, col=getOption("P.NbObsCol"), text.col=getOption("P.NbObsCol"), merge=FALSE)
         }else{}
 
         ## ###################################################

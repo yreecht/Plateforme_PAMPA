@@ -77,7 +77,7 @@ makeColorPalettes.f <- function()
 }
 
 
-PAMPAcolors.f <- function(n, palette=getOption("P.colPalette"))
+PAMPAcolors.f <- function(n=1, palette=getOption("P.colPalette"), list=FALSE)
 {
     ## Purpose: retourner n couleurs de la palette "palette".
     ## ----------------------------------------------------------------------
@@ -86,8 +86,14 @@ PAMPAcolors.f <- function(n, palette=getOption("P.colPalette"))
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 26 oct. 2012, 17:08
 
+    if (list)
+    {
+        return(c("défaut", "bleu", "chaud", "gris"))
+    }else{}
+
     if (is.element(palette,
-                   c("default", "defaut", "blue", "bleu", "heat", "gray", "grey")) &&
+                   c("default", "défaut", "defaut", "blue", "bleu",
+                     "heat", "chaud", "gray", "grey", "gris")) &&
         ! exists(palette, envir=.GlobalEnv))
     {
         makeColorPalettes.f()
@@ -95,7 +101,8 @@ PAMPAcolors.f <- function(n, palette=getOption("P.colPalette"))
 
     res <- switch(palette,
                   "default"=,
-                  "defaut"={
+                  "defaut"=,
+                  "défaut"={
                       if (n <= 10)
                       {
                           .ColorPaletteDefault(10)[1:n]
@@ -112,10 +119,12 @@ PAMPAcolors.f <- function(n, palette=getOption("P.colPalette"))
                           .ColorPaletteBlue(n)
                       }
                   },
+                  "chaud"=,
                   "heat"={
                       .ColorPaletteHeat(n)
                   },
                   "grey"=,
+                  "gris"=,
                   "gray"={
                       .ColorPaletteGray(n)
                   })

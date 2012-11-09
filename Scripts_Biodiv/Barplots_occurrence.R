@@ -182,11 +182,13 @@ barplotOccurrence.f <- function(factGraph, factGraphSel, listFact, listFactSel, 
               control=list(abstol=0.01))    # Tolérance.
 
         ## Label axe y :
-        ylab <- parse(text=paste("'", Capitalize.f(varNames[metrique, "nom"]), "'",
-                      ifelse(varNames[metrique, "unite"] != "",
-                             paste("~~(", varNames[metrique, "unite"], ")", sep=""),
-                             ""),
-                      sep=""))
+        ylab <- ifelse(getOption("P.axesLabels"),
+                       parse(text=paste("'", Capitalize.f(varNames[metrique, "nom"]), "'",
+                             ifelse(varNames[metrique, "unite"] != "",
+                                    paste("~~(", varNames[metrique, "unite"], ")", sep=""),
+                                    ""),
+                             sep="")),
+                       "")
 
         barPlotTmp <- barplot(heights,
                               beside=TRUE,
@@ -195,7 +197,7 @@ barplotOccurrence.f <- function(factGraph, factGraphSel, listFact, listFactSel, 
                               ylab=ylab,
                               ylim=c(0, 1.1 * max(heights, na.rm=TRUE)),
                               las=1,
-                              col=.ColorPalette(nrow(heights)),
+                              col=PAMPAcolors.f(n=nrow(heights)),
                               cex.lab=cex,
                               cex.axis=cex,
                               legend.text=ifelse(length(listFact) > 1, TRUE, FALSE),
@@ -222,7 +224,7 @@ barplotOccurrence.f <- function(factGraph, factGraphSel, listFact, listFactSel, 
 
             legend(x="topleft",
                    legend=expression("Nombre d'observations ("=="nb unités d'observation x nb espèces)"),
-                   cex =0.9, col=getOption("P.NbObsCol"), text.col="orange", merge=FALSE)
+                   cex =0.9, col=getOption("P.NbObsCol"), text.col=getOption("P.NbObsCol"), merge=FALSE)
 
         }else{}
 

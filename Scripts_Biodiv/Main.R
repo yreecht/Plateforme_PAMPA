@@ -31,7 +31,7 @@
 ####################################################################################################
 
 ## ** Version **
-options(versionPAMPA = "2.2-0")
+options(versionPAMPA = "2.3-0")
 
 ## Platform-specific treatment:
 ## Identification du dossier parent (d'installation) :
@@ -88,6 +88,9 @@ source("./Scripts_Biodiv/Calcul_tables_metriques_SVR.R", encoding="latin1")     
 
 ## ...la sélection des données :
 source("./Scripts_Biodiv/Selection_donnees.R", encoding="latin1")                      # OK
+
+## ...options graphiques et générales :
+source("./Scripts_Biodiv/Options.R", encoding="latin1")                                # OK
 
 ##################################################
 ## Analyses et graphiques :

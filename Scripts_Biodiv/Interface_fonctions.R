@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
-##   Copyright (C) 2008-2010 Ifremer - Tous droits réservés.
+##   Copyright (C) 2008-2012 Ifremer - Tous droits réservés.
 ##
 ##   Ce programme est un logiciel libre ; vous pouvez le redistribuer ou le
 ##   modifier suivant les termes de la "GNU General Public License" telle que
@@ -1160,115 +1160,6 @@ updateInterface.restore.f <- function(criterion="Tout", tabObs, baseEnv)
 
     winRaise.f(W.main)
 }
-
-########################################################################################################################
-generalOptions.f <- function()
-{
-    ## Purpose: choisir des options générales (graphiques et analyses)
-    ## ----------------------------------------------------------------------
-    ## Arguments: aucun
-    ## ----------------------------------------------------------------------
-    ## Author: Yves Reecht, Date: 11 sept. 2012, 17:33
-
-    env <- environment()
-    Done <- tclVar(0)                   # Statut d'exécution.
-
-    .Background <- "#FFF6BF"            # Couleur pour l'arrière plan des infos.
-
-    P.options <- lapply(options()[names(options("P.optionsClass")[[1]])],
-                        function(x)
-                    {
-                        tclVar(paste(if (is.logical(x))
-                                     {  # Pour avoir "1" au lieu de "TRUE" -> valeurs logiques pour tcl/tk :
-                                         as.character(as.numeric(x))
-                                     }else{
-                                         as.character(x)
-                                     }, collapse="*_*"))
-                    })  # Sélection des options graphiques de PAMPA.
-
-    P.options.old <- options()[names(options("P.optionsClass")[[1]])] # Pour pouvoir restorer les options (Cancel)
-
-    WinOpt <- tktoplevel()
-    tkwm.title(WinOpt, "Choix des options communes (analyses/graphiques)")
-
-    ## Objets pour le choix des options :
-
-    B.saveData <- tkcheckbutton(WinOpt, variable=P.options[["P.saveData"]])
-    B.saveStats <- tkcheckbutton(WinOpt, variable=P.options[["P.saveStats"]])
-
-    ## Boutons :
-    FrameBT <- tkframe(WinOpt)
-    B.OK <- tkbutton(FrameBT, text="  OK  ",
-                     command=function(){tclvalue(Done) <- 1})
-    B.Cancel <- tkbutton(FrameBT, text=" Annuler ",
-                         command=function(){tclvalue(Done) <- 2})
-    B.Reinit <- tkbutton(FrameBT, text=" Réinitialiser ",
-                         command=function()
-                     {
-                         initialiseGraphOptions.f()
-                         for (i in names(P.options))
-                         {
-                             eval(tclvalue(P.options[[i]]) <- options()[[i]], envir=env)
-                         }
-                     })
-
-    ## Placement des éléments sur la grille :
-
-    tkgrid(tklabel(WinOpt))
-    tkgrid(tklabel(WinOpt,
-                   text="Sauvgardes pour chaque analyse ou graphique :",
-                   background=.Background, justify="left"),
-           sticky="ew", padx=5, pady=3, columnspan=2)
-
-    tkgrid(tklabel(WinOpt,
-                   text="...données du graphique ou de l'analyse\n(fichier *.csv) ? ",
-                   justify="right"),
-           B.saveData, sticky="es", padx=3, pady=5)
-
-    tkgrid(tklabel(WinOpt,
-                   text="...informations sur les données et statistiques\n(fichier *.stat) ? ",
-                   justify="right"),
-           B.saveStats, sticky="es", padx=3, pady=5)
-
-
-    tkgrid(tklabel(WinOpt))
-    tkgrid(FrameBT, columnspan=2, padx=6, pady=10)
-    tkgrid(B.OK, tklabel(FrameBT, text="     "), B.Cancel,
-           tklabel(FrameBT, text="               "), B.Reinit,
-           tklabel(FrameBT, text="\n"))
-
-    ##
-    tkbind(WinOpt, "<Destroy>", function(){tclvalue(Done) <- 2}) # En cas de destruction de la fenêtre.
-
-    tcl("update")
-    winSmartPlace.f(WinOpt)
-
-    tkwait.variable(Done)
-
-    if (tclvalue(Done) == "1")
-    {
-        ## Sauvegarde des options :
-        options(sapply(names(P.options),
-                       function (name)
-                   {
-                       ## Conversion dans la bonne classe (renseignée par l'option P.optionClass) :
-                       switch(options("P.optionsClass")[[1]][name],
-                              logical=as.logical(as.integer(unlist(strsplit(tclvalue(P.options[[name]]),
-                                                                            split="*_*", fixed=TRUE)))),
-                              character=as.character(unlist(strsplit(tclvalue(P.options[[name]]),
-                                                                     split="*_*", fixed=TRUE))),
-                              integer=as.integer(unlist(strsplit(tclvalue(P.options[[name]]),
-                                                                 split="*_*", fixed=TRUE))),
-                              numeric=as.numeric(unlist(strsplit(tclvalue(P.options[[name]]),
-                                                                 split="*_*", fixed=TRUE))),
-                              stop("Erreur : Option PAMPA '", name, "' non définie"))
-                   }, simplify=FALSE))
-     }
-
-    tkdestroy(WinOpt)                   # Destruction de la fenêtre
-}
-
-
 
 
 

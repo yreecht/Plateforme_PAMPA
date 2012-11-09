@@ -466,11 +466,13 @@ WP2boxplot.f <- function(metrique, factGraph, factGraphSel, listFact, listFactSe
                                               "espece"))
 
         ## Label axe y :
-        ylab <- parse(text=paste("'", Capitalize.f(varNames[metrique, "nom"]), "'",
-                      ifelse(varNames[metrique, "unite"] != "",
-                             paste("~~(", varNames[metrique, "unite"], ")", sep=""),
-                             ""),
-                      sep=""))
+        ylab <- ifelse(getOption("P.axesLabels"),
+                       parse(text=paste("'", Capitalize.f(varNames[metrique, "nom"]), "'",
+                             ifelse(varNames[metrique, "unite"] != "",
+                                    paste("~~(", varNames[metrique, "unite"], ")", sep=""),
+                                    ""),
+                             sep="")),
+                       "")
 
         ## Boxplot !
         tmpBP <- boxplotPAMPA.f(exprBP, data=tmpDataMod,
@@ -528,11 +530,12 @@ WP2boxplot.f <- function(metrique, factGraph, factGraphSel, listFact, listFactSe
 
             ## Nombres sur l'axe supérieur :
             axis(3, as.vector(nbObs), at=1:length(as.vector(nbObs)),
-                 col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5,
+                 col.ticks=getOption("P.NbObsCol"), col.axis = getOption("P.NbObsCol"),
+                 lty = 2, lwd = 0.5,
                  mgp=c(2, 0.5, 0))
 
             legend("topleft", "Nombre d'enregistrements par boîte à moustache",
-                   cex =0.9, col=getOption("P.NbObsCol"), text.col="orange", merge=FALSE)
+                   cex =0.9, col=getOption("P.NbObsCol"), text.col=getOption("P.NbObsCol"), merge=FALSE)
         }else{}
 
         ## ###################################################

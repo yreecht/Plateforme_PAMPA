@@ -223,7 +223,7 @@ boxplotCarte.f <- function(metrique, tableMetrique, dataEnv)
     {
         subplot(boxplot(y[[i]] ~ x[[i]],
                         ylim=c(0, max(tmpData[ , metrique], na.rm=TRUE)),
-                        col=.ColorPalette(nlevels(tmpData$statut_protection)),
+                        col=PAMPAcolors.f(n=nlevels(tmpData$statut_protection)),
                         main=paste("", names(x)[i], sep=""),
                         las=1),
                 X[i], Y[i], size=c(1.2, 1.12),  type="fig",

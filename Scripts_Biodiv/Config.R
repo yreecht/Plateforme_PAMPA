@@ -17,6 +17,11 @@
 ##         P.legendeCouleurs = FALSE, P.NbObs = FALSE,
 ##         P.graphPaper=TRUE)
 
+## Dans le cas ou vous changeriez la langue des axes une étape supplémentaire est nécesaire :
+
+## options(P.lang="en")
+## init.GraphLang.f()          ## Pour charger le bon fichier de noms.
+
 
      #############################################
      ### Copiez votre configuration ci-dessous ###

@@ -168,11 +168,13 @@ WP2barplot.unitobs.f <- function(metrique, factGraph, factGraphSel, listFact, li
                                                      "unitobs")))
 
         ## Label axe y :
-        ylab <- parse(text=paste("'", Capitalize.f(varNames[metrique, "nom"]), "'",
-                      ifelse(varNames[metrique, "unite"] != "",
-                             paste("~~(", varNames[metrique, "unite"], ")", sep=""),
-                             ""),
-                      sep=""))
+        ylab <- ifelse(getOption("P.axesLabels"),
+                       parse(text=paste("'", Capitalize.f(varNames[metrique, "nom"]), "'",
+                             ifelse(varNames[metrique, "unite"] != "",
+                                    paste("~~(", varNames[metrique, "unite"], ")", sep=""),
+                                    ""),
+                             sep="")),
+                       "")
 
         ## Boxplot !
         tmpBaP <- barplotPAMPA.f(metrique=metrique, listFact=listFact, Data=tmpData,
@@ -195,11 +197,12 @@ WP2barplot.unitobs.f <- function(metrique, factGraph, factGraphSel, listFact, li
 
             ## Nombres sur l'axe supérieur :
             axis(3, as.vector(nbObs), at=as.vector(tmpBaP$x),
-                 col.ticks="orange", col.axis = "orange", lty = 2, lwd = 0.5,
+                 col.ticks=getOption("P.NbObsCol"), col.axis = getOption("P.NbObsCol"),
+                 lty = 2, lwd = 0.5,
                  mgp=c(2, 0.5, 0))
 
             legend("topleft", "Nombre d'enregistrements par barre",
-                   cex =0.9, col=getOption("P.NbObsCol"), text.col="orange", merge=FALSE)
+                   cex =0.9, col=getOption("P.NbObsCol"), text.col=getOption("P.NbObsCol"), merge=FALSE)
         }else{}
 
         ## ##################################################

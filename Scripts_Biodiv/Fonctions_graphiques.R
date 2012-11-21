@@ -28,23 +28,6 @@
 ### Fonctions communes pour les graphiques.
 ####################################################################################################
 
-########################################################################################################################
-makeColorPalette.f <- function()
-{
-    ## Purpose: Créer la palette de couleur pour les graphiques
-    ## ----------------------------------------------------------------------
-    ## Arguments: aucun !
-    ## ----------------------------------------------------------------------
-    ## Author: Yves Reecht, Date: 31 mai 2011, 17:02
-
-    assign(".ColorPalette",
-           colorRampPalette(switch(getOption("P.colPalette"),
-                                   "heat"=heat.colors(5),
-                                   "gray"=c("#787878", "#dddddd"),
-                                   1)),
-           envir=.GlobalEnv)
-}
-
 makeColorPalettes.f <- function()
 {
     ## Purpose: Créer les palettes de couleurs pour les graphiques
@@ -55,7 +38,7 @@ makeColorPalettes.f <- function()
 
     ## default:
     assign(".ColorPaletteDefault",
-           colorRampPalette(c("#66FFFF", "#215968", "#9966FF", "#CC3399", "#FFCC99",
+           colorRampPalette(c("#66FFFF", "#9966FF", "#009999", "#CC3399", "#FFCC99",
                               "#FFFF99", "#CCFF99", "#CC9900", "#C0504D", "#FF99CC")),
            envir=.GlobalEnv)
 
@@ -318,12 +301,13 @@ openDevice.f <- function(noGraph, metrique, factGraph, modSel, listFact, dataEnv
             if (getOption("P.PDFunFichierPage")) # Un fichier par graphique avec numéro.
             {
                 pdfFileName <- paste(get("filePathes", envir=dataEnv)["results"],
-                                     metrique, "_", factGraph, "_", paste(listFact, collapse="-"), "-%03d.pdf", sep="")
+                                     typeGraph, "_", metrique, "_", factGraph, "_", paste(listFact, collapse="-"),
+                                     "-%03d.pdf", sep="")
                 onefile <- FALSE
 
             }else{                          # Tous les graphiques dans des pages séparées d'un même fichier.
                 pdfFileName <- paste(get("filePathes", envir=dataEnv)["results"],
-                                     metrique, "_", factGraph, "_", paste(listFact, collapse="-"), ".pdf", sep="")
+                                     typeGraph, "_", metrique, "_", factGraph, "_", paste(listFact, collapse="-"), ".pdf", sep="")
                 onefile <- TRUE
             }
             ## Ouverture de fichier :
@@ -426,7 +410,7 @@ boxplotPAMPA.f <- function(exprBP, data, main=NULL, cex=getOption("P.cex"),...)
                              0.7 * unlist(par("pin"))[1],
                              tmp),
               ## Marge supérieure augmentée s'il y a un titre :
-              ifelse(isTRUE(getOption("P.graphPaper")),
+              ifelse(isTRUE(getOption("P.graphPaper")) || (! isTRUE(getOption("P.title"))),
                      2 * lineInchConvert.f()$V,
                      8 * lineInchConvert.f()$V),
               ## Marge de droite :
@@ -446,7 +430,7 @@ boxplotPAMPA.f <- function(exprBP, data, main=NULL, cex=getOption("P.cex"),...)
                      col=colors,
                      ylim=ylim,
                      xaxt="n",
-                     main=if (! isTRUE(getOption("P.graphPaper")))
+                     main=if ((! isTRUE(getOption("P.graphPaper"))) && isTRUE(getOption("P.title")))
                  {
                      main
                  }else{NULL},

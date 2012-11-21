@@ -1679,7 +1679,7 @@ sortiesLM.f <- function(objLM, formule, metrique, factAna, modSel, listFact, lis
                         paste("log(", Capitalize.f(varNames[metrique, "nom"]), ") moyen", sep=""),
                         "\", xlab=\"", Capitalize.f(varNames[listFact[1], "nom"]),
                         "\", main=\"",
-                        ifelse(isTRUE(getOption("P.graphPaper")), "", mainTitle),
+                        ifelse((! isTRUE(getOption("P.graphPaper"))) && isTRUE(getOption("P.title")), mainTitle, ""),
                         "\", trace.label=\"", Capitalize.f(varNames[listFact[2], "nom"]),
                         "\", cex.main=0.9)", sep="")))
 
@@ -1696,7 +1696,8 @@ sortiesLM.f <- function(objLM, formule, metrique, factAna, modSel, listFact, lis
                                         # "moyenne" ou "moyennes" selon le genre.
                               sep=""),
                         "\", xlab=\"", Capitalize.f(varNames[listFact[1], "nom"]),
-                        "\", main=\"", ifelse(isTRUE(getOption("P.graphPaper")), "", mainTitle),
+                        "\", main=\"", ifelse((! isTRUE(getOption("P.graphPaper"))) && isTRUE(getOption("P.title")),
+                                              mainTitle, ""),
                         "\", trace.label=\"", Capitalize.f(varNames[listFact[2], "nom"]),
                         "\", cex.main=0.9)", sep="")))
          })

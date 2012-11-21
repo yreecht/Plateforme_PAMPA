@@ -615,6 +615,8 @@ agregationTableParCritere.f <- function(Data, metrique, facteurs, dataEnv, listF
     ## Ajout du champ colonie pour le calcul des moyennes pondérées s'il est absent :
     if (casMetrique[metrique] == "w.mean.colonies" && ! is.element("colonie", colnames(Data)))
     {
+        unitSp <- get("unitSp", envir=dataEnv)
+
         Data$colonie <- unitSp$colonie[match(apply(Data[ , c("code_espece", "unite_observation")],
                                                    1, paste, collapse="*"),
                                              apply(unitSp[ , c("code_espece", "unite_observation")],

@@ -129,7 +129,7 @@ barplotOccurrence.f <- function(factGraph, factGraphSel, listFact, listFactSel, 
         if (!is.null(graphFileTmp)) graphFile <- graphFileTmp
 
         ## Titre (d'après les métriques, modalité du facteur de séparation et facteurs de regroupement) :
-        if (! isTRUE(getOption("P.graphPaper")))
+        if ((! isTRUE(getOption("P.graphPaper"))) && isTRUE(getOption("P.title")))
         {
             mainTitle <- graphTitle.f(metrique=metrique,
                                       modGraphSel=modGraphSel,
@@ -167,7 +167,7 @@ barplotOccurrence.f <- function(factGraph, factGraphSel, listFact, listFactSel, 
                                  0.7 * unlist(par("pin"))[1],
                                  tmp),
                   ## Marge supérieure augmentée s'il y a un titre :
-                  ifelse(isTRUE(getOption("P.graphPaper")) ,
+                  ifelse(isTRUE(getOption("P.graphPaper")) || (! isTRUE(getOption("P.title"))) ,
                          3 * lineInchConvert.f()$V,
                          8 * lineInchConvert.f()$V),
                   ## Marge de droite :
@@ -204,8 +204,11 @@ barplotOccurrence.f <- function(factGraph, factGraphSel, listFact, listFactSel, 
                               args.legend=list("x"="topright", "inset"=-0.08, "xpd"=NA,
                                                "title"=Capitalize.f(varNames[listFact[1], "nom"])))
 
-        mtext(Capitalize.f(varNames[tail(listFact, 1), "nom"]),
-              side=1, line=2.3, cex=cex)
+        if (getOption("P.axesLabels"))
+        {
+            mtext(Capitalize.f(varNames[tail(listFact, 1), "nom"]),
+                  side=1, line=2.3, cex=cex)
+        }else{}
 
         if (getOption("P.NbObs"))
         {

@@ -29,6 +29,97 @@
 ####################################################################################################
 
 ########################################################################################################################
+tooltip <- function(text, targetWidget, width = 350, xskip=0, yskip=0, background="white", focus=FALSE, ...)
+{
+    ## Purpose: créer un pseudo tooltip. L'association se fait par
+    ##          tkbind(targetWidget, "<Enter>",
+    ##                 expression(tooltip("Texte", targetWidget)))
+    ## ----------------------------------------------------------------------
+    ## Arguments: text : Le text à afficher.
+    ##            targetWidget : le widget parent.
+    ##            width : largeur du tooltip.
+    ##            xskip : décalage en x (pixels).
+    ##            yskip : décalage en y (pixels).
+    ##            background : couleur de fond.
+    ##            focus : est-il défini pour le focus sur le widget ?
+    ##            ... : arguments supplémentaires pour tklabel.
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, d'après la fonction du package "widgetTools",
+    ## Date: 21 nov. 2012, 10:02
+
+    end <- function() {
+        tkdestroy(base)
+    }
+
+    ## Position x :
+    tipX <- as.numeric(tkwinfo("rootx", targetWidget)) + as.numeric(tkwinfo("width",
+        targetWidget)) + as.numeric(xskip)
+
+    ## Position y :
+    tipY <- as.numeric(tkwinfo("rooty", targetWidget)) + as.numeric(yskip)
+
+    ## Création du tooltip :
+    tkwm.overrideredirect(base <- tktoplevel(), TRUE)
+    on.exit(tkdestroy(base))
+
+    ## Placement du tooltip
+    tkwm.geometry(base, paste("+", tipX, "+", tipY, sep = ""))
+
+    F.tip <- tkframe(base, borderwidth=2, relief="groove", bg=background, padx=3, pady=3)
+    tkpack(F.tip)
+    tip <- tklabel(F.tip, text = text, background = background, wraplength = width, ...)
+    tkpack(tip)
+
+    ## if (focus)
+    ## {
+    ##     ## On quitte le tooltip en en perdant le focus du widget parent :
+    ##     tkbind(base, "<FocusOut>", end)
+    ## }else{
+    ## On quitte le tooltip en même temps que la souris quitte le widget parent :
+    tkbind(targetWidget, "<Leave>", end)
+    ## }
+
+    ## ...+ en passant la souris dessus (sécurité) :
+    tkbind(base, "<Enter>", end)
+    tkbind(base, "<FocusOut>", end)
+    tkbind(base, "<Destroy>", end)
+
+    tkwait.window(base)
+    return(invisible())
+}
+
+########################################################################################################################
+tooltipWidget.f <- function(text, targetWidget, width = 350, xskip=0, yskip=0, background="#FFEDC4",
+                            font=tkfont.create(weight="normal", size=10),
+                            foreground="darkred", justify="left", ...)
+{
+    ## Purpose: lier un widget et un tooltip.
+    ## ----------------------------------------------------------------------
+    ## Arguments: text : Le text à afficher.
+    ##            targetWidget : le widget parent.
+    ##            width : largeur du tooltip.
+    ##            xskip : décalage en x (pixels).
+    ##            yskip : décalage en y (pixels).
+    ##            background : couleur de fond.
+    ##            ... : arguments supplémentaires pour tklabel.
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date: 21 nov. 2012, 10:17
+
+    tkbind(targetWidget, "<Enter>",
+           expression(tooltip(text=text, targetWidget=targetWidget, width=width,
+                              xskip=xskip, yskip=yskip, background=background,
+                              font=font, foreground=foreground, justify=justify,...)))
+
+
+    ## tkbind(targetWidget, "<FocusIn>",
+    ##        expression(tooltip(text=text, targetWidget=targetWidget, width=width,
+    ##                           xskip=xskip, yskip=yskip, background=background,
+    ##                           font=font, foreground=foreground, justify=justify,
+    ##                           focus=TRUE,...)))
+}
+
+
+########################################################################################################################
 winSmartPlace.f <- function(win, xoffset=0, yoffset=0)
 {
     ## Purpose: Placement "intelligent" des fenêtres (centrées en fonction de

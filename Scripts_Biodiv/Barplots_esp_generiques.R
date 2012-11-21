@@ -237,7 +237,7 @@ barplotPAMPA.f <- function(metrique, listFact, Data, main=NULL, cex=getOption("P
                              0.7 * unlist(par("pin"))[1],
                              tmp),
               ## Marge supérieure augmentée s'il y a un titre :
-              ifelse(isTRUE(getOption("P.graphPaper")) ,
+              ifelse(isTRUE(getOption("P.graphPaper")) || (! isTRUE(getOption("P.title"))),
                      3 * lineInchConvert.f()$V,
                      8 * lineInchConvert.f()$V),
               ## Marge de droite :
@@ -264,7 +264,7 @@ barplotPAMPA.f <- function(metrique, listFact, Data, main=NULL, cex=getOption("P
 
     barPlotTmp <- barplot(heights,
                           beside=TRUE,
-                          main=if (! isTRUE(getOption("P.graphPaper"))){main}else{NULL},
+                          main=if ((! isTRUE(getOption("P.graphPaper"))) && isTRUE(getOption("P.title"))){main}else{NULL},
                           xlab="",
                           ylim=ylims,
                           las=1,
@@ -283,29 +283,30 @@ barplotPAMPA.f <- function(metrique, listFact, Data, main=NULL, cex=getOption("P
     {
         mtext(Capitalize.f(varNames[tail(listFact, 1), "nom"]),
               side=1, line=2.3, cex=cex)
-    }else{}
 
-    ## Précision du type de statistique :
-    if ( ! isTRUE(getOption("P.graphPaper")))
-    {
-        mtext(switch(paste(getOption("P.lang"), getOption("P.barplotStat"), sep="-"),
-                     "fr-moyenne"=,
-                     "fr-mean"={
-                         expression((italic("moyenne")~+~italic("intervalle de confiance à 95%")))
-                     },
-                     "fr-médiane"=,
-                     "fr-median"={
-                         expression((italic("médiane")~+~italic("écart interquartile")))
-                     },
-                     "en-moyenne"=,
-                     "en-mean"={
-                         expression((italic("mean")~+~italic("95% confidence interval")))
-                     },
-                     "en-médiane"=,
-                     "en-median"={
-                         expression((italic("median")~+~italic("interquartile range")))
-                     }),
-              side=2, line=par("mgp")[1]-1.1, cex=0.9, font=2)
+
+        ## Précision du type de statistique :
+        if ( ! isTRUE(getOption("P.graphPaper")))
+        {
+            mtext(switch(paste(getOption("P.lang"), getOption("P.barplotStat"), sep="-"),
+                         "fr-moyenne"=,
+                         "fr-mean"={
+                             expression((italic("moyenne")~+~italic("intervalle de confiance à 95%")))
+                         },
+                         "fr-médiane"=,
+                         "fr-median"={
+                             expression((italic("médiane")~+~italic("écart interquartile")))
+                         },
+                         "en-moyenne"=,
+                         "en-mean"={
+                             expression((italic("mean")~+~italic("95% confidence interval")))
+                         },
+                         "en-médiane"=,
+                         "en-median"={
+                             expression((italic("median")~+~italic("interquartile range")))
+                         }),
+                  side=2, line=par("mgp")[1]-1.1, cex=0.9 * getOption("P.cex"), font=2)
+        }else{}
     }else{}
 
     ## Résultats :

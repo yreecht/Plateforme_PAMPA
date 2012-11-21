@@ -267,13 +267,22 @@ selectionOnRefesp.f <- function(dataEnv, baseEnv)
                             unitobs=unitobs, dataEnv=dataEnv)
 
         ## Sauvegarde des données recalculées dans l'environnement adéquat :
-        listInEnv.f(list("obs"=obs,
-                         "unitSpSz"=unitSpSz,
-                         "unitSp"=unitSp,
-                         "unit"=unit,
-                         ".NombresSVR"=.NombresSVR,
-                         ".DensitesSVR"=.DensitesSVR),
-                    env=dataEnv)
+        if (exists(".NombresSVR"))
+        {
+            listInEnv.f(list("obs"=obs,
+                             "unitSpSz"=unitSpSz,
+                             "unitSp"=unitSp,
+                             "unit"=unit,
+                             ".NombresSVR"=.NombresSVR,
+                             ".DensitesSVR"=.DensitesSVR),
+                        env=dataEnv)
+        }else{
+            listInEnv.f(list("obs"=obs,
+                             "unitSpSz"=unitSpSz,
+                             "unitSp"=unitSp,
+                             "unit"=unit),
+                        env=dataEnv)
+        }
 
         ## Plan d'échantillonnage basic :
         PlanEchantillonnageBasic.f(tabUnitobs=unitobs, tabObs=obs, filePathes=filePathes)
@@ -537,13 +546,22 @@ selectionOnUnitobs.f <- function(dataEnv, baseEnv)
                              which="unite_observation")
 
         ## Sauvegarde des données recalculées dans l'environnement adéquat :
-        listInEnv.f(list("obs"=obs,
-                         "unitSpSz"=unitSpSz,
-                         "unitSp"=unitSp,
-                         "unit"=unit,
-                         ".NombresSVR"=.NombresSVR,
-                         ".DensitesSVR"=.DensitesSVR),
-                    env=dataEnv)
+        if (exists(".NombresSVR"))
+        {
+            listInEnv.f(list("obs"=obs,
+                             "unitSpSz"=unitSpSz,
+                             "unitSp"=unitSp,
+                             "unit"=unit,
+                             ".NombresSVR"=.NombresSVR,
+                             ".DensitesSVR"=.DensitesSVR),
+                        env=dataEnv)
+        }else{
+            listInEnv.f(list("obs"=obs,
+                             "unitSpSz"=unitSpSz,
+                             "unitSp"=unitSp,
+                             "unit"=unit),
+                        env=dataEnv)
+        }
 
         ## Plan d'échantillonnage basic :
         PlanEchantillonnageBasic.f(tabUnitobs=unitobs, tabObs=obs, filePathes=filePathes)

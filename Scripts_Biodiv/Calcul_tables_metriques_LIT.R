@@ -66,6 +66,13 @@ calc.unitSp.LIT.f <- function(obs, unitobs, dataEnv)
 
     res[ , "colonie"][is.na(res[ , "colonie"])] <- 0 # [???]
 
+    ## Si les nombres sont des entiers, leur redonner la bonne classe :
+    if (isTRUE(all.equal(res[ , "colonie"], as.integer(res[ , "colonie"]))))
+    {
+        res[ , "colonie"] <- as.integer(res[ , "colonie"])
+    }else{}
+
+
     res[ , "taille.moy.colonies"] <- apply(res[ , c("nombre", "colonie")], 1,
                                            function(x)
                                        {

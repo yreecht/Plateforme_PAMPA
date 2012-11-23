@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "PAMPA Ressources & Biodiversité"
-#define MyAppVersion "2.3-1"
+#define MyAppVersion "2.3-1_refspa"
 #define MyAppPublisher "Ifremer"
 #define MyAppURL "http://wwz.ifremer.fr/pampa/"
 #define MyAppExeName "PAMPA WP2.bat"
@@ -31,8 +31,8 @@ LicenseFile=.\Scripts_Biodiv\LICENCE-GPL-3.0.fr.txt
 ; SetupIconFile=Y:\tmp\1284538187_bluefish-icon.ico
 Compression=lzma
 SolidCompression=yes
-WizardImageFile=.\Img\pampa2L.bmp
-WizardSmallImageFile=.\Img\pampa2.bmp
+WizardImageFile=..\..\Img\pampa2L.bmp
+WizardSmallImageFile=..\..\Img\pampa2.bmp
 
 [Languages]
 Name: "french"; MessagesFile: "compiler:Languages\French.isl"
@@ -64,6 +64,7 @@ Source: "Scripts_Biodiv\Calcul_tables_metriques_LIT.R"; DestDir: "{app}"
 Source: "Scripts_Biodiv\Calcul_tables_metriques_SVR.R"; DestDir: "{app}"
 Source: "Scripts_Biodiv\Chargement_fichiers.R"; DestDir: "{app}"
 Source: "Scripts_Biodiv\Chargement_manuel_fichiers.R"; DestDir: "{app}"
+Source: "Scripts_Biodiv\Chargement_shapefile.R"; DestDir: "{app}"
 Source: "Scripts_Biodiv\Demo_cartes.R"; DestDir: "{app}"
 Source: "Scripts_Biodiv\Fonctions_base.R"; DestDir: "{app}"
 Source: "Scripts_Biodiv\Fonctions_graphiques.R"; DestDir: "{app}"
@@ -71,6 +72,7 @@ Source: "Scripts_Biodiv\Gestionmessages.R"; DestDir: "{app}"
 Source: "Scripts_Biodiv\Initialisation.R"; DestDir: "{app}"
 Source: "Scripts_Biodiv\Interface_fonctions.R"; DestDir: "{app}"
 Source: "Scripts_Biodiv\Interface_principale.R"; DestDir: "{app}"
+Source: "Scripts_Biodiv\Lien_unitobs-refspa.R"; DestDir: "{app}"
 Source: "Scripts_Biodiv\Load_packages.R"; DestDir: "{app}"
 Source: "Scripts_Biodiv\Main.R"; DestDir: "{app}"
 Source: "Scripts_Biodiv\Modeles_lineaires_esp_generiques.R"; DestDir: "{app}"

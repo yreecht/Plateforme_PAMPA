@@ -201,3 +201,4 @@
 "biomasseMax","the ","maximum biomass","","g.100~m^{-2}"
 "biomasseSD","the ","biomass  standard error","",""
 "annee.campagne","the ","year of campaign","",""
+"cas.etude","the ","case study","",""

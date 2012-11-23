@@ -1,7 +1,8 @@
 #-*- coding: latin-1 -*-
+# Time-stamp: <2012-11-22 19:09:01 yves>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
-##   Copyright (C) 2008-2010 Ifremer - Tous droits réservés.
+##   Copyright (C) 2008-2012 Ifremer - Tous droits réservés.
 ##
 ##   Ce programme est un logiciel libre ; vous pouvez le redistribuer ou le
 ##   modifier suivant les termes de la "GNU General Public License" telle que
@@ -18,7 +19,7 @@
 ##   <http://www.gnu.org/licenses/>.
 
 ### File: Chargement_fichiers.R
-### Time-stamp: <2012-02-24 20:34:02 Yves>
+### Created: <2012-02-24 20:34:02 Yves>
 ###
 ### Author: Yves Reecht
 ###
@@ -441,7 +442,22 @@ testFiles.f <- function(filePathes)
         {
             if (file.access(filePathes["refspa"], 2) == -1)
             {
-                filePathes["refspa"] <- NA
+                ## On teste si un shapefile du même nom est présent dans le sous-dossier .../Maps/ :
+                tmpDir <- paste(dirname(filePathes["refspa"]), "Maps", sep="/")
+                tmpFilename <- basename(filePathes["refspa"])
+
+                if (any(grep(tmpFilename, dir(tmpDir), fixed=TRUE)) &&
+                    ## fichier .shp accessible ?
+                    file.access(paste(tmpDir, "/", tmpFilename,
+                                      ifelse(grepl(".shp$", tmpFilename, ignore.case=TRUE),
+                                             "", ".shp"), sep="")) == 0)
+                {
+                    filePathes["refspa"] <- paste(tmpDir, "/", tmpFilename,
+                                                  ifelse(grepl(".shp$", tmpFilename, ignore.case=TRUE),
+                                                         "", ".shp"), sep="")
+                }else{
+                    filePathes["refspa"] <- NA
+                }
             }else{}
         }else{
             filePathes["refspa"] <- NA
@@ -743,7 +759,7 @@ loadUnitobs.f <- function(pathUnitobs)
     unitobs <- read.table(pathUnitobs, sep="\t", dec=".", header=TRUE, encoding="latin1")
 
     ## Changement des noms de colonnes :
-    colnames(unitobs) <- c("AMP", "unite_observation", "type", "site", "station", "caracteristique_1", "caracteristique_2",
+    colnames(unitobs) <- c(getOption("P.MPAfield"), "unite_observation", "type", "site", "station", "caracteristique_1", "caracteristique_2",
          "fraction_echantillonnee", "jour", "mois", "an", "heure", "nebulosite", "direction_vent", "force_vent",
          "etat_mer", "courant", "maree", "phase_lunaire", "latitude", "longitude", "statut_protection", "avant_apres",
          "biotope", "biotope_2", "habitat1", "habitat2", "habitat3", "visibilite", "prof_min", "prof_max", "DimObs1",
@@ -808,18 +824,26 @@ loadRefspa.f <- function(pathRefspa, baseEnv=.GlobalEnv)
         infoLoading.f(msg="Pas de référentiel spatial défini ou fichier inexistant !", icon="warning")
         return(NULL)
     }else{
-        refSpatial <- read.table(pathRefspa, sep="\t", dec=".", header=TRUE, encoding="latin1")
-
-        if (ncol(refSpatial) == 15)     # [!!!] à vérifier  [yr: 7/12/2011]
+        if (grepl("Maps/[^/.]+\\.shp", pathRefspa, ignore.case=TRUE, perl=TRUE))
         {
-            colnames(refSpatial) <- c("code_zone", "zone", "AMP", "site", "station", "groupe", "longitude_zone",
-                                      "latitude_zone", "surface", "lineaire_cotier", "statut_protection",
-                                      "zonage_peche", "code_SIH", "statut_PAMPA", "nbCM")
-
-            return(refSpatial)
+            ## Chargement du shapefile... :
+            refSpatial <- loadShapefile.f(directory=dirname(pathRefspa),
+                                          layer=sub(".shp$", "", basename(pathRefspa), ignore.case=TRUE, perl=TRUE))
         }else{
-            infoLoading.f(msg="Référentiel spatial incorrect (non pris en compte) !", icon="warning")
-            return(NULL)
+            ## ...Sinon, chargement sous forme de fichier texte :
+            refSpatial <- read.table(pathRefspa, sep="\t", dec=".", header=TRUE, encoding="latin1")
+
+            if (ncol(refSpatial) == 15)     # [!!!] à vérifier  [yr: 7/12/2011]
+              {
+                  colnames(refSpatial) <- c("code_zone", "zone", "AMP", "site", "station", "groupe", "longitude_zone",
+                                            "latitude_zone", "surface", "lineaire_cotier", "statut_protection",
+                                            "zonage_peche", "code_SIH", "statut_PAMPA", "nbCM")
+
+                  return(refSpatial)
+              }else{
+                  infoLoading.f(msg="Référentiel spatial incorrect (non pris en compte) !", icon="warning")
+                  return(NULL)
+              }
         }
     }
 }
@@ -896,36 +920,6 @@ loadObservations.f <- function(pathObs)
     return(obs)
 }
 
-
-########################################################################################################################
-mergeSpaUnitobs.f <- function(unitobs, refspa)
-{
-    ## Purpose: Fusion des la table des unitobs et du référentiel spatial si
-    ##          adapté.
-    ## ----------------------------------------------------------------------
-    ## Arguments:
-    ## ----------------------------------------------------------------------
-    ## Author: Yves Reecht, Date:  7 déc. 2011, 17:23
-
-    res <- merge(unitobs, refspa, by.x="site", by.y="code_zone", all.x=TRUE, all.y=FALSE,
-                 suffixes = c(".KEEP",".SUPR"))
-
-    res <- res[ , ! grepl("\\.SUPR$", colnames(res))]
-    res <- res[ , colnames(res) != "station.1"]
-
-    colnames(res) <- sub("\\.KEEP$", "", colnames(res))
-
-    res <- res[ , c(colnames(unitobs),
-                    colnames(res)[!is.element(colnames(res), colnames(unitobs))])]
-
-    res <- reorderStatus.f(Data=dropLevels.f(df=res, which="statut_PAMPA"),
-                           which = "statut_PAMPA")
-
-    return(res)
-}
-
-
-
 ########################################################################################################################
 loadConfig.f <- function(dataEnv=NULL)
 {
@@ -965,8 +959,8 @@ pathMaker.f <- function(fileNames,
     ##                        - unitobs : fichier d'unitobs.
     ##                        - obs : fichier d'observations.
     ##                        - refesp : référentiel espèces.
-    ##                        - refspa : référentiel spatial (pas utilisé
-    ##                                   actuellement).
+    ##                        - refspa : référentiel spatial (soit un fichier
+    ##                                   texte, soit un shapefile).
     ##                        - ws : dossier de travail.
     ##            dataEnv : environnement des données.
     ## ----------------------------------------------------------------------
@@ -1061,13 +1055,13 @@ loadData.f <- function(filePathes, dataEnv, baseEnv=.GlobalEnv)
            })
 
     ## Info sur les AMP du jeu actuel :
-    options(P.MPA=as.character(unique(refUnitobs[ , "AMP"])))
+    options(P.MPA=as.character(unique(refUnitobs[ , getOption("P.MPAfield")])))
 
     ## Information sur l'(les) AMP sélectionnées et le type d'observations analysées :
     tkconfigure(get("ResumerAMPetType", envir=baseEnv),
                 text=paste(ifelse(length(getOption("P.MPA")) < 2,
-                                  "Aire Marine Protégée : ",
-                                  "Aires Marines Protégées : "),
+                                  "Cas d'étude : ",
+                                  "Cas d'étude : "),
                            paste(getOption("P.MPA"), collapse=", "),
                            " ; type d'observation : ",
                            getOption("P.obsType"), sep=""))
@@ -1080,8 +1074,14 @@ loadData.f <- function(filePathes, dataEnv, baseEnv=.GlobalEnv)
     ## Fusion de la table d'unités d'observation et de celle du référentiel spatial :
     if (!is.null(refSpatial))
     {
+        assign(".unitobsSmall", refUnitobs, envir=dataEnv) # pour lien manuel.
+
         refUnitobs <- mergeSpaUnitobs.f(unitobs=refUnitobs, refspa=refSpatial)
-    }else{}
+
+        tkentryconfigure(get("outils", envir=.baseEnv), 3, state="normal")
+    }else{
+        tkentryconfigure(get("outils", envir=baseEnv), 3, state="disabled")
+    }
 
     ## Fichier d'observations :
     stepInnerProgressBar.f(n=1, msg="Chargement du fichier d'observations...")
@@ -1099,7 +1099,7 @@ loadData.f <- function(filePathes, dataEnv, baseEnv=.GlobalEnv)
     tkconfigure(get("ResumerEspaceTravail", envir=baseEnv), # [!!!] déplacer vers la fin  [yr: 13/12/2011]
                 text=paste("Espace de travail : ", filePathes["ws"]))
 
-    return(list(obs=tabObs, unitobs=refUnitobs, refesp=refEspeces))
+    return(list(obs=tabObs, unitobs=refUnitobs, refesp=refEspeces, refspa=refSpatial))
 
     ## ##################################################
     ## Calcul des tables de métriques :

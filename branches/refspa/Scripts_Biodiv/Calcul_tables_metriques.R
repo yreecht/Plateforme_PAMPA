@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
-##   Copyright (C) 2008-2010 Ifremer - Tous droits réservés.
+##   Copyright (C) 2008-2012 Ifremer - Tous droits réservés.
 ##
 ##   Ce programme est un logiciel libre ; vous pouvez le redistribuer ou le
 ##   modifier suivant les termes de la "GNU General Public License" telle que
@@ -655,12 +655,13 @@ calc.unit.default.f <- function(unitSp, refesp, unitobs, colNombres="nombre", da
                                       dataEnv=dataEnv)
 
         tmp <- do.call(rbind,
-                       lapply(unique(as.character(unitobs[ , "AMP"])),
+                       lapply(unique(as.character(unitobs[ , getOption("P.MPAfield")])),
                               function(MPA)
                           {
                               calcBiodiv.f(Data=subset(unitSp,
                                                        is.element(unite_observation,
-                                                                  unitobs[unitobs[ , "AMP"] == MPA , "unite_observation"])),
+                                                                  unitobs[unitobs[ , getOption("P.MPAfield")] == MPA ,
+                                                                          "unite_observation"])),
                                            refesp=refesp,
                                            MPA=MPA,
                                            unitobs = "unite_observation",

@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
-##   Copyright (C) 2008-2010 Ifremer - Tous droits réservés.
+##   Copyright (C) 2008-2012 Ifremer - Tous droits réservés.
 ##
 ##   Ce programme est un logiciel libre ; vous pouvez le redistribuer ou le
 ##   modifier suivant les termes de la "GNU General Public License" telle que
@@ -34,11 +34,23 @@ options(P.requiredVar=c(unitobs="fileNameUnitobs",
                         refesp="fileNameRefesp",
                         ws="nameWorkspace"))
 
+## Options du référentiel spatial :
+options(P.linkUnitobs="site",
+        P.linkRefspa="CODE.SITE",
+        P.shapefileEncoding="latin1")
+
+## Option de noms de champs :
+options(P.MPAfield="cas.etude")
+
 ## ##################### Initialisation des variables globales ####################
 
 #### Logo :
 .fileimage <- "./Scripts_Biodiv/img/pampa2.GIF"
 assign(".fileimage", .fileimage, envir=.GlobalEnv)
+
+#### Image de lien de tables :
+.fileimageLink <- "./Scripts_Biodiv/img/tableLink.GIF"
+assign(".fileimageLink", .fileimageLink, envir=.GlobalEnv)
 
 
 ########################################################################################################################

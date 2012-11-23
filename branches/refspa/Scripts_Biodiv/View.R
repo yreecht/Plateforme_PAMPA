@@ -17,7 +17,8 @@
 ##   <http://www.gnu.org/licenses/>.
 
 ########################################################################################################################
-Voirentableau <- function(Montclarray, title="", height=-1, width=-1, nrow=-1, ncol=-1, infos=title)
+Voirentableau <- function(Montclarray, title="", height=-1, width=-1, nrow=-1, ncol=-1, infos=title,
+                          image)
 {
     tclRequire("Tktable")
 
@@ -27,7 +28,7 @@ Voirentableau <- function(Montclarray, title="", height=-1, width=-1, nrow=-1, n
     tkbind(tb, "<Destroy>",
            function()
        {
-           winRaise.f(tm)
+           ## winRaise.f(W.main)
        })
 
     ## Fonctions activées par les boutons de la fenêtre
@@ -62,7 +63,7 @@ Voirentableau <- function(Montclarray, title="", height=-1, width=-1, nrow=-1, n
 
     ## Éléments graphiques :
     frameOverwintb <- tkframe(tb)
-    imgAsLabelwintb <- tklabel(frameOverwintb, image=imageAMP, bg="white")
+    imgAsLabelwintb <- tklabel(frameOverwintb, image=image, bg="white")
 
     xscr <-tkscrollbar(tb, orient="horizontal", command=function(...)tkxview(tabletb,...))
     yscrtb <- tkscrollbar(tb, repeatinterval=3, command=function(...)tkyview(tabletb,...))
@@ -163,7 +164,7 @@ VoirPlanEchantillonnage.f <- function(dataEnv)
 }
 
 ########################################################################################################################
-VoirInformationsDonneesEspeces.f <- function(dataEnv)
+VoirInformationsDonneesEspeces.f <- function(dataEnv, image)
 {
 
     unitSp <- get("unitSp", envir=dataEnv)
@@ -215,11 +216,12 @@ VoirInformationsDonneesEspeces.f <- function(dataEnv)
                                                   " \n\t* nombre d'espèces observées = ",
                                                   sum(!is.na(tmp[ , "espece"]) & tmp[ , "espece"] != "sp."),
                                                   " \n\nCes informations tiennent compte des sélections en cours.", sep=""),
-                                      height=Nbesp, width=4, nrow=Nbesp + 1, ncol=4)
+                                      height=Nbesp, width=4, nrow=Nbesp + 1, ncol=4,
+                                      image=image)
 }#fin VoirInformationsDonneesEspeces
 
 ########################################################################################################################
-VoirInformationsDonneesUnitobs.f <- function(dataEnv)
+VoirInformationsDonneesUnitobs.f <- function(dataEnv, image)
 {
     obs <- get("obs", envir=dataEnv)
     unitobs <- get("unitobs", envir=dataEnv)
@@ -268,7 +270,8 @@ VoirInformationsDonneesUnitobs.f <- function(dataEnv)
                                       infos=paste("Informations par unité d'observation :",
                                                   "\n\n! tiennent compte des sélections en cours.",
                                                   sep=""),
-                                      height=Nbunitobs, width=5, nrow=Nbunitobs + 1, ncol=5)
+                                      height=Nbunitobs, width=5, nrow=Nbunitobs + 1, ncol=5,
+                                      image=image)
 }
 
 

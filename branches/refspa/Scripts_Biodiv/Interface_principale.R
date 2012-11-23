@@ -148,7 +148,7 @@ mainInterface.create.f <- function()
     tkadd(import, "separator", background=.MenuBackground)
 
     tkadd(import, "command", label="Test du référentiel (espèces concernées)", underline=9, accelerator="CTRL+R",
-          state="disabled", command = testfileref.f,
+          state="disabled", command = function(){testfileref.f(dataEnv=.dataEnv, baseEnv=.baseEnv)},
           background=.MenuBackground)
 
     ## tkadd(import, "command", label="Test des données importées", underline=0,
@@ -167,7 +167,7 @@ mainInterface.create.f <- function()
     tkadd(import, "command", label="Info données par espèces", state="disabled", accelerator="CTRL+E",
           command = function()
        {
-           VoirInformationsDonneesEspeces.f(dataEnv=.dataEnv)
+           VoirInformationsDonneesEspeces.f(dataEnv=.dataEnv, image=imageAMP)
        },
           background=.MenuBackground)
 
@@ -175,7 +175,7 @@ mainInterface.create.f <- function()
           state="disabled", accelerator="CTRL+U",
           command = function()
       {
-          VoirInformationsDonneesUnitobs.f(dataEnv=.dataEnv)
+          VoirInformationsDonneesUnitobs.f(dataEnv=.dataEnv, image=imageAMP)
       },
           background=.MenuBackground)
 
@@ -366,6 +366,22 @@ mainInterface.create.f <- function()
 
     tkadd(outils, "command", label="Options graphiques...", command = tuneGraphOptions.f, state="normal",
           background=.MenuBackground)
+    tkadd(outils, "separator", background=.MenuBackground)
+
+    tkadd(outils, "command", label="Lier les unités d'observations et le référentiel spatial...",
+          command=function()
+      {
+          unitobsTmp <- mergeSpaUnitobs.f(unitobs=get(".unitobsSmall", envir=.dataEnv),
+                                   refspa=get("refspa", envir=.dataEnv),
+                                   type="manual")
+
+          ## Sauvegardé uniquement si pas d'abandon :
+          if (ncol(unitobsTmp) > (ncol(get(".unitobsSmall", envir=.dataEnv)) + 1))
+          {
+              assign("unitobs", unitobsTmp, envir=.dataEnv)
+          }else{}
+      },
+          state="disabled", background=.MenuBackground)
     tkadd(outils, "separator", background=.MenuBackground)
 
     tkadd(outils, "command", label="Éditer le fichier de configuration",
@@ -677,8 +693,8 @@ mainInterface.create.f <- function()
                           baseEnv=.baseEnv)
        })
 
-    tkbind(W.main, "<Control-r>", testfileref.f)
-    tkbind(W.main, "<Control-R>", testfileref.f)
+    tkbind(W.main, "<Control-r>", function(){testfileref.f(dataEnv=.dataEnv, baseEnv=.baseEnv)})
+    tkbind(W.main, "<Control-R>", function(){testfileref.f(dataEnv=.dataEnv, baseEnv=.baseEnv)})
 
     ## tkbind(W.main, "<Control-F1>", aide.f)
     ## tkbind(W.main, "<Control-?>", aide.f)
@@ -696,23 +712,23 @@ mainInterface.create.f <- function()
     tkbind(W.main, "<Control-e>",
            function()
        {
-           VoirInformationsDonneesEspeces.f(dataEnv=.dataEnv)
+           VoirInformationsDonneesEspeces.f(dataEnv=.dataEnv, image=imageAMP)
        })
     tkbind(W.main, "<Control-E>",
            function()
        {
-           VoirInformationsDonneesEspeces.f(dataEnv=.dataEnv)
+           VoirInformationsDonneesEspeces.f(dataEnv=.dataEnv, image=imageAMP)
        })
 
     tkbind(W.main, "<Control-u>",
            function()
        {
-           VoirInformationsDonneesUnitobs.f(dataEnv=.dataEnv)
+           VoirInformationsDonneesUnitobs.f(dataEnv=.dataEnv, image=imageAMP)
        })
     tkbind(W.main, "<Control-U>",
            function()
        {
-           VoirInformationsDonneesUnitobs.f(dataEnv=.dataEnv)
+           VoirInformationsDonneesUnitobs.f(dataEnv=.dataEnv, image=imageAMP)
        })
 
     ## tkbind(W.main, "<Control-o>", test.f)

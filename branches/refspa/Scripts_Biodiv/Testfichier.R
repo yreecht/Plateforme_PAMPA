@@ -25,6 +25,8 @@ testfileref.f <- function (dataEnv, baseEnv)
     refesp <- get("refesp", envir=dataEnv)
     obs <- get("obs", envir=dataEnv)
 
+    imageAMP <- get("imageAMP", envir=baseEnv)
+
     runLog.f(msg=c("Informations sur le référentiel espèces :"))
 
     tclRequire("Tktable")
@@ -36,7 +38,7 @@ testfileref.f <- function (dataEnv, baseEnv)
     FermerWinTest <- function ()
     {
         tkdestroy(W.test)
-        winRaise.f(tm)
+        ## winRaise.f(W.main)
     }
 
     EnregistrerWinTest <- function ()

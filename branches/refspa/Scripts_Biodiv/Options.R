@@ -837,7 +837,7 @@ tuneGraphOptions.f <- function(graphType="none")
                                                                  split="*_*", fixed=TRUE))),
                               stop("Erreur : Option PAMPA '", name, "' non définie"))
                    }, simplify=FALSE))
-     }
+    }
 
     ## Initialisation de la langue des variables de graphiques :
     init.GraphLang.f()

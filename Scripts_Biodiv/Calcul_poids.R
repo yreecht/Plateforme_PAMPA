@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
-##   Copyright (C) 2008-2010 Ifremer - Tous droits réservés.
+##   Copyright (C) 2008-2012 Ifremer - Tous droits réservés.
 ##
 ##   Ce programme est un logiciel libre ; vous pouvez le redistribuer ou le
 ##   modifier suivant les termes de la "GNU General Public License" telle que
@@ -341,15 +341,17 @@ calcWeight.f <- function(Data)
     stepInnerProgressBar.f(n=1, msg="Calcul des poids")
 
     Data$obs <- do.call(rbind,          # Réassemblage de la...
-                        lapply(unique(Data$unitobs$AMP), # ...liste des observations par AMP avec les poids estimés.
+                        lapply(unique(Data$unitobs[ , getOption("P.MPAfield")]), # ...liste des observations par cas
+                                        # d'étude avec les poids estimés.
                                function(i, obs, unitobs, refesp)
                            {
                                stepInnerProgressBar.f(n=0,
                                                       msg=paste("Calcul des poids pour l'AMP :", i))
 
-                               ## Sélection des observations de l'AMP i :
+                               ## Sélection des observations du cas d'étude i :
                                obs <- obs[is.element(obs$unite_observation,
-                                                     unitobs[unitobs$AMP == i, "unite_observation"]), ]
+                                                     unitobs[unitobs[ , getOption("P.MPAfield")] == i,
+                                                             "unite_observation"]), ]
 
                                ## Estimation des poids :
                                return(calcWeightMPA.f(Data=obs, refesp=refesp, MPA=i))

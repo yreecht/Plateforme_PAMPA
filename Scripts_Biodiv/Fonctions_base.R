@@ -394,7 +394,7 @@ printGeneralDataInfo.f <- function(dataEnv, baseEnv, File)
 
     ## Informations sur les fichiers de données :
     cat(paste("################\nJeu de données :\n",
-              "\n  * Identification de l'AMP : ", paste(getOption("P.MPA"), collapse=", "),
+              "\n  * Identification du cas d'étude : ", paste(getOption("P.MPA"), collapse=", "),
               "\n  * Répertoire de données : ", dataEnv$fileNames["ws"], "/Data/",
               "\n  * Données d'observation : ", dataEnv$fileNames["obs"],
               "\n  * Données unités d'observation :) : ", dataEnv$fileNames["unitobs"],

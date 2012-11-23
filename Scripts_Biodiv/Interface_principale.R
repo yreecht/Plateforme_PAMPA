@@ -378,6 +378,22 @@ mainInterface.create.f <- function()
           background=.MenuBackground)
     tkadd(outils, "separator", background=.MenuBackground)
 
+    tkadd(outils, "command", label="Lier les unités d'observations et le référentiel spatial...",
+          command=function()
+      {
+          unitobsTmp <- mergeSpaUnitobs.f(unitobs=get(".unitobsSmall", envir=.dataEnv),
+                                   refspa=get("refspa", envir=.dataEnv),
+                                   type="manual")
+
+          ## Sauvegardé uniquement si pas d'abandon :
+          if (ncol(unitobsTmp) > (ncol(get(".unitobsSmall", envir=.dataEnv)) + 1))
+          {
+              assign("unitobs", unitobsTmp, envir=.dataEnv)
+          }else{}
+      },
+          state="disabled", background=.MenuBackground)
+    tkadd(outils, "separator", background=.MenuBackground)
+
     tkadd(outils, "command", label="Éditer le fichier de configuration",
           background=.MenuBackground,
           command=function()

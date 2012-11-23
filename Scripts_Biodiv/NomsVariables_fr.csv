@@ -201,3 +201,4 @@
 "biomasseMax","la ","biomasse maximale","f","g.100~m^{-2}"
 "biomasseSD","l´","écart type de la biomasse","m",""
 "annee.campagne","l´","année de campagne","f",""
+"cas.etude","le ","cas d´étude","m",""

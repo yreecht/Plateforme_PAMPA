@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
-##   Copyright (C) 2008-2010 Ifremer - Tous droits réservés.
+##   Copyright (C) 2008-2012 Ifremer - Tous droits réservés.
 ##
 ##   Ce programme est un logiciel libre ; vous pouvez le redistribuer ou le
 ##   modifier suivant les termes de la "GNU General Public License" telle que
@@ -31,7 +31,7 @@
 ####################################################################################################
 
 ## ** Version **
-options(versionPAMPA = "2.3-1")
+options(versionPAMPA = "2.4-0")
 
 ## Platform-specific treatment:
 ## Identification du dossier parent (d'installation) :
@@ -46,7 +46,7 @@ if(basename(fileCall) == "Main.R")
 {
     setwd(paste(dirname(fileCall), "/../", sep=""))
 }else{
-    message("Dossier non-trouvé")
+    ## message("Dossier non-trouvé")
     if (.Platform$OS.type == "windows")
     {
         setwd("C:/PAMPA/")
@@ -79,6 +79,8 @@ source("./Scripts_Biodiv/View.R", encoding="latin1")                            
 source("./Scripts_Biodiv/Chargement_fichiers.R", encoding="latin1")                    # OK
 source("./Scripts_Biodiv/Chargement_manuel_fichiers.R", encoding="latin1")             # OK
 source("./Scripts_Biodiv/Calcul_poids.R", encoding="latin1")                           # OK
+source("./Scripts_Biodiv/Lien_unitobs-refspa.R", encoding="latin1")                    # OK
+source("./Scripts_Biodiv/Chargement_shapefile.R", encoding="latin1")                   # OK
 
 ## ...les calculs de tables de métriques :
 source("./Scripts_Biodiv/Agregations_generiques.R", encoding="latin1")                 # OK

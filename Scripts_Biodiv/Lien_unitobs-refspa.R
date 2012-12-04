@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2012-11-23 16:50:55 Yves>
+# Time-stamp: <2012-12-03 17:12:54 yves>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2012 Ifremer - Tous droits réservés.
@@ -291,7 +291,7 @@ mergeSpaUnitobs.f <- function(unitobs, refspa, type="auto")
     ## Author: Yves Reecht, Date:  7 déc. 2011, 17:23
 
     ## Si issu d'un shapefile
-    if (is.element("SpatialPolygonsDataFrame", class(refspa)))
+    if (isPoly <- is.element("SpatialPolygonsDataFrame", class(refspa)))
     {
         ## Correspondance automatique des unitobs et du référentiel spatial :
         unitobs <- overlayUnitobs.f(unitobs=unitobs, refspa=refspa)
@@ -308,8 +308,9 @@ mergeSpaUnitobs.f <- function(unitobs, refspa, type="auto")
 
         if (type[1] == "auto")
         {
-            infoLoading.f(msg=paste("Impossible de faire le lien entre ",
-                                    "\nles unités d'observation et le référentiel spatial !", sep=""),
+            infoLoading.f(msg=paste("Référentiel spatial incorrect,",
+                                    "\nvous ne pourrez pas traiter vos données aux différentes échelles spatiales !",
+                                    sep=""),
                           icon="warning")
         }else{}
 
@@ -327,21 +328,22 @@ mergeSpaUnitobs.f <- function(unitobs, refspa, type="auto")
         res <- res[ , c(colnames(unitobs),
                         colnames(res)[!is.element(colnames(res), colnames(unitobs))])]
 
-        tryCatch(res <- reorderStatus.f(Data=dropLevels.f(df=res, which=c("STATUT.PRO")),
-                                        which = c("STATUT.PRO")),
-                 error=function(e){})
+        if (type[1] == "auto")
+        {
+            if (isPoly)
+            {
+                infoLoading.f(msg=paste("Le chargement du référentiel spatial géoréférencé a été effectué,",
+                                        "\nvous pourrez avoir accès à l'ensemble des fonctionnalités cartographiques.",
+                                        sep=""),
+                              icon="info")
+            }else{
+                infoLoading.f(msg=paste("Le référentiel spatial qui a été chargé n'est pas géoréférencé.",
+                                        "\nL'ensemble des fonctionnalités cartographiques ne seront pas disponibles.",
+                                        sep=""),
+                              icon="info")
+            }
+        }else{}
 
-        tryCatch(res <- reorderStatus.f(Data=dropLevels.f(df=res, which=c("STATUT.PAM")),
-                               which = c("STATUT.PAM")),
-                 error=function(e){})
-
-        tryCatch(res <- reorderStatus.f(Data=dropLevels.f(df=res, which=c("STATUT.PAMPA")),
-                               which = c("STATUT.PAMPA")),
-                 error=function(e){})
-
-        tryCatch(res <- reorderStatus.f(Data=dropLevels.f(df=res, which=c("STATUT.PROTECTION")),
-                               which = c("STATUT.PROTECTION")),
-                 error=function(e){})
     }
 
     return(res)

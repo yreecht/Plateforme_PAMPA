@@ -31,7 +31,7 @@
 ####################################################################################################
 
 ## ** Version **
-options(versionPAMPA = "2.4-0")
+options(versionPAMPA = "2.5-0")
 
 ## Platform-specific treatment:
 ## Identification du dossier parent (d'installation) :
@@ -130,7 +130,7 @@ source("./Scripts_Biodiv/Initialisation.R", encoding="latin1")
 ## Initialisation des options graphiques (nouveau système) :
 if (is.null(getOption("GraphPAMPA")))   # uniquement si pas déjà initialisées (cas de lancement multiple)
 {
-    initialiseGraphOptions.f()
+    initialiseOptions.f()
 }
 
 ## On lance l'interface :

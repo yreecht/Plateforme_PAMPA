@@ -28,6 +28,286 @@
 ### Fonctions de sélection des données selon les champs d'un des référentiels.
 ####################################################################################################
 
+########################################################################################################################
+change.levelsOrder.f <- function(Data)
+{
+    ## Purpose: changer manuellement l'ordre des modalités de facteurs.
+    ## ----------------------------------------------------------------------
+    ## Arguments: Data : table de donnée (data.frame) contenant des facteurs.
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date: 27 nov. 2012, 20:30
+
+    .BGcolor <- "#F7F5CE"
+
+    ## Sauvegarde :
+    .DataBackup <- Data
+
+    ## Variables tcl :
+    Done <- tclVar("0")
+    Levels <- tclVar()
+    Factor <- tclVar()                  # Facteur à modifier...
+                                        # Sert également à finaliser ou annuler les opérations
+
+    ## tclObj(Levels) <- levels(f.levels)
+    env <- environment()
+
+    factors <- colnames(Data)[sapply(Data,
+                                     function(x)
+                                 {
+                                     class(x) == "factor" && nlevels(x) > 1
+                                 })]
+
+    WinOrder <- tktoplevel(background="white")
+    tkwm.title(WinOrder, "Choisissez l'ordre des modalités d'un facteur")
+
+    ## #### Éléments de l'interface :
+
+    CB.factors <- ttkcombobox(WinOrder, value=factors,
+                              textvariable=Factor, state="readonly",
+                              width=max(sapply(factors, nchar)))
+
+    F.list <- tkframe(WinOrder, background="white")
+    SCR.levels <- tkscrollbar(F.list, repeatinterval=5,
+                              command=function(...){tkyview(L.levels,...)})
+
+    L.levels <- tklistbox(F.list,
+                          listvariable=Levels,
+                          height=15,    # ifelse(nlevels(factors) < 14,
+                                        #        ifelse(nlevels(factors) > 9,
+                                        #               nlevels(factors) + 1,
+                                        #               10),
+                                        #        15),
+                          width=max(c(15, unlist(sapply(sapply(factors, function(x){levels(Data[ , x])}), nchar)))),
+                          selectmode="single",
+                          background="white",
+                          yscrollcommand=function(...)tkset(SCR.levels,...))
+
+    B.up <- tkbutton(F.list, text="Monter",
+                     width=10,
+                     command=function()
+                 {
+                     i <- as.integer(tkcurselection(L.levels)) + 1
+                     levList <- as.character(tclObj(Levels))
+
+                     if (i > 1)
+                     {
+                         tclObj(Levels) <- c(head(levList, i-2),
+                                             levList[i], levList[i-1],
+                                             tail(levList, -i))
+
+                         tkselection.clear(L.levels, i-1)
+                         tkselection.set(L.levels, i-2)
+
+                         evalq(levels(Data[ , tclvalue(Factor)]) <- as.character(tclObj(Levels)),
+                               envir=env)
+                     }else{}
+
+                     tcl("update")
+                 })
+
+    B.down <- tkbutton(F.list, text="Descendre",
+                       width=10,
+                       command=function()
+                   {
+                       i <- as.integer(tkcurselection(L.levels)) + 1
+                       levList <- as.character(tclObj(Levels))
+
+                       if (i < length(levList))
+                       {
+                           tclObj(Levels) <- c(head(levList, i-1),
+                                               levList[i+1], levList[i],
+                                               tail(levList, -(i+1)))
+
+                           tkselection.clear(L.levels, i-1)
+                           tkselection.set(L.levels, i)
+
+                           evalq(levels(Data[ , tclvalue(Factor)]) <- as.character(tclObj(Levels)),
+                                 envir=env)
+                       }else{}
+
+                       tcl("update")
+                   })
+
+    B.alpha <- tkbutton(F.list, text="Tri alphabétique",
+                        width=12,
+                        command=function()
+                   {
+                       levList <- as.character(tclObj(Levels))
+
+                       tclObj(Levels) <- sort(levList)
+
+                       evalq(levels(Data[ , tclvalue(Factor)]) <- as.character(tclObj(Levels)),
+                             envir=env)
+
+                       tcl("update")
+                   })
+
+    B.num <- tkbutton(F.list, text="Tri numérique",
+                      width=12,
+                      command=function()
+                  {
+                      levList <- as.character(tclObj(Levels))
+
+                      levOrder <- tryCatch(order(as.numeric(sub("^[^[:digit:]]*([[:digit:].]+)[^[:digit:].]*.*$",
+                                                                "\\1",
+                                                                levList, perl=TRUE))),
+                                           warning=function(w){})
+
+                      if ( ! is.null(levOrder))
+                      {
+                          tclObj(Levels) <- levList[levOrder]
+
+                          evalq(levels(Data[ , tclvalue(Factor)]) <- as.character(tclObj(Levels)),
+                                envir=env)
+                      }else{}
+
+                      tcl("update")
+                  })
+
+    B.inverse <- tkbutton(F.list, text="Inverser l'ordre",
+                          width=12,
+                          command=function()
+                      {
+                          levList <- as.character(tclObj(Levels))
+
+                          tclObj(Levels) <- rev(levList)
+
+                          evalq(levels(Data[ , tclvalue(Factor)]) <- as.character(tclObj(Levels)),
+                                envir=env)
+
+                          tcl("update")
+                      })
+
+    B.cancel1 <- tkbutton(F.list, text="Réinitialiser ce facteur",
+                          command=function()
+                      {
+                          ## Réinitialisation de la liste :
+                          tclObj(Levels) <- levels(.DataBackup[ , tclvalue(Factor)])
+
+                          ## Réinitialisation des levels :
+                          evalq(levels(Data[ , tclvalue(Factor)]) <- levels(.DataBackup[ , tclvalue(Factor)]),
+                                envir=env)
+                      })
+    tooltipWidget.f(text=paste("Réinitialise l'ordre des modalités, du facteur courant uniquement, ",
+                               "aux valeurs d'origine.", sep=""),
+                    targetWidget=B.cancel1)
+
+    F.button <- tkframe(WinOrder, background="white")
+
+    B.OK <- tkbutton(F.button, text="Valider", width=10,
+                     command=function()
+                 {
+                     tclvalue(Factor) <- "!!Valider¡¡"
+                 })
+
+    B.Cancel <- tkbutton(F.button, text="Annuler", width=10,
+                         command=function()
+                     {
+                         tclvalue(Factor) <- "!!Annuler¡¡"
+                     })
+
+
+    F.info3 <- tkframe(WinOrder, background=.BGcolor)
+
+    ## #### Placement des éléments :
+    tkgrid(tklabel(WinOrder,
+                   text="1) Choisissez un facteur à ré-ordonner :",
+                   font=tkfont.create(weight="normal", size=10),
+                   foreground="darkred",
+                   background=.BGcolor),
+           padx=5, pady=5, sticky="ws")
+    tkgrid(CB.factors, padx=5, pady=5, sticky="w")
+
+    tkgrid(tklabel(WinOrder,
+                   text="2) Ré-ordonnez les modalités du facteur :",
+                   font=tkfont.create(weight="normal", size=10),
+                   foreground="darkred",
+                   background=.BGcolor),
+           padx=5, pady=5, sticky="ws")
+    tkgrid(L.levels, SCR.levels, sticky="nsw", rowspan=5)
+
+    ## Dans la répartition d'espace entre les lignes,
+    ## on attribue tout l'espace supplémentaire à la quatrième :
+    tkgrid.rowconfigure(F.list, 0, minsize=1, weight=0)
+    tkgrid.rowconfigure(F.list, 1, minsize=1, weight=0)
+    tkgrid.rowconfigure(F.list, 2, minsize=1, weight=0)
+    tkgrid.rowconfigure(F.list, 3, weight=9)
+    tkgrid.rowconfigure(F.list, 4, minsize=1, weight=0)
+
+    tkgrid(B.up, column=2, row=0, padx=10, pady=5, sticky="w")
+    tkgrid(B.down, column=2, row=1, padx=10, pady=5, sticky="w")
+
+    tkgrid(B.alpha, column=3, row=0, padx=10, pady=5, sticky="w")
+    tkgrid(B.num, column=3, row=1, padx=10, pady=5, sticky="w")
+    tkgrid(B.inverse, column=3, row=2, padx=10, pady=5, sticky="w")
+
+    tkgrid(B.cancel1, column=2, columnspan=2, row=4, padx=10, pady=5, sticky="ws")
+
+    tkgrid(F.list, padx=5, pady=5, sticky="w")
+
+    tcl("update")
+
+    tkgrid(tklabel(F.info3 , text="3) ",
+                   foreground="darkred",
+                   background=.BGcolor,
+                   font=tkfont.create(weight="normal", size=10)),
+           tklabel(F.info3,
+                   text="Finalisez ou revenez à l'étape 1 pour ré-ordonner un autre facteur :",
+                   font=tkfont.create(weight="normal", size=10),
+                   foreground="darkred",
+                   background=.BGcolor,
+                   wraplength=as.numeric(tkwinfo("width", F.list)) -
+                              4 * as.integer(tkCharPixel.f(parent=WinOrder,
+                                                           type="width",
+                                                           toPix=TRUE,
+                                                           font=tkfont.create(weight="normal", size=10))),
+                   justify="left"),
+           padx=0, pady=0, sticky="ewn")
+
+    tkgrid(F.info3, sticky="ws", padx=5, pady=5)
+
+    tkgrid(F.button, sticky="")
+    tkgrid(B.OK, B.Cancel, padx=12, pady=5)
+
+    tcl("update")
+    winSmartPlace.f(win=WinOrder)
+
+    tkbind(WinOrder, "<Destroy>", expression(tclvalue(Factor) <- "!!Annuler¡¡"))
+
+    repeat
+    {
+        tkwait.variable(Factor)
+
+
+        if (tclvalue(Factor) == "!!Valider¡¡")
+        {
+            ## On sort simplement de la boucle (les données modifiées seront retournées) :
+            break()
+        }else{}
+
+        if (tclvalue(Factor) == "!!Annuler¡¡")
+        {
+            ## Restauration des données originales :
+            Data <- .DataBackup
+            ## ... avant de sortir de la boucle :
+            break()
+        }else{}
+
+        ## Dans tous les autres cas, la liste des modalités est mise à jour :
+        tclObj(Levels) <- levels(Data[ , tclvalue(Factor)])
+
+    }
+
+    ## Destruction si la fenêtre existe encore :
+    if (tclvalue(tkwinfo("exists", WinOrder)) == "1") tkdestroy(WinOrder)
+
+    tcl("update")
+
+    return(Data)
+}
+
+
+########################################################################################################################
 chooseRefespField.f <- function(refesp, obs)
 {
     ## Purpose:

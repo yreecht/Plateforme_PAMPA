@@ -535,9 +535,9 @@ loadIcon.f <- function(icon="info")
 ########################################################################################################################
 apropos.f <- function()
 {
-    ## Purpose:
+    ## Purpose: Affiche une fenêtre d'"à propos".
     ## ----------------------------------------------------------------------
-    ## Arguments:
+    ## Arguments: Aucun !
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 21 févr. 2011, 15:51
 
@@ -581,13 +581,18 @@ apropos.f <- function()
              "\n\tYves REECHT, Romain DAVID, Jérémie HABASQUE, Bastien PREUSS")
     tktag.add(TX.develop, "text1", "end -2 lines linestart", "end")
 
-    tkinsert(TX.develop, "end", "\n\n Contact : ")
+    tkinsert(TX.develop, "end", "\n\n Contacts : ")
     tktag.add(TX.develop, "title2", "end -1 lines linestart", "end")
 
     email <- "developpeur-wp2@projet-pampa.fr"
     tkinsert(TX.develop, "end", email)
     tktag.add(TX.develop, "email",
               paste("end -", nchar(email) + 1, " chars", sep=""), "end -1 chars")
+    tkinsert(TX.develop, "end", ", ")
+    email2 <- "infopampa@listes.ifremer.fr"
+    tkinsert(TX.develop, "end", email2)
+    tktag.add(TX.develop, "email2",
+              paste("end -", nchar(email2) + 1, " chars", sep=""), "end -1 chars")
 
     ## ... configuration des différentes parties du texte :
     FT.title <- tkfont.create(family="arial", weight="bold", size=8)
@@ -597,6 +602,7 @@ apropos.f <- function()
     tktag.configure(TX.develop, "title1", font=FT.title, foreground="darkred")
     tktag.configure(TX.develop, "title2", font=FT.title, foreground="darkred")
     tktag.configure(TX.develop, "email", font=FT.email, foreground="blue")
+    tktag.configure(TX.develop, "email2", font=FT.email, foreground="blue")
 
     ## ...apparence du texte de licence :
     tktag.bind(TX.develop, "licence", "<1>",
@@ -608,10 +614,27 @@ apropos.f <- function()
 
     ## ...apparence de l'adresse e-mail :
     tktag.bind(TX.develop, "email", "<1>",
-               function() browseURL(paste("mailto:", email, "?subject=Contact%20plateforme%20PAMPA", sep="")))
+               function() browseURL(paste("mailto:", email,
+                                          ",",
+                                          email2,
+                                          "?subject=Contact%20plateforme%20PAMPA%20Ressources%20et%20Biodiversité",
+                                          sep="")))
+
     tktag.bind(TX.develop, "email", "<Enter>",
                function() tkconfigure(TX.develop, cursor="hand2"))
     tktag.bind(TX.develop, "email", "<Leave>",
+               function() tkconfigure(TX.develop, cursor="arrow"))
+
+    ## ...apparence de l'adresse e-mail2 :
+    tktag.bind(TX.develop, "email2", "<1>",
+               function() browseURL(paste("mailto:", email2,
+                                          ",",
+                                          email,
+                                          "?subject=Contact%20plateforme%20PAMPA%20Ressources%20et%20Biodiversité",
+                                          sep="")))
+    tktag.bind(TX.develop, "email2", "<Enter>",
+               function() tkconfigure(TX.develop, cursor="hand2"))
+    tktag.bind(TX.develop, "email2", "<Leave>",
                function() tkconfigure(TX.develop, cursor="arrow"))
 
     ## La zone doit être non éditable :
@@ -644,7 +667,7 @@ apropos.f <- function()
     tkinsert(TX.finance, "end", "\n\n Autres partenaires : ")
     tktag.add(TX.finance, "title2", "end -1 lines linestart", "end -1 lines lineend")
 
-    tkinsert(TX.finance, "end", "\n Retrouvez les tous sur le site insitutionnel PAMPA : \n ")
+    tkinsert(TX.finance, "end", "\n Retrouvez les tous sur le site institutionnel PAMPA : \n ")
 
     linkP <- "http://wwz.ifremer.fr/pampa/Partenaires"
     tkinsert(TX.finance, "end", linkP)
@@ -905,6 +928,56 @@ tkObj.gridInfo.f <- function(tkObj)
 }
 
 ########################################################################################################################
+tkCharPixel.f <- function(parent, type=c("width", "height"),
+                          toChar=TRUE, toPix=(! toChar),...)
+{
+    ## Purpose: Donner un facteur de conversion entre caractères et pixels
+    ##          pour les largeurs et hauteurs de widgets.
+    ## ----------------------------------------------------------------------
+    ## Arguments: parent : widget parent.
+    ##            type : largeur et/ou hauteur (width/height) ?
+    ##            toChar : conversion des pixels vers charactères ?
+    ##                     (char/pix).
+    ##            toPix : conversion des pixels vers caractères ? (pix/char).
+    ##            ... : arguments supplémentaires de mise en forme du label
+    ##                  (fonte, etc).
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date: 28 nov. 2012, 08:45
+
+
+    ## Cohérence des paramètres mutuellement exclusifs :
+    if (! toChar && ! toPix) {toPix <- TRUE}else{}
+    if (toChar && toPix){toChar <- FALSE}else{}
+
+    ## Un texte de 26 charactères de large (moyen) et 2 lignes de haut :
+    L.test <- tklabel(parent, text="azertyuiopqsdfghjklmwxcvbn\nazertyuiopqsdfghjklmwxcvbn", ...)
+
+    ## Affichage du label (nécessaire pour avoir des tailles correctes) :
+    tkgrid(L.test)
+    tcl("update")
+
+    ## Largeur et hauteur du label en pixels
+    res <- c(width=as.numeric(tkwinfo("width", L.test)),
+             height=as.numeric(tkwinfo("height", L.test)))
+
+    ## On le supprime immédiatement
+    tkgrid.remove(L.test)
+    tcl("update")
+
+    ## Calcul des rapports de conversion :
+    if (toChar)
+    {
+        res <- c(26, 2) / res
+    }else{
+        res <- res / c(26, 2)
+    }
+
+    ## Renvoi du résultat :
+    return(res[type])
+}
+
+
+########################################################################################################################
 ColAutoWidth.f <- function(TK.table)
 {
     ## Purpose: Largeur automatique des colonnes du tableau
@@ -1031,6 +1104,9 @@ updateInterface.load.f <- function(baseEnv, tabObs)
     tkentryconfigure(get("import", envir=baseEnv), 4, state="normal")
     tkentryconfigure(get("import", envir=baseEnv), 5, state="normal")
     tkentryconfigure(get("import", envir=baseEnv), 6, state="normal")
+
+    tkentryconfigure(get("outils", envir=baseEnv), 4, state="normal")
+    tkentryconfigure(get("outils", envir=baseEnv), 5, state="normal")
 
     ## Désactivation du bouton et du menu de restauration des données originales :
     tkconfigure(get("B.DataRestore", envir=baseEnv), state="disabled")

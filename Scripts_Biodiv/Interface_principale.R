@@ -392,6 +392,24 @@ mainInterface.create.f <- function()
           }else{}
       },
           state="disabled", background=.MenuBackground)
+
+    tkadd(outils, "command", label="Réorganiser des facteurs des unités d'observation...",
+          state="disabled", background=.MenuBackground,
+          command=function()
+      {
+          assign("unitobs",
+                 change.levelsOrder.f(Data=get("unitobs", envir=.dataEnv)),
+                 envir=.dataEnv)
+      })
+
+    tkadd(outils, "command", label="Réorganiser des facteurs du référentiel espèces...",
+          state="disabled", background=.MenuBackground,
+          command=function()
+      {
+          assign("refesp",
+                 change.levelsOrder.f(Data=get("refesp", envir=.dataEnv)),
+                 envir=.dataEnv)
+      })
     tkadd(outils, "separator", background=.MenuBackground)
 
     tkadd(outils, "command", label="Éditer le fichier de configuration",
@@ -520,6 +538,13 @@ mainInterface.create.f <- function()
                    background=.FrameBackground,
                    width=117,
                    font=tkfont.create(size=9)))
+    tkbind(ResumerEspaceTravail, "<Button-1>",
+           expression(tryCatch(browseURL(.dataEnv$filePathes["ws"]),
+                               error=function(e){})))
+    tkbind(ResumerEspaceTravail,  "<Enter>",
+           expression(tkconfigure(ResumerEspaceTravail, cursor="hand2")))
+    tkbind(ResumerEspaceTravail,  "<Leave>",
+           expression(tkconfigure(ResumerEspaceTravail, cursor="arrow")))
 
     tkgrid(ResumerAMPetType <-
            tklabel(frameOverall,
@@ -757,6 +782,7 @@ mainInterface.create.f <- function()
     ColAutoWidth.f(table1)
 
     ## Placement de la fenêtre :
+    tcl("update")
     winSmartPlace.f(W.main)
 }
 

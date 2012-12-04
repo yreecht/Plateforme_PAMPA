@@ -148,6 +148,8 @@ selectModWindow.f <- function(champ, data, selectmode="multiple", sort=TRUE, pre
 
     ## Affichage/attente :
     tkfocus(LB)
+
+    tcl("update")
     winSmartPlace.f(winfac, xoffset=50, yoffset=-100)
 
     tkwait.window(winfac)
@@ -679,6 +681,9 @@ nouvChoixFact.f <- function(level, env)
         eval(parse(text=exprSel), envir=env)
         eval(parse(text=exprGrid), envir=env)
         eval(parse(text=exprBind), envir=env)
+
+        tcl("update")
+        evalq(winSmartPlace.f(WinSelection), envir=env)
     }
 
     ## Mise à jour des données du facteur courant :
@@ -1019,11 +1024,11 @@ selectionVariables.f <- function(nextStep, dataEnv, baseEnv)
     tkgrid(B.OK, tklabel(FrameBT, text="      "), B.Cancel,
            tklabel(FrameBT, text="               "), B.optGraph, tklabel(FrameBT, text="\n"))
 
-    ## tkfocus(WinSelection)
-    winSmartPlace.f(WinSelection)
-
     ## Update des fenêtres :
     tcl("update")
+
+    ## tkfocus(WinSelection)
+    winSmartPlace.f(WinSelection)
 
     ## Tant que l'utilisateur ne ferme pas la fenêtre... :
     repeat

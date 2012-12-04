@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2012-11-23 16:31:13 Yves>
+# Time-stamp: <2012-12-03 12:50:28 yves>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2012 Ifremer - Tous droits réservés.
@@ -29,36 +29,74 @@
 ### Routines de chargement des fichiers de données.
 ####################################################################################################
 
-
-
-
 ########################################################################################################################
-reorderStatus.f <- function(Data, which="statut_protection")
+reorderFactors.f <- function(Data, which, type, warnings=FALSE)
 {
-    ## Purpose: Réordonner les nivaux du status de protection
+    ## Purpose: Réordonner les modalités de facteurs selon des types
+    ##          prédéfinis (avec tolérance à l'absence de colonne).
     ## ----------------------------------------------------------------------
     ## Arguments: Data : la table de données.
-    ##            which : l'indice de la colonne (de préférence un nom).
+    ##            which : l'indice de la (des) colonne(s)
+    ##                    (de préférence un nom).
+    ##            type : type de facteur(s) (parmis "protection", "interest",
+    ##                   "mobility", "position", "tide", "moon", "depth",
+    ##                   "protection2", "size")
+    ##            warnings : faut-il afficher les warnings pour colonne
+    ##                       absente ou non ré-ordonnable ?
     ## ----------------------------------------------------------------------
-    ## Author: Yves Reecht, Date:  1 juin 2011, 14:10
+    ## Author: Yves Reecht, Date:  3 déc. 2012, 10:50
 
-    if ( ! is.factor(Data[ , which]))
+    env <- environment()
+
+    for (i in 1:length(which))
     {
-        Data[ , which] <- as.factor(Data[ , which])
-    }else{}
+        tryCatch(
+        {
+            ## Au besoin, on le transforme en facteur :
+            if ( ! is.factor(Data[ , which[i]]))
+            {
+                Data[ , which[i]] <- as.factor(Data[ , which[i]])
+            }else{}
 
-    if (is.factor(Data[ , which]))
-    {
-        Data[ , which] <- factor(Data[ , which],
-                                 levels=c(getOption("P.statusOrder")[is.element(getOption("P.statusOrder"),
-                                                                                levels(Data[ , which]))],
-                                          levels(Data[ , which])[!is.element(levels(Data[ , which]),
-                                                                             getOption("P.statusOrder"))]))
+            ## Option définissant les ordres pour ce type de facteur :
+            option <- switch(type[i],
+                             "protection"="P.statusOrder",
+                             "interest"="P.interestOrder",
+                             "mobility"="P.mobilityOrder",
+                             "position"="P.positionOrder",
+                             "tide"="P.tideOrder",
+                             "moon"="P.moonOrder",
+                             "depth"="P.depthOrder",
+                             "protection2"="P.protection2Order",
+                             "size"="P.sizeOrder")
 
-        return(Data)
-    }else{
-        stop("Pas un facteur !")
+            ## Réorganisation des modalités :
+            if (is.factor(Data[ , which[i]]))
+            {
+                Data[ , which[i]] <- factor(Data[ , which[i]],
+                                            levels=c(getOption(option)[is.element(getOption(option),
+                                                                       levels(Data[ , which[i]]))],
+                                            ## ... les modalités pour lesquelles aucun ordre n'est spécifié
+                                            ## sont placées à la fin :
+                                            levels(Data[ , which[i]])[!is.element(levels(Data[ , which[i]]),
+                                                                                  getOption(option))]))
+            }else{
+                stop("Pas un facteur !")
+            }
+
+            ##assign("Data", Data, envir=env)
+        },
+            error=function(e)
+        {
+            ## On affiche la nature de l'erreur (comme un warning) si besoin :
+            if (warnings)
+            {
+                warning("la colonne ", which[i], " n'a put être réordonnée :\n\t\t", e)
+            }else{}
+        })
     }
+
+    return(Data)
 }
 
 ########################################################################################################################
@@ -601,7 +639,14 @@ loadRefEspeces.f <- function (pathRefesp, baseEnv=.GlobalEnv)
 
     ## Suppression de la ligne en NA
     especes <- subset(especes, !is.na(especes$code_espece))
-    ## assign("especes", especes, envir=.GlobalEnv)
+
+    ## Réorganisation des modalités de certains facteurs :
+    especes <- reorderFactors.f(Data=especes,
+                                which=c("position.col.eau", "mobilite",
+                                        tmpcol <- colnames(especes)[grepl("^interet\\..*$", colnames(especes))]),
+                                type=c("position", "mobility", rep("interest", length(tmpcol))),
+                                warnings=FALSE)
+
     return(especes)
 }
 
@@ -799,8 +844,11 @@ loadUnitobs.f <- function(pathUnitobs)
         unitobs[unitobs=="-999"] <- NA
     }
 
-    ## Reorganisation des niveaux de protection :
-    unitobs <- reorderStatus.f(Data=unitobs, which="statut_protection")
+    ## Reorganisation des niveaux de protection et autres facteurs :
+    unitobs <- reorderFactors.f(Data=unitobs,
+                                which=c("statut_protection", "caracteristique_1", "maree", "phase_lunaire"),
+                                type=c("protection", "protection", "tide", "moon"),
+                                warnings=FALSE)
 
     ## Années : integer -> factor (nécessaire pour les analyses stats):
     unitobs$an <- factor(unitobs$an)
@@ -829,6 +877,13 @@ loadRefspa.f <- function(pathRefspa, baseEnv=.GlobalEnv)
             ## Chargement du shapefile... :
             refSpatial <- loadShapefile.f(directory=dirname(pathRefspa),
                                           layer=sub(".shp$", "", basename(pathRefspa), ignore.case=TRUE, perl=TRUE))
+
+            refSpatial@data <- reorderFactors.f(Data=refSpatial@data,
+                                                which=c("STATUT.PRO", "STATUT.PAM", "STATUT.PAMPA", "STATUT.PROTECTION",
+                                                        "STATUT.PR2", "PROFONDEUR"),
+                                                type=c(rep("protection", 4),
+                                                       "protection2", "depth"),
+                                                warnings=FALSE)
         }else{
             ## ...Sinon, chargement sous forme de fichier texte :
             refSpatial <- read.table(pathRefspa, sep="\t", dec=".", header=TRUE, encoding="latin1")
@@ -843,6 +898,13 @@ loadRefspa.f <- function(pathRefspa, baseEnv=.GlobalEnv)
             }else{}
 
             colnames(refSpatial) <- toupper(colnames(refSpatial))
+
+            refSpatial <- reorderFactors.f(Data=refSpatial,
+                                           which=c("STATUT.PRO", "STATUT.PAM", "STATUT.PAMPA", "STATUT.PROTECTION",
+                                                   "STATUT.PR2", "PROFONDEUR"),
+                                           type=c(rep("protection", 4),
+                                                  "protection2", "depth"),
+                                           warnings=FALSE)
         }
         return(refSpatial)
     }

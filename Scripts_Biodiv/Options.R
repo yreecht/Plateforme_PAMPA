@@ -29,7 +29,7 @@
 ####################################################################################################
 
 ########################################################################################################################
-initialiseGraphOptions.f <- function()
+initialiseOptions.f <- function()
 {
     ## Purpose: (Ré-)initialiser les options graphiques (éventuellement
     ##          persistantes) spécifiques aux graphiques PAMPA WP2.
@@ -68,6 +68,26 @@ initialiseGraphOptions.f <- function()
                               "Z3", "I3",
                               "HR", "OUT",
                               "Z4"),
+            P.interestOrder=c("TR", "AR",       # Ordre des modalités d'intérêts (pour des types de pêche).
+                              "CA", "NC"),
+            P.mobilityOrder=c("TM", "MO", "SE"),# Ordre des modalités de mobilité.
+            P.positionOrder=c("surface",        # Ordre des modalités de la position dans la colonne d'eau.
+                              "milieu/surface",
+                              "P", "milieu",
+                              "D", "benthique",
+                              "B"),
+            P.tideOrder=c("MM", "HM",           # Ordre des modalités des phases de marée.
+                          "MD", "BM"),
+            P.moonOrder=c("NJ", "PC", "PQ",     # Ordre des modalités des phases lunaires.
+                          "LM", "PL", "LD",
+                          "DQ", "DC"),
+            P.depthOrder=c("peu profond",       # Ordre des modalités de profondeur.
+                           "variable",
+                           "profond"),
+            P.protection2Order=c("RNI", "RN",   # Ordre des modalités du statut de protection
+                                 "RSF", "AGDR", # (classification alternative).
+                                 "PMP", "HR"),
+            P.sizeOrder=c("P", "M", "G"),       # Ordre des modalités de classes de taille.
             P.graphPaper = FALSE,               # Graphiques adaptés pour la publication (pas de titre, format plus
                                                 # petit,...) ?
             P.warnings = TRUE,                  # Affichage des avertissement (graph tronqué, petits effectifs) ?
@@ -92,6 +112,9 @@ initialiseGraphOptions.f <- function()
                                P.ncolGraph="integer",
                                P.nrowGraph="integer", P.PDFunFichierPage="logical", P.NbDecimal="integer",
                                P.legendeCouleurs="logical", P.colPalette="character", P.statusOrder="character",
+                               P.interestOrder="character", P.mobilityOrder="character", P.positionOrder="character",
+                               P.tideOrder="character", P.moonOrder="character", P.depthOrder="character",
+                               P.protection2Order="character", P.sizeOrder="character",
                                P.graphPaper="logical", P.warnings="logical",
                                P.pointMoyenneCex="numeric", P.pointMoyennePch="integer", P.cex="numeric",
                                P.graphWMF="logical", P.pdfEmbedFonts="logical",
@@ -543,7 +566,7 @@ tuneGraphOptions.f <- function(graphType="none")
 
     if (is.null(getOption("GraphPAMPA")))
     {
-        initialiseGraphOptions.f()      # Initialisation des options Graphiques
+        initialiseOptions.f()      # Initialisation des options Graphiques
     }
 
     env <- environment()
@@ -661,7 +684,7 @@ tuneGraphOptions.f <- function(graphType="none")
     B.Reinit <- tkbutton(FrameBT, text=" Réinitialiser ", # bg=.BGcolor,
                          command=function()
                      {
-                         initialiseGraphOptions.f()
+                         initialiseOptions.f()
                          for (i in names(P.options))
                          {
                              eval(tclvalue(P.options[[i]]) <- options()[[i]], envir=env)
@@ -916,7 +939,7 @@ generalOptions.f <- function()
     B.Reinit <- tkbutton(FrameBT, text=" Réinitialiser ",
                          command=function()
                      {
-                         initialiseGraphOptions.f()
+                         initialiseOptions.f()
                          for (i in names(P.options))
                          {
                              eval(tclvalue(P.options[[i]]) <- options()[[i]], envir=env)

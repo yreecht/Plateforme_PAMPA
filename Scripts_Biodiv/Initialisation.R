@@ -68,11 +68,11 @@ init.GraphLang.f <- function()
     ## Author: Yves Reecht, Date: 17 nov. 2011, 10:22
 
     assign("varNames",
-           read.csv(paste(basePath, "/Scripts_Biodiv/NomsVariables_",
-                          tolower(getOption("P.lang")), ".csv",
-                          sep=""),
-                    header=TRUE, row.names=1, stringsAsFactors=FALSE,
-                    fileEncoding="latin1"),
+           read.csv2(paste(basePath, "/Scripts_Biodiv/NomsVariables_",
+                           tolower(getOption("P.lang")), ".csv",
+                           sep=""),
+                     header=TRUE, row.names=1, stringsAsFactors=FALSE,
+                     fileEncoding="latin1"),
            envir=.GlobalEnv)
 }
 

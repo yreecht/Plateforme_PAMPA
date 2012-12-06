@@ -176,7 +176,8 @@ chooseUnitobs.f <- function(dir=getwd(), env=NULL)
 
     runLog.f(msg=c("Choix manuel du fichiers d'unités d'observations :"))
 
-    nameUnitobs <- tclvalue(tkgetOpenFile(initialdir=paste(dir, "/Data/", sep="")))
+    nameUnitobs <- tclvalue(tkgetOpenFile(initialdir=paste(dir, "/Data/", sep=""),
+                                          filetypes = "{{Text files} {.txt .csv}} {{All files} *}"))
 
     ## On enlève le nom de chemin pour ne conserver que le nom du fichier:
     nameUnitobs <- basename(nameUnitobs)
@@ -211,7 +212,8 @@ chooseObservations.f <- function(dir=getwd(), env=NULL)
 
     runLog.f(msg=c("Choix manuel du fichiers d'observations :"))
 
-    namefileObs <- tclvalue(tkgetOpenFile(initialdir=paste(dir, "/Data/", sep="")))
+    namefileObs <- tclvalue(tkgetOpenFile(initialdir=paste(dir, "/Data/", sep=""),
+                                          filetypes = "{{Text files} {.txt .csv}} {{All files} *}"))
 
     ## On enlève le nom de chemin pour ne conserver que le nom du fichier:
     namefileObs <- basename(namefileObs)
@@ -247,7 +249,8 @@ chooseRefesp.f <- function(dir=getwd(), env=NULL)
 
     runLog.f(msg=c("Choix manuel du fichiers du référentiel espèces :"))
 
-    namefileRef <- tclvalue(tkgetOpenFile(initialdir=paste(dir, "/Data/", sep="")))
+    namefileRef <- tclvalue(tkgetOpenFile(initialdir=paste(dir, "/Data/", sep=""),
+                                          filetypes = "{{Text files} {.txt .csv}} {{All files} *}"))
 
     ## On enlève le nom de chemin pour ne conserver que le nom du fichier:
     namefileRef <- basename(namefileRef)
@@ -282,7 +285,8 @@ chooseRefspa.f <- function(dir=getwd(), env=NULL)
 
     runLog.f(msg=c("Choix manuel du fichiers du référentiel espèces :"))
 
-    namefileRef <- tclvalue(tkgetOpenFile(initialdir=paste(dir, "/Data/", sep="")))
+    namefileRef <- tclvalue(tkgetOpenFile(initialdir=paste(dir, "/Data/", sep=""),
+                                          filetypes = "{{Text & Shape files} {.txt .csv .shp}} {{All files} *}"))
 
     ## On enlève le nom de chemin pour ne conserver que le nom du fichier:
     namefileRef <- basename(namefileRef)
@@ -364,6 +368,7 @@ chooseFiles.f <- function(dataEnv)
                                           workSpaceTmp,
                                           envir=env)
                                }
+                               tcl("update")
                            },
                                justify="left")
 

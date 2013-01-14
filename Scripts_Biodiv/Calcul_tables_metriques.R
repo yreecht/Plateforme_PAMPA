@@ -509,7 +509,8 @@ calc.unitSpSz.f <- function(obs, unitobs, refesp, dataEnv)
                                ## calc.unitSpSz.Fixe.f()
                            },
                        {
-                           warning("\n\tType d'observation inconnu pour le calcul des métriques par classe de taille !")
+                           stop("\n\tType d'observation \"", getOption("P.obsType"),
+                              "\" inconnu pour le calcul des métriques par classe de taille !")
                            NULL
                        })
     }else{
@@ -618,7 +619,8 @@ calc.unitSp.f <- function(unitSpSz, obs, unitobs, dataEnv)
                              ## calc.unitSpSz.Fixe.f()
                          },
                      {
-                         warning("\n\tType d'observation inconnu pour le calcul des métriques par espèce !")
+                         stop("\n\tType d'observation \"", getOption("P.obsType"),
+                              "\" inconnu pour le calcul des métriques par espèce !")
                          NULL
                      })
     }

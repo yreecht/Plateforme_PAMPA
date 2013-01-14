@@ -1,4 +1,5 @@
 #-*- coding: latin-1 -*-
+# Time-stamp: <2013-01-14 15:32:00 Yves>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2012 Ifremer - Tous droits réservés.
@@ -18,7 +19,7 @@
 ##   <http://www.gnu.org/licenses/>.
 
 ### File: Main.R
-### Time-stamp: <2012-02-24 20:36:47 Yves>
+### Created: <2012-02-24 20:36:47 Yves>
 ###
 ### Author: Yves Reecht
 ###
@@ -31,7 +32,7 @@
 ####################################################################################################
 
 ## ** Version **
-options(versionPAMPA = "2.5-1")
+options(versionPAMPA = "2.5-2")
 
 ## Platform-specific treatment:
 ## Identification du dossier parent (d'installation) :

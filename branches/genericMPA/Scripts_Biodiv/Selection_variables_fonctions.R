@@ -1,7 +1,8 @@
 #-*- coding: latin-1 -*-
+# Time-stamp: <2013-01-16 20:02:00 yves>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
-##   Copyright (C) 2008-2010 Ifremer - Tous droits réservés.
+##   Copyright (C) 2008-2012 Ifremer - Tous droits réservés.
 ##
 ##   Ce programme est un logiciel libre ; vous pouvez le redistribuer ou le
 ##   modifier suivant les termes de la "GNU General Public License" telle que
@@ -18,7 +19,7 @@
 ##   <http://www.gnu.org/licenses/>.
 
 ### File: Selection_variables_fonctions.R
-### Time-stamp: <2012-01-18 17:45:33 yreecht>
+### Created: <2012-01-18 17:45:33 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -984,18 +985,43 @@ calcBiodiv.f <- function(Data, refesp, MPA, unitobs="unite_observation", code.es
     ## RS relative par rapp. au nombre d'espèces du site :
     if (any(is.element(c("all", "RS.relative.site"), indices)))
     {
-        df.biodiv$RS.relative.site <- (df.biodiv$richesse_specifique /
-                                       nrow(subset(refesp,
-                                                   eval(parse(text=paste("Obs", MPA, sep=""))) == "oui"))) * 100
+        if (getOption("P.refesp.Coefs") == "new")
+        {
+            ## Nouveau référentiel espèce ET fichier local chargé :
+            if (is.element("Observee", colnames(refesp)))
+            {
+                df.biodiv$RS.relative.site <- (df.biodiv$richesse_specifique /
+                                               nrow(subset(refesp,
+                                                           is.element(Observee, c("oui", "O"))))) * 100
+            }else{}
+        }else{
+            df.biodiv$RS.relative.site <- (df.biodiv$richesse_specifique /
+                                           nrow(subset(refesp,
+                                                       is.element(eval(parse(text=paste("Obs", MPA, sep=""))),
+                                                                  c("oui", "O"))))) * 100
+        }
     }
 
     ## RS relative par rapp. au nombre d'espèces du site et du(des) phylum(s) concerné(s) (jeu de données) :
     if (any(is.element(c("all", "RS.relative.site.phylum"), indices)))
     {
-        df.biodiv$RS.relative.site.phylum <- (df.biodiv$richesse_specifique /
-                                              nrow(subset(refesp,
-                                                          eval(parse(text=paste("Obs", MPA, sep=""))) == "oui" &
-                                                          is.element(Phylum, phylums)))) * 100
+        if (getOption("P.refesp.Coefs") == "new")
+        {
+            ## Nouveau référentiel espèce ET fichier local chargé :
+            if (is.element("Observee", colnames(refesp)))
+            {
+                df.biodiv$RS.relative.site.phylum <- (df.biodiv$richesse_specifique /
+                                                      nrow(subset(refesp,
+                                                                  is.element(Observee, c("oui", "O")) &
+                                                                  is.element(Phylum, phylums)))) * 100
+            }else{}
+        }else{
+            df.biodiv$RS.relative.site.phylum <- (df.biodiv$richesse_specifique /
+                                                  nrow(subset(refesp,
+                                                              is.element(eval(parse(text=paste("Obs", MPA, sep=""))),
+                                                                         c("oui", "O")) &
+                                                              is.element(Phylum, phylums)))) * 100
+        }
     }
 
     ## RS relative par rapp. au nombre d'espèces des données :

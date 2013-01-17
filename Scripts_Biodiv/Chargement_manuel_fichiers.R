@@ -272,6 +272,42 @@ chooseRefesp.f <- function(dir=getwd(), env=NULL)
     }
 }
 
+chooseRefesp.local.f <- function(dir=getwd(), env=NULL)
+{
+    ## Purpose: Choix d'un fichier de référentiel espèces
+    ## ----------------------------------------------------------------------
+    ## Arguments: dir : répertoir initial.
+    ##            env : environnement de l'interface de choix de fichier
+    ##                  (optionnel) pour la modification du résumé.
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date: 15 janv. 2013, 17:14
+
+    runLog.f(msg=c("Choix manuel du fichiers du référentiel espèces local :"))
+
+    namefileRef <- tclvalue(tkgetOpenFile(initialdir=paste(dir, "/Data/", sep=""),
+                                          filetypes = "{{Text files} {.txt .csv}} {{All files} *}"))
+
+    ## On enlève le nom de chemin pour ne conserver que le nom du fichier:
+    namefileRef <- basename(namefileRef)
+
+    if (!nchar(namefileRef))
+    {
+        return(NULL)
+    }else{
+        if (!is.null(env))
+        {
+            eval(substitute(evalq(tkconfigure(SummaryRefEspLoc,
+                                              text=namefileRef,
+                                              foreground="darkred"),
+                                  envir=env),
+                            list(namefileRef=namefileRef)))
+        }else{}
+
+        return(namefileRef)
+    }
+}
+
+
 ########################################################################################################################
 chooseRefspa.f <- function(dir=getwd(), env=NULL)
 {
@@ -336,6 +372,7 @@ chooseFiles.f <- function(dataEnv)
         fileNames <- c(unitobs=NA,
                        obs=NA,
                        refesp=NA,
+                       locrefesp=NA,
                        refspa=NA,
                        ws=getwd())
     }
@@ -344,6 +381,7 @@ chooseFiles.f <- function(dataEnv)
     unitobsTmp <- ifelse(is.na(fileNames["unitobs"]), character(), fileNames["unitobs"])
     obsTmp <- ifelse(is.na(fileNames["obs"]), character(), fileNames["obs"])
     refespTmp <- ifelse(is.na(fileNames["refesp"]), character(), fileNames["refesp"])
+    locrefespTmp <- ifelse(is.na(fileNames["locrefesp"]), character(), fileNames["locrefesp"])
     refspaTmp <- ifelse(is.na(fileNames["refspa"]), character(), fileNames["refspa"])
 
     ## ########################################################
@@ -408,6 +446,18 @@ chooseFiles.f <- function(dataEnv)
                            },
                                justify="left")
 
+    button.widget32 <- tkbutton(tt, text="Référentiel espèces local (optionnel)",
+                                command=function()
+                            {
+                                if ( ! is.null(locrefespTmp <- chooseRefesp.local.f(dir=workSpaceTmp, env=env)))
+                                {
+                                    assign("locrefespTmp",
+                                           locrefespTmp,
+                                           envir=env)
+                                }
+                            },
+                                justify="left")
+
     button.widget4 <- tkbutton(tt, text="Référentiel spatial (optionnel)",
                                command=function()
                            {
@@ -456,6 +506,12 @@ chooseFiles.f <- function(dataEnv)
                                                           refespTmp, "RIEN !!!"))),
            pady=3, padx=5, sticky="w")
 
+    tkgrid(button.widget32,
+           SummaryRefEspLoc <- tklabel(tt, text=paste("non sélectionné - par défaut :",
+                                                      ifelse(!is.na(refespTmp),
+                                                             refespTmp, "RIEN !!!"))),
+           pady=3, padx=5, sticky="w")
+
     tkgrid(button.widget4,
            SummaryRefSpa <- tklabel(tt, text=paste("non sélectionné - par défaut :",
                                                    ifelse(!is.na(refspaTmp),
@@ -485,7 +541,8 @@ chooseFiles.f <- function(dataEnv)
 
     tkbind(tt, "<Destroy>", function(){tclvalue(Done) <- "2"})
 
-    tkgrid.configure(button.widget0, button.widget1, button.widget2, button.widget3, button.widget4, sticky="ew")
+    tkgrid.configure(button.widget0, button.widget1, button.widget2, button.widget3, button.widget32, button.widget4,
+                     sticky="ew")
 
 
     tkfocus(tt)
@@ -501,6 +558,7 @@ chooseFiles.f <- function(dataEnv)
         fileNames <- c(unitobs=unname(unitobsTmp),
                        obs=unname(obsTmp),
                        refesp=unname(refespTmp),
+                       locrefesp=unname(locrefespTmp),
                        refspa=unname(refspaTmp),
                        ws=unname(workSpaceTmp))
 

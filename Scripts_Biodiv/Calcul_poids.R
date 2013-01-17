@@ -276,27 +276,35 @@ calcWeightMPA.f <- function(Data, refesp, MPA,
     ## Calcul des poids à partir des relations taille-poids W = n*a*L^b :
     idxP <- is.na(res)                  # indices des poids à calculer.
 
-    switch(casSite[MPA],
-           ## Méditerrannée :
-           "Med"={
-               res[idxP] <- (Data[ , vars["nb"]] * refesp$Coeff.a.Med[match(Data[ , vars["sp"]],
-                                                                            refesp[ , vars["sp"]])] *
-                             Data[ , vars["sz"]] ^ refesp$Coeff.b.Med[match(Data[ , vars["sp"]],
-                                                                            refesp[ , vars["sp"]])])[idxP]
-           },
-           ## Certains sites outre-mer :
-           "MAY"={
-               res[idxP] <- (Data[ , vars["nb"]] * refesp$Coeff.a.MAY[match(Data[ , vars["sp"]],
-                                                                            refesp[ , vars["sp"]])] *
-                             Data[ , vars["sz"]] ^ refesp$Coeff.b.MAY[match(Data[ , vars["sp"]],
-                                                                            refesp[ , vars["sp"]])])[idxP]
-           },
-           ## Autres (NC,...) :
-           res[idxP] <- (Data[ , vars["nb"]] * refesp$Coeff.a.NC[match(Data[ , vars["sp"]],
-                                                                       refesp[ , vars["sp"]])] *
-                         Data[ , vars["sz"]] ^ refesp$Coeff.b.NC[match(Data[ , vars["sp"]],
-                                                                       refesp[ , vars["sp"]])])[idxP]
-           )
+    if (getOption("P.refesp.Coefs") == "new")
+    {
+        res[idxP] <- (Data[ , vars["nb"]] * refesp$Coeff.a[match(Data[ , vars["sp"]],
+                                                                 refesp[ , vars["sp"]])] *
+                      Data[ , vars["sz"]] ^ refesp$Coeff.b[match(Data[ , vars["sp"]],
+                                                                 refesp[ , vars["sp"]])])[idxP]
+    }else{
+        switch(casSite[MPA],
+               ## Méditerrannée :
+               "Med"={
+                   res[idxP] <- (Data[ , vars["nb"]] * refesp$Coeff.a.Med[match(Data[ , vars["sp"]],
+                                                                                refesp[ , vars["sp"]])] *
+                                 Data[ , vars["sz"]] ^ refesp$Coeff.b.Med[match(Data[ , vars["sp"]],
+                                                                                refesp[ , vars["sp"]])])[idxP]
+               },
+               ## Certains sites outre-mer :
+               "MAY"={
+                   res[idxP] <- (Data[ , vars["nb"]] * refesp$Coeff.a.MAY[match(Data[ , vars["sp"]],
+                                                                                refesp[ , vars["sp"]])] *
+                                 Data[ , vars["sz"]] ^ refesp$Coeff.b.MAY[match(Data[ , vars["sp"]],
+                                                                                refesp[ , vars["sp"]])])[idxP]
+               },
+               ## Autres (NC,...) :
+               res[idxP] <- (Data[ , vars["nb"]] * refesp$Coeff.a.NC[match(Data[ , vars["sp"]],
+                                                                           refesp[ , vars["sp"]])] *
+                             Data[ , vars["sz"]] ^ refesp$Coeff.b.NC[match(Data[ , vars["sp"]],
+                                                                           refesp[ , vars["sp"]])])[idxP]
+               )
+    }
 
     ## [!!!] Comptabiliser les tailles incalculables !
     ## Nombre de poids ajoutées grâce à la méthode :
@@ -306,7 +314,9 @@ calcWeightMPA.f <- function(Data, refesp, MPA,
     ## (permet le calcul / poids moyen de classe si les coefs a et b sont inconnus) :
     Data <- sizeClasses.f(Data=Data, refesp=refesp, vars = vars)
 
-    if (isTRUE(MPA == "BO"))
+    if ((getOption("P.refesp.Coefs") == "new" && # Nouveau référentiel avec fichier local chargé.
+         all(is.element(c("poids.moyen.petits", "poids.moyen.moyens", "poids.moyen.gros"), colnames(refesp)))) ||
+        isTRUE(MPA == "BO"))
     {
         ## Poids d'après les classes de taille lorsque la taille n'est pas renseignée :
         tmpNb <- sum(!is.na(res))           # nombre de poids disponibles avant.

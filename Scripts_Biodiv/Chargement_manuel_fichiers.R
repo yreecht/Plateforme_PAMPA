@@ -1,7 +1,8 @@
 #-*- coding: latin-1 -*-
+# Time-stamp: <2013-01-22 17:47:53 Yves>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
-##   Copyright (C) 2008-2010 Ifremer - Tous droits réservés.
+##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
 ##
 ##   Ce programme est un logiciel libre ; vous pouvez le redistribuer ou le
 ##   modifier suivant les termes de la "GNU General Public License" telle que
@@ -18,7 +19,7 @@
 ##   <http://www.gnu.org/licenses/>.
 
 ### File: Chargement_manuel_fichiers.R
-### Time-stamp: <2012-02-24 20:23:01 Yves>
+### Created: <2012-02-24 20:23:01 Yves>
 ###
 ### Author: Yves Reecht
 ###
@@ -47,81 +48,84 @@ loadManual.f <- function(baseEnv, dataEnv)
     ## Choix des fichiers et dossiers :
     fileNames <- chooseFiles.f(dataEnv = dataEnv)
 
-    ## ...après chooseFiles.f car utilise une éventuelle valeur préalable de l'espace de travail.
-    suppressWarnings(rm(list=ls(envir=dataEnv)[!is.element(ls(envir=dataEnv), "fileNames")],
-                        envir=dataEnv)) # [!!!] revoir  [yr: 13/12/2011]
-
-
-    ## Vérification de la configuration :
-    filePathes <- testConfig.f(requiredVar=getOption("P.requiredVar"),
-                               fileNames = fileNames,
-                               dataEnv = dataEnv)
-
-    ## chargement (conditionnel) des données :
-    if (! is.null(filePathes))
+    if ( ! is.null(fileNames))
     {
-        Data <- loadData.f(filePathes=filePathes, dataEnv=dataEnv, baseEnv = baseEnv)
+        ## ...après chooseFiles.f car utilise une éventuelle valeur préalable de l'espace de travail.
+        suppressWarnings(rm(list=ls(envir=dataEnv)[!is.element(ls(envir=dataEnv), "fileNames")],
+                            envir=dataEnv)) # [!!!] revoir  [yr: 13/12/2011]
 
-        updateSummaryTable.f(get("tclarray", envir=baseEnv),
-                             fileNames, Data,
-                             get("table1", envir=baseEnv))
-    }else{
-        stop("Problème de configuration")
-    }
 
-    ## Calculs des poids (faits par AMP) :
-    if ( ! is.benthos.f())
-    {
-        Data <- calcWeight.f(Data=Data)
-    }else{}
+        ## Vérification de la configuration :
+        filePathes <- testConfig.f(requiredVar=getOption("P.requiredVar"),
+                                   fileNames = fileNames,
+                                   dataEnv = dataEnv)
 
-    ## Assignement des données dans l'environnement adéquat :
-    listInEnv.f(list=Data, env=dataEnv)
+        ## chargement (conditionnel) des données :
+        if (! is.null(filePathes))
+        {
+            Data <- loadData.f(filePathes=filePathes, dataEnv=dataEnv, baseEnv = baseEnv)
 
-    ## assign("Data", Data, envir=.GlobalEnv) # [tmp]  [yr: 20/12/2011]
+            updateSummaryTable.f(get("tclarray", envir=baseEnv),
+                                 filePathes, Data,
+                                 get("table1", envir=baseEnv))
+        }else{
+            stop("Problème de configuration")
+        }
 
-    ## Calcul des tables de métriques :
-    metrics <- calcTables.f(obs=Data$obs, unitobs=Data$unitobs, refesp=Data$refesp, dataEnv=dataEnv)
+        ## Calculs des poids (faits par AMP) :
+        if ( ! is.benthos.f())
+        {
+            Data <- calcWeight.f(Data=Data)
+        }else{}
 
-    stepInnerProgressBar.f(n=2, msg="Finalisation du calcul des tables de métriques")
+        ## Assignement des données dans l'environnement adéquat :
+        listInEnv.f(list=Data, env=dataEnv)
 
-    ## Assignement des tables de métriques dans l'environnement adéquat :
-    listInEnv.f(list=metrics, env=dataEnv)
+        ## assign("Data", Data, envir=.GlobalEnv) # [tmp]  [yr: 20/12/2011]
 
-    ## assign("metrics", metrics, envir=.GlobalEnv) # [tmp]  [yr: 20/12/2011]
+        ## Calcul des tables de métriques :
+        metrics <- calcTables.f(obs=Data$obs, unitobs=Data$unitobs, refesp=Data$refesp, dataEnv=dataEnv)
 
-    assign("backup", c(metrics,
-                       list(obs=Data$obs),
-                       tryCatch(list(".NombresSVR"=get(".NombresSVR", envir=dataEnv),
-                                     ".DensitesSVR"=get(".DensitesSVR", envir=dataEnv)),
-                                error=function(e){NULL})),
-           envir=dataEnv)
+        stepInnerProgressBar.f(n=2, msg="Finalisation du calcul des tables de métriques")
 
-    ## Export des tables de métriques :
-    stepInnerProgressBar.f(n=1, msg="Export des tables de métriques dans des fichiers")
+        ## Assignement des tables de métriques dans l'environnement adéquat :
+        listInEnv.f(list=metrics, env=dataEnv)
 
-    exportMetrics.f(unitSpSz=metrics$unitSpSz, unitSp=metrics$unitSp, unit=metrics$unit,
-                    obs=Data$obs, unitobs=Data$unitobs, refesp=Data$refesp,
-                    filePathes=filePathes, baseEnv=baseEnv)
+        ## assign("metrics", metrics, envir=.GlobalEnv) # [tmp]  [yr: 20/12/2011]
 
-    ## Ajout des fichiers créés au log de chargement :
-    add.logFrame.f(msgID="fichiers", env = baseEnv,
-                   results=filePathes["results"],
-                   has.SzCl=( ! is.null(metrics$unitSpSz) &&
-                             prod(dim(metrics$unitSpSz))))
+        assign("backup", c(metrics,
+                           list(obs=Data$obs),
+                           tryCatch(list(".NombresSVR"=get(".NombresSVR", envir=dataEnv),
+                                         ".DensitesSVR"=get(".DensitesSVR", envir=dataEnv)),
+                                    error=function(e){NULL})),
+               envir=dataEnv)
 
-    ## Fin des informations de chargement (demande de confirmation utilisateur) :
-    stepInnerProgressBar.f(n=2, msg="Fin de chargement !",
-                           font=tkfont.create(weight="bold", size=9), foreground="darkred")
+        ## Export des tables de métriques :
+        stepInnerProgressBar.f(n=1, msg="Export des tables de métriques dans des fichiers")
 
-    updateInterface.load.f(baseEnv=baseEnv, tabObs=Data$obs)
+        exportMetrics.f(unitSpSz=metrics$unitSpSz, unitSp=metrics$unitSp, unit=metrics$unit,
+                        obs=Data$obs, unitobs=Data$unitobs, refesp=Data$refesp,
+                        filePathes=filePathes, baseEnv=baseEnv)
 
-    gestionMSGaide.f(namemsg="SelectionOuTraitement", env=baseEnv)
+        ## Ajout des fichiers créés au log de chargement :
+        add.logFrame.f(msgID="fichiers", env = baseEnv,
+                       results=filePathes["results"],
+                       has.SzCl=( ! is.null(metrics$unitSpSz) &&
+                                 prod(dim(metrics$unitSpSz))))
 
-    infoLoading.f(button=TRUE, WinRaise=get("W.main", envir=baseEnv))
+        ## Fin des informations de chargement (demande de confirmation utilisateur) :
+        stepInnerProgressBar.f(n=2, msg="Fin de chargement !",
+                               font=tkfont.create(weight="bold", size=9), foreground="darkred")
 
-    ## [!!!] ajouter réinitialisation des menus si échec  [yr: 14/12/2011]
-    ## return(Data)
+        updateInterface.load.f(baseEnv=baseEnv, tabObs=Data$obs)
+
+        gestionMSGaide.f(namemsg="SelectionOuTraitement", env=baseEnv)
+
+        infoLoading.f(button=TRUE, WinRaise=get("W.main", envir=baseEnv))
+
+        ## [!!!] ajouter réinitialisation des menus si échec  [yr: 14/12/2011]
+        ## return(Data)
+    }else{}                             # Sinon rien !
 }
 
 ########################################################################################################################
@@ -446,7 +450,7 @@ chooseFiles.f <- function(dataEnv)
                            },
                                justify="left")
 
-    button.widget32 <- tkbutton(tt, text="Référentiel espèces local (optionnel)",
+    button.widget32 <- tkbutton(tt, text="Référentiel espèces local (OPTIONNEL)",
                                 command=function()
                             {
                                 if ( ! is.null(locrefespTmp <- chooseRefesp.local.f(dir=workSpaceTmp, env=env)))
@@ -458,7 +462,17 @@ chooseFiles.f <- function(dataEnv)
                             },
                                 justify="left")
 
-    button.widget4 <- tkbutton(tt, text="Référentiel spatial (optionnel)",
+    B.clear32 <- tkbutton(tt, text=" Effacer ",
+                          command=function()
+                      {
+                          assign("locrefespTmp",
+                                 NA,
+                                 envir=env)
+
+                          tkconfigure(SummaryRefEspLoc, text="RIEN !!!")
+                      })
+
+    button.widget4 <- tkbutton(tt, text="Référentiel spatial (OPTIONNEL)",
                                command=function()
                            {
                                if ( ! is.null(refspaTmp <- chooseRefspa.f(dir=workSpaceTmp, env=env)))
@@ -470,6 +484,16 @@ chooseFiles.f <- function(dataEnv)
                            },
                                justify="left")
 
+    B.clear4 <- tkbutton(tt, text=" Effacer ",
+                         command=function()
+                     {
+                         assign("locrefespTmp",
+                                NA,
+                                envir=env)
+
+                         tkconfigure(SummaryRefSpa, text="RIEN !!!")
+                     })
+
     FrameBT <- tkframe(tt)
 
     OK.but <- tkbutton(FrameBT, text=" Valider ",
@@ -479,7 +503,7 @@ chooseFiles.f <- function(dataEnv)
                          command=function(){tclvalue(Done) <- "2"})
 
     tkgrid(L.Info,
-           columnspan=2,
+           columnspan=3,
            pady=3, padx=5, sticky="ew")
 
     tkgrid(button.widget0,
@@ -508,14 +532,16 @@ chooseFiles.f <- function(dataEnv)
 
     tkgrid(button.widget32,
            SummaryRefEspLoc <- tklabel(tt, text=paste("non sélectionné - par défaut :",
-                                                      ifelse(!is.na(refespTmp),
-                                                             refespTmp, "RIEN !!!"))),
+                                                      ifelse(!is.na(locrefespTmp),
+                                                             locrefespTmp, "RIEN !!!"))),
+           B.clear32,
            pady=3, padx=5, sticky="w")
 
     tkgrid(button.widget4,
            SummaryRefSpa <- tklabel(tt, text=paste("non sélectionné - par défaut :",
                                                    ifelse(!is.na(refspaTmp),
                                                           refspaTmp, "RIEN !!!"))),
+           B.clear4,
            pady=3, padx=5, sticky="w")
 
     tkgrid(OK.but, tklabel(FrameBT, text="            "), B.Cancel, pady=5, padx=5)

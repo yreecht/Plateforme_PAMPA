@@ -1,8 +1,8 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2013-01-16 19:50:54 yves>
+# Time-stamp: <2013-01-22 17:36:01 Yves>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
-##   Copyright (C) 2008-2012 Ifremer - Tous droits réservés.
+##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
 ##
 ##   Ce programme est un logiciel libre ; vous pouvez le redistribuer ou le
 ##   modifier suivant les termes de la "GNU General Public License" telle que
@@ -473,6 +473,18 @@ testFiles.f <- function(filePathes)
 
                 stop("Dossier de résultats non accessible en écriture")
             }else{}
+        }
+
+        ## Test d'existence du référentiel espèces local (sinon remplacé par NA) :
+        if (! is.null(filePathes["locrefesp"]) && ! is.na(filePathes["locrefesp"]))
+        {
+            ## Test de lecture du fichier s'il existe :
+            if (file.access(filePathes["locrefesp"], 2) == -1)
+            {
+                filePathes["locrefesp"] <- NA
+            }else{}
+        }else{
+            filePathes["locrefesp"] <- NA
         }
 
         ## Test d'existence du référentiel spatial (sinon remplacé par NA) :
@@ -1167,8 +1179,8 @@ pathMaker.f <- function(fileNames,
                     obs=paste(directories["data"], fileNames["obs"], sep=""),
                     refesp=paste(directories["data"], fileNames["refesp"], sep=""),
                     locrefesp=unname(ifelse(is.na(fileNames["locrefesp"]),
-                                         NA,
-                                         paste(directories["data"], fileNames["locrefesp"], sep=""))),
+                                            NA,
+                                            paste(directories["data"], fileNames["locrefesp"], sep=""))),
                     refspa=unname(ifelse(is.na(fileNames["refspa"]),
                                          NA,
                                          paste(directories["data"], fileNames["refspa"], sep=""))),
@@ -1333,7 +1345,7 @@ loadDefault.f <- function(baseEnv, dataEnv)
 
         ## MàJ du tableau d'informations de l'interface principale :
         updateSummaryTable.f(get("tclarray", envir=baseEnv),
-                             fileNames, Data,
+                             filePathes, Data,
                              get("table1", envir=baseEnv))
     }else{
         stop("Problème de configuration")

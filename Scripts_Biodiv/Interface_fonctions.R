@@ -1,7 +1,8 @@
 #-*- coding: latin-1 -*-
+# Time-stamp: <2013-01-22 17:36:58 Yves>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
-##   Copyright (C) 2008-2012 Ifremer - Tous droits réservés.
+##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
 ##
 ##   Ce programme est un logiciel libre ; vous pouvez le redistribuer ou le
 ##   modifier suivant les termes de la "GNU General Public License" telle que
@@ -18,7 +19,7 @@
 ##   <http://www.gnu.org/licenses/>.
 
 ### File: interface_fonctions.R
-### Time-stamp: <2012-01-17 14:24:57 yves>
+### Created: <2012-01-17 14:24:57 yves>
 ###
 ### Author: Yves Reecht
 ###
@@ -987,15 +988,15 @@ ColAutoWidth.f <- function(TK.table)
     ## Author: Yves Reecht, Date: 18 avr. 2011, 16:40
 
     ## Dimensions du tableau (à partir de 0 => +1) :
-
     dim.array <- as.numeric(unlist(strsplit(tclvalue(tcl(.Tk.ID(TK.table),
-                                                         "index", "bottomright")),
+                                                         "index", "end")),
                                             ",")))
 
     ## Redimensionnement des colonnes :
     invisible(sapply(0:dim.array[2],
                      function(j)
                  {
+                     ## Identification du max de caractères dans la colonne :
                      tmp <- sapply(0:dim.array[1],
                                    function(i, j)
                                {
@@ -1006,7 +1007,9 @@ ColAutoWidth.f <- function(TK.table)
                                               nchar))
                                }, j)
 
-                     tcl(.Tk.ID(TK.table), "width", j, max(c(tmp, 3)) + 3)
+                     ## Définition de la largeur de colonne :
+                     tcl(.Tk.ID(TK.table), "width", j,
+                         max(c(tmp, 3)) + ifelse(.Platform$OS.type == "windows", 3, 1))
                  }))
 }
 
@@ -1043,37 +1046,48 @@ RowAutoEight.f <- function(TK.table)
 }
 
 ########################################################################################################################
-updateSummaryTable.f <- function(tclarray, fileNames, Data, table1)
+updateSummaryTable.f <- function(tclarray, filePathes, Data, table1)
 {
     ## Purpose: MàJ du tableau de résumé des fichiers chargés.
     ## ----------------------------------------------------------------------
     ## Arguments: tclarray : tableau de valeurs TCL.
-    ##            fileNames : noms des fichiers
+    ##            filePathes : chemins des fichiers
     ##            Data : les données chargées.
     ##            table1 : l'objet TCL de type "table".
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 21 déc. 2011, 11:12
 
     ##  ############# Mise à jour des valeurs dans le tableau #############
-    tclarray[["1,1"]] <- fileNames["unitobs"]
+    tclarray[["1,1"]] <- basename(filePathes["unitobs"])
     tclarray[["1,2"]] <- ncol(Data$unitobs)
     tclarray[["1,3"]] <- nrow(Data$unitobs)
-    tclarray[["2,1"]] <- fileNames["obs"]
+    tclarray[["2,1"]] <- basename(filePathes["obs"])
     tclarray[["2,2"]] <- ncol(Data$obs)
     tclarray[["2,3"]] <- nrow(Data$obs)
-    tclarray[["3,1"]] <- fileNames["refesp"]
+    tclarray[["3,1"]] <- basename(filePathes["refesp"])
     tclarray[["3,2"]] <- ncol(Data$refesp)
     tclarray[["3,3"]] <- nrow(Data$refesp)
 
-    if ( ! is.na(fileNames["refspa"]))
+    if ( ! is.na(filePathes["locrefesp"]))
     {
-        tclarray[["4,1"]] <- fileNames["refspa"]
+        tclarray[["4,1"]] <- basename(filePathes["locrefesp"])
         tclarray[["4,2"]] <- "inclus dans"
-        tclarray[["4,3"]] <- "les unités d'obs."
+        tclarray[["4,3"]] <- "ref. esp. général"
     }else{
         tclarray[["4,1"]] <- "non sélectionné"
         tclarray[["4,2"]] <- "-"
         tclarray[["4,3"]] <- "-"
+    }
+
+    if ( ! is.na(filePathes["refspa"]))
+    {
+        tclarray[["5,1"]] <- basename(filePathes["refspa"])
+        tclarray[["5,2"]] <- "inclus dans"
+        tclarray[["5,3"]] <- "les unités d'obs."
+    }else{
+        tclarray[["5,1"]] <- "non sélectionné"
+        tclarray[["5,2"]] <- "-"
+        tclarray[["5,3"]] <- "-"
     }
 
     ColAutoWidth.f(table1)
@@ -1218,6 +1232,10 @@ updateInterface.select.f <- function(criterion, tabObs, baseEnv)
     tclarray[[3, 4]] <- nlevels(tabObs[ , "code_espece"]) # Nombre d'espèces conservées (! peut différer du nombre dans
                                         # le fichier d'observation).
     tclarray[[4, 4]] <- "-"
+    tclarray[[5, 4]] <- "-"
+
+    ## Largeur automatique des colonnes du tableau :
+    ColAutoWidth.f(table1)
 
     ## Information sur les critères :
     if((tmp <- tclvalue(tkcget(MonCritere, "-text"))) == "Tout") # ou bien : tcl(.Tk.ID(MonCritere), "cget", "-text")

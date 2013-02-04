@@ -1,8 +1,8 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2013-01-16 20:02:00 yves>
+# Time-stamp: <2013-01-29 17:49:10 yves>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
-##   Copyright (C) 2008-2012 Ifremer - Tous droits réservés.
+##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
 ##
 ##   Ce programme est un logiciel libre ; vous pouvez le redistribuer ou le
 ##   modifier suivant les termes de la "GNU General Public License" telle que
@@ -387,7 +387,7 @@ subsetToutesTables.f <- function(metrique, facteurs, selections,
     {
         metrique <- "tmp"
         dataMetrique$tmp <- 0
-        dataMetrique$tmp[dataMetrique$nombre > 0] <- 1
+        dataMetrique$tmp[dataMetrique[ , nbName] > 0] <- 1
     }else{}
 
     if (!is.null(add))
@@ -517,7 +517,8 @@ getReducedSVRdata.f <- function(dataName, data, dataEnv)
 
 
 ########################################################################################################################
-agregationTableParCritere.f <- function(Data, metrique, facteurs, dataEnv, listFact=NULL)
+agregationTableParCritere.f <- function(Data, metrique, facteurs, dataEnv, listFact=NULL,
+                                        nbName="nombre")
 {
     ## Purpose: Agréger les données selon un ou plusieurs facteurs.
     ## ----------------------------------------------------------------------
@@ -527,7 +528,9 @@ agregationTableParCritere.f <- function(Data, metrique, facteurs, dataEnv, listF
     ##            listFact : noms des facteurs supplémentaires (agrégés et
     ##                       ajoutés à la table de sortie).
     ##            dataEnv : l'environnement des données.
-    ## Output : une data.frame agrégée.
+    ##            nbName : nom de la colonne nombre.
+    ##
+    ## Output: une data.frame agrégée.
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 18 oct. 2010, 15:47
 
@@ -558,7 +561,37 @@ agregationTableParCritere.f <- function(Data, metrique, facteurs, dataEnv, listF
                      "nombreSD"="nbSD",
                      "densiteMax"="densMax",
                      "densiteSD"="densSD",
-                     "biomasseMax"="sum")
+                     "biomasseMax"="sum",
+                     "reussite.ponte"="%.nesting",
+                     "pontes"="sum",
+                     "traces.lisibles"="sum",
+                     "nombre.traces"="sum")
+
+
+    ## Ajout de "traces.lisibles" pour le pourcentage de ponte :
+    if (any(casMetrique[metrique] == "%.nesting"))
+    {
+        if (is.element("classe_taille", colnames(Data)))
+        {
+            unitSpSz <- get("unitSpSz", envir=dataEnv)
+
+            if (is.null(unitSpSz)) stop("unitSpSz doit être défini")
+
+            Data <- merge(Data,
+                          unitSpSz[ , c("code_espece", "unite_observation", "classe_taille", "traces.lisibles")],
+                          by=c("code_espece", "unite_observation", "classe_taille"),
+                          suffixes=c("", ".y"))
+        }else{
+            unitSp <- get("unitSp", envir=dataEnv)
+
+            if (is.null(unitSp)) stop("unitSp doit être défini")
+
+            Data <- merge(Data,
+                          unitSp[ , c("code_espece", "unite_observation", "traces.lisibles")],
+                          by=c("code_espece", "unite_observation"),
+                          suffixes=c("", ".y"))
+        }
+    }else{}
 
     ## Ajout du champ nombre pour le calcul des moyennes pondérées s'il est absent :
     if ((casMetrique[metrique] == "w.mean" || casMetrique[metrique] == "w.mean.prop"))
@@ -568,11 +601,11 @@ agregationTableParCritere.f <- function(Data, metrique, facteurs, dataEnv, listF
             unitSpSz <- get("unitSpSz", envir=dataEnv)
 
             Data <- merge(Data,
-                          unitSpSz[ , c("code_espece", "unite_observation", "classe_taille", "nombre")],
+                          unitSpSz[ , c("code_espece", "unite_observation", "classe_taille", nbName)],
                           by=c("code_espece", "unite_observation", "classe_taille"))
 
             ## Ajout de l'abondance totale /espèce/unité d'observation :
-            nbTot <- tapply(unitSpSz$nombre,
+            nbTot <- tapply(unitSpSz[ , nbName],
                             as.list(unitSpSz[ , c("code_espece", "unite_observation")]),
                             sum, na.rm=TRUE)
 
@@ -581,7 +614,7 @@ agregationTableParCritere.f <- function(Data, metrique, facteurs, dataEnv, listF
         }else{
 
             Data <- merge(Data,
-                          get("unitSp", envir=dataEnv)[ , c("code_espece", "unite_observation", "nombre")], # [!!!] unitSpSz ?
+                          get("unitSp", envir=dataEnv)[ , c("code_espece", "unite_observation", nbName)],
                           by=c("code_espece", "unite_observation"))
         }
     }else{}
@@ -644,7 +677,7 @@ agregationTableParCritere.f <- function(Data, metrique, facteurs, dataEnv, listF
                              ifelse(all(is.na(Data[ii, metrique])),
                                     NA,
                                     weighted.mean(Data[ii, metrique],
-                                                  Data[ii, "nombre"],
+                                                  Data[ii, nbName],
                                                   na.rm=TRUE))
                          })
            },
@@ -669,7 +702,7 @@ agregationTableParCritere.f <- function(Data, metrique, facteurs, dataEnv, listF
                                     NA,
                                     ifelse(all(na.omit(Data[ii, metrique]) == 0), # Pour ne pas avoir NaN.
                                            0,
-                                           (sum(Data[ii, "nombre"][ !is.na(Data[ii, metrique])], na.rm=TRUE) /
+                                           (sum(Data[ii, nbName][ !is.na(Data[ii, metrique])], na.rm=TRUE) /
                                              sum(Data[ii, "nombre.tot"], na.rm=TRUE)) *
                                            ## Correction si la classe de taille n'est pas un facteur d'agrégation
                                            ## (sinon valeur divisée par le nombre de classes présentes) :
@@ -789,6 +822,18 @@ agregationTableParCritere.f <- function(Data, metrique, facteurs, dataEnv, listF
                                  {
                                      ifelse(all(is.na(x)), NA, sd(x, na.rm=TRUE))
                                  }))
+           },
+           "%.nesting"={
+               res <- tapply(1:nrow(Data),
+                             as.list(Data[ , facteurs, drop=FALSE]),
+                             function(ii)
+                         {
+                             ifelse(all(is.na(Data[ii, metrique])),
+                                    NA,
+                                    weighted.mean(Data[ii, metrique],
+                                                  Data[ii, "traces.lisibles"],
+                                                  na.rm=TRUE))
+                         })
            },
            stop("Pas implémenté !")
            )

@@ -29,20 +29,22 @@
 ####################################################################################################
 ########################################################################################################################
 calcNumber.default.f <- function(obs,
-                                 factors=c("unite_observation", "code_espece", "classe_taille"))
+                                 factors=c("unite_observation", "code_espece", "classe_taille"),
+                                 nbName="nombre")
 {
     ## Purpose: Calcul des nombres au niveau d'agrégation souhaité.
     ## ----------------------------------------------------------------------
     ## Arguments: obs : table des observations (data.frame).
     ##            factors : les facteurs d'agrégation.
+    ##            nbName : nom de la colonne nombre.
     ##
-    ## Output : un array avec autant de dimensions que de facteurs
-    ##          d'agrégation.
+    ## Output: un array avec autant de dimensions que de facteurs
+    ##         d'agrégation.
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 19 déc. 2011, 13:38
 
     ## Somme des nombres d'individus :
-    nbr <- tapply(obs[ , "nombre"],
+    nbr <- tapply(obs[ , nbName],
                   as.list(obs[ , factors]),
                   sum, na.rm = TRUE)
 
@@ -53,20 +55,21 @@ calcNumber.default.f <- function(obs,
 }
 
 ########################################################################################################################
-calc.numbers.f <- function(nbr)
+calc.numbers.f <- function(nbr, nbName="nombre")
 {
     ## Purpose: Produit la data.frame qui va servir de table, à partir du
     ##          tableau de nombres produit par calcNumber.default.f().
     ## ----------------------------------------------------------------------
     ## Arguments: nbr : array de nombres avec autant de dimensions que de
     ##                  facteurs d'agrégations.
+    ##            nbName : nom de la colonne nombre.
     ##
     ## Output: une data.frame avec (nombre de facteurs d'agrégation + 1)
     ##         colonnes.
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 19 déc. 2011, 13:46
 
-    res <- as.data.frame(as.table(nbr), responseName="nombre")
+    res <- as.data.frame(as.table(nbr), responseName=nbName)
     ## res$unitobs <- res$unite_observation # Pour compatibilité uniquement !!!
 
     if (is.element("classe_taille", colnames(res)))
@@ -75,9 +78,9 @@ calc.numbers.f <- function(nbr)
     }else{}
 
     ## Si les nombres sont des entiers, leur redonner la bonne classe :
-    if (isTRUE(all.equal(res$nombre, as.integer(res$nombre))))
+    if (isTRUE(all.equal(res[ , nbName], as.integer(res[ , nbName]))))
     {
-        res$nombre <- as.integer(res$nombre)
+        res[ , nbName] <- as.integer(res[ , nbName])
     }else{}
 
     return(res)
@@ -85,13 +88,15 @@ calc.numbers.f <- function(nbr)
 
 ########################################################################################################################
 calc.meanSize.f <- function(obs,
-                            factors=c("unite_observation", "code_espece", "classe_taille"))
+                            factors=c("unite_observation", "code_espece", "classe_taille"),
+                            nbName="nombre")
 {
     ## Purpose: Calcul des tailles moyennes pondérées (par le nombre
     ##          d'individus)
     ## ----------------------------------------------------------------------
     ## Arguments: obs : table des observations (data.frame).
     ##            factors : les facteurs d'agrégation.
+    ##            nbName : nom de la colonne nombre.
     ##
     ## Output: vecteur des tailles moyennes.
     ## ----------------------------------------------------------------------
@@ -101,19 +106,21 @@ calc.meanSize.f <- function(obs,
                             as.list(obs[ , factors]),
                             function(ii)
                         {
-                            weighted.mean(obs[ii, "taille"], obs[ii, "nombre"])
+                            weighted.mean(obs[ii, "taille"], obs[ii, nbName])
                         })))
 }
 
 ########################################################################################################################
 calc.weight.f <- function(obs, Data,
-                              factors=c("unite_observation", "code_espece", "classe_taille"))
+                          factors=c("unite_observation", "code_espece", "classe_taille"),
+                          nbName="nombre")
 {
     ## Purpose: Calcul des poids totaux.
     ## ----------------------------------------------------------------------
     ## Arguments: obs : table des observations (data.frame).
     ##            Data : la table de métrique (temporaire).
     ##            factors : les facteurs d'agrégation.
+    ##            nbName : nom de la colonne nombre.
     ##
     ## Output: vecteur des poids.
     ## ----------------------------------------------------------------------
@@ -134,7 +141,7 @@ calc.weight.f <- function(obs, Data,
         ## Certains NAs correspondent à des vrai zéros :
         if (!all(is.na(obs[ , "poids"])))
         {
-            weight[is.na(weight) & Data[ , "nombre"] == 0] <- 0
+            weight[is.na(weight) & Data[ , nbName] == 0] <- 0
         }
 
         ## Especes pour lesquelles aucune biomasse n'est calculée.
@@ -152,11 +159,13 @@ calc.weight.f <- function(obs, Data,
 }
 
 ########################################################################################################################
-calc.meanWeight.f <- function(Data)
+calc.meanWeight.f <- function(Data,
+                              nbName="nombre")
 {
     ## Purpose: Calcul des poids moyens (d'individus).
     ## ----------------------------------------------------------------------
     ## Arguments: Data : la table de métrique (temporaire).
+    ##            nbName : nom de la colonne nombre.
     ##
     ## Output: vecteur des poids moyens.
     ## ----------------------------------------------------------------------
@@ -164,7 +173,7 @@ calc.meanWeight.f <- function(Data)
 
     if ( ! all(is.na(Data[ , "poids"])))
     {
-        return(apply(Data[ , c("nombre", "poids")], 1,
+        return(apply(Data[ , c(nbName, "poids")], 1,
                      function(x)
                  {
                      ## Le poids moyen par individu est le poids total / le nombre d'individus :
@@ -265,11 +274,13 @@ calc.biomass.f <- function(Data, unitobs)
 }
 
 ########################################################################################################################
-calc.presAbs.f <- function(Data)
+calc.presAbs.f <- function(Data,
+                           nbName="nombre")
 {
     ## Purpose: Calcul des présences/absences à partir des abondances.
     ## ----------------------------------------------------------------------
     ## Arguments: Data : la table de métrique (temporaire).
+    ##            nbName : nom de la colonne nombre.
     ##
     ## Output: vecteur des présences/absences (0 ou 1).
     ## ----------------------------------------------------------------------
@@ -277,8 +288,8 @@ calc.presAbs.f <- function(Data)
 
     ## Presence - absence :
     presAbs <- integer(nrow(Data))
-    presAbs[Data[ , "nombre"] > 0] <- as.integer(1) # pour avoir la richesse spécifique en 'integer'.1
-    presAbs[Data[ , "nombre"] == 0] <- as.integer(0) # pour avoir la richesse spécifique en 'integer'.0
+    presAbs[Data[ , nbName] > 0] <- as.integer(1) # pour avoir la richesse spécifique en 'integer'.1
+    presAbs[Data[ , nbName] == 0] <- as.integer(0) # pour avoir la richesse spécifique en 'integer'.0
 
     return(presAbs)
 }
@@ -482,7 +493,8 @@ calc.unitSpSz.f <- function(obs, unitobs, refesp, dataEnv)
                     "PIT"="PIT",
                     "TRUVC"="Transect", "UVC"="Transect",
                     "TRVID"="Transect", "Q"="Transect",
-                    "PFUVC"="Fixe")
+                    "PFUVC"="Fixe",
+                    "TRATO"="TTracks")
 
     ## Calcul des métriques selon cas d'observation :
     if ( ! all(is.na(obs[ , "classe_taille"])))
@@ -491,22 +503,31 @@ calc.unitSpSz.f <- function(obs, unitobs, refesp, dataEnv)
 
         unitSpSz <- switch(casObsType[getOption("P.obsType")],
                            "SVR"={
+                               options(P.nbName="nombre") # Nom du champ de nombres.
                                calc.tables.SVR.f(obs=obs, dataEnv=dataEnv, factors=factors)
                            },
                            "Fishing"={
+                               options(P.nbName="nombre") # Nom du champ de nombres.
                                calc.tables.Fishing.f(obs=obs, unitobs=unitobs, dataEnv=dataEnv, factors=factors)
                            },
                            "LIT"={
+                               options(P.nbName="colonies") # Nom du champ de nombres.
                                ## Pas calculé par classe de taille
                            },
                            "PIT"={
                                ## Pas calculé par classe de taille
                            },
                            "Transect"={
+                               options(P.nbName="nombre") # Nom du champ de nombres.
                                calc.tables.Transect.f(obs=obs, unitobs=unitobs, dataEnv=dataEnv, factors=factors)
                            },
                            "Fixe"={
                                ## calc.unitSpSz.Fixe.f()
+                           },
+                           ## Traces de tortues :
+                           "TTracks"={
+                               options(P.nbName="nombre.traces") # Nom du champ de nombres.
+                               calc.tables.TurtleTracks.f(obs=obs, unitobs=unitobs, dataEnv=dataEnv, factors=factors)
                            },
                        {
                            stop("\n\tType d'observation \"", getOption("P.obsType"),
@@ -595,16 +616,20 @@ calc.unitSp.f <- function(unitSpSz, obs, unitobs, dataEnv)
                         "PIT"="PIT",
                         "TRUVC"="Transect", "UVC"="Transect",
                         "TRVID"="Transect", "Q"="Transect",
-                        "PFUVC"="Fixe")
+                        "PFUVC"="Fixe",
+                        "TRATO"="TTracks")
 
         unitSp <- switch(casObsType[getOption("P.obsType")],
                          "SVR"={
+                             options(P.nbName="nombre") # Nom du champ de nombres.
                              calc.tables.SVR.f(obs=obs, dataEnv=dataEnv, factors=factors)
                          },
                          "Fishing"={
+                             options(P.nbName="nombre") # Nom du champ de nombres.
                              calc.tables.Fishing.f(obs=obs, unitobs=unitobs, dataEnv=dataEnv, factors=factors)
                          },
                          "LIT"={
+                             options(P.nbName="colonie") # Nom du champ de nombres.
                              calc.unitSp.LIT.f(obs=obs, unitobs=unitobs, dataEnv=dataEnv)
                          },
                          "PIT"={
@@ -612,11 +637,17 @@ calc.unitSp.f <- function(unitSpSz, obs, unitobs, dataEnv)
                              ## calc.unitSpSz.PIT.f()
                          },
                          "Transect"={
+                             options(P.nbName="nombre") # Nom du champ de nombres.
                              calc.tables.Transect.f(obs=obs, unitobs=unitobs, dataEnv=dataEnv, factors=factors)
                          },
                          "Fixe"={
                              warning("Protocole \"Point fixe\" pas implémenté pour l'instant !")
                              ## calc.unitSpSz.Fixe.f()
+                         },
+                         ## Traces de tortues :
+                         "TTracks"={
+                             options(P.nbName="nombre.traces") # Nom du champ de nombres.
+                             calc.tables.TurtleTracks.f(obs=obs, unitobs=unitobs, dataEnv=dataEnv, factors=factors)
                          },
                      {
                          stop("\n\tType d'observation \"", getOption("P.obsType"),
@@ -631,7 +662,8 @@ calc.unitSp.f <- function(unitSpSz, obs, unitobs, dataEnv)
 }
 
 ########################################################################################################################
-calc.unit.default.f <- function(unitSp, refesp, unitobs, colNombres="nombre", dataEnv=.GlobalEnv)
+calc.unit.default.f <- function(unitSp, refesp, unitobs, colNombres="nombre", dataEnv=.GlobalEnv,
+                                nbName="nombre")
 {
     ## Purpose:
     ## ----------------------------------------------------------------------
@@ -642,7 +674,9 @@ calc.unit.default.f <- function(unitSp, refesp, unitobs, colNombres="nombre", da
     metrics <- c("nombre", "taille_moyenne", "poids", "poids_moyen", "densite", "biomasse",
                  "pres_abs",
                  "CPUE", "CPUEbiomasse",
-                 "colonie", "recouvrement", "taille.moy.colonies")
+                 "colonie", "recouvrement", "taille.moy.colonies",
+                 "pontes", "traces.lisibles", "reussite.ponte",
+                 "nombre.traces")
 
     usedMetrics <- metrics[is.element(metrics, colnames(unitSp))]
 
@@ -654,7 +688,8 @@ calc.unit.default.f <- function(unitSp, refesp, unitobs, colNombres="nombre", da
                                       listFact = NULL,
                                       unitSpSz = NULL,
                                       unitSp = unitSp,
-                                      dataEnv=dataEnv)
+                                      dataEnv=dataEnv,
+                                      nbName=nbName)
 
         tmp <- do.call(rbind,
                        lapply(unique(as.character(unitobs[ , getOption("P.MPAfield")])),
@@ -705,7 +740,8 @@ calc.unit.f <- function(unitSp, obs, refesp, unitobs, dataEnv)
                     "PIT"="PIT",
                     "TRUVC"="Transect", "UVC"="Transect",
                     "TRVID"="Transect", "Q"="Transect",
-                    "PFUVC"="Fixe")
+                    "PFUVC"="Fixe",
+                    "TRATO"="TTracks")
 
     ##
     if ( ! is.null(unitSp) && nrow(unitSp))
@@ -719,6 +755,12 @@ calc.unit.f <- function(unitSp, obs, refesp, unitobs, dataEnv)
                                       # "nombre" :
                            calc.unit.default.f(unitSp=unitSp, refesp=refesp, unitobs=unitobs, colNombres="colonie",
                                                dataEnv=dataEnv)
+                       },
+
+                       "TTracks"={      # Pour les types d'observation qui ont une colonne "nombre.traces" à la
+                                        # place de "nombre" :
+                           calc.unit.default.f(unitSp=unitSp, refesp=refesp, unitobs=unitobs, colNombres="nombre.traces",
+                                               dataEnv=dataEnv, nbName="nombre.traces")
                        },
                        calc.unit.default.f(unitSp=unitSp, refesp=refesp, unitobs=unitobs, colNombres="nombre",
                                            dataEnv=dataEnv))

@@ -1,7 +1,8 @@
 #-*- coding: latin-1 -*-
+# Time-stamp: <2013-01-29 17:49:38 yves>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
-##   Copyright (C) 2008-2010 Ifremer - Tous droits réservés.
+##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
 ##
 ##   Ce programme est un logiciel libre ; vous pouvez le redistribuer ou le
 ##   modifier suivant les termes de la "GNU General Public License" telle que
@@ -18,7 +19,7 @@
 ##   <http://www.gnu.org/licenses/>.
 
 ### File: modeles_lineaires_unitobs_generiques.R
-### Time-stamp: <2012-01-11 19:27:55 yreecht>
+### Created: <2012-01-11 19:27:55 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -64,7 +65,7 @@ modeleLineaireWP2.unitobs.f <- function(metrique, factAna, factAnaSel, listFact,
     if (tableMetrique == "unit")
     {
         ## Pour les indices de biodiversité, il faut travailler sur les nombres... :
-        tmpData <- subsetToutesTables.f(metrique="nombre", facteurs=facteurs,
+        tmpData <- subsetToutesTables.f(metrique=getOption("P.nbName"), facteurs=facteurs,
                                         selections=selections, dataEnv=dataEnv, tableMetrique="unitSp",
                                         exclude = NULL, add=c("unite_observation", "code_espece"))
     }else{
@@ -111,15 +112,16 @@ modeleLineaireWP2.unitobs.f <- function(metrique, factAna, factAnaSel, listFact,
                                                refesp=get("refesp", envir=dataEnv),
                                                MPA=MPA,
                                                unitobs = "unite_observation", code.especes = "code_espece",
-                                               nombres = "nombre",
+                                               nombres = getOption("P.nbName"),
                                                indices=metrique,
                                                dataEnv=dataEnv)
                               }))
 
             ## On rajoute les anciennes colonnes :
-            tmpData <- cbind(tmp,
+            tmpData <- cbind(tmp[ , colnames(tmp) != getOption("P.nbName")], # Colonne "nombre" désormais inutile.
                              tmpData[match(tmp$unite_observation, tmpData$unite_observation),
-                                     !is.element(colnames(tmpData), colnames(tmp))])
+                                     !is.element(colnames(tmpData),
+                                                 c(colnames(tmp), getOption("P.nbName"), "code_espece")), drop=FALSE])
 
             ## On garde le strict minimum :
             tmpData <- tmpData[ , is.element(colnames(tmpData), c(metrique, facteurs))]

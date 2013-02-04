@@ -160,6 +160,7 @@ niveau.a.et.b.MED;;niveau.a.et.b.MED;;
 niveau.a.et.b.NC;;niveau.a.et.b.NC;;
 nocturne;;nocturne;;
 nombre;the ;number;;ind
+nombre.traces;the ;tracks number;;
 nombreMax;the ;maximum number;;ind
 nombreSD;the ;number standard error;;
 ObsBA;;ObsBA;;
@@ -181,6 +182,7 @@ poids_moyen;the ;mean weight;;g
 poids.moyen.gros;the ;poids moyen des gros;;
 poids.moyen.moyens;the ;poids moyen des moyens;;
 poids.moyen.petits;the ;poids moyen des petits;;
+pontes;the ;number of nests;;
 position.col.eau;the ;location in the water column;;
 pres_abs;the ;presence/absence;;
 prof_max;the ;maximum depth;;
@@ -189,6 +191,7 @@ prop.abondance.CL;the ;abundance proportions by size class;;'%'
 prop.biomasse.CL;the ;biomass proportion by size class;;'%'
 recouvrement;the ;percent cover;;
 regim.alim;the ;diet;;
+reussite.ponte;the ;nesting success;;' %'
 richesse_specifique;the ;species richness;;
 RS_relative;the ;relative species richness;;
 RS.relative.donnees;the ;relative species richness (/ sp. from the data);;'%'
@@ -211,6 +214,7 @@ taille.moy.colonies;the ;mean size of colonies;;cm
 taillemax;the ;maximum size;;cm
 TaxoCode;;TaxoCode;;
 territorial;;territorial;;
+traces.lisibles;the ;number of interpretable tracks;;
 type;;type;;
 Type.ponte;the ;type de ponte;;
 unite_observation;the ;observation unit;;

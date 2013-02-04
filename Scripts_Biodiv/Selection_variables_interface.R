@@ -1,7 +1,8 @@
 #-*- coding: latin-1 -*-
+# Time-stamp: <2013-01-29 17:48:05 yves>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
-##   Copyright (C) 2008-2012 Ifremer - Tous droits réservés.
+##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
 ##
 ##   Ce programme est un logiciel libre ; vous pouvez le redistribuer ou le
 ##   modifier suivant les termes de la "GNU General Public License" telle que
@@ -18,7 +19,7 @@
 ##   <http://www.gnu.org/licenses/>.
 
 ### File: Selection_variables_interface.R
-### Time-stamp: <2012-01-18 15:55:46 yreecht>
+### Created: <2012-01-18 15:55:46 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -193,7 +194,7 @@ selectModalites.f <- function(factor, tableMetrique, env, nextStep, dataEnv, lev
         tableMetrique == "unit")
     {
         tableMetrique <- "unitSp"
-        metrique <- "nombre"
+        metrique <- getOption("P.nbName")
     }else{}
 
     tmp <- subsetToutesTables.f(metrique=metrique, facteurs=facts, selections=selections,
@@ -264,7 +265,7 @@ verifVariables.f <- function(metrique, factGraph, factGraphSel, listFact, listFa
         tableMetrique == "unit")
     {
         tableMetrique <- "unitSp"
-        metrique <- "nombre"
+        metrique <- getOption("P.nbName")
     }else{}
 
 

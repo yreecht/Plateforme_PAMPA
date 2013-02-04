@@ -1,7 +1,8 @@
 #-*- coding: latin-1 -*-
+# Time-stamp: <2013-01-29 17:50:40 yves>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
-##   Copyright (C) 2008-2012 Ifremer - Tous droits réservés.
+##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
 ##
 ##   Ce programme est un logiciel libre ; vous pouvez le redistribuer ou le
 ##   modifier suivant les termes de la "GNU General Public License" telle que
@@ -18,7 +19,7 @@
 ##   <http://www.gnu.org/licenses/>.
 
 ### File: Baplots_unitobs_generiques.R
-### Time-stamp: <2012-09-05 16:07:46 yves>
+### Created: <2012-09-05 16:07:46 yves>
 ###
 ### Author: Yves Reecht
 ###
@@ -65,7 +66,7 @@ WP2barplot.unitobs.f <- function(metrique, factGraph, factGraphSel, listFact, li
     if (tableMetrique == "unit")
     {
         ## Pour les indices de biodiversité, il faut travailler sur les nombres... :
-        tmpData <- subsetToutesTables.f(metrique="nombre", facteurs=facteurs,
+        tmpData <- subsetToutesTables.f(metrique=getOption("P.nbName"), facteurs=facteurs,
                                         selections=selections, dataEnv=dataEnv, tableMetrique="unitSp",
                                         exclude = NULL, add=c("unite_observation", "code_espece"))
     }else{
@@ -108,16 +109,16 @@ WP2barplot.unitobs.f <- function(metrique, factGraph, factGraphSel, listFact, li
                                                refesp=get("refesp", envir=dataEnv),
                                                MPA=MPA,
                                                unitobs = "unite_observation", code.especes = "code_espece",
-                                               nombres = "nombre",
+                                               nombres = getOption("P.nbName"),
                                                indices=metrique,
                                                dataEnv=dataEnv)
                               }))
 
             ## On rajoute les anciennes colonnes :
-            tmpData <- cbind(tmp[ , colnames(tmp) != "nombre"], # Colonne "nombre" désormais inutile.
+            tmpData <- cbind(tmp[ , colnames(tmp) != getOption("P.nbName")], # Colonne "nombre" désormais inutile.
                              tmpData[match(tmp$unite_observation, tmpData$unite_observation),
                                      !is.element(colnames(tmpData),
-                                                 c(colnames(tmp), "nombre", "code_espece")), drop=FALSE])
+                                                 c(colnames(tmp), getOption("P.nbName"), "code_espece")), drop=FALSE])
         }else{
             tmpData <- na.omit(agregationTableParCritere.f(Data=tmpData,
                                                            metrique=metrique,

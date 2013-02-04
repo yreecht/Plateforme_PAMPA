@@ -1,7 +1,8 @@
 #-*- coding: latin-1 -*-
+# Time-stamp: <2013-01-29 17:52:09 yves>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
-##   Copyright (C) 2008-2010 Ifremer - Tous droits réservés.
+##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
 ##
 ##   Ce programme est un logiciel libre ; vous pouvez le redistribuer ou le
 ##   modifier suivant les termes de la "GNU General Public License" telle que
@@ -18,7 +19,7 @@
 ##   <http://www.gnu.org/licenses/>.
 
 ### File: Agregations_generiques.R
-### Time-stamp: <2012-01-17 22:53:24 yves>
+### Created: <2012-01-17 22:53:24 yves>
 ###
 ### Author: Yves Reecht
 ###
@@ -62,7 +63,8 @@ betterCbind <- function(..., dfList=NULL, deparse.level = 1)
 }
 
 ########################################################################################################################
-agregation.f <- function(metric, Data, factors, casMetrique, dataEnv)
+agregation.f <- function(metric, Data, factors, casMetrique, dataEnv,
+                         nbName="nombre")
 {
     ## Purpose: Agrégation d'une métrique.
     ## ----------------------------------------------------------------------
@@ -72,6 +74,7 @@ agregation.f <- function(metric, Data, factors, casMetrique, dataEnv)
     ##            casMetrique: vecteur nommé des types d'observation en
     ##                         fonction de la métrique choisie.
     ##            dataEnv: environnement des données.
+    ##            nbName : nom de la colonne nombre.
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 20 déc. 2011, 14:29
 
@@ -94,7 +97,7 @@ agregation.f <- function(metric, Data, factors, casMetrique, dataEnv)
                              ifelse(all(is.na(Data[ii, metric])),
                                     NA,
                                     weighted.mean(Data[ii, metric],
-                                                  Data[ii, "nombre"],
+                                                  Data[ii, nbName],
                                                   na.rm=TRUE))
                          })
            },
@@ -119,7 +122,7 @@ agregation.f <- function(metric, Data, factors, casMetrique, dataEnv)
                                     NA,
                                     ifelse(all(na.omit(Data[ii, metric]) == 0), # Pour ne pas avoir NaN.
                                            0,
-                                           (sum(Data[ii, "nombre"][ !is.na(Data[ii, metric])], na.rm=TRUE) /
+                                           (sum(Data[ii, nbName][ !is.na(Data[ii, metric])], na.rm=TRUE) /
                                             sum(Data[ii, "nombre.tot"], na.rm=TRUE)) *
                                            ## Correction si la classe de taille n'est pas un facteur d'agrégation
                                            ## (sinon valeur divisée par le nombre de classes présentes) :
@@ -240,6 +243,18 @@ agregation.f <- function(metric, Data, factors, casMetrique, dataEnv)
                                      ifelse(all(is.na(x)), NA, sd(x, na.rm=TRUE))
                                  }))
            },
+           "%.nesting"={
+               res <- tapply(1:nrow(Data),
+                             as.list(Data[ , factors, drop=FALSE]),
+                             function(ii)
+                         {
+                             ifelse(all(is.na(Data[ii, metric])),
+                                    NA,
+                                    weighted.mean(Data[ii, metric],
+                                                  Data[ii, "traces.lisibles"],
+                                                  na.rm=TRUE))
+                         })
+           },
            stop("Pas implémenté !")
            )
 
@@ -254,7 +269,7 @@ agregation.f <- function(metric, Data, factors, casMetrique, dataEnv)
 }
 
 agregations.generic.f <- function(Data, metrics, factors, listFact=NULL, unitSpSz=NULL, unitSp=NULL, info=FALSE,
-                                  dataEnv=.GlobalEnv)
+                                  dataEnv=.GlobalEnv, nbName="nombre")
 {
     ## Purpose: Agréger les données selon un ou plusieurs facteurs.
     ## ----------------------------------------------------------------------
@@ -266,6 +281,8 @@ agregations.generic.f <- function(Data, metrics, factors, listFact=NULL, unitSpS
     ##            unitSpSz : Table de métriques par unitobs/esp/CT.
     ##            unitSp : Table de métriques par unitobs/esp
     ##            info : affichage des infos ?
+    ##            nbName : nom de la colonne nombre.
+    ##
     ## Output : une data.frame agrégée.
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 18 oct. 2010, 15:47
@@ -284,8 +301,8 @@ agregations.generic.f <- function(Data, metrics, factors, listFact=NULL, unitSpS
                      "CPUE"="sum",
                      "CPUEbiomasse"="sum",
                      "pres_abs"="pres",
-                     "prop.abondance.CL"="w.mean.prop", # Pas bon [!!!]
-                     "prop.biomasse.CL"="w.mean.prop.bio",  # Pas bon [!!!]
+                     "prop.abondance.CL"="w.mean.prop", # Pas bon [!!!] ?
+                     "prop.biomasse.CL"="w.mean.prop.bio",  # Pas bon [!!!] ?
                      ## Benthos :
                      "colonie"="sum",
                      "recouvrement"="sum",
@@ -295,7 +312,32 @@ agregations.generic.f <- function(Data, metrics, factors, listFact=NULL, unitSpS
                      "nombreSD"="nbSD",
                      "densiteMax"="densMax",
                      "densiteSD"="densSD",
-                     "biomasseMax"="sum")
+                     "biomasseMax"="sum",
+                     "reussite.ponte"="%.nesting",
+                     "pontes"="sum",
+                     "traces.lisibles"="sum",
+                     "nombre.traces"="sum")
+
+    ## Ajout de "traces.lisibles" pour le pourcentage de ponte :
+    if (any(casMetrique[metrics] == "%.nesting"))
+    {
+        if (is.element("classe_taille", colnames(Data)))
+        {
+            if (is.null(unitSpSz)) stop("unitSpSz doit être défini")
+
+            Data <- merge(Data,
+                          unitSpSz[ , c("code_espece", "unite_observation", "classe_taille", "traces.lisibles")],
+                          by=c("code_espece", "unite_observation", "classe_taille"),
+                          suffixes=c("", ".y"))
+        }else{
+            if (is.null(unitSp)) stop("unitSp doit être défini")
+
+            Data <- merge(Data,
+                          unitSp[ , c("code_espece", "unite_observation", "traces.lisibles")],
+                          by=c("code_espece", "unite_observation"),
+                          suffixes=c("", ".y"))
+        }
+    }else{}
 
     ## Ajout du champ nombre pour le calcul des moyennes pondérées s'il est absent :
     if (any(casMetrique[metrics] == "w.mean" | casMetrique[metrics] == "w.mean.prop"))
@@ -305,12 +347,12 @@ agregations.generic.f <- function(Data, metrics, factors, listFact=NULL, unitSpS
             if (is.null(unitSpSz)) stop("unitSpSz doit être défini")
 
             Data <- merge(Data,
-                          unitSpSz[ , c("code_espece", "unite_observation", "classe_taille", "nombre")],
+                          unitSpSz[ , c("code_espece", "unite_observation", "classe_taille", nbName)],
                           by=c("code_espece", "unite_observation", "classe_taille"),
                           suffixes=c("", ".y"))
 
             ## Ajout de l'abondance totale /espèce/unité d'observation :
-            nbTot <- tapply(unitSpSz$nombre,
+            nbTot <- tapply(unitSpSz[ , nbName],
                             as.list(unitSpSz[ , c("code_espece", "unite_observation")]),
                             sum, na.rm=TRUE)
 
@@ -320,7 +362,7 @@ agregations.generic.f <- function(Data, metrics, factors, listFact=NULL, unitSpS
             if (is.null(unitSp)) stop("unitSp doit être défini")
 
             Data <- merge(Data,
-                          unitSp[ , c("code_espece", "unite_observation", "nombre")], # [!!!] unitSpSz ?
+                          unitSp[ , c("code_espece", "unite_observation", nbName)], # [!!!] unitSpSz ?
                           by=c("code_espece", "unite_observation"),
                           suffixes=c("", ".y"))
         }
@@ -363,7 +405,8 @@ agregations.generic.f <- function(Data, metrics, factors, listFact=NULL, unitSpS
     ## Agrégation de la métrique selon les facteurs :
     reslong <- betterCbind(dfList=lapply(metrics,   # sapply utilisé pour avoir les noms.
                                          agregation.f,
-                                         Data=Data, factors=factors, casMetrique=casMetrique, dataEnv=dataEnv))
+                                         Data=Data, factors=factors, casMetrique=casMetrique, dataEnv=dataEnv,
+                                         nbName=nbName))
 
     ## Agrégation et ajout des facteurs supplémentaires :
     if (!is.null(listFact))

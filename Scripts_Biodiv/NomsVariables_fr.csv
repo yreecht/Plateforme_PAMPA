@@ -160,6 +160,7 @@ niveau.a.et.b.MED;;niveau.a.et.b.MED;;
 niveau.a.et.b.NC;;niveau.a.et.b.NC;;
 nocturne;;nocturne;;
 nombre;le ;nombre;m;indiv
+nombre.traces;le;nombre de traces;m;
 nombreMax;le ;nombre maximum;m;indiv
 nombreSD;l´;écart type du nombre;m;
 ObsBA;;ObsBA;;
@@ -181,6 +182,7 @@ poids_moyen;le ;poids moyen;m;g
 poids.moyen.gros;le ;poids moyen des gros;m;
 poids.moyen.moyens;le ;poids moyen des moyens;m;
 poids.moyen.petits;le ;poids moyen des petits;m;
+pontes;le;nombre de pontes;m;
 position.col.eau;la ;position dans la colone d´eau;f;
 pres_abs;les ;présences/absence;fp;
 prof_max;la ;profondeur maximale;f;
@@ -189,6 +191,7 @@ prop.abondance.CL;les ;proportions d´abondances par classe de taille;fp;'%'
 prop.biomasse.CL;les ;proportions de biomasse par classe de taille;fp;'%'
 recouvrement;le ;recouvrement;m;'%'
 regim.alim;le ;régime alimentaire;m;
+reussite.ponte;la;réussite de ponte;f;'%'
 richesse_specifique;la ;richesse specifique;f;
 RS_relative;la ;richesse spécifique relative;f;
 RS.relative.donnees;la ;richesse spécifique relative (/ esp. des données);f;'%'
@@ -211,6 +214,7 @@ taille.moy.colonies;la ;taille moyenne des colonies;f;cm
 taillemax;la ;taille maximale;f;cm
 TaxoCode;;TaxoCode;;
 territorial;;territorial;;
+traces.lisibles;le;nombre de traces lisibles;m;
 type;;type;;
 Type.ponte;le ;type de ponte;m;
 unite_observation;l´;unité d´observation;f;

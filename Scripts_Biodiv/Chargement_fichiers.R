@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2013-01-22 17:36:01 Yves>
+# Time-stamp: <2013-01-23 10:41:49 yves>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
@@ -1066,6 +1066,12 @@ loadObservations.f <- function(pathObs)
     {
         colnames(obs) <- c("unite_observation", "secteur", "code_espece", "sexe", "taille", "classe_taille", "poids",
                            "nombre", "dmin", "dmax")
+
+        ## Traitements particuliers pour les protocoles "traces de tortues" :
+        if (getOption("P.obsType") == "TRATO")
+        {
+            obs <- obsFormatting.TRATO.f(obs)
+        }else{}
     }else{
         ## On renomme les colonnes + identification du type d'interpolation :
         switch(as.character(ncol(obs)),

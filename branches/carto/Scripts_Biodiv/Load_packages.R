@@ -88,7 +88,7 @@ loadPackages.f <- function()
     ## Packages nécessaires au bon fonctionnement de la plateforme PAMPA WP2 :
     requiredPack <- c("R.utils", "tcltk", "tkrplot", "vegan", "MASS",
                       "mvpart", "multcomp", "gamlss", "maps", "maptools", ## "Hmisc"
-                      "TeachingDemos", "sp", "rgdal", "geosphere")
+                      "TeachingDemos", "sp", "rgdal", "geosphere", "rgeos")
 
     ## Packages installés :
     installedPack <- installed.packages()[ , "Package"]

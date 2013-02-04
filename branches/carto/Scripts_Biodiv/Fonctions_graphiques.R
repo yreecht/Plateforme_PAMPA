@@ -57,6 +57,18 @@ makeColorPalettes.f <- function()
     assign(".ColorPaletteGray",
            colorRampPalette(c("#787878", "#dddddd")),
            envir=.GlobalEnv)
+
+    ## carto1:
+    assign(".ColorPaletteCarto1",
+           colorRampPalette(c("cyan", "violet", "slateblue", "lightsalmon", "palegreen")),
+           envir=.GlobalEnv)
+
+    ## carto2:
+    assign(".ColorPaletteCarto2",
+           colorRampPalette(c("cyan", "violet", "slateblue", "lightsalmon", "palegreen", "darkseagreen4", "chocolate1",
+                              "slateblue1", "pink", "burlywood1", "hotpink3", "tomato3", "khaki2", "goldenrod", "tan1",
+                              "violetred3")),
+           envir=.GlobalEnv)
 }
 
 
@@ -71,12 +83,13 @@ PAMPAcolors.f <- function(n=1, palette=getOption("P.colPalette"), list=FALSE)
 
     if (list)
     {
-        return(c("défaut", "bleu", "chaud", "gris"))
+        return(c("défaut", "bleu", "chaud", "gris", "carto1", "carto2"))
     }else{}
 
     if (is.element(palette,
                    c("default", "défaut", "defaut", "blue", "bleu",
-                     "heat", "chaud", "gray", "grey", "gris")) &&
+                     "heat", "chaud", "gray", "grey", "gris",
+                     "carto1", "carto2")) &&
         ! exists(palette, envir=.GlobalEnv))
     {
         makeColorPalettes.f()
@@ -110,6 +123,22 @@ PAMPAcolors.f <- function(n=1, palette=getOption("P.colPalette"), list=FALSE)
                   "gris"=,
                   "gray"={
                       .ColorPaletteGray(n)
+                  },
+                  "carto1"={
+                      if (n <= 5)
+                      {
+                          .ColorPaletteCarto1(5)[1:n]
+                      }else{
+                          .ColorPaletteCarto1(n)
+                      }
+                  },
+                  "carto2"={
+                      if (n <= 16)
+                      {
+                          .ColorPaletteCarto2(16)[1:n]
+                      }else{
+                          .ColorPaletteCarto2(n)
+                      }
                   })
 
     return(res)
@@ -335,9 +364,21 @@ openDevice.f <- function(noGraph, metrique, factGraph, modSel, listFact, dataEnv
     return(fileName)
 }
 
+########################################################################################################################
+isSubplot <- function()
+{
+    ## Purpose: Déterminer si l'on est dans un subplot ou non.
+    ## ----------------------------------------------------------------------
+    ## Arguments: aucun.
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date: 10 janv. 2013, 17:03
+
+    return(isTRUE(all.equal(getOption("P.pinSubplot"), par("fin"))))
+}
+
 
 ########################################################################################################################
-boxplotPAMPA.f <- function(exprBP, data, main=NULL, cex=getOption("P.cex"),...)
+boxplotPAMPA.f <- function(exprBP, data, main=NULL, cex=getOption("P.cex"), ylim=NULL,...)
 {
     ## Purpose: Boxplot avec un formatage pour pampa
     ## ----------------------------------------------------------------------
@@ -345,6 +386,7 @@ boxplotPAMPA.f <- function(exprBP, data, main=NULL, cex=getOption("P.cex"),...)
     ##            data : les données à utiliser.
     ##            main : titre du graphique.
     ##            cex : taille des caractères.
+    ##            ylim : limites desordonnées.
     ##            ... : arguments optionnels (passés à la fonction boxplot).
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 10 févr. 2011, 17:05
@@ -355,16 +397,19 @@ boxplotPAMPA.f <- function(exprBP, data, main=NULL, cex=getOption("P.cex"),...)
     ## Les couleurs pour l'identification des modalités du facteur de second niveau :
     colors <- colBoxplot.f(terms=attr(terms(exprBP), "term.labels"), data=data)
 
-    ## Suppression des valeurs infinies (plante ylims les graphiques) :
+    ## Suppression des valeurs infinies (plante ylims dans les graphiques) :
     tmpMetric <- replace(data[ , metrique], is.infinite(data[ , metrique]), NA)
 
     ## ylims :
-    ylim <- c(min(tmpMetric, na.rm=TRUE),
-              ifelse(getOption("P.maxExclu") && getOption("P.GraphPartMax") < 1,
-                     getOption("P.GraphPartMax") * max(tmpMetric, na.rm=TRUE),
-                     max(tmpMetric, na.rm=TRUE) +
-                     0.1*(max(tmpMetric, na.rm=TRUE) -
-                          min(tmpMetric, na.rm=TRUE))))
+    if (is.null(ylim))
+    {
+        ylim <- c(min(tmpMetric, na.rm=TRUE),
+                  ifelse(getOption("P.maxExclu") && getOption("P.GraphPartMax") < 1,
+                         getOption("P.GraphPartMax") * max(tmpMetric, na.rm=TRUE),
+                         max(tmpMetric, na.rm=TRUE) +
+                         0.1*(max(tmpMetric, na.rm=TRUE) -
+                              min(tmpMetric, na.rm=TRUE))))
+    }else{}
 
     ## Plot sans affichage pour récupérer l'objet :
     tmpBP <- boxplot(exprBP, data=data,
@@ -383,8 +428,10 @@ boxplotPAMPA.f <- function(exprBP, data, main=NULL, cex=getOption("P.cex"),...)
       {
           par(mai=c(
               ## Marge du bas dynamique :
-              ifelse((tmp <- lineInchConvert.f()$V * cex * unlist(par("lheight")) * (0.2 + 0.9) + # marge
-                                        # supplémentaire.
+              ifelse((tmp <- lineInchConvert.f()$V * cex * unlist(par("lheight")) *
+                      ifelse(isSubplot(),
+                             (0.2 + 0.8),   # cas des subplots.
+                             (0.2 + 0.9)) + # marge supplémentaire.
                       max(strDimRotation.f(tmpBP$names,
                                            srt=45,
                                            unit="inches",
@@ -392,8 +439,10 @@ boxplotPAMPA.f <- function(exprBP, data, main=NULL, cex=getOption("P.cex"),...)
                      0.65 * unlist(par("pin"))[2],
                      tmp),
               ## Marge de gauche dynamique :
-              tmp2 <- ifelse((tmp <- lineInchConvert.f()$H * cex * unlist(par("lheight")) * (1.4 +0.4 + 0.9) + # marge
-                                        # supplémentaire.
+              tmp2 <- ifelse((tmp <- lineInchConvert.f()$H * cex * unlist(par("lheight")) *
+                              ifelse(isSubplot(),
+                                     (1.0 +0.4 + 0.9),   # cas des subplots.
+                                     (1.4 +0.4 + 0.9)) + # marge supplémentaire.
                               max(strDimRotation.f(as.graphicsAnnot(pretty(range(if(getOption("P.maxExclu")
                                                                                     && getOption("P.GraphPartMax") < 1)
                                                                              {
@@ -410,14 +459,20 @@ boxplotPAMPA.f <- function(exprBP, data, main=NULL, cex=getOption("P.cex"),...)
                              0.7 * unlist(par("pin"))[1],
                              tmp),
               ## Marge supérieure augmentée s'il y a un titre :
-              ifelse(isTRUE(getOption("P.graphPaper")) || (! isTRUE(getOption("P.title"))),
-                     2 * lineInchConvert.f()$V,
-                     8 * lineInchConvert.f()$V),
+              ifelse(isSubplot(),
+                     2.5 * lineInchConvert.f()$V, # cas des subplots.
+                     ## ...sinon cas normal :
+                     ifelse(isTRUE(getOption("P.graphPaper")) || (! isTRUE(getOption("P.title"))),
+                            2 * lineInchConvert.f()$V,
+                            8 * lineInchConvert.f()$V)),
               ## Marge de droite :
-              lineInchConvert.f()$H * cex * unlist(par("lheight")) * 0.5) +
+              lineInchConvert.f()$H * cex * unlist(par("lheight")) *
+              ifelse(all.equal(getOption("P.pinSubplot"), par("fin")),
+                     1, 0.5)) +
                   lineInchConvert.f()$H * cex * unlist(par("lheight")) * 0.1,
               ## Distance du nom d'axe dépendante de la taille de marge gauche :
-              mgp=c(tmp2 / lineInchConvert.f()$H - 1.4, 0.9, 0))
+              mgp=c(tmp2 / lineInchConvert.f()$H -  ifelse(isSubplot(), 1.0, 1.4),
+                    0.9, 0))
 
           ## Valeur à minimiser :
           return(sum(abs(x - unlist(par("mai")))))

@@ -1,7 +1,8 @@
 #-*- coding: latin-1 -*-
+# Time-stamp: <2013-02-01 16:51:36 yves>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
-##   Copyright (C) 2008-2010 Ifremer - Tous droits réservés.
+##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
 ##
 ##   Ce programme est un logiciel libre ; vous pouvez le redistribuer ou le
 ##   modifier suivant les termes de la "GNU General Public License" telle que
@@ -18,7 +19,7 @@
 ##   <http://www.gnu.org/licenses/>.
 
 ### File: boxplots_ttesp_generic.R
-### Time-stamp: <2012-01-10 18:14:11 yreecht>
+### Created: <2012-01-10 18:14:11 yreecht>
 ###
 ### Author: Yves Reecht
 ###

@@ -228,23 +228,29 @@ barplotPAMPA.f <- function(metrique, listFact, Data, main=NULL, cex=getOption("P
               lineInchConvert.f()$V * cex * unlist(par("lheight")) * 4.5,
               ## Marge de gauche dynamique :
               tmp2 <- ifelse((tmp <- lineInchConvert.f()$H * cex * unlist(par("lheight")) *
-                                      (ifelse(isTRUE(getOption("P.graphPaper")), 1.4, 2.4)
+                                      (ifelse(isTRUE(getOption("P.graphPaper")),
+                                              ifelse(isSubplot(), 1.0, 1.4),
+                                              ifelse(isSubplot(), 2.0, 2.4))
                                        + 0.4 + 0.9) + # marge# supplémentaire.
-                          max(strDimRotation.f(as.graphicsAnnot(pretty(range(heights, na.rm=TRUE))),
-                                               srt=0,
-                                               unit="inches",
-                                               cex=cex)$width, na.rm=TRUE)) > 0.7 * unlist(par("pin"))[1],
+                              max(strDimRotation.f(as.graphicsAnnot(pretty(range(heights, na.rm=TRUE))),
+                                                   srt=0,
+                                                   unit="inches",
+                                                   cex=cex)$width, na.rm=TRUE)) > 0.7 * unlist(par("pin"))[1],
                              0.7 * unlist(par("pin"))[1],
                              tmp),
               ## Marge supérieure augmentée s'il y a un titre :
-              ifelse(isTRUE(getOption("P.graphPaper")) || (! isTRUE(getOption("P.title"))),
-                     3 * lineInchConvert.f()$V,
-                     8 * lineInchConvert.f()$V),
+              ifelse(isSubplot(),
+                     2.5 * lineInchConvert.f()$V, # cas des subplots.
+                     ## ...sinon cas normal :
+                     ifelse(isTRUE(getOption("P.graphPaper")) || (! isTRUE(getOption("P.title"))),
+                            3 * lineInchConvert.f()$V,
+                            8 * lineInchConvert.f()$V)),
               ## Marge de droite :
               lineInchConvert.f()$H * cex * unlist(par("lheight")) * 7) +
               lineInchConvert.f()$H * cex * unlist(par("lheight")) * 0.1,
               ## Distance du nom d'axe dépendante de la taille de marge gauche :
-              mgp=c(tmp2 / lineInchConvert.f()$H - 1.4, 0.9, 0))
+              mgp=c(tmp2 / lineInchConvert.f()$H - ifelse(isSubplot(), 1.0, 1.4),
+                    0.9, 0))
 
           ## Valeur à minimiser :
           return(sum(abs(x - unlist(par("mai")))))

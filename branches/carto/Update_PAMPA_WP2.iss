@@ -31,8 +31,8 @@ LicenseFile=.\Scripts_Biodiv\LICENCE-GPL-3.0.fr.txt
 ; SetupIconFile=Y:\tmp\1284538187_bluefish-icon.ico
 Compression=lzma
 SolidCompression=yes
-WizardImageFile=.\Img\pampa2L.bmp
-WizardSmallImageFile=.\Img\pampa2.bmp
+WizardImageFile=..\..\Img\pampa2L.bmp
+WizardSmallImageFile=..\..\Img\pampa2.bmp
 
 [Languages]
 Name: "french"; MessagesFile: "compiler:Languages\French.isl"

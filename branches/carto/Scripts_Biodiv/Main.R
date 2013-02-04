@@ -105,8 +105,10 @@ source("./Scripts_Biodiv/Selection_variables_interface.R", encoding="latin1")   
 source("./Scripts_Biodiv/Fonctions_graphiques.R", encoding="latin1")                   # OK
 source("./Scripts_Biodiv/Boxplots_esp_generiques.R", encoding="latin1")                # OK
 source("./Scripts_Biodiv/Boxplots_unitobs_generiques.R", encoding="latin1")            # OK
-## ...dont démonstartions sur des cartes :
+## ...dont démonstrations sur des cartes :
 source("./Scripts_Biodiv/Demo_cartes.R", encoding="latin1")                            # OK
+source("./Scripts_Biodiv/Graphiques_carto.R", encoding="latin1")                            #
+source("./Scripts_Biodiv/Variables_carto.R", encoding="latin1")                            #
 
 ## ...les analyses statistiques :
 source("./Scripts_Biodiv/Modeles_lineaires_interface.R", encoding="latin1")            # OK

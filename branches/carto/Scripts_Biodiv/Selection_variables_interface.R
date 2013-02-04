@@ -161,6 +161,7 @@ selectModWindow.f <- function(champ, data, selectmode="multiple", sort=TRUE, pre
 ########################################################################################################################
 selectModalites.f <- function(factor, tableMetrique, env, nextStep, dataEnv, level=0)
 {
+
     ## Purpose: Sélection et stockage des modalités d'un facteur
     ## ----------------------------------------------------------------------
     ## Arguments: factor : le nom du facteur sélectionné.
@@ -639,7 +640,7 @@ nouvChoixFact.f <- function(level, env)
 
     fact <- get("listFacteurs", envir=env) # Récupération de la liste des facteurs sélectionnés.
 
-    if (length(fact) <= level & tclvalue(fact[[level]]) != "") # Si un nouveau facteur a été ajouté :
+    if (length(fact) <= level && tclvalue(fact[[level]]) != "") # Si un nouveau facteur a été ajouté :
     {
         ## ########## Expressions ##########
         ## Ajout d'une entrée à la liste des facteurs :
@@ -665,8 +666,10 @@ nouvChoixFact.f <- function(level, env)
 
         ## Affichage de la combobox et du bouton :
         exprGrid <- paste("tkgrid(tklabel(FrameFact, text='Facteur ",
-                          level + 1, " '), CB.fact", level + 1, ", B.factSel", level + 1,
-                          ", sticky='')", sep="")
+                          level + 1, " '",
+                          ifelse(exists(".BGcolor", envir=env), ", background=.BGcolor", ""),
+                          "), CB.fact", level + 1, ", B.factSel", level + 1,
+                          ", sticky='', pady=1)", sep="")
 
         ## Ajout d'un évènement à la combobox :
         exprBind <- paste("tkbind(CB.fact", level + 1,
@@ -702,86 +705,125 @@ titreSelVar.f <- function(type, nextStep)
     ## Author: Yves Reecht, Date: 24 août 2010, 11:28
 
     texts <- list(
-                  ## Titre de fenêtre :
-                  winTitle=c(boxplot.esp="boxplots (métrique/espèce/unité d'observation)",
-                             modele_lineaire="modèles linéaires (métrique/espèce/unité d'observation)",
-                             freq_occurrence="fréquences d'occurrences",
-                             freq_occurrence.unitobs="fréquences d'occurrences",
-                             boxplot.unitobs="boxplots (métrique agrégée/unité d'observation)",
-                             modele_lineaire.unitobs="modèles linéaires (métrique/unité d'observation)",
-                             MRT.unitobs="Arbres de régression (métrique/unité d'observation)",
-                             MRT.esp="Arbres de régression (métrique/espèce/unité d'observation)",
-                             barplot.unitobs="barplots (métrique agrégée/unité d'observation)",
-                             barplot.esp="barplots (métrique/espèce/unité d'observation)"),
-                  ## Texte pour le choix métrique :
-                  metrique=c(boxplot.esp="Métrique à représenter : ",
-                             modele_lineaire="Métrique expliquée : ",
-                             freq_occurrence="Métrique calculée : \"fréquence d'occurrence\" (/espèce ; sur unités d'observations)",
-                             freq_occurrence.unitobs="Métrique calculée : \"fréquence d'occurrence\" (/groupe d'espèce ; sur unités d'observations)",
-                             boxplot.unitobs="Métrique à représenter",
-                             modele_lineaire.unitobs="Métrique expliquée : ",
-                             MRT.unitobs="Métrique expliquée :",
-                             MRT.esp="Métrique expliquée : ",
-                             barplot.unitobs="Métrique à représenter",
-                             barplot.esp="Métrique à représenter : "),
-                  ## Texte pour le choix d'un facteur de séparation :
-                  factSep=c(boxplot.esp="Créer un graphique par facteur...  (optionnel, 'code_espece' conseillé)",
-                            modele_lineaire="Séparer les analyses par facteur...  (optionnel)",
-                            freq_occurrence="Séparer les graphiques par facteur...  (optionnel, 'code_espece' conseillé)",
-                            freq_occurrence.unitobs="Sélection d'espèce(s) selon un critère...  (optionnel)",
-                            boxplot.unitobs="Sélection d'espèce(s) selon un critère...  (optionnel)",
-                            modele_lineaire.unitobs="Sélection d'espèce(s) selon un critère...  (optionnel)",
-                            MRT.unitobs="Sélection d'espèce(s) selon un critère...  (optionnel)",
-                            MRT.esp="Séparer les graphiques/analyses par facteur...  (optionnel, 'code_espece' conseillé)",
-                            barplot.unitobs="Sélection d'espèce(s) selon un critère...  (optionnel)",
-                            barplot.esp="Créer un graphique par facteur...  (optionnel, 'code_espece' conseillé)"),
-                  ## Texte pour le choix du(des) facteur(s) explicatif(s) :
-                  facteurs=c(boxplot.esp="Choix du (des) facteur(s) de regroupement (sur un même graphique)",
-                             modele_lineaire="Choix du(des) facteur(s) explicatif(s)",
-                             freq_occurrence="Choix du(des) facteur(s) explicatif(s)/de regroupement",
-                             freq_occurrence.unitobs="Choix du(des) facteur(s) explicatif(s)/de regroupement",
-                             boxplot.unitobs="Choix du (des) facteur(s) de regroupement (sur un même graphique)",
-                             modele_lineaire.unitobs="Choix du(des) facteur(s) explicatif(s)",
-                             MRT.unitobs="Choix du(des) facteur(s) explicatif(s) (l'ordre n'a pas d'influence)",
-                             MRT.esp="Choix du(des) facteur(s) explicatif(s) (l'ordre n'a pas d'influence)",
-                             barplot.unitobs="Choix du (des) facteur(s) de regroupement (sur un même graphique)",
-                             barplot.esp="Choix du (des) facteur(s) de regroupement (sur un même graphique)"),
-                  ## Niveau d'agrégation pour table / espèce :
-                  tabListesp=c(boxplot.esp=".../ unité d'observation / espèce",
-                               modele_lineaire=".../ unité d'observation / espèce",
-                               freq_occurrence=".../ unité d'observation / espèce",
-                               freq_occurrence.unitobs=".../ unité d'observation",
-                               boxplot.unitobs=".../ unité d'observation",
-                               modele_lineaire.unitobs=".../ unité d'observation",
-                               MRT.unitobs=".../ unité d'observation",
-                               MRT.esp=".../ unité d'observation / espèce",
-                               barplot.unitobs=".../ unité d'observation",
-                               barplot.esp=".../ unité d'observation / espèce"),
-                  ## Niveau d'agrégation pour table / classe de taille :
-                  tabListespCT=c(boxplot.esp=".../ unité d'observation / espèce / classes de taille",
-                                 modele_lineaire=".../ unité d'observation / espèce / classes de taille",
-                                 freq_occurrence=".../ unité d'observation / espèce / classes de taille",
-                                 freq_occurrence.unitobs=".../ unité d'observation / classes de taille",
-                                 boxplot.unitobs=".../ unité d'observation / classes de taille",
-                                 modele_lineaire.unitobs=".../ unité d'observation / classes de taille",
-                                 MRT.unitobs=".../ unité d'observation / classes de taille",
-                                 MRT.esp=".../ unité d'observation / espèce / classes de taille",
-                                 barplot.unitobs=".../ unité d'observation / classes de taille",
-                                 barplot.esp=".../ unité d'observation / espèce / classes de taille")
-                  ## =c(boxplot= , modele_lineaire=),
-                  )
+        ## Titre de fenêtre :
+        winTitle=c(boxplot.esp="boxplots (métrique/espèce/unité d'observation)",
+                   modele_lineaire="modèles linéaires (métrique/espèce/unité d'observation)",
+                   freq_occurrence="fréquences d'occurrences",
+                   freq_occurrence.unitobs="fréquences d'occurrences",
+                   boxplot.unitobs="boxplots (métrique agrégée/unité d'observation)",
+                   modele_lineaire.unitobs="modèles linéaires (métrique/unité d'observation)",
+                   MRT.unitobs="Arbres de régression (métrique/unité d'observation)",
+                   MRT.esp="Arbres de régression (métrique/espèce/unité d'observation)",
+                   barplot.unitobs="barplots (métrique agrégée/unité d'observation)",
+                   barplot.esp="barplots (métrique/espèce/unité d'observation)",
+                   spBarBoxplot.unitobs="barplots/boxplots (métrique agrégée/unité d'observation)",
+                   spBarBoxplot.esp="barplots/boxplots (métrique/espèce/unité d'observation)",
+                   spSymbols.unitobs="symboles/couleurs (métrique agrégée/unité d'observation)",
+                   spSymbols.esp="symboles/couleurs (métrique/espèce/unité d'observation)"),
+        ## Texte pour le choix métrique :
+        metrique=c(boxplot.esp="Métrique à représenter : ",
+                   modele_lineaire="Métrique expliquée : ",
+                   freq_occurrence="Métrique calculée : \"fréquence d'occurrence\" (/espèce ; sur unités d'observations)",
+                   freq_occurrence.unitobs="Métrique calculée : \"fréquence d'occurrence\" (/groupe d'espèce ; sur unités d'observations)",
+                   boxplot.unitobs="Métrique à représenter",
+                   modele_lineaire.unitobs="Métrique expliquée : ",
+                   MRT.unitobs="Métrique expliquée :",
+                   MRT.esp="Métrique expliquée : ",
+                   barplot.unitobs="Métrique à représenter",
+                   barplot.esp="Métrique à représenter : ",
+                   spBarBoxplot.unitobs="Métrique à représenter",
+                   spBarBoxplot.esp="Métrique à représenter : ",
+                   spSymbols.unitobs="Métrique à représenter",
+                   spSymbols.esp="Métrique à représenter : "),
+        ## Texte pour le choix d'un facteur de séparation :
+        factSep=c(boxplot.esp="Créer un graphique par facteur...  (optionnel, 'code_espece' conseillé)",
+                  modele_lineaire="Séparer les analyses par facteur...  (optionnel)",
+                  freq_occurrence="Séparer les graphiques par facteur...  (optionnel, 'code_espece' conseillé)",
+                  freq_occurrence.unitobs="Sélection d'espèce(s) selon un critère...  (optionnel, toutes par défaut)",
+                  boxplot.unitobs="Sélection d'espèce(s) selon un critère...  (optionnel, toutes par défaut)",
+                  modele_lineaire.unitobs="Sélection d'espèce(s) selon un critère...  (optionnel, toutes par défaut)",
+                  MRT.unitobs="Sélection d'espèce(s) selon un critère...  (optionnel, toutes par défaut)",
+                  MRT.esp="Séparer les graphiques/analyses par facteur...  (optionnel, 'code_espece' conseillé)",
+                  barplot.unitobs="Sélection d'espèce(s) selon un critère...  (optionnel, toutes par défaut)",
+                  barplot.esp="Créer un graphique par facteur...  (optionnel, 'code_espece' conseillé)",
+                  spBarBoxplot.unitobs="Sélection d'espèce(s) selon un critère...  (optionnel, toutes par défaut)",
+                  spBarBoxplot.esp="Créer un graphique par facteur...  (optionnel, 'code_espece' conseillé)",
+                  spSymbols.unitobs="Sélection d'espèce(s) selon un critère...  (optionnel, toutes par défaut)",
+                  spSymbols.esp="Créer un graphique par facteur...  (optionnel, 'code_espece' conseillé)"),
+        ## Texte pour le choix du(des) facteur(s) explicatif(s) :
+        facteurs=c(boxplot.esp="Choix du (des) facteur(s) de regroupement (sur un même graphique)",
+                   modele_lineaire="Choix du(des) facteur(s) explicatif(s)",
+                   freq_occurrence="Choix du(des) facteur(s) explicatif(s)/de regroupement",
+                   freq_occurrence.unitobs="Choix du(des) facteur(s) explicatif(s)/de regroupement",
+                   boxplot.unitobs="Choix du (des) facteur(s) de regroupement (sur un même graphique)",
+                   modele_lineaire.unitobs="Choix du(des) facteur(s) explicatif(s)",
+                   MRT.unitobs="Choix du(des) facteur(s) explicatif(s) (l'ordre n'a pas d'influence)",
+                   MRT.esp="Choix du(des) facteur(s) explicatif(s) (l'ordre n'a pas d'influence)",
+                   barplot.unitobs="Choix du (des) facteur(s) de regroupement (sur un même graphique)",
+                   barplot.esp="Choix du (des) facteur(s) de regroupement (sur un même graphique)",
+                   spBarBoxplot.unitobs="Choix du (des) facteur(s) de regroupement (sur un même graphique)",
+                   spBarBoxplot.esp="Choix du (des) facteur(s) de regroupement (sur un même graphique)",
+                   spSymbols.unitobs="Choix du (des) facteur(s) de regroupement (sur un même graphique)",
+                   spSymbols.esp="Choix du (des) facteur(s) de regroupement (sur un même graphique)"),
+        ## Niveau d'agrégation pour table / espèce :
+        tabListesp=c(boxplot.esp=".../ unité d'observation / espèce",
+                     modele_lineaire=".../ unité d'observation / espèce",
+                     freq_occurrence=".../ unité d'observation / espèce",
+                     freq_occurrence.unitobs=".../ unité d'observation",
+                     boxplot.unitobs=".../ unité d'observation",
+                     modele_lineaire.unitobs=".../ unité d'observation",
+                     MRT.unitobs=".../ unité d'observation",
+                     MRT.esp=".../ unité d'observation / espèce",
+                     barplot.unitobs=".../ unité d'observation",
+                     barplot.esp=".../ unité d'observation / espèce",
+                     spBarBoxplot.unitobs=".../ unité d'observation",
+                     spBarBoxplot.esp=".../ unité d'observation / espèce",
+                     spSymbols.unitobs=".../ unité d'observation",
+                     spSymbols.esp=".../ unité d'observation / espèce"),
+        ## Niveau d'agrégation pour table / classe de taille :
+        tabListespCT=c(boxplot.esp=".../ unité d'observation / espèce / classes de taille",
+                       modele_lineaire=".../ unité d'observation / espèce / classes de taille",
+                       freq_occurrence=".../ unité d'observation / espèce / classes de taille",
+                       freq_occurrence.unitobs=".../ unité d'observation / classes de taille",
+                       boxplot.unitobs=".../ unité d'observation / classes de taille",
+                       modele_lineaire.unitobs=".../ unité d'observation / classes de taille",
+                       MRT.unitobs=".../ unité d'observation / classes de taille",
+                       MRT.esp=".../ unité d'observation / espèce / classes de taille",
+                       barplot.unitobs=".../ unité d'observation / classes de taille",
+                       barplot.esp=".../ unité d'observation / espèce / classes de taille",
+                       spBarBoxplot.unitobs=".../ unité d'observation / classes de taille",
+                       spBarBoxplot.esp=".../ unité d'observation / espèce / classes de taille",
+                       spSymbols.unitobs=".../ unité d'observation / classes de taille",
+                       spSymbols.esp=".../ unité d'observation / espèce / classes de taille"),
+        factSpatial=c(boxplot.esp="Facteur de regroupement spatial",
+                      modele_lineaire="",
+                      freq_occurrence="",
+                      freq_occurrence.unitobs="",
+                      boxplot.unitobs="",
+                      modele_lineaire.unitobs="",
+                      MRT.unitobs="",
+                      MRT.esp="",
+                      barplot.unitobs="",
+                      barplot.esp="",
+                      spBarBoxplot.unitobs="Facteur de regroupement spatial",
+                      spBarBoxplot.esp="Facteur de regroupement spatial",
+                      spSymbols.unitobs="Facteur de regroupement spatial",
+                      spSymbols.esp="Facteur de regroupement spatial")
+        ## =c(boxplot= , modele_lineaire=),
+        )
 
     return(texts[[type]][nextStep])
 }
 
 
 ########################################################################################################################
+
 selectionVariables.f <- function(nextStep, dataEnv, baseEnv)
 {
     ## Purpose: * Sélection des métrique et facteur(s) ainsi que leur(s)
     ##            modalité(s).
     ##          * Lancement de l'étape suivante (graphique, analyse
-    ##            statistique,...)
+    ##            statistique,...).
     ## ----------------------------------------------------------------------
     ## Arguments: nextStep : étape suivante (chaîne de caractères parmi
     ##                       "boxplot.esp", "modele_lineaire",

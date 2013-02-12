@@ -1,7 +1,8 @@
 #-*- coding: latin-1 -*-
+# Time-stamp: <2013-02-12 11:25:34 Yves>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
-##   Copyright (C) 2008-2010 Ifremer - Tous droits réservés.
+##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
 ##
 ##   Ce programme est un logiciel libre ; vous pouvez le redistribuer ou le
 ##   modifier suivant les termes de la "GNU General Public License" telle que
@@ -18,7 +19,7 @@
 ##   <http://www.gnu.org/licenses/>.
 
 ### File: test_load_packages.R
-### Time-stamp: <2012-01-15 14:50:18 yves>
+### Created: <2010-09-03 12:58:00 yves>
 ###
 ### Author: Yves Reecht
 ###
@@ -88,7 +89,7 @@ loadPackages.f <- function()
     ## Packages nécessaires au bon fonctionnement de la plateforme PAMPA WP2 :
     requiredPack <- c("R.utils", "tcltk", "tkrplot", "vegan", "MASS",
                       "mvpart", "multcomp", "gamlss", "maps", "maptools", ## "Hmisc"
-                      "TeachingDemos", "sp", "rgdal", "geosphere")
+                      "TeachingDemos", "rgeos", "sp", "rgdal", "geosphere")
 
     ## Packages installés :
     installedPack <- installed.packages()[ , "Package"]

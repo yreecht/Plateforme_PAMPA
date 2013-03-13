@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2013-01-29 17:49:10 yves>
+# Time-stamp: <2013-03-13 11:31:18 yves>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
@@ -387,7 +387,7 @@ subsetToutesTables.f <- function(metrique, facteurs, selections,
     {
         metrique <- "tmp"
         dataMetrique$tmp <- 0
-        dataMetrique$tmp[dataMetrique[ , nbName] > 0] <- 1
+        dataMetrique$tmp[dataMetrique[ , getOption("P.nbName")] > 0] <- 1
     }else{}
 
     if (!is.null(add))

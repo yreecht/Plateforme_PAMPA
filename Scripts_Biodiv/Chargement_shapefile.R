@@ -1,8 +1,8 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2012-11-20 19:08:42 yves>
+# Time-stamp: <2013-02-15 17:10:30 yves>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
-##   Copyright (C) 2008-2012 Ifremer - Tous droits réservés.
+##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
 ##
 ##   Ce programme est un logiciel libre ; vous pouvez le redistribuer ou le
 ##   modifier suivant les termes de la "GNU General Public License" telle que
@@ -44,13 +44,14 @@ loadShapefile.f <- function(directory, layer)
                       input_field_name_encoding=getOption("P.shapefileEncoding"), verbose=FALSE)
 
     colnames(refspa@data) <- gsub("_", ".", colnames(refspa@data), fixed=TRUE)
+    colnames(refspa@data)[1] <- "OBJECTID"
 
     ## Définition du système de coordonnées (sans projection) pour les calculs de surface :
     crsArea <- CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")
 
     refspa <- spCbind(refspa,
                       data.frame("SITE.SURFACE"=areaPolygon(spTransform(x=refspa,
-                                                                   CRSobj=crsArea)) / (10^6), # en km² !
+                                                                        CRSobj=crsArea)) / (10^6), # en km² !
                                  row.names=row.names(refspa@data)))
 
     ## Ajout des centroïdes :

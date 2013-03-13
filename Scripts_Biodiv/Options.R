@@ -98,6 +98,7 @@ initialiseOptions.f <- function()
             P.pdfEmbedFonts = TRUE,             # Inclusion des polices dans les pdfs ?
             P.lang = "fr",                      # Langue des graphiques ("fr" ou "en")... n'affecte que les axes.
             P.barplotStat="moyenne",            # Statistique des barplots ("mean", "moyenne", "médiane" ou "median").
+            P.barplotErrorBar=TRUE,             # Doit-on afficher les barres d'erreur (sd/quantiles) sur les barplots ?
             P.saveData=TRUE,                    # Sauvegarde des données de graphiques et analyses ?
             P.saveStats=TRUE,                   # Sauvegarde des informations sur les données (stats incluses) ?
             P.axesLabels=TRUE,                  # Affichage des noms d'axes ?
@@ -118,7 +119,8 @@ initialiseOptions.f <- function()
                                P.graphPaper="logical", P.warnings="logical",
                                P.pointMoyenneCex="numeric", P.pointMoyennePch="integer", P.cex="numeric",
                                P.graphWMF="logical", P.pdfEmbedFonts="logical",
-                               P.lang="character", P.barplotStat="character", P.saveData="logical",
+                               P.lang="character", P.barplotStat="character",  P.barplotErrorBar="logical",
+                               P.saveData="logical",
                                P.saveStats="logical", P.axesLabels="logical", P.title="logical")
             )
 
@@ -291,6 +293,8 @@ addBarplotOptFrame.f <- function(env)
     CB.stat <- ttkcombobox(F.stat, value=c("moyenne", "médiane"),
                            textvariable=P.options[["P.barplotStat"]],
                            state="readonly", width=8, background=.BGcolor)
+    ##
+    B.errBar <-  tkcheckbutton(F.barplot1, variable=P.options[["P.barplotErrorBar"]])
 
     ## #### Placement des éléments sur la grille :
     tkgrid(B.NbObs,
@@ -315,6 +319,13 @@ addBarplotOptFrame.f <- function(env)
            CB.stat,
            sticky="w")
     tkgrid(F.stat, sticky="w", padx=4, pady=2, columnspan=2)
+
+    tkgrid(B.errBar,
+           tklabel(F.barplot1,
+                   text=paste(" Afficher les barres d'erreur ?\n",
+                              "    (écart type/écart inter-quartiles selon la statistique)", sep=""),
+                   bg=.BGcolor, justify="left"),
+           sticky="w", padx=4, pady=1)
 
     ## Éléments généraux :
 

@@ -173,20 +173,33 @@ barplotPAMPA.f <- function(metrique, listFact, Data, main=NULL, cex=getOption("P
     if (is.element(getOption("P.barplotStat"), c("mean", "moyenne")))
     {
         SD <- with(Data,
-                   tapply(eval(parse(text=metrique)), lapply(listFact, function(y)eval(parse(text=y))),
-                          sd, na.rm=TRUE))
+                       tapply(eval(parse(text=metrique)), lapply(listFact, function(y)eval(parse(text=y))),
+                              sd, na.rm=TRUE))
+
+        ## Fixé à 0 si les barres d'erreur ne doivent pas être affichées :
+        if ( ! getOption("P.barplotErrorBar"))
+        {
+            SD[1:length(SD)] <- 0
+        }else{}
     }else{}
     ## ... ou des quantiles :
     if (is.element(getOption("P.barplotStat"), c("median", "médiane")))
     {
         ## Lower:
         quantL <- with(Data,
-                         tapply(eval(parse(text=metrique)), lapply(listFact, function(y)eval(parse(text=y))),
-                                quantile, probs=c(0.25), na.rm=TRUE))
+                       tapply(eval(parse(text=metrique)), lapply(listFact, function(y)eval(parse(text=y))),
+                              quantile, probs=c(0.25), na.rm=TRUE))
         ## Higher:
         quantH <- with(Data,
-                         tapply(eval(parse(text=metrique)), lapply(listFact, function(y)eval(parse(text=y))),
-                                quantile, probs=c(0.75), na.rm=TRUE))
+                       tapply(eval(parse(text=metrique)), lapply(listFact, function(y)eval(parse(text=y))),
+                              quantile, probs=c(0.75), na.rm=TRUE))
+
+        ## Fixé à 0 si les barres d'erreur ne doivent pas être affichées :
+        if ( ! getOption("P.barplotErrorBar"))
+        {
+            quantL[1:length(quantL)] <- 0
+            quantH[1:length(quantH)] <- 0
+        }else{}
     }else{}
 
     ## Nombre d'observation par croisement de facteur :
@@ -252,7 +265,7 @@ barplotPAMPA.f <- function(metrique, listFact, Data, main=NULL, cex=getOption("P
           control=list(abstol=0.01))    # Tolérance.
 
 
-    ## Suppression des valeurs infinies (plante ylims les graphiques) :
+    ## Suppression des valeurs infinies (plante ylims pour les graphiques) :
     tmpHeights <- replace(heights, is.infinite(heights), NA)
     tmpCIplus <- replace(CIplus, is.infinite(CIplus), NA)
 
@@ -276,8 +289,12 @@ barplotPAMPA.f <- function(metrique, listFact, Data, main=NULL, cex=getOption("P
                                            "title"=Capitalize.f(varNames[listFact[1], "nom"])),
                           ...)
 
-    errbar(x=barPlotTmp, y=heights, yplus=heights + CIplus, yminus=heights - CIminus,
-           add=TRUE, pch=NA)
+    ## Barres d'erreur (si souhaitées) :
+    if (getOption("P.barplotErrorBar"))
+    {
+        errbar(x=barPlotTmp, y=heights, yplus=heights + CIplus, yminus=heights - CIminus,
+               add=TRUE, pch=NA)
+    }else{}
 
     if (getOption("P.axesLabels"))
     {
@@ -291,19 +308,27 @@ barplotPAMPA.f <- function(metrique, listFact, Data, main=NULL, cex=getOption("P
             mtext(switch(paste(getOption("P.lang"), getOption("P.barplotStat"), sep="-"),
                          "fr-moyenne"=,
                          "fr-mean"={
-                             expression((italic("moyenne")~+~italic("intervalle de confiance à 95%")))
+                             ifelse(getOption("P.barplotErrorBar"),
+                                    expression((italic("moyenne")~+~italic("intervalle de confiance à 95%"))),
+                                    expression((italic("moyenne"))))
                          },
                          "fr-médiane"=,
                          "fr-median"={
-                             expression((italic("médiane")~+~italic("écart interquartile")))
+                             ifelse(getOption("P.barplotErrorBar"),
+                                    expression((italic("médiane")~+~italic("écart interquartile"))),
+                                    expression((italic("médiane"))))
                          },
                          "en-moyenne"=,
                          "en-mean"={
-                             expression((italic("mean")~+~italic("95% confidence interval")))
+                             ifelse(getOption("P.barplotErrorBar"),
+                                    expression((italic("mean")~+~italic("95% confidence interval"))),
+                                    expression((italic("mean"))))
                          },
                          "en-médiane"=,
                          "en-median"={
-                             expression((italic("median")~+~italic("interquartile range")))
+                             ifelse(getOption("P.barplotErrorBar"),
+                                    expression((italic("median")~+~italic("interquartile range"))),
+                                    expression((italic("median"))))
                          }),
                   side=2, line=par("mgp")[1]-1.1, cex=0.9 * getOption("P.cex"), font=2)
         }else{}

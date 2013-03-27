@@ -1,7 +1,8 @@
 #-*- coding: latin-1 -*-
+# Time-stamp: <2013-03-26 19:27:24 yves>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
-##   Copyright (C) 2008-2010 Ifremer - Tous droits réservés.
+##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
 ##
 ##   Ce programme est un logiciel libre ; vous pouvez le redistribuer ou le
 ##   modifier suivant les termes de la "GNU General Public License" telle que
@@ -18,7 +19,7 @@
 ##   <http://www.gnu.org/licenses/>.
 
 ### File: selection_donnees.R
-### Time-stamp: <2012-01-17 15:27:21 yves>
+### Created: <2012-01-17 15:27:21 yves>
 ###
 ### Author: Yves Reecht
 ###
@@ -98,7 +99,8 @@ change.levelsOrder.f <- function(Data)
                          tkselection.clear(L.levels, i-1)
                          tkselection.set(L.levels, i-2)
 
-                         evalq(levels(Data[ , tclvalue(Factor)]) <- as.character(tclObj(Levels)),
+                         evalq(Data[ , tclvalue(Factor)] <- factor(Data[ , tclvalue(Factor)],
+                                                                   levels=as.character(tclObj(Levels))),
                                envir=env)
                      }else{}
 
@@ -121,7 +123,8 @@ change.levelsOrder.f <- function(Data)
                            tkselection.clear(L.levels, i-1)
                            tkselection.set(L.levels, i)
 
-                           evalq(levels(Data[ , tclvalue(Factor)]) <- as.character(tclObj(Levels)),
+                           evalq(Data[ , tclvalue(Factor)] <- factor(Data[ , tclvalue(Factor)],
+                                                                     levels=as.character(tclObj(Levels))),
                                  envir=env)
                        }else{}
 
@@ -136,7 +139,8 @@ change.levelsOrder.f <- function(Data)
 
                        tclObj(Levels) <- sort(levList)
 
-                       evalq(levels(Data[ , tclvalue(Factor)]) <- as.character(tclObj(Levels)),
+                       evalq(Data[ , tclvalue(Factor)] <- factor(Data[ , tclvalue(Factor)],
+                                                                 levels=as.character(tclObj(Levels))),
                              envir=env)
 
                        tcl("update")
@@ -157,7 +161,8 @@ change.levelsOrder.f <- function(Data)
                       {
                           tclObj(Levels) <- levList[levOrder]
 
-                          evalq(levels(Data[ , tclvalue(Factor)]) <- as.character(tclObj(Levels)),
+                          evalq(Data[ , tclvalue(Factor)] <- factor(Data[ , tclvalue(Factor)],
+                                                                    levels=as.character(tclObj(Levels))),
                                 envir=env)
                       }else{}
 
@@ -172,7 +177,8 @@ change.levelsOrder.f <- function(Data)
 
                           tclObj(Levels) <- rev(levList)
 
-                          evalq(levels(Data[ , tclvalue(Factor)]) <- as.character(tclObj(Levels)),
+                          evalq(Data[ , tclvalue(Factor)] <- factor(Data[ , tclvalue(Factor)],
+                                                                    levels=as.character(tclObj(Levels))),
                                 envir=env)
 
                           tcl("update")
@@ -185,7 +191,8 @@ change.levelsOrder.f <- function(Data)
                           tclObj(Levels) <- levels(.DataBackup[ , tclvalue(Factor)])
 
                           ## Réinitialisation des levels :
-                          evalq(levels(Data[ , tclvalue(Factor)]) <- levels(.DataBackup[ , tclvalue(Factor)]),
+                          evalq(Data[ , tclvalue(Factor)] <- factor(Data[ , tclvalue(Factor)],
+                                                                    levels=levels(.DataBackup[ , tclvalue(Factor)])),
                                 envir=env)
                       })
     tooltipWidget.f(text=paste("Réinitialise l'ordre des modalités, du facteur courant uniquement, ",

@@ -1,6 +1,8 @@
+#-*- coding: latin-1 -*-
+# Time-stamp: <2013-01-29 17:48:52 yves>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
-##   Copyright (C) 2008-2010 Ifremer - Tous droits réservés.
+##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
 ##
 ##   Ce programme est un logiciel libre ; vous pouvez le redistribuer ou le
 ##   modifier suivant les termes de la "GNU General Public License" telle que
@@ -170,7 +172,7 @@ VoirInformationsDonneesEspeces.f <- function(dataEnv, image)
     unitSp <- get("unitSp", envir=dataEnv)
     refesp <- get("refesp", envir=dataEnv)
     unitobs <- get("unitobs", envir=dataEnv)
-    nombres <- ifelse(is.benthos.f(), "colonie", "nombre")
+    nombres <- ifelse(is.benthos.f(), "colonie", getOption("P.nbName"))
 
     Nbesp <- length(unique(unitSp[ , "code_espece"]))
 
@@ -226,7 +228,7 @@ VoirInformationsDonneesUnitobs.f <- function(dataEnv, image)
     obs <- get("obs", envir=dataEnv)
     unitobs <- get("unitobs", envir=dataEnv)
     unitSp <- get("unitSp", envir=dataEnv)
-    nombres <- ifelse(is.benthos.f(), "colonie", "nombre")
+    nombres <- ifelse(is.benthos.f(), "colonie", getOption("P.nbName"))
 
     Nbunitobs <- nlevels(obs[ , "unite_observation"]) ## length(unique(unitobs[ , "unite_observation"]))
 

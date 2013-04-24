@@ -1,7 +1,8 @@
 #-*- coding: latin-1 -*-
+# Time-stamp: <2013-02-27 16:55:01 yves>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
-##   Copyright (C) 2008-2012 Ifremer - Tous droits réservés.
+##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
 ##
 ##   Ce programme est un logiciel libre ; vous pouvez le redistribuer ou le
 ##   modifier suivant les termes de la "GNU General Public License" telle que
@@ -18,7 +19,7 @@
 ##   <http://www.gnu.org/licenses/>.
 
 ### File: Selection_variables_interface.R
-### Time-stamp: <2012-01-18 15:55:46 yreecht>
+### Created: <2012-01-18 15:55:46 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -194,7 +195,7 @@ selectModalites.f <- function(factor, tableMetrique, env, nextStep, dataEnv, lev
         tableMetrique == "unit")
     {
         tableMetrique <- "unitSp"
-        metrique <- "nombre"
+        metrique <- getOption("P.nbName")
     }else{}
 
     tmp <- subsetToutesTables.f(metrique=metrique, facteurs=facts, selections=selections,
@@ -222,7 +223,7 @@ selectModalites.f <- function(factor, tableMetrique, env, nextStep, dataEnv, lev
 
 ########################################################################################################################
 verifVariables.f <- function(metrique, factGraph, factGraphSel, listFact, listFactSel, tableMetrique, nextStep, dataEnv,
-                             ParentWin=NULL)
+                             factSpatial=NULL, factSpatialSel=NULL, ParentWin=NULL)
 {
     ## Purpose: Vérification du choix des métrique et facteur(s) et retourne
     ##          un statut (éventuellement accompagné d'un avertissement)
@@ -236,19 +237,41 @@ verifVariables.f <- function(metrique, factGraph, factGraphSel, listFact, listFa
     ##            tableMetrique : nom de la table des métriques.
     ##            nextStep : nom de l'étape suivante.
     ##            dataEnv : l'environnement des données.
+    ##            factSpatial : facteur de zone (carto uniquement).
+    ##            factSpatialSel : sélection sur facteur de zone
+    ##                             (carto uniquement).
     ##            ParentWin : Fenêtre parente.
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date:  6 août 2010, 15:07
 
-    facts <- c(factGraph, unlist(listFact)) #
-    idxFacts <- facts != ""                 # liste des facteurs renseignées.
-    facts <- facts[idxFacts]                #
+    if (is.null(factSpatial))
+    {
+        facts <- c(factGraph, unlist(listFact)) # liste des facteurs renseignées.
+        selections <- c(list(factGraphSel), listFactSel) # listes des leurs modalités sélectionnées.
+    }else{
+        facts <- c(factSpatial, factGraph, unlist(listFact)) # liste des facteurs renseignées.
+        selections <- c(factSpatialSel, list(factGraphSel), listFactSel) # listes des leurs modalités sélectionnées.
+    }
 
-    selections <- c(list(factGraphSel), listFactSel) # listes des leurs modalités sélectionnées.
-    selections <- selections[idxFacts]               #
+    idxFacts <- facts != ""                 #
+    facts <- facts[idxFacts]                #
+    selections <- selections[idxFacts]      #
 
     ## Définir [!!!]
     return.val <- 2
+
+    ## Carto sans facteur de zone sélectionné :
+    if (is.element(nextStep,
+                   c("spBarBoxplot.unitobs",
+                     "spBarBoxplot.esp",
+                     "spSymbols.unitobs",
+                     "spSymbols.esp")) &&
+        is.null(factSpatial))
+    {
+        infoLoading.f(msg="Vous devez sélectionner un facteur de zone", icon="error", titleType="check")
+
+        return.val <- 0
+    }else{}
 
     ## Métrique pas sélectionnée :
     if (metrique == "")
@@ -261,11 +284,12 @@ verifVariables.f <- function(metrique, factGraph, factGraphSel, listFact, listFa
     ## Pour les indices de biodiversité recalculés, il faut utiliser "unitSp" et une métrique adaptée.
     if (is.element(nextStep,
                    c("boxplot.unitobs", "modele_lineaire.unitobs",
-                     "MRT.unitobs", "barplot.unitobs")) &&
+                     "MRT.unitobs", "barplot.unitobs",
+                     "spBarBoxplot.unitobs", "spSymbols.unitobs")) &&
         tableMetrique == "unit")
     {
         tableMetrique <- "unitSp"
-        metrique <- "nombre"
+        metrique <- getOption("P.nbName")
     }else{}
 
 
@@ -285,7 +309,8 @@ verifVariables.f <- function(metrique, factGraph, factGraphSel, listFact, listFa
     }else{}
 
     ## Pas de facteur de regroupement sélectionné :
-    if (length(listFact[unlist(listFact) != ""]) == 0)
+    if (length(listFact[unlist(listFact) != ""]) == 0 &&
+        ! is.element(nextStep, c("spSymbols.unitobs", "spSymbols.esp")))
     {
         infoLoading.f(msg="pas de facteur de regroupement sélectionné !", icon="error", titleType="check")
         return.val <- 0
@@ -317,9 +342,10 @@ verifVariables.f <- function(metrique, factGraph, factGraphSel, listFact, listFa
     }else{}
 
     ## Métrique par espèce mais facteur 'espece', 'Identifiant' ou 'code_espece' non retenu :
-    if (is.element(nextStep, c("boxplot.esp", "modele_lineaire",
-                               "freq_occurrence", "MRT.esp",
-                               "barplot.esp")) &
+    if (is.element(nextStep,
+                   c("boxplot.esp", "modele_lineaire",
+                     "freq_occurrence", "MRT.esp",
+                     "barplot.esp", "spSymbols.esp", "spBarBoxplot.esp")) &
         !any(is.element(c("espece", "code_espece", "Identifiant"), facts)))
     {
         infoLoading.f(msg=paste("Attention : représentation d'une métrique par espèce\n",
@@ -333,7 +359,8 @@ verifVariables.f <- function(metrique, factGraph, factGraphSel, listFact, listFa
     ## Fréquences d'occurrence... pas plus de deux facteurs de regroupement :
     if (is.element(nextStep,
                    c("freq_occurrence", "freq_occurrence.unitobs",
-                     "barplot.esp", "barplot.unitobs")) &&
+                     "barplot.esp", "barplot.unitobs",
+                     "spBarBoxplot.esp", "spBarBoxplot.unitobs")) &&
         length(listFact[unlist(listFact) != ""]) > 2)
     {
         infoLoading.f(msg="Utilisez 2 facteurs de regroupement au plus", icon="error", titleType="check")
@@ -342,7 +369,8 @@ verifVariables.f <- function(metrique, factGraph, factGraphSel, listFact, listFa
 
     ## Agrégé toutes espèces... vérification de la pertinence des facteurs :
     if (is.element(nextStep, c("boxplot.unitobs", "modele_lineaire.unitobs",
-                               "MRT.unitobs", "barplot.unitobs")) &&
+                               "MRT.unitobs", "barplot.unitobs",
+                               "spBarBoxplot.unitobs", "spSymbols.unitobs")) &&
         return.val)                     # Inutile si déjà des erreurs (risque de plantage).
     {
         if (is.null(agregations.generic.f(Data=subsetToutesTables.f(metrique=metrique,

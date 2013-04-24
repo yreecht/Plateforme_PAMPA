@@ -229,14 +229,15 @@ barplotPAMPA.f <- function(metrique, listFact, Data, main=NULL, cex=getOption("P
               ## Marge de gauche dynamique :
               tmp2 <- ifelse((tmp <- lineInchConvert.f()$H * cex * unlist(par("lheight")) *
                                       (ifelse(isTRUE(getOption("P.graphPaper")),
-                                              ifelse(isSubplot(), 1.0, 1.4),
-                                              ifelse(isSubplot(), 2.0, 2.4))
-                                       + 0.4 + 0.9) + # marge# supplémentaire.
-                              max(strDimRotation.f(as.graphicsAnnot(pretty(range(heights, na.rm=TRUE))),
+                                              ifelse(isSubplot(), 0.8, 1.4),
+                                              ifelse(isSubplot(), 0.8, 2.4))
+                                       + 0.4 + ifelse(isSubplot(), 0.5, 0.9)) + # marge supplémentaire.
+                              max(strDimRotation.f(as.graphicsAnnot(pretty(range(c(heights,
+                                                                                   heights + CIplus), na.rm=TRUE))),
                                                    srt=0,
                                                    unit="inches",
                                                    cex=cex)$width, na.rm=TRUE)) > 0.7 * unlist(par("pin"))[1],
-                             0.7 * unlist(par("pin"))[1],
+                             0.7 * unlist(par("pin"))[1], # marge maximale.
                              tmp),
               ## Marge supérieure augmentée s'il y a un titre :
               ifelse(isSubplot(),
@@ -246,17 +247,30 @@ barplotPAMPA.f <- function(metrique, listFact, Data, main=NULL, cex=getOption("P
                             3 * lineInchConvert.f()$V,
                             8 * lineInchConvert.f()$V)),
               ## Marge de droite :
-              lineInchConvert.f()$H * cex * unlist(par("lheight")) * 7) +
+              lineInchConvert.f()$H * cex * unlist(par("lheight")) *  ifelse(isSubplot(), 1.0, 7.0)) +
               lineInchConvert.f()$H * cex * unlist(par("lheight")) * 0.1,
               ## Distance du nom d'axe dépendante de la taille de marge gauche :
-              mgp=c(tmp2 / lineInchConvert.f()$H - ifelse(isSubplot(), 1.0, 1.4),
-                    0.9, 0))
+              mgp=c(tmp2 / lineInchConvert.f()$H - ifelse(isSubplot(), 1.4, 1.4),
+                    ifelse(isSubplot(), 0.4, 0.9), 0))
 
           ## Valeur à minimiser :
           return(sum(abs(x - unlist(par("mai")))))
       },
           control=list(abstol=0.01))    # Tolérance.
 
+    ##browser()
+
+    ## On retir les noms de colonnes de "heights" pour les rajouter manuellement ensuite sur le graphique (meilleurs
+    ## contrôle) ; uniquement si deux dimensions :
+
+    if (length(dim(heights)) > 1)
+    {
+        xnames <- colnames(heights)
+        colnames(heights) <- NULL
+    }else{
+        xnames <- row.names(heights)
+        row.names(heights) <- NULL
+    }
 
     ## Suppression des valeurs infinies (plante ylims les graphiques) :
     tmpHeights <- replace(heights, is.infinite(heights), NA)
@@ -277,22 +291,29 @@ barplotPAMPA.f <- function(metrique, listFact, Data, main=NULL, cex=getOption("P
                           col=PAMPAcolors.f(n=nrow(heights)),
                           cex.lab=cex,
                           cex.axis=cex,
-                          legend.text=ifelse(length(listFact) > 1, TRUE, FALSE),
+                          legend.text=ifelse(length(listFact) > 1 && ! isSubplot(), TRUE, FALSE),
                           args.legend=list("x"="topright", "inset"=-0.08, "xpd"=NA,
                                            "title"=Capitalize.f(varNames[listFact[1], "nom"])),
                           ...)
 
+    ## Axe des abs. (facteurs) :
+    mtext(text=xnames, side=1, line=ifelse(isSubplot(), 0.5, 0.9),
+          at=if (length(dim(heights)) > 1) {apply(barPlotTmp, 2, mean)}else{barPlotTmp},
+          cex=cex * par("cex"))
+
+    ## Barres d'erreur :
     errbar(x=barPlotTmp, y=heights, yplus=heights + CIplus, yminus=heights - CIminus,
            add=TRUE, pch=NA)
 
+    ## Labels des axes :
     if (getOption("P.axesLabels"))
     {
         mtext(Capitalize.f(varNames[tail(listFact, 1), "nom"]),
-              side=1, line=2.3, cex=cex)
+              side=1, line=ifelse(isSubplot(), 1.6, 2.3), cex=cex)
 
 
         ## Précision du type de statistique :
-        if ( ! isTRUE(getOption("P.graphPaper")))
+        if ( ! isTRUE(getOption("P.graphPaper")) && ! isSubplot())
         {
             mtext(switch(paste(getOption("P.lang"), getOption("P.barplotStat"), sep="-"),
                          "fr-moyenne"=,
@@ -578,7 +599,9 @@ WP2barplot.esp.f <- function(metrique,
 
             ## On parcours tous les fichiers qui correspondent au motif :
             while (is.element(basename(tmpFile <- sub("\\%03d", formatC(i, width=3, flag="0"), graphFile)),
-                              dir(dirname(graphFile))))
+                              dir(dirname(graphFile))) &&
+                   ## Si pas de remplacement effectif, application pour i==1 uniquement :
+                   (i == 1 || grepl(pattern="\\%03d", graphFile)))
             {
                 tryCatch(embedFonts(file=tmpFile),
                          error=function(e)

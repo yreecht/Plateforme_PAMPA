@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2013-02-01 16:50:54 yves>
+# Time-stamp: <2013-02-21 17:13:24 yves>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
@@ -628,7 +628,9 @@ WP2boxplot.f <- function(metrique, factGraph, factGraphSel, listFact, listFactSe
 
             ## On parcours tous les fichiers qui correspondent au motif :
             while (is.element(basename(tmpFile <- sub("\\%03d", formatC(i, width=3, flag="0"), graphFile)),
-                              dir(dirname(graphFile))))
+                              dir(dirname(graphFile))) &&
+                   ## Si pas de remplacement effectif, application pour i==1 uniquement :
+                   (i == 1 || grepl(pattern="\\%03d", graphFile)))
             {
                 tryCatch(embedFonts(file=tmpFile),
                          error=function(e)

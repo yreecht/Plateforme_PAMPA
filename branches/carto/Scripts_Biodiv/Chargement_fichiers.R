@@ -1,8 +1,8 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2012-12-03 12:50:28 yves>
+# Time-stamp: <2013-01-23 10:41:49 yves>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
-##   Copyright (C) 2008-2012 Ifremer - Tous droits réservés.
+##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
 ##
 ##   Ce programme est un logiciel libre ; vous pouvez le redistribuer ou le
 ##   modifier suivant les termes de la "GNU General Public License" telle que
@@ -475,6 +475,18 @@ testFiles.f <- function(filePathes)
             }else{}
         }
 
+        ## Test d'existence du référentiel espèces local (sinon remplacé par NA) :
+        if (! is.null(filePathes["locrefesp"]) && ! is.na(filePathes["locrefesp"]))
+        {
+            ## Test de lecture du fichier s'il existe :
+            if (file.access(filePathes["locrefesp"], 2) == -1)
+            {
+                filePathes["locrefesp"] <- NA
+            }else{}
+        }else{
+            filePathes["locrefesp"] <- NA
+        }
+
         ## Test d'existence du référentiel spatial (sinon remplacé par NA) :
         if (! is.null(filePathes["refspa"]) && ! is.na(filePathes["refspa"]))
         {
@@ -583,49 +595,177 @@ testConfig.f <- function(requiredVar, fileNames=NULL, dataEnv=NULL)
 }
 
 ########################################################################################################################
-loadRefEspeces.f <- function (pathRefesp, baseEnv=.GlobalEnv)
+loadRefEspece.old.f <- function(refesp)
+{
+    ## Purpose: Traitements du référentiel espèces à l'ancien format.
+    ## ----------------------------------------------------------------------
+    ## Arguments: refesp : référentiel "brut".
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date: 15 janv. 2013, 10:39
+
+    ## Stockage du type de référentiel dans une option
+    options(P.refesp.Coefs="old")
+
+    ## Renommage des colonnes :
+    names(refesp) <- c("code_espece", "GrSIH", "CodeSIH", "IssCaap", "TaxoCode", "CodeFAO", "CodeFB", "Phylum",
+                       "Cat_benthique", "Classe", "Ordre", "Famille", "Genre", "espece", "Identifiant", "ObsNC",
+                       "ObsRUN", "ObsMAY", "ObsSTM", "ObsCB", "ObsBA", "ObsBO", "ObsCR", "taillemax", "L50",
+                       "cryptique", "mobilite", "territorial", "nocturne", "comportement.grp", "agreg.saison",
+                       "position.col.eau", "strategie.demo", "Type.ponte", "Habitat.Prefere", "Changement.sexe",
+                       "regim.alim", "interet.chasseNC", "interet.chasseRUN", "interet.chasseMAY", "interet.chasseSTM",
+                       "interet.chasseCB", "interet.chasseBA", "interet.chasseBO", "interet.chasseCR",
+                       "interet.ligneNC", "interet.ligneRUN", "interet.ligneMAY", "interet.ligneSTM",
+                       "interet.ligneCB", "interet.ligneBA", "interet.ligneBO", "interet.ligneCR", "interet.filetNC",
+                       "interet.filetRUN", "interet.filetMAY", "interet.filetSTM", "interet.filetCB",
+                       "interet.filetBA", "interet.filetBO", "interet.filetCR", "interet.casierNC",
+                       "interet.casierRUN", "interet.casierMAY", "interet.casierSTM", "interet.casierCB",
+                       "interet.casierBA", "interet.casierBO", "interet.casierCR", "interet.piedNC", "interet.piedRUN",
+                       "interet.piedMAY", "interet.piedSTM", "interet.piedCB", "interet.piedBA", "interet.piedBO",
+                       "interet.piedCR", "interetComMAY", "Coeff.a.Med", "Coeff.b.Med", "Coeff.a.NC", "Coeff.a.MAY",
+                       "Coeff.b.NC", "Coeff.b.MAY", "poids.moyen.petits", "poids.moyen.moyens", "poids.moyen.gros",
+                       "tailleMax.petit", "tailleMax.moyen", "niveau.a.et.b.MED", "niveau.a.et.b.NC",
+                       "niveau.a.et.b.MAY", "emblematiqueNC", "emblematiqueRUN", "emblematiqueMAY", "emblematiqueSTM",
+                       "emblematiqueCB", "emblematiqueBA", "emblematiqueBO", "emblematiqueCR", "stat.IUCN",
+                       "autre.statutNC", "autre.statutRUN", "autre.statutMAY", "autre.statutSTM", "autre.statutCB",
+                       "autre.statutBA", "autre.statutBO", "autre.statutCR", "etat.pop.localNC", "etat.pop.localRUN",
+                       "etat.pop.localMAY", "etat.pop.localSTM", "etat.pop.localCB", "etat.pop.localBA",
+                       "etat.pop.localBO", "etat.pop.localCR", "endemiqueNC", "endemiqueRUN", "endemiqueMAY",
+                       "endemiqueSTM", "endemiqueCB", "endemiqueBA", "endemiqueBO", "endemiqueCR")
+
+    ## Remplacement des -999 par NA :
+    if (nrow(refesp)!=0)
+    {
+        refesp[refesp=="-999"] <- NA
+    }
+
+    infoLoading.f(msg=paste("Vous utilisez un référentiel espèces à l'ancien format...",
+                            "\n Il est possible qu'il ne soit plus maintenu.", sep=""),
+                  icon="warning")
+
+    return(refesp)
+}
+
+########################################################################################################################
+priority.merge.f <- function(first, second, by, exclude)
+{
+    ## Purpose: Merge de deux tables, avec fusion des colonnes communes selon
+    ##          la priorité.
+    ## ----------------------------------------------------------------------
+    ## Arguments: first : table prioritaire.
+    ##            second : table non-prioritaire.
+    ##            by : colonne commune.
+    ##            exclude : colonne(s) de la table prioritaire à exclure de
+    ##                      la fusion.
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date: 15 janv. 2013, 12:13
+
+
+    ## merge des colonnes non communes :
+    res <- merge(second,
+                 first[ , c(by,
+                            colnames(first)[ ! is.element(colnames(first),
+                                                          colnames(second))])],
+                 by=by)
+
+    ## Colonnes communes :
+    col.comm <- colnames(first)[is.element(colnames(first),
+                                           colnames(second))]
+
+    ## ... retenues pour la fusion :
+    col.fus <- col.comm[ ! is.element(col.comm, c(by, exclude))]
+
+    ## Écriture des valeurs prioritaires (hors NA) de first dans res :
+    for (i in col.fus)
+    {
+        res[ ! is.na(first[ , i]) , i] <- first[ ! is.na(first[ , i]) , i]
+    }
+
+    return(res)
+}
+
+
+########################################################################################################################
+loadRefEspeces.new.f <- function(refesp, pathRefesp.local)
+{
+    ## Purpose: Traitement du référentiel especes général et complétion avec
+    ##          les données d'un éventuel (optionnel) référentiel espèces
+    ##          local.
+    ## ----------------------------------------------------------------------
+    ## Arguments: refesp : le référentiel espèces général "brut".
+    ##            pathRefesp.local : chemin vers le référentiel espèces local.
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date: 15 janv. 2013, 10:50
+
+    options(P.refesp.Coefs="new")
+
+    ## Renommage des colonnes :
+    names(refesp) <- c("code_espece", "GrSIH", "CodeSIH", "IssCaap", "TaxoCode", "CodeFAO", "CodeFB", "Phylum",
+                       "Cat_benthique", "Classe", "Ordre", "Famille", "Genre", "espece", "Identifiant", "taillemax",
+                       "L50", "cryptique", "mobilite", "territorial", "nocturne", "comportement.grp", "agreg.saison",
+                       "position.col.eau", "strategie.demo", "Type.ponte", "Habitat.Prefere", "Changement.sexe",
+                       "regim.alim", "stat.IUCN", "Coeff.a", "Coeff.b", "niveau.a.et.b")
+
+    ## Remplacement des -999 par NA :
+    if (nrow(refesp)!=0)
+    {
+        refesp[refesp=="-999"] <- NA
+    }
+
+    if ( ! is.na(pathRefesp.local) && file.exists(pathRefesp.local))
+    {
+        refesp.local <- read.table(pathRefesp.local, sep="\t", dec=".", quote="", header=TRUE, encoding="latin1")
+
+        ## Le référentiel local a 13 colonnes obligatoires :
+        if (ncol(refesp.local) < 14)
+        {
+            infoLoading.f(msg="Référentiel espèces local incorrect !", icon="warning")
+        }else{
+            ## S'il est correct...
+            ## Renommage des 13, premières colonnes pour éviter les fautes de frappes :
+            colnames(refesp.local)[1:14] <- c("code_espece", "Identifiant", "Coeff.a", "Coeff.b",
+                                              "niveau.a.et.b", "taillemax", "L50",
+                                              "poids.moyen.petits", "poids.moyen.moyens", "poids.moyen.gros",
+                                              "tailleMax.petit", "tailleMax.moyen", "Observee", "statutIUCN")
+
+            ## Remplacement des -999 par NA :
+            if (nrow(refesp.local)!=0)
+            {
+                refesp.local[refesp.local == "-999"] <- NA
+            }
+
+            refesp <- priority.merge.f(first=refesp.local, second=refesp, by="code_espece", exclude="Identifiant")
+        }
+    }else{
+        infoLoading.f(msg=paste("Pas de référentiel espèces local défini, ou fichier illisible."), icon="warning")
+    }
+
+    return(refesp)
+}
+
+
+########################################################################################################################
+loadRefEspeces.f <- function (pathRefesp, pathRefesp.local=NA, baseEnv=.GlobalEnv)
 {
     ## rm(especes)
     runLog.f(msg=c("Chargement du référentiel espèces :"))
 
     ## Importation des caracteristiques des especes
     especes <- read.table(pathRefesp, sep="\t", dec=".", quote="", header=TRUE, encoding="latin1")
-    names(especes) <- c("code_espece", "GrSIH", "CodeSIH", "IssCaap", "TaxoCode", "CodeFAO", "CodeFB", "Phylum",
-                        "Cat_benthique", "Classe", "Ordre", "Famille", "Genre", "espece", "Identifiant", "ObsNC",
-                        "ObsRUN", "ObsMAY", "ObsSTM", "ObsCB", "ObsBA", "ObsBO", "ObsCR", "taillemax", "L50",
-                        "cryptique", "mobilite", "territorial", "nocturne", "comportement.grp", "agreg.saison",
-                        "position.col.eau", "strategie.demo", "Type.ponte", "Habitat.Prefere", "Changement.sexe",
-                        "regim.alim", "interet.chasseNC", "interet.chasseRUN", "interet.chasseMAY", "interet.chasseSTM",
-                        "interet.chasseCB", "interet.chasseBA", "interet.chasseBO", "interet.chasseCR",
-                        "interet.ligneNC", "interet.ligneRUN", "interet.ligneMAY", "interet.ligneSTM",
-                        "interet.ligneCB", "interet.ligneBA", "interet.ligneBO", "interet.ligneCR", "interet.filetNC",
-                        "interet.filetRUN", "interet.filetMAY", "interet.filetSTM", "interet.filetCB",
-                        "interet.filetBA", "interet.filetBO", "interet.filetCR", "interet.casierNC",
-                        "interet.casierRUN", "interet.casierMAY", "interet.casierSTM", "interet.casierCB",
-                        "interet.casierBA", "interet.casierBO", "interet.casierCR", "interet.piedNC", "interet.piedRUN",
-                        "interet.piedMAY", "interet.piedSTM", "interet.piedCB", "interet.piedBA", "interet.piedBO",
-                        "interet.piedCR", "interetComMAY", "Coeff.a.Med", "Coeff.b.Med", "Coeff.a.NC", "Coeff.a.MAY",
-                        "Coeff.b.NC", "Coeff.b.MAY", "poids.moyen.petits", "poids.moyen.moyens", "poids.moyen.gros",
-                        "taille_max_petits", "taille_max_moyens", "niveau.a.et.b.MED", "niveau.a.et.b.NC",
-                        "niveau.a.et.b.MAY", "emblematiqueNC", "emblematiqueRUN", "emblematiqueMAY", "emblematiqueSTM",
-                        "emblematiqueCB", "emblematiqueBA", "emblematiqueBO", "emblematiqueCR", "stat.IUCN",
-                        "autre.statutNC", "autre.statutRUN", "autre.statutMAY", "autre.statutSTM", "autre.statutCB",
-                        "autre.statutBA", "autre.statutBO", "autre.statutCR", "etat.pop.localNC", "etat.pop.localRUN",
-                        "etat.pop.localMAY", "etat.pop.localSTM", "etat.pop.localCB", "etat.pop.localBA",
-                        "etat.pop.localBO", "etat.pop.localCR", "endemiqueNC", "endemiqueRUN", "endemiqueMAY",
-                        "endemiqueSTM", "endemiqueCB", "endemiqueBA", "endemiqueBO", "endemiqueCR")
 
-
-    ## Verification du nombre de colonnes:
-    if (ncol(especes) != 125)
-    {
-        rm(especes)
-        gestionMSGerreur.f("nbChampEsp", env=baseEnv)
-    }
-    if (nrow(especes)!=0)
-    {
-        especes[especes=="-999"] <- NA
-    }
+    ## Traitement différent selon le nombre de colonnes :
+    switch(as.character(ncol(especes)),
+           "125"=
+       {
+           especes <- loadRefEspece.old.f(refesp=especes)
+       },
+           "33"=
+       {
+           especes <- loadRefEspeces.new.f(refesp=especes, pathRefesp.local=pathRefesp.local)
+       },
+       {
+           gestionMSGerreur.f("nbChampEsp", env=baseEnv)
+           especes <- NULL
+       })
 
     ## Ajout de cathégories benthiques supplémentaires lues dans un fichier de correspondance :
     correspCatBenthique <- read.csv(paste(basePath,
@@ -926,6 +1066,12 @@ loadObservations.f <- function(pathObs)
     {
         colnames(obs) <- c("unite_observation", "secteur", "code_espece", "sexe", "taille", "classe_taille", "poids",
                            "nombre", "dmin", "dmax")
+
+        ## Traitements particuliers pour les protocoles "traces de tortues" :
+        if (getOption("P.obsType") == "TRATO")
+        {
+            obs <- obsFormatting.TRATO.f(obs)
+        }else{}
     }else{
         ## On renomme les colonnes + identification du type d'interpolation :
         switch(as.character(ncol(obs)),
@@ -996,6 +1142,7 @@ loadConfig.f <- function(dataEnv=NULL)
     confNames <- c(unitobs=ifelse(exists("fileNameUnitobs"), fileNameUnitobs, NA),
                    obs=ifelse(exists("fileNameObs"), fileNameObs, NA),
                    refesp=ifelse(exists("fileNameRefesp"), fileNameRefesp, NA),
+                   locrefesp=ifelse(exists("fileNameRefespLocal"), fileNameRefespLocal, NA),
                    refspa=ifelse(exists("fileNameRefspa"), fileNameRefspa, NA),
                    ws=ifelse(exists("nameWorkspace"), nameWorkspace, NA))
 
@@ -1037,6 +1184,9 @@ pathMaker.f <- function(fileNames,
     filePathes <- c(unitobs=paste(directories["data"], fileNames["unitobs"], sep=""),
                     obs=paste(directories["data"], fileNames["obs"], sep=""),
                     refesp=paste(directories["data"], fileNames["refesp"], sep=""),
+                    locrefesp=unname(ifelse(is.na(fileNames["locrefesp"]),
+                                            NA,
+                                            paste(directories["data"], fileNames["locrefesp"], sep=""))),
                     refspa=unname(ifelse(is.na(fileNames["refspa"]),
                                          NA,
                                          paste(directories["data"], fileNames["refspa"], sep=""))),
@@ -1155,7 +1305,8 @@ loadData.f <- function(filePathes, dataEnv, baseEnv=.GlobalEnv)
     ## Fichier du référentiel espèces :
     stepInnerProgressBar.f(n=1, msg="Chargement du référentiel espèces")
 
-    refEspeces <- loadRefEspeces.f(pathRefesp=filePathes["refesp"], baseEnv=baseEnv)
+    refEspeces <- loadRefEspeces.f(pathRefesp=filePathes["refesp"],
+                                   pathRefesp.local=filePathes["locrefesp"], baseEnv=baseEnv)
 
     ## Interaction avec l'interface :
     tkconfigure(get("ResumerEspaceTravail", envir=baseEnv), # [!!!] déplacer vers la fin  [yr: 13/12/2011]
@@ -1200,7 +1351,7 @@ loadDefault.f <- function(baseEnv, dataEnv)
 
         ## MàJ du tableau d'informations de l'interface principale :
         updateSummaryTable.f(get("tclarray", envir=baseEnv),
-                             fileNames, Data,
+                             filePathes, Data,
                              get("table1", envir=baseEnv))
     }else{
         stop("Problème de configuration")

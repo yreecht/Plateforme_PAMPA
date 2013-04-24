@@ -1,8 +1,8 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2013-01-10 16:57:49 yves>
+# Time-stamp: <2013-04-24 16:39:16 Yves>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
-##   Copyright (C) 2008-2012 Ifremer - Tous droits réservés.
+##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
 ##
 ##   Ce programme est un logiciel libre ; vous pouvez le redistribuer ou le
 ##   modifier suivant les termes de la "GNU General Public License" telle que
@@ -159,6 +159,43 @@ selectModalitesZoneSpatiales.f <- function(env, dataEnv, refspaName="refspa",
 }
 
 ########################################################################################################################
+tmpData.f <- function(tableMetrique, env, nextStep, dataEnv)
+{
+    ## Purpose: sélectionner des données temporaires sur la base des
+    ##          sélections de facteurs en cours.
+    ## ----------------------------------------------------------------------
+    ## Arguments: tableMetrique : nom de la table des métriques.
+    ##            nextStep : étape suivante.                     [!!!] on devrait pouvoir s'en passer  [yr: 18/1/2012]
+    ##            dataEnv : l'environnement des données.
+    ##            env : environnement de la fonction appelante.
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date: 15 févr. 2013, 18:00
+
+    facts <- c(tclvalue(get("FacteurSpatial", envir=env)),
+               tclvalue(get("FacteurGraph", envir=env)),
+               sapply(get("listFacteurs", envir=env), tclvalue))
+
+    selections <- c(list(get("factSpatialSel", envir=env)), # Liste des modalités déjà sélectionnées
+                    list(get("factGraphSel", envir=env)),
+                    get("listFactSel", envir=env))
+
+    ## Table réduite :
+    metrique <- tclvalue(get("MetriqueChoisie" , envir=env))
+
+    ## Pour les indices de biodiversité recalculés, il faut utiliser "unitSp" et une métrique adaptée.
+    if (is.element(nextStep, get("nextStepBiodiv", envir=env)) &&
+        tableMetrique == "unit")
+    {
+        tableMetrique <- "unitSp"
+        metrique <- getOption("P.nbName")
+    }else{}
+
+    return(subsetToutesTables.f(metrique=metrique, facteurs=facts, selections=selections,
+                                dataEnv=dataEnv, tableMetrique=tableMetrique))
+}
+
+
+########################################################################################################################
 selectModalitesSpatiales.f <- function(factor, tableMetrique, env, nextStep, dataEnv,
                                        selName="factSpatialSel", factName="FacteurSpatial")
 {
@@ -197,7 +234,7 @@ selectModalitesSpatiales.f <- function(factor, tableMetrique, env, nextStep, dat
         tableMetrique == "unit")
     {
         tableMetrique <- "unitSp"
-        metrique <- "nombre"
+        metrique <- getOption("P.nbName")
     }else{}
 
     tmp <- subsetToutesTables.f(metrique=metrique, facteurs=facts, selections=selections,
@@ -301,7 +338,8 @@ selectionVariables.carto.f <- function(nextStep, dataEnv, baseEnv)
     ##            statistique,...).
     ## ----------------------------------------------------------------------
     ## Arguments: nextStep : étape suivante (chaîne de caractères parmi
-    ##                       "",...
+    ##                       "spBarBoxplot.unitobs", "spBarBoxplot.esp",
+    ##                       "spSymbols.unitobs", "spSymbols.esp",...
     ##                       [appelé à s'étoffer]).
     ##            dataEnv : l'environnement des données.
     ## Note : les arguments de cette fonction peuvent changer à l'avenir
@@ -366,7 +404,10 @@ selectionVariables.carto.f <- function(nextStep, dataEnv, baseEnv)
     LimiteE <- tclVar("")
     LimiteW <- tclVar("")
 
-    TypeGraph <- tclVar("barplot")
+    TypeGraph <- tclVar(ifelse(is.element(nextStep,
+                                          c("spSymbols.unitobs", "spSymbols.esp")),
+                               "symboles",
+                               "barplot"))
 
     ## ########################
     ## Éléments graphiques :
@@ -482,9 +523,8 @@ selectionVariables.carto.f <- function(nextStep, dataEnv, baseEnv)
                            command=function(x)
                        {
                            tuneGraphOptions.f(graphType=switch(nextStep,
-                                              "boxplot.esp"=, "boxplot.unitobs"={"boxplot"},
-                                              "barplot.unitobs"=, "barplot.esp"={"barplot"},
-                                              "freq_occurrence.unitobs"=, "freq_occurrence"={"barplotocc"},
+                                              "spBarBoxplot.esp"=, "spBarBoxplot.unitobs"={"subplot"},
+                                              "spSymbols.unitobs"=, "spSymbols.esp"={"none"},
                                               {"none"}))
                            winRaise.f(WinSelection)
                        })
@@ -492,7 +532,9 @@ selectionVariables.carto.f <- function(nextStep, dataEnv, baseEnv)
     ## Type de graphique :
     FrameTG <- tkframe(FrameBT, background="white")
     CB.TG <- ttkcombobox(FrameTG,
-                         value=c("boxplot", "barplot"),
+                         value=switch(nextStep,
+                                      "spSymbols.unitobs"=, "spSymbols.esp"={c("symboles", "couleurs")},
+                                      "spBarBoxplot.unitobs"=,"spBarBoxplot.esp"={c("boxplot", "barplot")}),
                          textvariable=TypeGraph,
                          width=18,
                          state="readonly")
@@ -564,10 +606,14 @@ selectionVariables.carto.f <- function(nextStep, dataEnv, baseEnv)
                                foreground="darkred",
                                background=.BGcolor)
 
-    B.spatialFact <- tkbutton(FrameCoords2, text="Facteur de regroupement", width=22,
+    B.spatialFact <- tkbutton(FrameCoords2, text="Sélection de données", width=22,
                               command=function()
                           {
-                              bbox.subset.f(refspa=get("refspa", envir=dataEnv),
+                              bbox.subset.f(refspa=subsetRefspaToData.f(refspa=get("refspa", envir=dataEnv),
+                                                                        unitobs=get("unitobs", envir=dataEnv),
+                                                                        Data=tmpData.f(tableMetrique=tclvalue(TableMetrique),
+                                                                                       env=env, nextStep=nextStep,
+                                                                                       dataEnv=dataEnv)),
                                             facteur=tclvalue(FacteurSpatial),
                                             selection=if (is.na(factSpatialSel[1]))
                                         {
@@ -584,8 +630,8 @@ selectionVariables.carto.f <- function(nextStep, dataEnv, baseEnv)
                               tcl("update")
                           })
     L.spatialFact <- tklabel(FrameInfoSelect,
-                             text=paste("Définir les limites d'après la sélection sur le",
-                                        " facteur de regroupement spatial (onglet précédent).", sep=""),
+                             text=paste("Définir les limites d'après les polygones comprenant la sélection de données",
+                                        " (onglet précédent + \"Sélections & recalculs\").", sep=""),
                              font=tkfont.create(weight="normal", size=10),
                              justify="left",
                              foreground="darkred",
@@ -865,6 +911,8 @@ selectionVariables.carto.f <- function(nextStep, dataEnv, baseEnv)
                                                listFact=sapply(listFacteurs, tclvalue), listFactSel=listFactSel,
                                                tableMetrique=tclvalue(TableMetrique),
                                                nextStep=nextStep, dataEnv=dataEnv,
+                                               factSpatial=tclvalue(FacteurSpatial),
+                                               factSpatialSel=factSpatialSel,
                                                ParentWin=WinSelection)
 
             if (tclvalue(Done) != "1") {next()} # traitement en fonction du statut : itération
@@ -886,6 +934,29 @@ selectionVariables.carto.f <- function(nextStep, dataEnv, baseEnv)
                                               factSpatial=tclvalue(FacteurSpatial), factSpatialSel=factSpatialSel,
                                               factGraph=tclvalue(FacteurGraph), factGraphSel=factGraphSel,
                                               listFact=sapply(listFacteurs, tclvalue), listFactSel=listFactSel,
+                                              tableMetrique=tclvalue(TableMetrique),
+                                              bbox=bbox,
+                                              dataEnv=dataEnv, baseEnv=baseEnv)
+                   },
+                   spBarBoxplot.esp={
+
+                       ## tkmessageBox(message="BoxPlots")
+                       subplotCarto.esp.f(graphType=tclvalue(TypeGraph),
+                                          metrique=tclvalue(MetriqueChoisie),
+                                          factSpatial=tclvalue(FacteurSpatial), factSpatialSel=factSpatialSel,
+                                          factGraph=tclvalue(FacteurGraph), factGraphSel=factGraphSel,
+                                          listFact=sapply(listFacteurs, tclvalue), listFactSel=listFactSel,
+                                          tableMetrique=tclvalue(TableMetrique),
+                                          bbox=bbox,
+                                          dataEnv=dataEnv, baseEnv=baseEnv)
+                   },
+                   spSymbols.unitobs={
+
+                       ## tkmessageBox(message="BoxPlots")
+                       symbColCarto.unitobs.f(graphType=tclvalue(TypeGraph),
+                                              metrique=tclvalue(MetriqueChoisie),
+                                              factSpatial=tclvalue(FacteurSpatial), factSpatialSel=factSpatialSel,
+                                              factGraph=tclvalue(FacteurGraph), factGraphSel=factGraphSel,
                                               tableMetrique=tclvalue(TableMetrique),
                                               bbox=bbox,
                                               dataEnv=dataEnv, baseEnv=baseEnv)

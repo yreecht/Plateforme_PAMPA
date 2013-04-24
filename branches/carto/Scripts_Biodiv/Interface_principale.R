@@ -1,7 +1,8 @@
 #-*- coding: latin-1 -*-
+# Time-stamp: <2013-02-11 18:12:15 yves>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
-##   Copyright (C) 2008-2012 Ifremer - Tous droits réservés.
+##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
 ##
 ##   Ce programme est un logiciel libre ; vous pouvez le redistribuer ou le
 ##   modifier suivant les termes de la "GNU General Public License" telle que
@@ -18,7 +19,7 @@
 ##   <http://www.gnu.org/licenses/>.
 
 ### File: Interface_principale.R
-### Time-stamp: <2012-01-18 17:45:47 yreecht>
+### Created: <2012-01-18 17:45:47 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -92,6 +93,8 @@ mainInterface.create.f <- function()
     ## Sous menus :
     speciesMetrics <- tkmenu(traitement, tearoff=FALSE)
     unitobsMetrics <- tkmenu(traitement, tearoff=FALSE)
+    speciesMaps <- tkmenu(traitement, tearoff=FALSE)
+    unitobsMaps <- tkmenu(traitement, tearoff=FALSE)
     ## arbreRegression <- tkmenu(analyse, tearoff=FALSE)
     ## modelesInferentiels <- tkmenu(analyse, tearoff=FALSE)
     ## analysesExplo <- tkmenu(analyse, tearoff=FALSE)
@@ -260,6 +263,17 @@ mainInterface.create.f <- function()
           winRaise.f(W.main)
       })
 
+    tkadd(traitement, "cascade", label="Cartes",
+          menu=speciesMaps, background=.MenuBackground)
+
+    tkadd(speciesMaps, "command", label="Graphiques en barres ou boîtes à moustaches, par zone...",
+          background=.MenuBackground,
+          command=function ()
+      {
+          selectionVariables.carto.f(nextStep="spBarBoxplot.esp", dataEnv=.dataEnv, baseEnv=.baseEnv)
+          winRaise.f(W.main)
+      })
+
     ## Info :
     tkadd(traitement, "separator", background=.MenuBackground)
 
@@ -299,6 +313,16 @@ mainInterface.create.f <- function()
           winRaise.f(W.main)
       })
 
+    tkadd(traitement, "cascade", label="Cartes",
+          menu=unitobsMaps, background=.MenuBackground)
+
+    tkadd(unitobsMaps, "command", label="Graphiques en barres ou boîtes à moustaches, par zone...",
+          background=.MenuBackground,
+          command=function ()
+      {
+          selectionVariables.carto.f(nextStep="spBarBoxplot.unitobs", dataEnv=.dataEnv, baseEnv=.baseEnv)
+          winRaise.f(W.main)
+      })
     ## ######################################
     ## Analyses :
 
@@ -612,9 +636,10 @@ mainInterface.create.f <- function()
     ArrayEtatFichier <- matrix(c("Type de fichier", "Nom de fichier", "Nb champs", "Nb enregistrements", "",
                                  " Fichier d'unités d'observations ", "non sélectionné", "NA", "NA", "NA",
                                  " Fichier d'observations ", "non sélectionné", "NA", "NA", "NA",
-                                 " Référentiel espèce ", "non sélectionné", "NA", "NA", "NA",
-                                 " Référentiel spatial ", "non sélectionné", "NA", "NA", "NA"),
-                               nrow=5, ncol=5, byrow=TRUE)
+                                 " Référentiel espèce général ", "non sélectionné", "NA", "NA", "NA",
+                                 " Référentiel espèce local (optionnel) ", "non sélectionné", "NA", "NA", "NA",
+                                 " Référentiel spatial (optionnel) ", "non sélectionné", "NA", "NA", "NA"),
+                               nrow=6, ncol=5, byrow=TRUE)
 
     ## Création d'un tableau tcl :
     tclarray <- tclArray()
@@ -632,7 +657,7 @@ mainInterface.create.f <- function()
     tclRequire("Tktable")
 
     table1 <-tkwidget(frameOverall, "table", variable=tclarray,
-                      rows=5, cols=4, titlerows=1, # seulement 4 colonnes au départ => ajout ultérieur.
+                      rows=6, cols=4, titlerows=1, # seulement 4 colonnes au départ => ajout ultérieur.
                       selectmode="extended",
                       colwidth=15, background="white")
 
@@ -690,6 +715,49 @@ mainInterface.create.f <- function()
     tkfocus(W.main)
 
     ## ##############################################################################
+    ## Gestion du redimentionnement de la fenêtre principale :
+    w.old <- as.numeric(tkwinfo("width", W.main))
+
+    tkbind(W.main, "<Configure>",
+            function(w, W)
+           {
+               w <- as.numeric(w)
+
+               if ((w.tmp <- get("w.old", envir=.baseEnv)) != w &&
+                   W == as.character(tkwinfo("parent", F.menu)))
+               {
+                   assign("w.old", as.numeric(w), envir=.baseEnv)
+
+                   ## Largeur de ResumerEspaceTravail (défini la largeur des autres éléments) en caractères :
+                   textWidthChar <- as.numeric(tail(unlist(strsplit(tclvalue(tkconfigure(ResumerEspaceTravail,
+                                                                                         width=NULL)),
+                                                                    " ")),
+                                                    1))
+
+                   ## Largeur de ResumerEspaceTravail en pixels :
+                   textwidthPix <- as.numeric(tkwinfo("width", ResumerEspaceTravail))
+
+                   ## Rapport de conversion pixels/caractères :
+                   ratioPixChar <- textwidthPix / textWidthChar
+
+                   ## Ajout du nombre de caractères nécessaires à la largeur de ResumerEspaceTravail pour
+                   ## correctement fitter la largeur de fenêtre :
+                   tkconfigure(ResumerEspaceTravail, width=textWidthChar + floor((w - w.tmp) / ratioPixChar))
+
+                   tcl("update")
+
+                   ## Ajout d'un caractère supplémentaire s'il y a (encore) de la place :
+                   if (w - (as.numeric(tkwinfo("width", ResumerEspaceTravail)) + ratioPixChar) >= 14)
+                   {
+                       tkconfigure(ResumerEspaceTravail,
+                                   width=textWidthChar + 1 + floor((w - w.tmp) / ratioPixChar))
+                   }else{}
+
+
+                   tcl("update")
+               }
+           })
+
     ## Gestion des évènements dans la fenêtre W.main (toplevel) => raccourcis claviers :
     tkbind(W.main, "<Control-a>",
            function()

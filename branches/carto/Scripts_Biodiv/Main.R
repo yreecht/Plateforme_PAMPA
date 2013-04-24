@@ -1,7 +1,8 @@
 #-*- coding: latin-1 -*-
+# Time-stamp: <2013-02-12 11:23:32 Yves>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
-##   Copyright (C) 2008-2012 Ifremer - Tous droits réservés.
+##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
 ##
 ##   Ce programme est un logiciel libre ; vous pouvez le redistribuer ou le
 ##   modifier suivant les termes de la "GNU General Public License" telle que
@@ -18,7 +19,7 @@
 ##   <http://www.gnu.org/licenses/>.
 
 ### File: Main.R
-### Time-stamp: <2012-02-24 20:36:47 Yves>
+### Created: <2012-02-24 20:36:47 Yves>
 ###
 ### Author: Yves Reecht
 ###
@@ -31,7 +32,7 @@
 ####################################################################################################
 
 ## ** Version **
-options(versionPAMPA = "2.5-1")
+options(versionPAMPA = "2.7-1_carto_alpha1")
 
 ## Platform-specific treatment:
 ## Identification du dossier parent (d'installation) :
@@ -87,6 +88,7 @@ source("./Scripts_Biodiv/Agregations_generiques.R", encoding="latin1")          
 source("./Scripts_Biodiv/Calcul_tables_metriques.R", encoding="latin1")                # OK
 source("./Scripts_Biodiv/Calcul_tables_metriques_LIT.R", encoding="latin1")            # OK
 source("./Scripts_Biodiv/Calcul_tables_metriques_SVR.R", encoding="latin1")            # OK
+source("./Scripts_Biodiv/Traces_tortues.R", encoding="latin1")                         # OK
 
 ## ...la sélection des données :
 source("./Scripts_Biodiv/Selection_donnees.R", encoding="latin1")                      # OK

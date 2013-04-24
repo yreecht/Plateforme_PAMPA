@@ -72,18 +72,22 @@ makeColorPalettes.f <- function()
 }
 
 
-PAMPAcolors.f <- function(n=1, palette=getOption("P.colPalette"), list=FALSE)
+PAMPAcolors.f <- function(n=1, palette=getOption("P.colPalette"), list=FALSE, cartoOnly=FALSE)
 {
     ## Purpose: retourner n couleurs de la palette "palette".
     ## ----------------------------------------------------------------------
     ## Arguments: n : nombre de couleurs.
     ##            palette : une des palettes de couleurs prédéfinies
+    ##            cartoOnly : uniquement les palettes cartographiques (si
+    ##                        list==TRUE).
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 26 oct. 2012, 17:08
 
     if (list)
     {
-        return(c("défaut", "bleu", "chaud", "gris", "carto1", "carto2"))
+        return(switch(as.character(cartoOnly),
+                      "1"=,"TRUE"={c("carto1", "carto2", "topo")},
+                      c("défaut", "bleu", "chaud", "gris", "carto1", "carto2", "topo")))
     }else{}
 
     if (is.element(palette,
@@ -138,6 +142,14 @@ PAMPAcolors.f <- function(n=1, palette=getOption("P.colPalette"), list=FALSE)
                           .ColorPaletteCarto2(16)[1:n]
                       }else{
                           .ColorPaletteCarto2(n)
+                      }
+                  },
+                  "topo"={
+                      if (n <= 5)
+                      {
+                          topo.colors(5)[1:n]
+                      }else{
+                          topo.colors(n)
                       }
                   })
 
@@ -250,7 +262,8 @@ openDevice.f <- function(noGraph, metrique, factGraph, modSel, listFact, dataEnv
     {
         if (isTRUE(getOption("P.graphPNG")))
         {
-            if (noGraph == 1 || ! getOption("P.plusieursGraphPage"))
+            if (noGraph == 1 || ! getOption("P.plusieursGraphPage") ||
+                grepl(pattern="^carte_(boxplot|barplot)$", x=typeGraph))
             {
                 pngFileName <- resFileGraph.f(metrique=metrique, factGraph=factGraph, modSel=modSel, listFact=listFact,
                                               dataEnv=dataEnv, ext="png", prefix = typeGraph,
@@ -262,7 +275,8 @@ openDevice.f <- function(noGraph, metrique, factGraph, modSel, listFact, dataEnv
 
                 ## Si plusieurs graphiques par page :
                 if (getOption("P.plusieursGraphPage") && length(modSel) > 1 & # Regrouper dans une fonction de test
-                    !is.element(type, c("unitobs")))                          # (mutualiser le code). [!!!]
+                    ! is.element(type, c("unitobs")) &&                       # (mutualiser le code). [!!!]
+                    ! grepl(pattern="^carte_(boxplot|barplot)$", x=typeGraph))
                 {
                     png(pngFileName,
                         width=ifelse(large, 120, 90) * 15,
@@ -290,9 +304,10 @@ openDevice.f <- function(noGraph, metrique, factGraph, modSel, listFact, dataEnv
                 winFUN <- "X11"
             }
 
-            if (getOption("P.plusieursGraphPage") && # Plusieurs graphs par page...
-                    length(modSel) > 1 &&            # ...plus d'un facteur sélectionné...
-                    !is.element(type, c("unitobs"))) # ...et pas d'agrégation.
+            if (getOption("P.plusieursGraphPage") &&                           # Plusieurs graphs par page...
+                    length(modSel) > 1 &&                                      # ...plus d'un facteur sélectionné...
+                    ! is.element(type, c("unitobs")) &&                        # ...pas d'agrégation...
+                    ! grepl(pattern="^carte_(boxplot|barplot)$", x=typeGraph)) # ...et pas des cartes.
             {
                 if ((noGraph %% # ...et page remplie.
                      (getOption("P.nrowGraph") * getOption("P.ncolGraph"))) == 1)
@@ -349,8 +364,9 @@ openDevice.f <- function(noGraph, metrique, factGraph, modSel, listFact, dataEnv
 
             ## Si plusieurs graphiques par page :
             if (getOption("P.plusieursGraphPage") &&
-                length(modSel) > 1 &&            # Plus d'un facteur sélectionné.
-                !is.element(type, c("unitobs"))) # Pas d'agrégation.
+                length(modSel) > 1 &&                                      # Plus d'un facteur sélectionné.
+                ! is.element(type, c("unitobs")) &&                        # Pas d'agrégation.
+                ! grepl(pattern="^carte_(boxplot|barplot)$", x=typeGraph)) # ...et pas des cartes.
             {
                 par(mfrow=c(getOption("P.nrowGraph"), getOption("P.ncolGraph")))
             }else{}
@@ -441,7 +457,7 @@ boxplotPAMPA.f <- function(exprBP, data, main=NULL, cex=getOption("P.cex"), ylim
               ## Marge de gauche dynamique :
               tmp2 <- ifelse((tmp <- lineInchConvert.f()$H * cex * unlist(par("lheight")) *
                               ifelse(isSubplot(),
-                                     (1.0 +0.4 + 0.9),   # cas des subplots.
+                                     (0.8 +0.4 + 0.9),   # cas des subplots.
                                      (1.4 +0.4 + 0.9)) + # marge supplémentaire.
                               max(strDimRotation.f(as.graphicsAnnot(pretty(range(if(getOption("P.maxExclu")
                                                                                     && getOption("P.GraphPartMax") < 1)
@@ -456,7 +472,7 @@ boxplotPAMPA.f <- function(exprBP, data, main=NULL, cex=getOption("P.cex"), ylim
                                                    srt=0,
                                                    unit="inches",
                                                    cex=cex)$width, na.rm=TRUE)) > 0.7 * unlist(par("pin"))[1],
-                             0.7 * unlist(par("pin"))[1],
+                             0.7 * unlist(par("pin"))[1], # marge maximale.
                              tmp),
               ## Marge supérieure augmentée s'il y a un titre :
               ifelse(isSubplot(),
@@ -467,11 +483,11 @@ boxplotPAMPA.f <- function(exprBP, data, main=NULL, cex=getOption("P.cex"), ylim
                             8 * lineInchConvert.f()$V)),
               ## Marge de droite :
               lineInchConvert.f()$H * cex * unlist(par("lheight")) *
-              ifelse(all.equal(getOption("P.pinSubplot"), par("fin")),
+              ifelse(isSubplot(),
                      1, 0.5)) +
                   lineInchConvert.f()$H * cex * unlist(par("lheight")) * 0.1,
               ## Distance du nom d'axe dépendante de la taille de marge gauche :
-              mgp=c(tmp2 / lineInchConvert.f()$H -  ifelse(isSubplot(), 1.0, 1.4),
+              mgp=c(tmp2 / lineInchConvert.f()$H -  ifelse(isSubplot(), 1.4, 1.4),
                     0.9, 0))
 
           ## Valeur à minimiser :
@@ -500,8 +516,8 @@ boxplotPAMPA.f <- function(exprBP, data, main=NULL, cex=getOption("P.cex"), ylim
     text(x = seq_along(tmpBP$names),
          y = par("usr")[3] -
              ifelse(isTRUE(getOption("P.graphPDF")), # Coef différent pour les PDFs.
-                    0.020,
-                    0.030) * cex *
+                    ifelse(isSubplot(), 0.04, 0.02),
+                    ifelse(isSubplot(), 0.050, 0.030)) * cex *
              diff(range(par("usr")[3:4])),
          labels = tmpBP$names,
          xpd = TRUE, srt = 45, adj = c(1, 1),

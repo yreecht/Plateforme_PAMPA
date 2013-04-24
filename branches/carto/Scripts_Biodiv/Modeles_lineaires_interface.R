@@ -1,7 +1,8 @@
 #-*- coding: latin-1 -*-
+# Time-stamp: <2013-02-12 11:28:49 Yves>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
-##   Copyright (C) 2008-2010 Ifremer - Tous droits réservés.
+##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
 ##
 ##   Ce programme est un logiciel libre ; vous pouvez le redistribuer ou le
 ##   modifier suivant les termes de la "GNU General Public License" telle que
@@ -17,8 +18,8 @@
 ##   ce programme ; si ce n'est pas le cas, consultez :
 ##   <http://www.gnu.org/licenses/>.
 
-### File: modeles_lineaires_interface.R
-### Time-stamp: <2010-12-16 11:32:33 yreecht>
+### File: Modeles_lineaires_interface.R
+### Created: <2010-12-16 11:32:33 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -120,8 +121,8 @@ choixDistri.f <- function(metrique, Data)
     env <- environment()                # environnement courant.
     Done <- tclVar(0)                   # État d'exécution.
     LoiChoisie <- tclVar("NO")          # Variable pour le choix de distribution théorique.
-    vscale <- 0.6                      # dimension verticale des graphiques.
-    hscale <- 1.05                       # dimension horizontale des graphiques.
+    vscale <- 0.48                      # dimension verticale des graphiques.
+    hscale <- 0.95                      # dimension horizontale des graphiques.
     pointsize <- 10                     # taille du point pour les graphiques
     distList <- list()                  # liste pour le stockage des AIC et autres.
 

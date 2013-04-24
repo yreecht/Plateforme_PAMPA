@@ -30,6 +30,41 @@
 ####################################################################################################
 
 ########################################################################################################################
+varNames.f <- function(fields, info="name")
+{
+    ## Purpose: revoyer les informations (en particulier nom) sur le nom
+    ##          "d'usage" d'un ou plusieurs champ(s).
+    ## ----------------------------------------------------------------------
+    ## Arguments: fields : champ(s) recherché(s).
+    ##            info : type d'info ("name", "article", "gender", "unit")
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date: 21 févr. 2013, 18:21
+
+    info <- info[1]
+
+    if (is.element(info, c("nom", "name")))
+    {
+        ## S'il n'est pas définit, le nom d'usage est remplacé par le nom de champ plutôt que par NA :
+        res <- ifelse(is.na(tmp <- varNames[fields, "nom"]),
+                      fields,
+                      tmp)
+    }else{
+        ## Possibilité de nommer les infos en français et anglais:
+        res <- varNames[fields,
+                        switch(info,
+                               "article"="article",
+                               "genre"=,
+                               "gender"="genre",
+                               "unite"=,
+                               "unit"="unite",
+                               "nom")]
+    }
+
+    return(res)
+}
+
+
+########################################################################################################################
 dropLevels.f <- function(df, which=NULL)
 {
     ## Purpose: Supprimer les 'levels' non utilisés des facteurs d'une

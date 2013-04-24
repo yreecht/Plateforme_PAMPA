@@ -743,7 +743,9 @@ WP2MRT.esp.f <- function(metrique, factGraph, factGraphSel, listFact, listFactSe
 
                 ## On parcours tous les fichiers qui correspondent au motif :
                 while (is.element(basename(tmpFile <- sub("\\%03d", formatC(i, width=3, flag="0"), graphFile)),
-                                  dir(dirname(graphFile))))
+                                  dir(dirname(graphFile))) &&
+                       ## Si pas de remplacement effectif, application pour i==1 uniquement :
+                       (i == 1 || grepl(pattern="\\%03d", graphFile)))
                 {
                     tryCatch(embedFonts(file=tmpFile),
                              error=function(e)

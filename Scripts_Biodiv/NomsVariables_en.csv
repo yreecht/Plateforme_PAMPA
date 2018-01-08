@@ -13,6 +13,7 @@ autre.statutRUN;;autre.statutRUN;;
 autre.statutSTM;;autre.statutSTM;;
 avant_apres;;before_after;;
 biomasse;the ;biomass;;g.100~m^{-2}
+biomasse;the ;biomass;;kg.km^{-2}
 biomasseMax;the ;maximum biomass;;g.100~m^{-2}
 biomasseSD;the ;biomass  standard error;;
 biotope;the ;biotop;;
@@ -48,6 +49,7 @@ Delta;the ;Delta;;
 DeltaEtoile;the ;Delta*;;
 DeltaPlus;the ;Delta+;;
 densite;the ;density;;ind.100~m^{-2}
+Densite;the ;density;;ind.km^{-2}
 densiteMax;the ;maximum density;;ind.100~m^{-2}
 densiteSD;the ;density standard error;;
 DimObs1;;DimObs1;;
@@ -163,6 +165,7 @@ nombre;the ;number;;ind
 nombre.traces;the ;tracks number;;
 nombreMax;the ;maximum number;;ind
 nombreSD;the ;number standard error;;
+OBJECTID;;OBJECTID;;
 ObsBA;;ObsBA;;
 ObsBO;;ObsBO;;
 ObsCB;;ObsCB;;

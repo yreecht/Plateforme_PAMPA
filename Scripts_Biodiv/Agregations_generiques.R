@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2013-01-29 17:52:09 yves>
+# Time-stamp: <2013-04-26 09:35:57 yves>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
@@ -295,9 +295,11 @@ agregations.generic.f <- function(Data, metrics, factors, listFact=NULL, unitSpS
                      "taille_moyenne"="w.mean",
                      "taille_moy"="w.mean",
                      "biomasse"="sum",
+                     "Biomasse"="sum",
                      "poids"="sum",
                      "poids_moyen"="w.mean",
                      "densite"="sum",
+                     "Densite"="sum",
                      "CPUE"="sum",
                      "CPUEbiomasse"="sum",
                      "pres_abs"="pres",
@@ -409,7 +411,7 @@ agregations.generic.f <- function(Data, metrics, factors, listFact=NULL, unitSpS
                                          nbName=nbName))
 
     ## Agrégation et ajout des facteurs supplémentaires :
-    if (!is.null(listFact))
+    if ( ! (is.null(listFact) || length(listFact) == 0))
     {
         reslong <- cbind(reslong,
                          sapply(Data[ , listFact, drop=FALSE],

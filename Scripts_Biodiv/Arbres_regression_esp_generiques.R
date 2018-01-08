@@ -1,7 +1,8 @@
 #-*- coding: latin-1 -*-
+# Time-stamp: <2013-04-24 17:30:43 yves>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
-##   Copyright (C) 2008-2010 Ifremer - Tous droits réservés.
+##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
 ##
 ##   Ce programme est un logiciel libre ; vous pouvez le redistribuer ou le
 ##   modifier suivant les termes de la "GNU General Public License" telle que
@@ -18,7 +19,7 @@
 ##   <http://www.gnu.org/licenses/>.
 
 ### File: arbres_regression_esp_generiques.R
-### Time-stamp: <2012-01-10 18:11:47 yreecht>
+### Created: <2012-01-10 18:11:47 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -743,7 +744,9 @@ WP2MRT.esp.f <- function(metrique, factGraph, factGraphSel, listFact, listFactSe
 
                 ## On parcours tous les fichiers qui correspondent au motif :
                 while (is.element(basename(tmpFile <- sub("\\%03d", formatC(i, width=3, flag="0"), graphFile)),
-                                  dir(dirname(graphFile))))
+                                  dir(dirname(graphFile))) &&
+                       ## Si pas de remplacement effectif, application pour i==1 uniquement :
+                       (i == 1 || grepl(pattern="\\%03d", graphFile)))
                 {
                     tryCatch(embedFonts(file=tmpFile),
                              error=function(e)

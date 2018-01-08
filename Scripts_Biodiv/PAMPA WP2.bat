@@ -1,8 +1,11 @@
+:: -*- coding: latin-1 -*-
+:: Time-stamp: <2013-04-24 17:40:46 yves>
+
 :: Adaptation des scripts de lancement de R, fournis par le CRAN sous
 :: Licence GPL v2 (Copyright (C) 2005 Gabor Grothendieck).
 ::
 :: Modifications pour la Plateforme PAMPA de calcul d'indicateurs de
-::   ressources & biodiversité Copyright (C) 2008-2010 Ifremer -
+::   ressources & biodiversité Copyright (C) 2008-2013 Ifremer -
 ::   Tous droits réservés.
 ::
 ::   Ce programme est un logiciel libre ; vous pouvez le redistribuer ou le

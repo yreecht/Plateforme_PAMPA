@@ -1,7 +1,8 @@
 #-*- coding: latin-1 -*-
+# Time-stamp: <2013-04-24 17:31:06 yves>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
-##   Copyright (C) 2008-2012 Ifremer - Tous droits réservés.
+##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
 ##
 ##   Ce programme est un logiciel libre ; vous pouvez le redistribuer ou le
 ##   modifier suivant les termes de la "GNU General Public License" telle que
@@ -18,7 +19,7 @@
 ##   <http://www.gnu.org/licenses/>.
 
 ### File: Initialisation.R
-### Time-stamp: <2012-01-15 20:35:45 yves>
+### Created: <2012-01-15 20:35:45 yves>
 ###
 ### Author: Yves Reecht
 ###
@@ -37,12 +38,18 @@ options(P.requiredVar=c(unitobs="fileNameUnitobs",
 ## Options du référentiel spatial :
 options(P.linkUnitobs="site",
         P.linkRefspa="CODE.SITE",
-        P.shapefileEncoding="latin1")
+        P.shapefileEncoding="latin1",
+        P.landField="HABITAT1",         # Champs du référentiel spatial permettant d'identifier la terre...
+        P.landMods=c("terre", "ilot"),  # ...modalités de ce champs correspondant à la terre.
+        P.landCols=c(terre="chocolate3",  mer="powderblue"), # couleurs terre/mer.
+        P.pinSubplot=c(2.0, 1.8))      # dimensions (en pouces/inches) des sous-graphiques pour représentation sur des
+                                        # cartes.
+        ## P.landCols=c(terre="saddlebrown", mer="steelblue"))
 
 ## Option de noms de champs :
 options(P.MPAfield="cas.etude")
 
-## ##################### Initialisation des variables globales ####################
+## ##################### Initialisation des (rares) variables globales ####################
 
 #### Logo :
 .fileimage <- "./Scripts_Biodiv/img/pampa2.GIF"

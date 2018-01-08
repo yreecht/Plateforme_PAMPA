@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2013-03-13 11:31:18 yves>
+# Time-stamp: <2015-11-30 11:53:36 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
@@ -457,14 +457,18 @@ subsetToutesTables.f <- function(metrique, facteurs, selections,
     }else{}
 
     ## Conversion des biomasses et densités -> /100m² :
-    if (any(is.element(colnames(restmp), c("biomasse", "densite", "biomasseMax", "densiteMax"))) && !is.peche.f())
+    if (any(is.element(colnames(restmp), c("biomasse", "densite",
+                                           "biomasseMax", "densiteMax",
+                                           "biomasseSD", "densiteSD"))) && ! is.peche.f())
     {
         restmp[ , is.element(colnames(restmp),
                              c("biomasse", "densite",
-                               "biomasseMax", "densiteMax"))] <- 100 *
+                               "biomasseMax", "densiteMax",
+                               "biomasseSD", "densiteSD"))] <- 100 *
                                    restmp[, is.element(colnames(restmp),
                                                        c("biomasse", "densite",
-                                                         "biomasseMax", "densiteMax"))]
+                                                         "biomasseMax", "densiteMax",
+                                                         "biomasseSD", "densiteSD"))]
     }else{}
 
     return(restmp)
@@ -544,9 +548,11 @@ agregationTableParCritere.f <- function(Data, metrique, facteurs, dataEnv, listF
                      "taille_moyenne"="w.mean",
                      "taille_moy"="w.mean",
                      "biomasse"="sum",
+                     "Biomasse"="sum",
                      "poids"="sum",
                      "poids_moyen"="w.mean",
                      "densite"="sum",
+                     "Densite"="sum",
                      "CPUE"="sum",
                      "CPUEbiomasse"="sum",
                      "pres_abs"="pres",
@@ -965,6 +971,14 @@ calcBiodiv.f <- function(Data, refesp, MPA, unitobs="unite_observation", code.es
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 29 oct. 2010, 08:58
 
+    ## Unitobs appartenant a l'AMP courante:
+    unitobsData <- get("unitobs", envir=dataEnv)
+
+    Data <- subset(Data,
+                   is.element(Data[ , unitobs],
+                              unitobsData[unitobsData[ , getOption("P.MPAfield")] == MPA ,
+                                          unitobs]))
+
     DataTmp <- Data
 
     ## Supression de tout ce qui n'a pas d'espèce précisee (peut être du non biotique ou identification >= genre) :
@@ -1158,6 +1172,14 @@ calcBiodiv.f <- function(Data, refesp, MPA, unitobs="unite_observation", code.es
             df.biodiv[ , ind] <- NULL
         }else{}
     }
+
+    ## ## On retablit les niveaux de facteurs:
+    ## colFact <- colnames(df.biodiv)[is.element(sapply(df.biodiv, class), "factor")]
+
+    ## for (col in colFact)
+    ## {
+    ##     levels(df.biodiv[ , colFact]) <- levels(DataTmp[ , colFact])
+    ## }
 
     return(df.biodiv)
 }

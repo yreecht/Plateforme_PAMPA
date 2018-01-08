@@ -1,7 +1,8 @@
 #-*- coding: latin-1 -*-
+# Time-stamp: <2013-04-25 12:32:25 yves>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
-##   Copyright (C) 2008-2012 Ifremer - Tous droits réservés.
+##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
 ##
 ##   Ce programme est un logiciel libre ; vous pouvez le redistribuer ou le
 ##   modifier suivant les termes de la "GNU General Public License" telle que
@@ -18,14 +19,14 @@
 ##   <http://www.gnu.org/licenses/>.
 
 ### File: Options.R
-### Time-stamp: <>
+### Created: <2012-11-05 yreecht>
 ###
 ### Author: Yves Reecht
 ###
 ####################################################################################################
 ### Description:
 ###
-###
+### Scripts d'initialisation et de gestion des options de la plateforme.
 ####################################################################################################
 
 ########################################################################################################################
@@ -103,6 +104,12 @@ initialiseOptions.f <- function()
             P.saveStats=TRUE,                   # Sauvegarde des informations sur les données (stats incluses) ?
             P.axesLabels=TRUE,                  # Affichage des noms d'axes ?
             P.title=TRUE,                       # Affichage des titres ?
+            ## Carto :
+            P.colorLegendCarto = TRUE,          # Afficher la légende des couleurs (facteur de secon niveau).
+            P.zonesPalette="carto1",            # Palette de couleurs pour différentier les zones.
+            P.symbMaxIn=0.5,                    # Taille maximal des symboles de taille variable (inches).
+            P.symbColor="red",                  # Couleur des symbols de taille variable.
+            P.symbScale=TRUE,                   # Affichage de l'échelle des symbols.
             ## ####################################################################################################
             ## Classe des options (pour conversion depuis les variables tcl) :
             P.optionsClass = c(P.maxExclu="logical", P.NbObs="logical", P.NbObsCol="character",
@@ -121,7 +128,9 @@ initialiseOptions.f <- function()
                                P.graphWMF="logical", P.pdfEmbedFonts="logical",
                                P.lang="character", P.barplotStat="character",  P.barplotErrorBar="logical",
                                P.saveData="logical",
-                               P.saveStats="logical", P.axesLabels="logical", P.title="logical")
+                               P.saveStats="logical", P.axesLabels="logical", P.title="logical",
+                               P.zonesPalette="character", P.colorLegendCarto="logical",
+                               P.symbMaxIn="numeric", P.symbColor="character", P.symbScale="logical")
             )
 
     ## On crée les palettes de couleurs :
@@ -241,6 +250,77 @@ addBarplotOccOptFrame.f <- function(env)
     ## On retourne l'environnement (pour accès extérieur aux objets) :
     return(env2)
 }
+
+########################################################################################################################
+addCartoSubplotFrame.f <- function(env)
+{
+    ## Purpose: Ajouter une frame avec les options spécifiques
+    ##          aux subplots sur cartes à une interface existante.
+    ## ----------------------------------------------------------------------
+    ## Arguments: env : environnement de l'interface existante.
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date: 27 févr. 2013, 19:20
+
+    env2 <- environment()
+
+    attach(env)
+
+    on.exit(detach(env))
+
+    ## Objets pour le choix des options :
+    F.subplotOpt <- tkwidget(WinOpt, "labelframe",
+                             text="Options des \"graphiques en barres\"", padx=4, pady=4,
+                             height=30,
+                             borderwidth=2, relief="groove",
+                             font=tkfont.create(weight="bold", size=10),
+                             foreground="darkred",
+                             background=.BGcolor)
+
+    F.subplot1 <- tkframe(F.subplotOpt, background=.BGcolor) #, borderwidth=4, relief="groove")
+
+    F.colorZones <- tkframe(F.subplot1, background=.BGcolor, pady=2)
+    CB.colPaletteZones <- ttkcombobox(F.colorZones, value=PAMPAcolors.f(list=TRUE, cartoOnly=TRUE),
+                                      textvariable=P.options[["P.zonesPalette"]],
+                                      state="readonly", width=6, background=.BGcolor)
+
+    B.legendCarto <- tkcheckbutton(F.subplot1, variable=P.options[["P.colorLegendCarto"]])
+
+    F.stat <- tkframe(F.subplot1, background=.BGcolor, pady=2)
+    CB.stat <- ttkcombobox(F.stat, value=c("moyenne", "médiane"),
+                           textvariable=P.options[["P.barplotStat"]],
+                           state="readonly", width=8, background=.BGcolor)
+
+    ## #### Placement des éléments sur la grille :
+    tkgrid(tklabel(F.colorZones, text="Palette de couleurs des zones : ", bg=.BGcolor),
+           CB.colPaletteZones)
+    tkgrid(F.colorZones, sticky="w", padx=4, columnspan=2)
+
+    tkgrid(B.legendCarto,
+            tklabel(F.subplot1,
+                   text=" Afficher la légende des couleurs (facteur de second niveau) ?",
+                   bg=.BGcolor),
+           sticky="w", padx=4, pady=2)
+
+    tkgrid(tklabel(F.stat,
+                   text="Type de statistique à représenter sur les barplots : ",
+                   bg=.BGcolor, justify="left"),
+           CB.stat,
+           sticky="w")
+    tkgrid(F.stat, sticky="w", padx=4, pady=2, columnspan=2)
+
+    ## Éléments généraux :
+
+    tkgrid(F.subplot1, ## S.barplot2, F.barplot2,
+           sticky="nsew")
+
+    ## tkgrid.configure(S.barplot, rowspan=2, sticky="ns", pady=0)
+
+    tkgrid(F.subplotOpt, columnspan=2, sticky="ew", padx=4, pady=6)
+
+    ## On retourne l'environnement (pour accès extérieur aux objets) :
+    return(env2)
+}
+
 
 ########################################################################################################################
 addBarplotOptFrame.f <- function(env)
@@ -600,6 +680,9 @@ tuneGraphOptions.f <- function(graphType="none")
 
     ## Ajout optionnel d'un cadre spécifique au type de graphique :
     env2 <- switch(graphType,
+                   "subplot"={
+                       addCartoSubplotFrame.f(env=env)
+                   },
                    "boxplot"={
                        addBoxplotOptFrame.f(env=env)
                    },
@@ -996,6 +1079,7 @@ generalOptions.f <- function()
         options(sapply(names(P.options),
                        function (name)
                    {
+                       ## [!!!] ajouter une gestion des erreurs => non bloquantes !
                        ## Conversion dans la bonne classe (renseignée par l'option P.optionClass) :
                        switch(options("P.optionsClass")[[1]][name],
                               logical=as.logical(as.integer(unlist(strsplit(tclvalue(P.options[[name]]),

@@ -465,6 +465,35 @@ calc.tables.Fishing.f <- function(obs, unitobs, dataEnv,
     return(res)
 }
 
+########################################################################################################################
+calc.tables.OBSIND.f <- function(obs, unitobs, dataEnv,
+                                 factors=c("unite_observation", "code_espece", "classe_taille"))
+{
+    ## Purpose: Calcul des métriques par unité d'observation, par espèce et
+    ##          par classe de taille pour les observations individuelles
+    ##          géoréférencées.
+    ## ----------------------------------------------------------------------
+    ## Arguments: obs : table des observations (data.frame).
+    ##            unitobs : table des unités d'observation (data.frame).
+    ##            dataEnv : environnement des données.
+    ##            factors : les facteurs d'agrégation.
+    ## ----------------------------------------------------------------------
+    ## Arguments:
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date: 25 avril 2013, 18:41
+
+    res <- calc.tables.Transect.f(obs=obs, unitobs=unitobs, dataEnv=dataEnv, factors=factors)
+
+    ## Renommage des colonnes de densité et biomasse :
+    res[ , "Densite"] <- res$densite
+    res$densite <- NULL
+    res[ , "Biomasse"] <- res$biomasse # Fonctionne même si biomasse n'existe pas.
+    res$biomasse <- NULL
+
+    return(res)
+}
+
+
 
 ########################################################################################################################
 calc.unitSpSz.f <- function(obs, unitobs, refesp, dataEnv)
@@ -494,7 +523,8 @@ calc.unitSpSz.f <- function(obs, unitobs, refesp, dataEnv)
                     "TRUVC"="Transect", "UVC"="Transect",
                     "TRVID"="Transect", "Q"="Transect",
                     "PFUVC"="Fixe",
-                    "TRATO"="TTracks")
+                    "TRATO"="TTracks",
+                    "OBSIND"="OBSIND")
 
     ## Calcul des métriques selon cas d'observation :
     if ( ! all(is.na(obs[ , "classe_taille"])))
@@ -528,6 +558,11 @@ calc.unitSpSz.f <- function(obs, unitobs, refesp, dataEnv)
                            "TTracks"={
                                options(P.nbName="nombre.traces") # Nom du champ de nombres.
                                calc.tables.TurtleTracks.f(obs=obs, unitobs=unitobs, dataEnv=dataEnv, factors=factors)
+                           },
+                           ## OBSIND :
+                           "OBSIND"={
+                               options(P.nbName="nombre") # Nom du champ de nombres.
+                               calc.tables.OBSIND.f(obs=obs, unitobs=unitobs, dataEnv=dataEnv, factors=factors)
                            },
                        {
                            stop("\n\tType d'observation \"", getOption("P.obsType"),
@@ -617,7 +652,8 @@ calc.unitSp.f <- function(unitSpSz, obs, unitobs, dataEnv)
                         "TRUVC"="Transect", "UVC"="Transect",
                         "TRVID"="Transect", "Q"="Transect",
                         "PFUVC"="Fixe",
-                        "TRATO"="TTracks")
+                        "TRATO"="TTracks",
+                        "OBSIND"="OBSIND")
 
         unitSp <- switch(casObsType[getOption("P.obsType")],
                          "SVR"={
@@ -649,6 +685,11 @@ calc.unitSp.f <- function(unitSpSz, obs, unitobs, dataEnv)
                              options(P.nbName="nombre.traces") # Nom du champ de nombres.
                              calc.tables.TurtleTracks.f(obs=obs, unitobs=unitobs, dataEnv=dataEnv, factors=factors)
                          },
+                           ## OBSIND :
+                           "OBSIND"={
+                               options(P.nbName="nombre") # Nom du champ de nombres.
+                               calc.tables.OBSIND.f(obs=obs, unitobs=unitobs, dataEnv=dataEnv, factors=factors)
+                           },
                      {
                          stop("\n\tType d'observation \"", getOption("P.obsType"),
                               "\" inconnu pour le calcul des métriques par espèce !")

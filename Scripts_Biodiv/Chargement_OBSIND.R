@@ -1,0 +1,158 @@
+#-*- coding: latin-1 -*-
+# Time-stamp: <2013-04-25 18:23:28 yves>
+
+## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
+##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
+##
+##   Ce programme est un logiciel libre ; vous pouvez le redistribuer ou le
+##   modifier suivant les termes de la "GNU General Public License" telle que
+##   publiée par la Free Software Foundation : soit la version 2 de cette
+##   licence, soit (à votre gré) toute version ultérieure.
+##
+##   Ce programme est distribué dans l'espoir qu'il vous sera utile, mais SANS
+##   AUCUNE GARANTIE : sans même la garantie implicite de COMMERCIALISABILITÉ
+##   ni d'ADÉQUATION À UN OBJECTIF PARTICULIER. Consultez la Licence Générale
+##   Publique GNU pour plus de détails.
+##
+##   Vous devriez avoir reçu une copie de la Licence Générale Publique GNU avec
+##   ce programme ; si ce n'est pas le cas, consultez :
+##   <http://www.gnu.org/licenses/>.
+
+### File: Chargement_OBSIND.R
+### Created: <2013-04-25 12:12:23 yves>
+###
+### Author: Yves Reecht
+###
+####################################################################################################
+### Description:
+###
+### Chargement des données de type OBSIND (observation ponctuelle et géolocalisée d'individus).
+####################################################################################################
+
+
+unitobsNew.OBSIND.create.f <- function(unitobs, refspa, dataEnv)
+{
+    ## Purpose: Création d'une nouvelle table d'unités d'observations pour
+    ##          les observations ponctuelles géoréférencées (OBSIND).
+    ## ----------------------------------------------------------------------
+    ## Arguments: unitobs : table des unités d'observations
+    ##                      (réduite à ce stade).
+    ##            refspa : référentiel spatial sous forme de shapefile.
+    ##            dataEnv : environnmeent des données.
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date: 25 avril 2013, 16:04
+
+    ## lien entre les unitobs "individuelles" et le référentiel spatial :
+    unitobsTmp <- overlayUnitobs.f(unitobs=unitobs, refspa=refspa)
+
+    ## Construction d'un nouvel indice d'unités d'observations (intersection zone - jour
+    ## d'observation ; dites "regroupées") :
+    unitobsTmp$unitobsNew <- paste("Z", unitobsTmp$OBJECTID, "-J", unitobsTmp$jour, "-",
+                                   unitobsTmp$mois, "-", unitobsTmp$an, sep="")
+
+    ## Sauvegarde d'une table de correspondance entre unités d'observations "individuelles" et
+    ## "regroupées" dans l'environnement des données :
+    assign(x=".unitobsCorresp",
+           value=unitobsTmp[ , c("unite_observation", "unitobsNew")],
+           envir=dataEnv)
+
+    ## Suppression des unités d'observation hors polygones :
+    unitobsTmp <- unitobsTmp[ ! is.na(unitobsTmp$OBJECTID), ]
+
+    ## Réorganisation des colonnes :
+    unitobsTmp <- unitobsTmp[ , c("cas.etude", "unitobsNew",
+                                 "type", "site", "station", "caracteristique_1",
+                                  "caracteristique_2", "fraction_echantillonnee", "jour", "mois",
+                                  "an", "heure", "nebulosite", "direction_vent", "force_vent",
+                                  "etat_mer", "courant", "maree", "phase_lunaire", "latitude",
+                                  "longitude", "statut_protection", "avant_apres", "biotope",
+                                  "biotope_2", "habitat1", "habitat2", "habitat3", "visibilite",
+                                  "prof_min", "prof_max", "DimObs1", "DimObs2", "nb_plong",
+                                  "plongeur", "OBJECTID")]
+
+    colnames(unitobsTmp)[2] <- "unite_observation"
+
+    ## Agrégations (une ligne par unité d'observation) :
+    unitobsNew <- do.call(rbind,
+                          lapply(split(unitobsTmp, unitobsTmp[ , "unite_observation"]),
+                                 aggreg.unitobsNew.f,
+                                 refspa=refspa))
+
+    return(unitobsNew)
+}
+
+
+########################################################################################################################
+aggreg.unitobsNew.f <- function(x, refspa)
+{
+    ## Purpose: Agréger des parties de la nouvelle table des unitobs pour
+    ##          n'avoir plus qu'une ligne par unitobs.
+    ## ----------------------------------------------------------------------
+    ## Arguments: x : sous-table des unitobs avec les données d'une unitobs.
+    ##            refspa : le référentiel spatial sous forme de shapefile.
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date: 25 avril 2013, 17:04
+
+    ## Colonnes ne bénéficiant pas d'un traitement spécial :
+    idx <- which(! is.element(colnames(x),
+                              c("latitude", "longitude", "visibilite", "prof_min", "prof_max",
+                                "DimObs1", "DimObs2", "plongeur")))
+
+    ## On conserve la valeur si c'est la même partout dans la colonne :
+    x[ , idx] <- sapply(x[ , idx],
+                        function(y)
+                    {
+                        if (length(unique(y)) == 1)
+                        {
+                            return(y)
+                        }else{
+                            return(rep(NA, length(y)))
+                        }
+                    }, simplify=FALSE)
+
+    ## Longitude/latitude = barycentre du polygone :
+    x[ , c("latitude", "longitude")] <- refspa@data[x[ , "OBJECTID"],
+                                                    c("SITE.centrY", "SITE.centrX")]
+
+    ## Colonnes pour lesquelles on prend le minimum :
+    x[ , c("visibilite", "prof_min")] <- sapply(x[ , c("visibilite", "prof_min")],
+                                                function(x)
+                                            {
+                                                if (all(is.na(x)))
+                                                {
+                                                    NA
+                                                }else{
+                                                    min(x, na.rm=TRUE)
+                                                }
+                                            },
+                                                simplify=FALSE)
+
+    ## Colonne pour laquelle on prend le maximum :
+    x[ , "prof_max"] <- if (all(is.na(x[ , "prof_max"])))
+      {
+          NA
+      }else{
+          max(x[ , "prof_max"], na.rm=TRUE)
+      }
+
+    ## Dimobs en km² :
+    x[ , "DimObs1"] <- refspa@data[x[ , "OBJECTID"],
+                                   c("SITE.SURFACE")]
+
+    x[ , "DimObs2"] <- 1
+
+    ## Plusieurs observateurs possibles :
+    x[ , "nb_plong"] <- length(unique(x[ , "plongeur"]))
+    x[ , "plongeur"] <- paste(unique(x[ , "plongeur"]), collapse=", ")
+
+    return(x[1, !is.element(colnames(x), "OBJECTID"), drop=FALSE])
+}
+
+
+
+
+
+### Local Variables:
+### ispell-local-dictionary: "english"
+### fill-column: 100
+### End:

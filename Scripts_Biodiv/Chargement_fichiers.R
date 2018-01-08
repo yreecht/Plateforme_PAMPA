@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2013-01-23 10:41:49 yves>
+# Time-stamp: <2013-04-25 18:56:15 yves>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
@@ -1010,6 +1010,18 @@ loadRefspa.f <- function(pathRefspa, baseEnv=.GlobalEnv)
         ! file.exists(pathRefspa))
     {
         infoLoading.f(msg="Pas de référentiel spatial défini ou fichier inexistant !", icon="warning")
+
+        ## Si type d'observation == "OBSIND", un shapefile est requis :
+        if(getOption("P.obsType") == "OBSIND")
+        {
+            infoLoading.f(msg=paste("Type d'observation \"OBSIND\" :",
+                                    "   un référentiel spatial spatial sous forme de shapefile (.shp) est requis !",
+                                    sep=""),
+                          icon="error")
+
+            stop("Référentiel shapefile non défini !")
+        }else{}
+
         return(NULL)
     }else{
         if (grepl("Maps/[^/.]+\\.shp", pathRefspa, ignore.case=TRUE, perl=TRUE))
@@ -1025,6 +1037,17 @@ loadRefspa.f <- function(pathRefspa, baseEnv=.GlobalEnv)
                                                        "protection2", "depth"),
                                                 warnings=FALSE)
         }else{
+            ## Si type d'observation == "OBSIND", un shapefile est requis :
+            if(getOption("P.obsType") == "OBSIND")
+            {
+                infoLoading.f(msg=paste("Type d'observation \"OBSIND\" :",
+                                        "   un référentiel spatial spatial sous forme de shapefile (.shp) est requis !",
+                                        sep=""),
+                              icon="error")
+
+                stop("Référentiel shapefile non défini !")
+            }else{}
+
             ## ...Sinon, chargement sous forme de fichier texte :
             refSpatial <- read.table(pathRefspa, sep="\t", dec=".", header=TRUE, encoding="latin1")
 
@@ -1283,6 +1306,12 @@ loadData.f <- function(filePathes, dataEnv, baseEnv=.GlobalEnv)
 
     refSpatial <- loadRefspa.f(pathRefspa=filePathes["refspa"])
 
+    ## [OBSIND]
+    if (getOption("P.obsType") == "OBSIND")
+    {
+        refUnitobs <- unitobsNew.OBSIND.create.f(unitobs=refUnitobs, refspa=refSpatial, dataEnv=dataEnv)
+    }else{}
+
     ## Fusion de la table d'unités d'observation et de celle du référentiel spatial :
     if (!is.null(refSpatial))
     {
@@ -1299,6 +1328,16 @@ loadData.f <- function(filePathes, dataEnv, baseEnv=.GlobalEnv)
     stepInnerProgressBar.f(n=1, msg="Chargement du fichier d'observations...")
 
     tabObs <- loadObservations.f(pathObs=filePathes["obs"])
+
+    ## Correspondance avec les nouvelles unités d'observations dans le cas "OBSIND" :
+    if (getOption("P.obsType") == "OBSIND")
+    {
+        unitobsCorresp <- dataEnv$.unitobsCorresp
+
+        tabObs[ , "unite_observation"] <- dataEnv$.unitobsCorresp[match(tabObs[ , "unite_observation"],
+                                                                        unitobsCorresp[ , "unite_observation"]),
+                                                                  "unitobsNew"]
+    }else{}
 
     tabObs <- checkUnitobs.in.obs.f(obs=tabObs, unitobs=refUnitobs) # Réduction aux unitobs existantes.
 

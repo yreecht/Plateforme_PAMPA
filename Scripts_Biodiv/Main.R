@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2013-03-27 10:47:12 yves>
+# Time-stamp: <2013-04-26 11:06:18 Yves>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
@@ -32,7 +32,7 @@
 ####################################################################################################
 
 ## ** Version **
-options(versionPAMPA = "2.7-3")
+options(versionPAMPA = "2.8-alpha1")
 
 ## Platform-specific treatment:
 ## Identification du dossier parent (d'installation) :
@@ -82,6 +82,7 @@ source("./Scripts_Biodiv/Chargement_manuel_fichiers.R", encoding="latin1")      
 source("./Scripts_Biodiv/Calcul_poids.R", encoding="latin1")                           # OK
 source("./Scripts_Biodiv/Lien_unitobs-refspa.R", encoding="latin1")                    # OK
 source("./Scripts_Biodiv/Chargement_shapefile.R", encoding="latin1")                   # OK
+source("./Scripts_Biodiv/Chargement_OBSIND.R", encoding="latin1")                      # OK
 
 ## ...les calculs de tables de métriques :
 source("./Scripts_Biodiv/Agregations_generiques.R", encoding="latin1")                 # OK
@@ -107,8 +108,9 @@ source("./Scripts_Biodiv/Selection_variables_interface.R", encoding="latin1")   
 source("./Scripts_Biodiv/Fonctions_graphiques.R", encoding="latin1")                   # OK
 source("./Scripts_Biodiv/Boxplots_esp_generiques.R", encoding="latin1")                # OK
 source("./Scripts_Biodiv/Boxplots_unitobs_generiques.R", encoding="latin1")            # OK
-## ...dont démonstartions sur des cartes :
-source("./Scripts_Biodiv/Demo_cartes.R", encoding="latin1")                            # OK
+## ...dont cartes :
+source("./Scripts_Biodiv/Graphiques_carto.R", encoding="latin1")                       #
+source("./Scripts_Biodiv/Variables_carto.R", encoding="latin1")                        #
 
 ## ...les analyses statistiques :
 source("./Scripts_Biodiv/Modeles_lineaires_interface.R", encoding="latin1")            # OK

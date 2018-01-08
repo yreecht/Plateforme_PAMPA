@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2013-02-15 17:10:30 yves>
+# Time-stamp: <2013-07-07 18:59:48 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
@@ -41,7 +41,7 @@ loadShapefile.f <- function(directory, layer)
 
     ## Lecture du shapefile :
     refspa <- readOGR(dsn=directory, layer=layer,
-                      input_field_name_encoding=getOption("P.shapefileEncoding"), verbose=FALSE)
+                      encoding=getOption("P.shapefileEncoding"), verbose=FALSE)
 
     colnames(refspa@data) <- gsub("_", ".", colnames(refspa@data), fixed=TRUE)
     colnames(refspa@data)[1] <- "OBJECTID"
@@ -85,7 +85,7 @@ overlayUnitobs.f <- function(unitobs, refspa)
 
     ## Correspondance avec les zones :
     unitobs <- cbind(unitobs,
-                     "OBJECTID"=overlay(x=spaUnitobs, y=refspa))
+                     "OBJECTID"=as.character(over(x=spaUnitobs, y=refspa)[ , "OBJECTID"]))
 
     return(unitobs)
 }

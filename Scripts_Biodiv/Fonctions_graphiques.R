@@ -1,7 +1,8 @@
 #-*- coding: latin-1 -*-
+# Time-stamp: <2013-08-11 18:40:32 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
-##   Copyright (C) 2008-2010 Ifremer - Tous droits réservés.
+##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
 ##
 ##   Ce programme est un logiciel libre ; vous pouvez le redistribuer ou le
 ##   modifier suivant les termes de la "GNU General Public License" telle que
@@ -18,7 +19,7 @@
 ##   <http://www.gnu.org/licenses/>.
 
 ### File: fonctions_graphiques.R
-### Time-stamp: <2012-01-10 18:24:33 yreecht>
+### Time-created: <2012-01-10 18:24:33 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -57,26 +58,43 @@ makeColorPalettes.f <- function()
     assign(".ColorPaletteGray",
            colorRampPalette(c("#787878", "#dddddd")),
            envir=.GlobalEnv)
+
+    ## carto1:
+    assign(".ColorPaletteCarto1",
+           colorRampPalette(c("cyan", "violet", "slateblue", "lightsalmon", "palegreen")),
+           envir=.GlobalEnv)
+
+    ## carto2:
+    assign(".ColorPaletteCarto2",
+           colorRampPalette(c("cyan", "violet", "slateblue", "lightsalmon", "palegreen", "darkseagreen4", "chocolate1",
+                              "slateblue1", "pink", "burlywood1", "hotpink3", "tomato3", "khaki2", "goldenrod", "tan1",
+                              "violetred3")),
+           envir=.GlobalEnv)
 }
 
 
-PAMPAcolors.f <- function(n=1, palette=getOption("P.colPalette"), list=FALSE)
+PAMPAcolors.f <- function(n=1, palette=getOption("P.colPalette"), list=FALSE, cartoOnly=FALSE)
 {
     ## Purpose: retourner n couleurs de la palette "palette".
     ## ----------------------------------------------------------------------
     ## Arguments: n : nombre de couleurs.
     ##            palette : une des palettes de couleurs prédéfinies
+    ##            cartoOnly : uniquement les palettes cartographiques (si
+    ##                        list==TRUE).
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 26 oct. 2012, 17:08
 
     if (list)
     {
-        return(c("défaut", "bleu", "chaud", "gris"))
+        return(switch(as.character(cartoOnly),
+                      "1"=,"TRUE"={c("carto1", "carto2", "topo")},
+                      c("défaut", "bleu", "chaud", "gris", "carto1", "carto2", "topo")))
     }else{}
 
     if (is.element(palette,
                    c("default", "défaut", "defaut", "blue", "bleu",
-                     "heat", "chaud", "gray", "grey", "gris")) &&
+                     "heat", "chaud", "gray", "grey", "gris",
+                     "carto1", "carto2")) &&
         ! exists(palette, envir=.GlobalEnv))
     {
         makeColorPalettes.f()
@@ -110,11 +128,61 @@ PAMPAcolors.f <- function(n=1, palette=getOption("P.colPalette"), list=FALSE)
                   "gris"=,
                   "gray"={
                       .ColorPaletteGray(n)
+                  },
+                  "carto1"={
+                      if (n <= 5)
+                      {
+                          .ColorPaletteCarto1(5)[1:n]
+                      }else{
+                          .ColorPaletteCarto1(n)
+                      }
+                  },
+                  "carto2"={
+                      if (n <= 16)
+                      {
+                          .ColorPaletteCarto2(16)[1:n]
+                      }else{
+                          .ColorPaletteCarto2(n)
+                      }
+                  },
+                  "topo"={
+                      if (n <= 5)
+                      {
+                          topo.colors(5)[1:n]
+                      }else{
+                          topo.colors(n)
+                      }
                   })
 
     return(res)
 }
 
+########################################################################################################################
+collapse.max.f <- function(x, nmax=120, collapse="+", fillstr="...")
+{
+    ## Purpose: assemblage des noms de modalités avec contrôle sur la nombre
+    ##          de caractères
+    ## ----------------------------------------------------------------------
+    ## Arguments: x : chaîne de caractères à assembler.
+    ##            nmax : nombre maximum de lettres dans la chaîne assemblée.
+    ##            collapse : caractère d'assemblage ("+" par défaut).
+    ##            fillstr : chaîne de remplissage de dépassement.
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date:  2 mai 2013, 15:56
+
+    ## Collapse :
+    res <- paste(x, collapse=collapse)
+
+    ## test de longueur de chaîne :
+    if (nchar(res) > nmax)
+    {
+        res <- paste(substr(res, 1, as.integer(nmax/2) - 1),
+                     fillstr,
+                     substr(res, nchar(res) - as.integer(nmax/2) + 2, nchar(res)), sep="")
+    }
+
+    return(res)
+}
 
 ########################################################################################################################
 resFileGraph.f <- function(metrique, factGraph, modSel, listFact, ext, dataEnv,
@@ -158,28 +226,28 @@ resFileGraph.f <- function(metrique, factGraph, modSel, listFact, ext, dataEnv,
                                  ifelse(factGraph == "",
                                         "",
                                         paste(factGraph, "(", ifelse(modSel[1] != "",
-                                                                     paste(modSel, collapse="+"),
+                                                                     collapse.max.f(modSel, collapse="+"),
                                                                      "toutes"), ")_", sep=""))
                              },
                              "CL_espece"={
                                  ifelse(factGraph == "",
                                         "",
                                         paste(factGraph, "(", ifelse(modSel[1] != "",
-                                                                     paste(modSel, collapse="+"),
+                                                                     collapse.max.f(modSel, collapse="+"),
                                                                      "toutes"), ")_", sep=""))
                              },
                              "unitobs"={
                                  ifelse(factGraph == "",
                                         "(toutes_espèces)_",
                                         paste(factGraph, "(", ifelse(modSel[1] != "",
-                                                                     paste(modSel, collapse="+"),
+                                                                     collapse.max.f(modSel, collapse="+"),
                                                                      "toutes"), ")_", sep=""))
                              },
                              "CL_unitobs"={
                                  ifelse(factGraph == "",
                                         "(toutes_espèces)_",
                                         paste(factGraph, "(", ifelse(modSel[1] != "",
-                                                                     paste(modSel, collapse="+"),
+                                                                     collapse.max.f(modSel, collapse="+"),
                                                                      "toutes"), ")_", sep=""))
                              },
                              ""),
@@ -221,7 +289,8 @@ openDevice.f <- function(noGraph, metrique, factGraph, modSel, listFact, dataEnv
     {
         if (isTRUE(getOption("P.graphPNG")))
         {
-            if (noGraph == 1 || ! getOption("P.plusieursGraphPage"))
+            if (noGraph == 1 || ! getOption("P.plusieursGraphPage") ||
+                grepl(pattern="^carte_(boxplot|barplot)$", x=typeGraph))
             {
                 pngFileName <- resFileGraph.f(metrique=metrique, factGraph=factGraph, modSel=modSel, listFact=listFact,
                                               dataEnv=dataEnv, ext="png", prefix = typeGraph,
@@ -233,7 +302,8 @@ openDevice.f <- function(noGraph, metrique, factGraph, modSel, listFact, dataEnv
 
                 ## Si plusieurs graphiques par page :
                 if (getOption("P.plusieursGraphPage") && length(modSel) > 1 & # Regrouper dans une fonction de test
-                    !is.element(type, c("unitobs")))                          # (mutualiser le code). [!!!]
+                    ! is.element(type, c("unitobs")) &&                       # (mutualiser le code). [!!!]
+                    ! grepl(pattern="^carte_(boxplot|barplot)$", x=typeGraph))
                 {
                     png(pngFileName,
                         width=ifelse(large, 120, 90) * 15,
@@ -261,9 +331,10 @@ openDevice.f <- function(noGraph, metrique, factGraph, modSel, listFact, dataEnv
                 winFUN <- "X11"
             }
 
-            if (getOption("P.plusieursGraphPage") && # Plusieurs graphs par page...
-                    length(modSel) > 1 &&            # ...plus d'un facteur sélectionné...
-                    !is.element(type, c("unitobs"))) # ...et pas d'agrégation.
+            if (getOption("P.plusieursGraphPage") &&                           # Plusieurs graphs par page...
+                    length(modSel) > 1 &&                                      # ...plus d'un facteur sélectionné...
+                    ! is.element(type, c("unitobs")) &&                        # ...pas d'agrégation...
+                    ! grepl(pattern="^carte_(boxplot|barplot)$", x=typeGraph)) # ...et pas des cartes.
             {
                 if ((noGraph %% # ...et page remplie.
                      (getOption("P.nrowGraph") * getOption("P.ncolGraph"))) == 1)
@@ -320,8 +391,9 @@ openDevice.f <- function(noGraph, metrique, factGraph, modSel, listFact, dataEnv
 
             ## Si plusieurs graphiques par page :
             if (getOption("P.plusieursGraphPage") &&
-                length(modSel) > 1 &&            # Plus d'un facteur sélectionné.
-                !is.element(type, c("unitobs"))) # Pas d'agrégation.
+                length(modSel) > 1 &&                                      # Plus d'un facteur sélectionné.
+                ! is.element(type, c("unitobs")) &&                        # Pas d'agrégation.
+                ! grepl(pattern="^carte_(boxplot|barplot)$", x=typeGraph)) # ...et pas des cartes.
             {
                 par(mfrow=c(getOption("P.nrowGraph"), getOption("P.ncolGraph")))
             }else{}
@@ -335,9 +407,21 @@ openDevice.f <- function(noGraph, metrique, factGraph, modSel, listFact, dataEnv
     return(fileName)
 }
 
+########################################################################################################################
+isSubplot <- function()
+{
+    ## Purpose: Déterminer si l'on est dans un subplot ou non.
+    ## ----------------------------------------------------------------------
+    ## Arguments: aucun.
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date: 10 janv. 2013, 17:03
+
+    return(isTRUE(all.equal(getOption("P.pinSubplot"), par("fin"))))
+}
+
 
 ########################################################################################################################
-boxplotPAMPA.f <- function(exprBP, data, main=NULL, cex=getOption("P.cex"),...)
+boxplotPAMPA.f <- function(exprBP, data, main=NULL, cex=getOption("P.cex"), ylim=NULL,...)
 {
     ## Purpose: Boxplot avec un formatage pour pampa
     ## ----------------------------------------------------------------------
@@ -345,6 +429,7 @@ boxplotPAMPA.f <- function(exprBP, data, main=NULL, cex=getOption("P.cex"),...)
     ##            data : les données à utiliser.
     ##            main : titre du graphique.
     ##            cex : taille des caractères.
+    ##            ylim : limites desordonnées.
     ##            ... : arguments optionnels (passés à la fonction boxplot).
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 10 févr. 2011, 17:05
@@ -355,16 +440,19 @@ boxplotPAMPA.f <- function(exprBP, data, main=NULL, cex=getOption("P.cex"),...)
     ## Les couleurs pour l'identification des modalités du facteur de second niveau :
     colors <- colBoxplot.f(terms=attr(terms(exprBP), "term.labels"), data=data)
 
-    ## Suppression des valeurs infinies (plante ylims les graphiques) :
+    ## Suppression des valeurs infinies (plante ylims dans les graphiques) :
     tmpMetric <- replace(data[ , metrique], is.infinite(data[ , metrique]), NA)
 
     ## ylims :
-    ylim <- c(min(tmpMetric, na.rm=TRUE),
-              ifelse(getOption("P.maxExclu") && getOption("P.GraphPartMax") < 1,
-                     getOption("P.GraphPartMax") * max(tmpMetric, na.rm=TRUE),
-                     max(tmpMetric, na.rm=TRUE) +
-                     0.1*(max(tmpMetric, na.rm=TRUE) -
-                          min(tmpMetric, na.rm=TRUE))))
+    if (is.null(ylim))
+    {
+        ylim <- c(min(tmpMetric, na.rm=TRUE),
+                  ifelse(getOption("P.maxExclu") && getOption("P.GraphPartMax") < 1,
+                         getOption("P.GraphPartMax") * max(tmpMetric, na.rm=TRUE),
+                         max(tmpMetric, na.rm=TRUE) +
+                         0.1*(max(tmpMetric, na.rm=TRUE) -
+                              min(tmpMetric, na.rm=TRUE))))
+    }else{}
 
     ## Plot sans affichage pour récupérer l'objet :
     tmpBP <- boxplot(exprBP, data=data,
@@ -383,8 +471,10 @@ boxplotPAMPA.f <- function(exprBP, data, main=NULL, cex=getOption("P.cex"),...)
       {
           par(mai=c(
               ## Marge du bas dynamique :
-              ifelse((tmp <- lineInchConvert.f()$V * cex * unlist(par("lheight")) * (0.2 + 0.9) + # marge
-                                        # supplémentaire.
+              ifelse((tmp <- lineInchConvert.f()$V * cex * unlist(par("lheight")) *
+                      ifelse(isSubplot(),
+                             (0.2 + 1.0),   # cas des subplots.
+                             (0.2 + 0.9)) + # marge supplémentaire.
                       max(strDimRotation.f(tmpBP$names,
                                            srt=45,
                                            unit="inches",
@@ -392,8 +482,10 @@ boxplotPAMPA.f <- function(exprBP, data, main=NULL, cex=getOption("P.cex"),...)
                      0.65 * unlist(par("pin"))[2],
                      tmp),
               ## Marge de gauche dynamique :
-              tmp2 <- ifelse((tmp <- lineInchConvert.f()$H * cex * unlist(par("lheight")) * (1.4 +0.4 + 0.9) + # marge
-                                        # supplémentaire.
+              tmp2 <- ifelse((tmp <- lineInchConvert.f()$H * cex * unlist(par("lheight")) *
+                              ifelse(isSubplot(),
+                                     (0.8 +0.4 + 0.9),   # cas des subplots.
+                                     (1.4 +0.4 + 0.9)) + # marge supplémentaire.
                               max(strDimRotation.f(as.graphicsAnnot(pretty(range(if(getOption("P.maxExclu")
                                                                                     && getOption("P.GraphPartMax") < 1)
                                                                              {
@@ -407,17 +499,23 @@ boxplotPAMPA.f <- function(exprBP, data, main=NULL, cex=getOption("P.cex"),...)
                                                    srt=0,
                                                    unit="inches",
                                                    cex=cex)$width, na.rm=TRUE)) > 0.7 * unlist(par("pin"))[1],
-                             0.7 * unlist(par("pin"))[1],
+                             0.7 * unlist(par("pin"))[1], # marge maximale.
                              tmp),
               ## Marge supérieure augmentée s'il y a un titre :
-              ifelse(isTRUE(getOption("P.graphPaper")) || (! isTRUE(getOption("P.title"))),
-                     2 * lineInchConvert.f()$V,
-                     8 * lineInchConvert.f()$V),
+              ifelse(isSubplot(),
+                     2.5 * lineInchConvert.f()$V, # cas des subplots.
+                     ## ...sinon cas normal :
+                     ifelse(isTRUE(getOption("P.graphPaper")) || (! isTRUE(getOption("P.title"))),
+                            2 * lineInchConvert.f()$V,
+                            8 * lineInchConvert.f()$V)),
               ## Marge de droite :
-              lineInchConvert.f()$H * cex * unlist(par("lheight")) * 0.5) +
+              lineInchConvert.f()$H * cex * unlist(par("lheight")) *
+              ifelse(isSubplot(),
+                     1, 0.5)) +
                   lineInchConvert.f()$H * cex * unlist(par("lheight")) * 0.1,
               ## Distance du nom d'axe dépendante de la taille de marge gauche :
-              mgp=c(tmp2 / lineInchConvert.f()$H - 1.4, 0.9, 0))
+              mgp=c(tmp2 / lineInchConvert.f()$H -  ifelse(isSubplot(), 1.1, 1.4),
+                    ifelse(isSubplot(), 0.7, 0.9), 0))
 
           ## Valeur à minimiser :
           return(sum(abs(x - unlist(par("mai")))))
@@ -445,8 +543,8 @@ boxplotPAMPA.f <- function(exprBP, data, main=NULL, cex=getOption("P.cex"),...)
     text(x = seq_along(tmpBP$names),
          y = par("usr")[3] -
              ifelse(isTRUE(getOption("P.graphPDF")), # Coef différent pour les PDFs.
-                    0.020,
-                    0.030) * cex *
+                    ifelse(isSubplot(), 0.04, 0.02),
+                    ifelse(isSubplot(), 0.050, 0.027)) * cex *
              diff(range(par("usr")[3:4])),
          labels = tmpBP$names,
          xpd = TRUE, srt = 45, adj = c(1, 1),
@@ -557,6 +655,22 @@ unitConvX.f <- function(x=NULL, from="user", to="user")
     }
 }
 
+########################################################################################################################
+blank.plot.f <- function(x=c(0, 1), y=c(0, 1))
+{
+    ## Purpose: crée un graphique vide
+    ## ----------------------------------------------------------------------
+    ## Arguments: x : donne les limites de x.
+    ##            y : donne les limites de y.
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date:  6 mai 2013, 19:19
+
+    plot(x, y, type="n",
+         xaxt="n", yaxt="n",
+         main="", xlab="", ylab="",
+         bty="n",
+         xlim=range(x), ylim=range(y))
+}
 
 
 

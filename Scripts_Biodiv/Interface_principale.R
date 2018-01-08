@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2013-01-22 17:37:36 Yves>
+# Time-stamp: <2013-05-07 20:17:30 yves>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
@@ -93,6 +93,8 @@ mainInterface.create.f <- function()
     ## Sous menus :
     speciesMetrics <- tkmenu(traitement, tearoff=FALSE)
     unitobsMetrics <- tkmenu(traitement, tearoff=FALSE)
+    speciesMaps <- tkmenu(traitement, tearoff=FALSE)
+    unitobsMaps <- tkmenu(traitement, tearoff=FALSE)
     ## arbreRegression <- tkmenu(analyse, tearoff=FALSE)
     ## modelesInferentiels <- tkmenu(analyse, tearoff=FALSE)
     ## analysesExplo <- tkmenu(analyse, tearoff=FALSE)
@@ -261,6 +263,25 @@ mainInterface.create.f <- function()
           winRaise.f(W.main)
       })
 
+    tkadd(traitement, "cascade", label="Cartes",
+          menu=speciesMaps, background=.MenuBackground, state="disabled")
+
+    tkadd(speciesMaps, "command", label="Graphiques en barres ou boîtes à moustaches, par zone...",
+          background=.MenuBackground,
+          command=function ()
+      {
+          selectionVariables.carto.f(nextStep="spBarBoxplot.esp", dataEnv=.dataEnv, baseEnv=.baseEnv)
+          winRaise.f(W.main)
+      })
+
+    tkadd(speciesMaps, "command", label="Symboles de taille variable ou échelle de couleur, par zone...",
+          background=.MenuBackground,
+          command=function ()
+      {
+          selectionVariables.carto.f(nextStep="spSymbols.esp", dataEnv=.dataEnv, baseEnv=.baseEnv)
+          winRaise.f(W.main)
+      })
+
     ## Info :
     tkadd(traitement, "separator", background=.MenuBackground)
 
@@ -300,6 +321,24 @@ mainInterface.create.f <- function()
           winRaise.f(W.main)
       })
 
+    tkadd(traitement, "cascade", label="Cartes",
+          menu=unitobsMaps, background=.MenuBackground, state="disabled")
+
+    tkadd(unitobsMaps, "command", label="Graphiques en barres ou boîtes à moustaches, par zone...",
+          background=.MenuBackground,
+          command=function ()
+      {
+          selectionVariables.carto.f(nextStep="spBarBoxplot.unitobs", dataEnv=.dataEnv, baseEnv=.baseEnv)
+          winRaise.f(W.main)
+      })
+
+    tkadd(unitobsMaps, "command", label="Symboles de taille variable ou échelle de couleur, par zone...",
+          background=.MenuBackground,
+          command=function ()
+      {
+          selectionVariables.carto.f(nextStep="spSymbols.unitobs", dataEnv=.dataEnv, baseEnv=.baseEnv)
+          winRaise.f(W.main)
+      })
     ## ######################################
     ## Analyses :
 

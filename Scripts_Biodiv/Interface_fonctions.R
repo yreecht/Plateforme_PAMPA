@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2013-01-22 17:36:58 Yves>
+# Time-stamp: <2013-07-07 17:51:55 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
@@ -390,6 +390,7 @@ infoLoading.f <- function(msg="", icon="info", button=FALSE,
                    switch(titleType,
                           "load"="Infos de chargement",
                           "check"="Vérification des sélections",
+                          "warning"="Avertissement...",
                           "Infos de chargement"))
 
         ## Il faudra refaire le cadre principal d'info de chargement :
@@ -1126,28 +1127,37 @@ updateInterface.load.f <- function(baseEnv, tabObs)
     tkconfigure(get("B.DataRestore", envir=baseEnv), state="disabled")
     tkentryconfigure(get("selection", envir=baseEnv), 5, state="disabled")
 
-    if (length(getOption("P.MPA")) < 2 && getOption("P.MPA") == "NC")
+    ## if (length(getOption("P.MPA")) < 2 && getOption("P.MPA") == "NC")
+    ## {
+    ##     if (! grepl("^Carte",
+    ##                 tclvalue(tkentrycget(get("traitement", envir=baseEnv), "10", "-label"))))
+    ##     {
+    ##         tkadd(get("traitement", envir=baseEnv),
+    ##               "command", label="Carte de métrique /unité d'observation (démonstration)...",
+    ##               background="#FFFBCF",
+    ##               command=function ()
+    ##           {
+    ##               selectionVariablesCarte.f(dataEnv=dataEnv) # [!!!]  [yr: 3/1/2012]
+    ##               winRaise.f(get("W.main", envir=baseEnv))
+    ##           })
+    ##     }else{
+    ##         tkentryconfigure(get("traitement", envir=baseEnv), 10, state="normal")
+    ##     }
+    ## }else{
+    ##     if (grepl("^Carte",
+    ##               tclvalue(tkentrycget(get("traitement", envir=baseEnv), "10", "-label"))))
+    ##     {
+    ##         tkdelete(get("traitement", envir=baseEnv), "10", "10")
+    ##     }else{}
+    ## }
+
+    if (is.element("SpatialPolygonsDataFrame", class(baseEnv$.dataEnv$refspa)))
     {
-        if (! grepl("^Carte",
-                    tclvalue(tkentrycget(get("traitement", envir=baseEnv), "10", "-label"))))
-        {
-            tkadd(get("traitement", envir=baseEnv),
-                  "command", label="Carte de métrique /unité d'observation (démonstration)...",
-                  background="#FFFBCF",
-                  command=function ()
-              {
-                  selectionVariablesCarte.f(dataEnv=dataEnv) # [!!!]  [yr: 3/1/2012]
-                  winRaise.f(get("W.main", envir=baseEnv))
-              })
-        }else{
-            tkentryconfigure(get("traitement", envir=baseEnv), 10, state="normal")
-        }
+        tkentryconfigure(get("traitement", envir=baseEnv), 5, state="normal")
+        tkentryconfigure(get("traitement", envir=baseEnv), 11, state="normal")
     }else{
-        if (grepl("^Carte",
-                  tclvalue(tkentrycget(get("traitement", envir=baseEnv), "10", "-label"))))
-        {
-            tkdelete(get("traitement", envir=baseEnv), "10", "10")
-        }else{}
+        tkentryconfigure(get("traitement", envir=baseEnv), 5, state="disabled")
+        tkentryconfigure(get("traitement", envir=baseEnv), 11, state="disabled")
     }
 
     ## Suppression de la colonne "sélections" si besoin :

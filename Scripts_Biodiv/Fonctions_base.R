@@ -30,6 +30,47 @@
 ####################################################################################################
 
 ########################################################################################################################
+varNames.f <- function(fields, info="name", quote=TRUE)
+{
+    ## Purpose: revoyer les informations (en particulier nom) sur le nom
+    ##          "d'usage" d'un ou plusieurs champ(s).
+    ## ----------------------------------------------------------------------
+    ## Arguments: fields : champ(s) recherché(s).
+    ##            info : type d'info ("name", "article", "gender", "unit")
+    ##            quote : faut-il mettre des guillemets pour les noms de
+    ##                    champs tels-quels (pas de nom d'usage défini).
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date: 21 févr. 2013, 18:21
+
+    info <- info[1]
+
+    if (is.element(info, c("nom", "name")))
+    {
+        ## S'il n'est pas définit, le nom d'usage est remplacé par le nom de champ plutôt que par NA :
+        res <- ifelse(is.na(tmp <- varNames[fields, "nom"]),
+                      paste(ifelse(quote, "\"", ""),
+                            fields,
+                            ifelse(quote, "\"", ""), sep=""),
+                      tmp)
+    }else{
+        ## Possibilité de nommer les infos en français et anglais:
+        res <- ifelse(is.na(varNames[fields, info]),
+                      "",
+                      varNames[fields,
+                               switch(info,
+                                      "article"="article",
+                                      "genre"=,
+                                      "gender"="genre",
+                                      "unite"=,
+                                      "unit"="unite",
+                                      "nom")])
+    }
+
+    return(res)
+}
+
+
+########################################################################################################################
 dropLevels.f <- function(df, which=NULL)
 {
     ## Purpose: Supprimer les 'levels' non utilisés des facteurs d'une
@@ -431,13 +472,35 @@ printSelectionInfo.f <- function(metrique, factGraph, factGraphSel, listFact, li
     ## Author: Yves Reecht, Date: 11 sept. 2012, 10:41
 
     cat("\n##################################################\n",
-        "Métrique et facteurs (et éventuelles sélections) :\n",
+        "Métrique et facteurs (et éventuelles unité/sélections) :\n",
         sep="", file=File)
 
     ## Informations sur la métrique :
     cat("\n Métrique :", varNames[metrique, "nom"],
-        paste("(", varNames[metrique, "unite"],")", sep=""),
+        paste("(", varNames[metrique, "unite"],"),", sep=""),
         "\n", file=File)
+
+    ## Niveau d'agrégation :
+    cat("            agrégée par ",
+        switch(agregLevel,
+               "CL_espece"=,"CL_unitobs"=,"spCL_unitobs"=,"spCL_espece"={
+                   "classe de taille / "
+               }),
+        switch(agregLevel,
+               "CL_espece"=,"spCL_espece"=,"species"=,"spSpecies"=,"spEspece"={
+                   "espèce / "
+               }),
+        switch(agregLevel,
+               "spUnitobs"=,"spCL_unitobs"=,"spCL_espece"=,"spUnitobs(CL)"=,"spSpecies"=,"spEspece"={
+                   paste(listFact, " (moyenne sur les ", sep="")
+              }),
+        "unité d'observation",
+        switch(agregLevel,
+               "spUnitobs"=,"spCL_unitobs"=,"spCL_espece"=,"spUnitobs(CL)"=,"spSpecies"=,"spEspece"={
+                   ")"
+              }),
+        ".\n",
+        sep="", file=File)
 
     ## Facteurs de séparation de graphiques/analyses ou sélection d'observations :
     switch(agregLevel,
@@ -449,25 +512,29 @@ printSelectionInfo.f <- function(metrique, factGraph, factGraphSel, listFact, li
                    " : ",
                    ifelse(factGraph == "", "aucun !",
                           ifelse(is.na(factGraphSel[1]),
-                                 paste(varNames[factGraph, "nom"], "(attention, aucune sélection !!!)"),
-                                 paste(varNames[factGraph, "nom"], " (",
+                                 paste(varNames.f(factGraph, "nom"), "(attention, aucune sélection !!!)"),
+                                 paste(varNames.f(factGraph, "nom"), " (",
                                        paste(factGraphSel, collapse=", "), ")", sep=""))), "\n",
                    sep="", file=File)
            },
-           "unitobs"=,"CL_unitobs"={
+           "unitobs"=,"CL_unitobs"=,"unitobs(CL)"=,"spUnitobs"={
                cat("\nFacteur de sélection des observations à agréger : ",
                    ifelse(factGraph == "", "aucun (toutes les espèces/classes de taille) !",
                           ifelse(is.na(factGraphSel[1]),
-                                 paste(varNames[factGraph, "nom"], "(aucune sélection)"),
-                                 paste(varNames[factGraph, "nom"], " (",
+                                 paste(varNames.f(factGraph, "nom"), "(aucune sélection)"),
+                                 paste(varNames.f(factGraph, "nom"), " (",
                                        paste(factGraphSel, collapse=", "), ")", sep=""))), "\n",
                    sep="", file=File)
            })
 
     ## Facteurs de regroupements :
+    if (is.element(agregLevel, c("spCL_unitobs", "spCL_espece", "spSpecies", "spEspece",
+                                 "spUnitobs", "spUnitobs(CL)"))) {type <- "spatialGraph"}
+
     cat(switch(type,
                "graph"="\nFacteur(s) de regroupement : ",
-               "stat"="\nFacteur(s) de l'analyse : "), "\n",
+               "stat"="\nFacteur(s) de l'analyse : ",
+               "spatialGraph"="\nFacteur d'agrégation spatiale : "), "\n",
         file=File)
 
     invisible(sapply(1:length(listFact),
@@ -475,15 +542,15 @@ printSelectionInfo.f <- function(metrique, factGraph, factGraphSel, listFact, li
                  {
                      cat("\n  * ",
                          ifelse(is.na(listFactSel[[i]][1]),
-                                       paste(varNames[listFact[i], "nom"], "(aucune sélection)"),
-                                       paste(varNames[listFact[i], "nom"], " (",
+                                       paste(varNames.f(listFact[i], "nom"), "(aucune sélection)"),
+                                       paste(varNames.f(listFact[i], "nom"), " (",
                                              paste(listFactSel[[i]], collapse=", "), ")", sep="")), "\n",
                          sep="", file=File)
                  }))
 }
 
 ########################################################################################################################
-summary.fr <- function(object,...)
+summary.fr <- function(object, digits = max(3, getOption("digits") - 3),...)
 {
     ## Purpose: Franciser les sorties d'un summary (numeric uniquement).
     ## ----------------------------------------------------------------------
@@ -495,10 +562,10 @@ summary.fr <- function(object,...)
     if ( ! is.numeric(object)) stop("Erreur de programmation")
 
     ## Calcul du résumé :
-    res <- summary(object=object, ...)
+    res <- c(summary(object=object, digits, ...), "sd"=signif(sd(x=object), digits=digits), "N"=length(object))
 
     ## Changement des noms d'éléments :
-    names(res) <- c("Min.", "1er.Quart.", "Médiane", "Moyenne", "3e.Quart.", "Max")
+    names(res) <- c("Min.", "1er.Quart.", "Médiane", "Moyenne", "3e.Quart.", "Max", "Écart.type", "N")
 
     return(res)
 }
@@ -529,21 +596,24 @@ printStats.f <- function(Data, metrique, listFact, File, headline=NULL)
 
     capture.output(print(summary.fr(Data[ , metrique])), file=File, append=TRUE)
 
-    cat("\n#########################################",
-        "\nStatistiques par croisement de facteurs :\n\n", file=File, sep="")
+    if ( ! is.null(listFact))
+    {
+        cat("\n#########################################",
+            "\nStatistiques par croisement de facteurs :\n\n", file=File, sep="")
 
-    ## Calcul du summary pour chaque croisement (existant) de facteur :
-    res <- with(Data,
-                tapply(eval(parse(text=metrique)),
-                       INDEX=do.call(paste,
-                                     c(lapply(listFact,
-                                              function(y)eval(parse(text=y))),
-                                       sep=".")),
-                       FUN=summary.fr))
+        ## Calcul du summary pour chaque croisement (existant) de facteur :
+        res <- with(Data,
+                    tapply(eval(parse(text=metrique)),
+                           INDEX=do.call(paste,
+                                         c(lapply(listFact,
+                                                  function(y)eval(parse(text=y))),
+                                           sep=".")),
+                           FUN=summary.fr))
 
-    ## Assemblage du résultat dans un tableau
-    capture.output(print(do.call(rbind, res)),
-                   file=File, append=TRUE)
+        ## Assemblage du résultat dans un tableau
+        capture.output(print(do.call(rbind, res)),
+                       file=File, append=TRUE)
+    }else{}
 
     ## Ligne vide (pour l'esthétique) :
     cat("\n", file=File)

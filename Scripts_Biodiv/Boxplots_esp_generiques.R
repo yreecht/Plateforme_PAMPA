@@ -1,7 +1,8 @@
 #-*- coding: latin-1 -*-
+# Time-stamp: <2013-08-11 18:36:19 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
-##   Copyright (C) 2008-2010 Ifremer - Tous droits réservés.
+##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
 ##
 ##   Ce programme est un logiciel libre ; vous pouvez le redistribuer ou le
 ##   modifier suivant les termes de la "GNU General Public License" telle que
@@ -18,7 +19,7 @@
 ##   <http://www.gnu.org/licenses/>.
 
 ### File: Boxplot_generique_calc.R
-### Time-stamp: <2012-01-19 17:11:27 yreecht>
+### Created: <2012-01-19 17:11:27 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -71,7 +72,14 @@ colBoxplot.f <- function(terms, data)
 
     if (length(terms) < 2)
     {
-        return(NULL)
+        if (length(terms) == 1)
+        {
+            col <- PAMPAcolors.f(n=length(unique(na.omit(data[ , terms[1]]))))
+
+            return(col)
+        }else{
+            return(NULL)
+        }
     }else{
         n <- length(terms)
 
@@ -87,7 +95,7 @@ colBoxplot.f <- function(terms, data)
 
 
 ########################################################################################################################
-legendBoxplot.f <- function(terms, data)
+legendBoxplot.f <- function(terms, data, pch = 15, pt.cex=1.2, cex=0.9)
 {
     ## Purpose: Afficher la légende des couleurs (facteur de second
     ##          niveau)
@@ -110,8 +118,8 @@ legendBoxplot.f <- function(terms, data)
 
         ## Légende :
         legend("topright", names, col=colors,
-               pch = 15, pt.cex=1.2,
-               cex =0.9, title=varNames[terms[n - 1], "nom"])
+               pch = pch, pt.cex=pt.cex,
+               cex = cex, title=varNames.f(terms[n - 1], "nom"))
     }
 }
 
@@ -123,9 +131,8 @@ graphTitle.f <- function(metrique, modGraphSel, factGraph, listFact, model=NULL,
     ## Arguments:
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 14 oct. 2010, 15:44
-
     return(paste(ifelse(is.null(model),
-                        "valeurs de ",
+                        "Valeurs de ",
                         paste(model, " pour ", varNames[metrique, "article"], sep="")),
                  varNames[metrique, "nom"],
                  ifelse(is.element(type, c("espece", "unitobs", "CL_espece", "unitobs(CL)")),
@@ -179,7 +186,7 @@ graphTitle.f <- function(metrique, modGraphSel, factGraph, listFact, model=NULL,
                         ""),
                  "\n selon ",
                  paste(sapply(listFact[length(listFact):1],
-                              function(x)paste(varNames[x, c("article", "nom")], collapse="")),
+                              function(x)paste(c(varNames.f(x, "article"), varNames.f(x, "nom")), collapse="")),
                        collapse=" et "),
                  "\n", sep=""))
 }
@@ -627,7 +634,9 @@ WP2boxplot.f <- function(metrique, factGraph, factGraphSel, listFact, listFactSe
 
             ## On parcours tous les fichiers qui correspondent au motif :
             while (is.element(basename(tmpFile <- sub("\\%03d", formatC(i, width=3, flag="0"), graphFile)),
-                              dir(dirname(graphFile))))
+                              dir(dirname(graphFile))) &&
+                   ## Si pas de remplacement effectif, application pour i==1 uniquement :
+                   (i == 1 || grepl(pattern="\\%03d", graphFile)))
             {
                 tryCatch(embedFonts(file=tmpFile),
                          error=function(e)

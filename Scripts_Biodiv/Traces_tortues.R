@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2013-01-28 11:19:00 yves>
+# Time-stamp: <2013-05-01 16:29:12 yves>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
@@ -105,8 +105,8 @@ calc.nestingSuccess.f <- function(obs,
                             }))
 
 
-    ## Correction de NAs à la place de 0 dans pontes lorsque aucune traces observées mais nombre valide (0) : [!!!]
-    ## pontes[is.na(pontes) & ! is.na(Data[ , nbName])] <- 0
+    ## Correction de NAs à la place de 0 dans pontes lorsque aucune traces observées mais nombre valide (0) :
+    pontes[is.na(pontes) & ! is.na(Data[ , nbName])] <- 0
 
     ## Nombre de traces lisibles :
     traces.lisibles <- as.vector(tapply(subset(obs, grepl("^(oui|non)\\??$", obs$ponte))[ , "nombre"],
@@ -120,8 +120,8 @@ calc.nestingSuccess.f <- function(obs,
                                                       sum(x, na.rm=TRUE)))
                                     }))
 
-    ## Correction de NAs à la place de 0 dans traces lisibles lorsque aucune traces observées mais nombre valide (0) : [!!!]
-    ## traces.lisibles[is.na(traces.lisibles) & ! is.na(Data[ , nbName])] <- 0
+    ## Correction de NAs à la place de 0 dans traces lisibles lorsque aucune traces observées mais nombre valide (0) :
+    traces.lisibles[is.na(traces.lisibles) & ! is.na(Data[ , nbName])] <- 0
 
     return(data.frame("pontes"=pontes, "traces.lisibles"=traces.lisibles,
                       "reussite.ponte"=100 * pontes / traces.lisibles))

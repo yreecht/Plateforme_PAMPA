@@ -1,8 +1,8 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2012-12-03 17:12:54 yves>
+# Time-stamp: <2013-07-07 19:18:30 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
-##   Copyright (C) 2008-2012 Ifremer - Tous droits réservés.
+##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
 ##
 ##   Ce programme est un logiciel libre ; vous pouvez le redistribuer ou le
 ##   modifier suivant les termes de la "GNU General Public License" telle que
@@ -293,6 +293,10 @@ mergeSpaUnitobs.f <- function(unitobs, refspa, type="auto")
     ## Si issu d'un shapefile
     if (isPoly <- is.element("SpatialPolygonsDataFrame", class(refspa)))
     {
+        if (is.element("OBJECTID", colnames(slot(refspa, "data"))))
+        {
+            slot(refspa, "data")[ , "OBJECTID"] <- as.character(slot(refspa, "data")[ , "OBJECTID"])
+        }else{}
         ## Correspondance automatique des unitobs et du référentiel spatial :
         unitobs <- overlayUnitobs.f(unitobs=unitobs, refspa=refspa)
 

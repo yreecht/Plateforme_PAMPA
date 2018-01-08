@@ -3,13 +3,16 @@
 ## #########################################################################################################
 ## Exemple : faites de même avec vos jeux de donnée (sans les commentaires -- "## " -- en début de ligne.) :
 
-## #### RUN :
-## fileNameUnitobs <- "unitobspampaGCRMNpoisson-100810.txt"
-## fileNameObs <- "obspampaGCRMNpoisson-100810.txt"
-## fileNameRefesp <- "PAMPA-WP1-Meth-4-RefSpOM 110810.txt"
+## #### <Cas d'étude> :
+## fileNameUnitobs <- "<fichier_unitobs.txt>"
+## fileNameObs <- "<fichier_observations.txt>"
+## fileNameRefesp <- "<référentiel_espèces_général.txt>"
+## fileNameRefespLocal <- "<référentiel_espèces_local.txt>"
+## fileNameRefspa <- "<référentiel_spatial.txt|.shp>"
 ## nameWorkspace <- "C:/PAMPA"
 
-## Vous pouvez également définir des options par défaut personnalisées (donne accès aux options "cachées") :
+## Vous pouvez également définir des options par défaut personnalisées (donne également accès aux
+## options "cachées") :
 
 ## options(P.colPalette="gray", P.pointMoyenneCol = "black", P.sepGroupesCol = "#6f6f6f",
 ##         P.valMoyenneCol = "black", P.NbObsCol = "black",
@@ -24,6 +27,6 @@
 
 
      #############################################
-     ### Copiez votre configuration ci-dessous ###
+     ### Collez votre configuration ci-dessous ###
      #############################################
 

@@ -43,6 +43,7 @@ Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescrip
 
 [Files]
 Source: ".\Scripts_Biodiv\PAMPA WP2.bat"; DestDir: "{app}"; Flags: ignoreversion
+Source: ".\Scripts_Biodiv\R.bat"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\Scripts_Biodiv\img\*"; DestDir: "{app}\img"; Flags: ignoreversion
 Source: ".\Scripts_Biodiv\Doc\*"; DestDir: "{app}\Doc"; Flags: ignoreversion
 Source: ".\Scripts_Biodiv\Config.R"; DestDir: "{app}"; Flags: uninsneveruninstall
@@ -119,11 +120,11 @@ Name: "{#InstallDir}\Data"; Flags: uninsneveruninstall; Tasks: ; Languages:
 
 [code]
 // Sauvegarde de l'ancien config.r -> config.bak.R
-procedure CurStepChanged(CurStep: TSetupStep); 
+procedure CurStepChanged(CurStep: TSetupStep);
 var
   OldFile: string;
 begin
-  case CurStep of    
+  case CurStep of
     ssInstall:
       begin
         OldFile := ExpandConstant('{app}\Config.R');

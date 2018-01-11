@@ -4,7 +4,7 @@
 #define MyAppName "PAMPA Ressources & Biodiversité"
 #define MyAppVersion "2.8-beta2"
 #define MyAppPublisher "Ifremer"
-#define MyAppURL "http://wwz.ifremer.fr/pampa/"
+#define MyAppURL "https://github.com/yreecht/Plateforme_PAMPA/releases"
 #define MyAppExeName "PAMPA WP2.bat"
 #define InstallDir "C:\PAMPA"
 #define ExecDir "Scripts_Biodiv"
@@ -43,6 +43,7 @@ Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescrip
 
 [Files]
 Source: ".\Scripts_Biodiv\PAMPA WP2.bat"; DestDir: "{app}"; Flags: ignoreversion
+Source: ".\Scripts_Biodiv\R.bat"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\Scripts_Biodiv\img\*"; DestDir: "{app}\img"; Flags: ignoreversion
 Source: ".\Scripts_Biodiv\Doc\*"; DestDir: "{app}\Doc"; Flags: ignoreversion
 Source: ".\Scripts_Biodiv\Config.R"; DestDir: "{app}"; Flags: uninsneveruninstall onlyifdoesntexist

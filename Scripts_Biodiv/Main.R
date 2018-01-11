@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2013-04-26 11:06:18 Yves>
+# Time-stamp: <2018-01-09 10:24:26 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
@@ -32,7 +32,7 @@
 ####################################################################################################
 
 ## ** Version **
-options(versionPAMPA = "2.8-alpha1")
+options(versionPAMPA = "2.8-beta2")
 
 ## Platform-specific treatment:
 ## Identification du dossier parent (d'installation) :

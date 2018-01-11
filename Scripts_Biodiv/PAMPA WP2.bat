@@ -1,5 +1,5 @@
 :: -*- coding: latin-1 -*-
-:: Time-stamp: <2018-01-11 11:48:50 yreecht>
+:: Time-stamp: <2018-01-11 13:07:20 yreecht>
 
 :: Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ::   Copyright (C) 2008-2017 Ifremer - Tous droits réservés.
@@ -24,6 +24,5 @@ rem R version can be easily forced uncommenting/adapting the set command.
 rem   For example, forcing R 2.15.3 (must be installed, loading fails otherwise):
 
 rem set R_VER=R-2.15.3
-start "PAMPA WP2" cmd /c set R_PROFILE=Scripts_Biodiv/Rprofile.site ^&^
-      .\Scripts_Biodiv\R.bat path ^&^
-      Rgui.exe --no-restore --no-save --sdi
+set R_PROFILE=Scripts_Biodiv/Rprofile.site
+cmd /c  .\Scripts_Biodiv\R.bat path ^& start "PAMPA WP2" Rgui.exe --no-restore --no-save --sdi

@@ -1,8 +1,8 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2013-07-07 17:51:55 yreecht>
+# Time-stamp: <2018-01-11 13:07:21 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
-##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
+##   Copyright (C) 2008-2017 Ifremer - Tous droits réservés.
 ##
 ##   Ce programme est un logiciel libre ; vous pouvez le redistribuer ou le
 ##   modifier suivant les termes de la "GNU General Public License" telle que
@@ -586,7 +586,7 @@ apropos.f <- function()
     tkinsert(TX.develop, "end", "\n\n Contacts : ")
     tktag.add(TX.develop, "title2", "end -1 lines linestart", "end")
 
-    email <- "developpeur-wp2@projet-pampa.fr"
+    email <- "Yves.Reecht@marine.ie"
     tkinsert(TX.develop, "end", email)
     tktag.add(TX.develop, "email",
               paste("end -", nchar(email) + 1, " chars", sep=""), "end -1 chars")
@@ -671,7 +671,7 @@ apropos.f <- function()
 
     tkinsert(TX.finance, "end", "\n Retrouvez les tous sur le site institutionnel PAMPA : \n ")
 
-    linkP <- "http://wwz.ifremer.fr/pampa/Partenaires"
+    linkP <- "https://wwz.ifremer.fr/pampa/Partenaires"
     tkinsert(TX.finance, "end", linkP)
     tktag.add(TX.finance, "linkP",
               paste("end -", nchar(linkP) + 1, " chars", sep=""), "end -1 chars")

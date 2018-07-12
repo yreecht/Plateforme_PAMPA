@@ -1,8 +1,8 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-01-11 13:07:23 yreecht>
+# Time-stamp: <2018-07-12 10:47:21 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
-##   Copyright (C) 2008-2017 Ifremer - Tous droits réservés.
+##   Copyright (C) 2008-2018 Ifremer - Tous droits réservés.
 ##
 ##   Ce programme est un logiciel libre ; vous pouvez le redistribuer ou le
 ##   modifier suivant les termes de la "GNU General Public License" telle que
@@ -32,7 +32,8 @@
 ####################################################################################################
 
 ## ** Version **
-options(versionPAMPA = "2.8-beta3")
+options(versionPAMPA = "3.0-Intl-alpha1",
+        defaultLang = "en")
 
 ## Platform-specific treatment:
 ## Identification du dossier parent (d'installation) :
@@ -69,12 +70,12 @@ source("./Scripts_Biodiv/Fonctions_base.R", encoding="latin1")                  
 
 ## ...la création de l'interface :
 source("./Scripts_Biodiv/Interface_fonctions.R", encoding="latin1")                    # OK
-source("./Scripts_Biodiv/Interface_principale.R", encoding="latin1")                   # OK
+source("./Scripts_Biodiv/Interface_principale.R", encoding="latin1")                   # OK [mln]
 
 ## anciennes fonctions annexes de visualisation des données (corrigées) :
-source("./Scripts_Biodiv/Gestionmessages.R", encoding="latin1")                        # faite
-source("./Scripts_Biodiv/Testfichier.R", encoding="latin1")                            # faite
-source("./Scripts_Biodiv/View.R", encoding="latin1")                                   # faite
+source("./Scripts_Biodiv/Gestionmessages.R", encoding="latin1")                        # done
+source("./Scripts_Biodiv/Testfichier.R", encoding="latin1")                            # done
+source("./Scripts_Biodiv/View.R", encoding="latin1")                                   # done
 
 ## ...le chargement des données :
 source("./Scripts_Biodiv/Chargement_fichiers.R", encoding="latin1")                    # OK
@@ -149,6 +150,12 @@ mainInterface.create.f()
 ## [???] : comprend pas !
 ## [sup] : supprimé.
 ## [dep] : déplacé (menu).
+
+## Translation tags:
+## [mln]: not started
+## [mli]: irrelevant
+## [mlo]: ongoing
+## [mld]: Done
 
 
 ### Local Variables:

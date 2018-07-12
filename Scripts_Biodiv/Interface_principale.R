@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2013-05-07 20:17:30 yves>
+# Time-stamp: <2018-07-12 11:18:29 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
@@ -54,7 +54,7 @@ mainInterface.create.f <- function()
 
     W.main <- tktoplevel(height=600, width=800, background="#FFFFFF")
 
-    tkwm.title(W.main, "Indicateurs relatifs à la biodiversité et aux ressources")
+    tkwm.title(W.main, mltext("W.main.title"))
 
     tkwm.maxsize(W.main,
                  tkwinfo("screenwidth", W.main),
@@ -74,12 +74,12 @@ mainInterface.create.f <- function()
     ## initialisation des entrées de menu déchirables (i.e. qui donne accès à un sous menu)
 
     ## Boutons de menus :
-    MB.import <- tkmenubutton(F.menu, text="Données", state="normal")
-    MB.selection <- tkmenubutton(F.menu, text="Sélection et recalcul", state="disabled")
-    MB.traitement <- tkmenubutton(F.menu, text="Graphiques", state="disabled")
-    MB.analyse <- tkmenubutton(F.menu, text="Statistiques", state="disabled")
-    MB.outils <- tkmenubutton(F.menu, text="Outils", state="normal")
-    MB.pampainfos <- tkmenubutton(F.menu, text="Aide", state="normal")
+    MB.import <- tkmenubutton(F.menu, text=mltext("MB.import"), state="normal")
+    MB.selection <- tkmenubutton(F.menu, text= mltext("MB.selection"), state="disabled")
+    MB.traitement <- tkmenubutton(F.menu, text= mltext("MB.traitement"), state="disabled")
+    MB.analyse <- tkmenubutton(F.menu, text= mltext("MB.analyse"), state="disabled")
+    MB.outils <- tkmenubutton(F.menu, text= mltext("MB.outils"), state="normal")
+    MB.pampainfos <- tkmenubutton(F.menu, text= mltext("MB.pampainfos"), state="normal")
 
 
     ## Menus associés :
@@ -108,7 +108,7 @@ mainInterface.create.f <- function()
     tkconfigure(MB.pampainfos, menu=pampainfos, activebackground="#81a5dc", background=.TopMenueBackground)
 
     ## Bouton pour quitter :
-    B.quit.main <- tkbutton(F.menu, text=" Quitter... ",
+    B.quit.main <- tkbutton(F.menu, text= mltext("B.quit.main"),
                             command=function()
                         {
                             quitConfirm.f(W.main)
@@ -117,7 +117,7 @@ mainInterface.create.f <- function()
 
 
     ## Fermeture de tous les graphiques :
-    B.graphicsOFF <- tkbutton(F.menu, text="Fermer les graphiques", command=graphics.off,
+    B.graphicsOFF <- tkbutton(F.menu, text= mltext("B.graphicsOFF"), command=graphics.off,
                               activebackground="#81a5dc")
 
 
@@ -132,7 +132,7 @@ mainInterface.create.f <- function()
     ## Menu deroulant des Données :
 
     ## Imports :
-    tkadd(import, "command", label="Choix des dossiers et fichiers de données...",
+    tkadd(import, "command", label= mltext("menu.import.manual"),
           accelerator="CTRL+N",
           command = function()
       {
@@ -141,7 +141,7 @@ mainInterface.create.f <- function()
       },
           background=.MenuBackground)
 
-    tkadd(import, "command", label="Dossiers et fichiers par défaut", accelerator="CTRL+A",
+    tkadd(import, "command", label= mltext("menu.import.default"), accelerator="CTRL+A",
           command = function()
       {
           tryCatchLoad.f(expr=loadDefault.f(baseEnv=.baseEnv, dataEnv=.dataEnv),

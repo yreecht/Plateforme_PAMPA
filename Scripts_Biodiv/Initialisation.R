@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2013-04-24 17:31:06 yves>
+# Time-stamp: <2018-07-12 11:00:17 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
@@ -58,6 +58,12 @@ assign(".fileimage", .fileimage, envir=.GlobalEnv)
 #### Image de lien de tables :
 .fileimageLink <- "./Scripts_Biodiv/img/tableLink.GIF"
 assign(".fileimageLink", .fileimageLink, envir=.GlobalEnv)
+
+## ####################################################################################################
+## Load translation table:
+.translations <- read.csv("./Scripts_Biodiv/Translations.csv", stringsAsFactor = FALSE, row.names = 1)
+assign(".translations", .translations, envir=.GlobalEnv)
+
 
 
 ########################################################################################################################

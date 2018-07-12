@@ -1,0 +1,12 @@
+msgid,fr,en
+W.main.title,Indicateurs relatifs à la biodiversité et aux ressources,Biodiversity and Resource indicators
+MB.import,Données,Data
+MB.selection,Sélection et recalcul,Subsetting
+MB.traitement,Graphiques,Graphics
+MB.analyse,Statistiques,Statistics
+MB.outils,Outils,Tools
+MB.pampainfos,Aide,Help
+B.quit.main, Quitter... ,   Exit...   
+B.graphicsOFF,Fermer les graphiques,Close all graphics
+menu.import.manual,Choix des dossiers et fichiers de données...,Manual selection of directory and files...
+menu.import.default,Dossiers et fichiers par défaut,Default directory and files

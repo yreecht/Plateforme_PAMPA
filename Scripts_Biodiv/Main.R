@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-07-12 10:47:21 yreecht>
+# Time-stamp: <2018-07-17 15:05:00 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2018 Ifremer - Tous droits réservés.
@@ -61,7 +61,7 @@ basePath <- getwd()
 ## Répertoire de travail par défaut (si pas configuré par ailleurs) :
 nameWorkspace <- basePath
 
-########################################################################################################################
+## #############################################################################################################
 ## Chargement des fonctions de la plateforme pour :
                                                                                        # Mise en forme du code :
 ## ...les fonctions communes de base :                                                 # -----------------------
@@ -70,7 +70,7 @@ source("./Scripts_Biodiv/Fonctions_base.R", encoding="latin1")                  
 
 ## ...la création de l'interface :
 source("./Scripts_Biodiv/Interface_fonctions.R", encoding="latin1")                    # OK
-source("./Scripts_Biodiv/Interface_principale.R", encoding="latin1")                   # OK [mln]
+source("./Scripts_Biodiv/Interface_principale.R", encoding="latin1")                   # OK [mlo]
 
 ## anciennes fonctions annexes de visualisation des données (corrigées) :
 source("./Scripts_Biodiv/Gestionmessages.R", encoding="latin1")                        # done

@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-07-12 11:18:29 yreecht>
+# Time-stamp: <2018-07-17 16:30:53 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
@@ -152,7 +152,7 @@ mainInterface.create.f <- function()
     ## Informations sur les données :
     tkadd(import, "separator", background=.MenuBackground)
 
-    tkadd(import, "command", label="Test du référentiel (espèces concernées)", underline=9, accelerator="CTRL+R",
+    tkadd(import, "command", label=mltext("menu.import.test.refesp"), underline=9, accelerator="CTRL+R",
           state="disabled", command = function(){testfileref.f(dataEnv=.dataEnv, baseEnv=.baseEnv)},
           background=.MenuBackground)
 
@@ -162,21 +162,21 @@ mainInterface.create.f <- function()
     ## tkadd(import, "command", label="Champs de 'TableMetrique' et TableBiodiv", underline=0, accelerator="CTRL+M",
     ##       state="disabled")
 
-    tkadd(import, "command", label="Plan d'échantillonnage basique", accelerator="CTRL+P", state="disabled",
+    tkadd(import, "command", label=mltext("menu.import.design"), accelerator="CTRL+P", state="disabled",
           command = function()
       {
           VoirPlanEchantillonnage.f(dataEnv=.dataEnv)
       },
           background=.MenuBackground)
 
-    tkadd(import, "command", label="Info données par espèces", state="disabled", accelerator="CTRL+E",
+    tkadd(import, "command", label=mltext("menu.import.info.sp"), state="disabled", accelerator="CTRL+E",
           command = function()
        {
            VoirInformationsDonneesEspeces.f(dataEnv=.dataEnv, image=imageAMP)
        },
           background=.MenuBackground)
 
-    tkadd(import, "command", label="Info données par unité d'observation",
+    tkadd(import, "command", label=mltext("menu.import.info.unitobs"),
           state="disabled", accelerator="CTRL+U",
           command = function()
       {
@@ -187,7 +187,7 @@ mainInterface.create.f <- function()
     ## ######################################
     ## Sélection et recalcul :
 
-    tkadd(selection, "command", label="Selon un champ du référentiel espèce...",
+    tkadd(selection, "command", label=mltext("menu.select.refesp"),
           background=.MenuBackground,
           command = function ()
       {
@@ -195,7 +195,7 @@ mainInterface.create.f <- function()
           winRaise.f(W.main)
       })
 
-    tkadd(selection, "command", label="Selon un champ des unités d'observation...",
+    tkadd(selection, "command", label=mltext("menu.select.unitobs"),
           background=.MenuBackground,
           command = function ()
       {
@@ -204,15 +204,15 @@ mainInterface.create.f <- function()
       })
 
     tkadd(selection, "separator", background=.MenuBackground)
-    tkadd(selection, "checkbutton", label="Par liste d'espèces (fichier)",
+    tkadd(selection, "checkbutton", label=mltext("menu.select.sp.list"),
           background=.MenuBackground,
           ## variable=SelectListEsp, # à quoi sert cette variable ? [???]
           ## onvalue=1, offvalue=0,
-          command = function() message("En développement !"), state="disabled")
+          command = function() message(mltext("msg.ongoing.dev")), state="disabled")
 
     ## Restauration des données :
     tkadd(selection, "separator", background=.MenuBackground)
-    tkadd(selection, "command", label="Restaurer les données originales",
+    tkadd(selection, "command", label=mltext("menu.select.restore"),
           background=.MenuBackground,
           state="disabled",
           command = function ()
@@ -227,7 +227,7 @@ mainInterface.create.f <- function()
     ## Info :
     tkadd(traitement, "separator", background=.MenuBackground)
 
-    tkadd(traitement, "command", label="Par espèce ou classe de taille d'espèce :",
+    tkadd(traitement, "command", label=mltext("menu.sub.szsp"),
           foreground="darkred", background="#dadada",
           font=tkfont.create(weight="bold", size=8),
           state="normal")
@@ -237,7 +237,7 @@ mainInterface.create.f <- function()
     ##       background=.MenuBackground)
 
     ## Boxplots espèces :
-    tkadd(traitement, "command", label="Graphiques en \"boîtes à moustaches\" (boxplots)...",
+    tkadd(traitement, "command", label=mltext("menu.graphs.boxplots"),
           background=.MenuBackground,
           command=function ()
       {
@@ -246,7 +246,7 @@ mainInterface.create.f <- function()
       })
 
     ## Barplots espèces :
-    tkadd(traitement, "command", label="Graphiques en barres (barplots)...",
+    tkadd(traitement, "command", label=mltext("menu.graphs.barplots"),
           background=.MenuBackground,
           command=function ()
       {
@@ -255,7 +255,7 @@ mainInterface.create.f <- function()
       })
 
     ## Barplots d'occurrence par espèces :
-    tkadd(traitement, "command", label="Fréquences d'occurrence (/espèce sur des unité d'observation)...",
+    tkadd(traitement, "command", label=mltext("menu.graphs.occ.freq"),
           background=.MenuBackground,
           command=function ()
       {
@@ -263,10 +263,10 @@ mainInterface.create.f <- function()
           winRaise.f(W.main)
       })
 
-    tkadd(traitement, "cascade", label="Cartes",
+    tkadd(traitement, "cascade", label=mltext("menu.graphs.maps"),
           menu=speciesMaps, background=.MenuBackground, state="disabled")
 
-    tkadd(speciesMaps, "command", label="Graphiques en barres ou boîtes à moustaches, par zone...",
+    tkadd(speciesMaps, "command", label=mltext("menu.graphs.maps.barplots"),
           background=.MenuBackground,
           command=function ()
       {
@@ -274,7 +274,7 @@ mainInterface.create.f <- function()
           winRaise.f(W.main)
       })
 
-    tkadd(speciesMaps, "command", label="Symboles de taille variable ou échelle de couleur, par zone...",
+    tkadd(speciesMaps, "command", label=mltext("menu.graphs.maps.symbols"),
           background=.MenuBackground,
           command=function ()
       {
@@ -285,7 +285,7 @@ mainInterface.create.f <- function()
     ## Info :
     tkadd(traitement, "separator", background=.MenuBackground)
 
-    tkadd(traitement, "command", label="Plusieurs espèces ou classes de taille, agrégées par unité d'observation :",
+    tkadd(traitement, "command", label=mltext("menu.sub.aggr.szsp"),
           foreground="darkred", background="#dadada",
           font=tkfont.create(weight="bold", size=8),
           state="normal")
@@ -295,7 +295,7 @@ mainInterface.create.f <- function()
     ##       background=.MenuBackground)
 
     ## Boxplots unitobs :
-    tkadd(traitement, "command", label="Graphiques en \"boîtes à moustaches\" (boxplots)...",
+    tkadd(traitement, "command", label=mltext("menu.graphs.boxplots"),
           background=.MenuBackground,
           command=function ()
       {
@@ -304,7 +304,7 @@ mainInterface.create.f <- function()
       })
 
     ## Barplots unitobs :
-    tkadd(traitement, "command", label="Graphiques en barres (barplots)...",
+    tkadd(traitement, "command", label=mltext("menu.graphs.barplots"),
           background=.MenuBackground,
           command=function ()
       {
@@ -313,7 +313,7 @@ mainInterface.create.f <- function()
       })
 
     ## Barplots d'occurrence par unitobs :
-    tkadd(traitement, "command", label="Fréquences d'occurrence (/facteurs d'unité d'observation)...",
+    tkadd(traitement, "command", label=mltext("menu.graphs.occ.freq.unitobs"),
           background=.MenuBackground,
           command=function ()
       {
@@ -321,10 +321,10 @@ mainInterface.create.f <- function()
           winRaise.f(W.main)
       })
 
-    tkadd(traitement, "cascade", label="Cartes",
+    tkadd(traitement, "cascade", label=mltext("menu.graphs.maps"),
           menu=unitobsMaps, background=.MenuBackground, state="disabled")
 
-    tkadd(unitobsMaps, "command", label="Graphiques en barres ou boîtes à moustaches, par zone...",
+    tkadd(unitobsMaps, "command", label=mltext("menu.graphs.boxplots.zone"),
           background=.MenuBackground,
           command=function ()
       {
@@ -332,7 +332,7 @@ mainInterface.create.f <- function()
           winRaise.f(W.main)
       })
 
-    tkadd(unitobsMaps, "command", label="Symboles de taille variable ou échelle de couleur, par zone...",
+    tkadd(unitobsMaps, "command", label=mltext("menu.graphs.maps.symbols.zone"),
           background=.MenuBackground,
           command=function ()
       {
@@ -356,13 +356,13 @@ mainInterface.create.f <- function()
     ## Modèles inférentiels :
 
     ## Info :
-    tkadd(modelesInferentiels, "command", label="Par espèce ou classe de taille d'espèce :",
+    tkadd(modelesInferentiels, "command", label=mltext("menu.sub.szsp"),
           foreground="darkred", background="#dadada",
           font=tkfont.create(weight="bold", size=8),
           state="normal")
 
     ## (G)LMs espèces
-    tkadd(modelesInferentiels, "command", label="Modèles linéaires, métrique /espèce/unité d'observation...",
+    tkadd(modelesInferentiels, "command", label=mltext("menu.stats.sp.unitobs"),
           background=.MenuBackground,
           command=function ()
       {
@@ -371,8 +371,7 @@ mainInterface.create.f <- function()
       })
 
     ## MRT espèces :
-    tkadd(modelesInferentiels, "command", label=paste("Arbres de régression multivariée,",
-                                          " métrique / espèces / unité d'observation...", sep=""),
+    tkadd(modelesInferentiels, "command", label=mltext("menu.stats.MRT.esp"), sep=""),
           background=.MenuBackground,
           command=function ()
       {
@@ -383,13 +382,13 @@ mainInterface.create.f <- function()
     ## Info :
     tkadd(modelesInferentiels, "separator", background=.MenuBackground)
 
-    tkadd(modelesInferentiels, "command", label="Plusieurs espèces ou classes de taille, agrégées par unité d'observation :",
+    tkadd(modelesInferentiels, "command", label=mltext("menu.sub.aggr.szsp"),
           foreground="darkred", background="#dadada",
           font=tkfont.create(weight="bold", size=8),
           state="normal")
 
     ## (G)LMs unitobs :
-    tkadd(modelesInferentiels, "command", label="Modèles linéaires, métrique /unité d'observation (dont biodiversité)...",
+    tkadd(modelesInferentiels, "command", label=mltext("menu.stats.unitobs"),
           background=.MenuBackground,
           command=function ()
       {
@@ -398,8 +397,7 @@ mainInterface.create.f <- function()
       })
 
     ## MRT unitobs :
-    tkadd(modelesInferentiels, "command", label=paste("Arbres de régression multivariée,",
-                                          " métrique /unité d'observation (dont biodiversité)...", sep=""),
+    tkadd(modelesInferentiels, "command", label=mltext("menu.stats.MRT.unitobs"),
           background=.MenuBackground,
           command=function ()
       {
@@ -411,14 +409,17 @@ mainInterface.create.f <- function()
     ## ######################################
     ## Menu deroulant des outils :
 
-    tkadd(outils, "command", label="Options d'export...", command = generalOptions.f, state="normal",
+    tkadd(outils, "command", label=mltext("menu.tools.export.opt"),
+          command = generalOptions.f, state="normal",
           background=.MenuBackground)
 
-    tkadd(outils, "command", label="Options graphiques...", command = tuneGraphOptions.f, state="normal",
+    tkadd(outils, "command", label=mltext("menu.tools.graph.opt"),
+          command = tuneGraphOptions.f, state="normal",
           background=.MenuBackground)
+
     tkadd(outils, "separator", background=.MenuBackground)
 
-    tkadd(outils, "command", label="Lier les unités d'observations et le référentiel spatial...",
+    tkadd(outils, "command", label=mltext("menu.tools.link.unitobs.refspa"),
           command=function()
       {
           unitobsTmp <- mergeSpaUnitobs.f(unitobs=get(".unitobsSmall", envir=.dataEnv),
@@ -433,7 +434,7 @@ mainInterface.create.f <- function()
       },
           state="disabled", background=.MenuBackground)
 
-    tkadd(outils, "command", label="Réorganiser des facteurs des unités d'observation...",
+    tkadd(outils, "command", label=mltext("menu.tools.reorder.fact.unitobs"),
           state="disabled", background=.MenuBackground,
           command=function()
       {
@@ -442,7 +443,7 @@ mainInterface.create.f <- function()
                  envir=.dataEnv)
       })
 
-    tkadd(outils, "command", label="Réorganiser des facteurs du référentiel espèces...",
+    tkadd(outils, "command", label=mltext("menu.tools.reorder.fact.refesp"),
           state="disabled", background=.MenuBackground,
           command=function()
       {
@@ -452,7 +453,7 @@ mainInterface.create.f <- function()
       })
     tkadd(outils, "separator", background=.MenuBackground)
 
-    tkadd(outils, "command", label="Éditer le fichier de configuration",
+    tkadd(outils, "command", label=mltext("menu.tools.edit.conf"),
           background=.MenuBackground,
           command=function()
       {
@@ -460,7 +461,7 @@ mainInterface.create.f <- function()
       })
     tkadd(outils, "separator", background=.MenuBackground)
 
-    tkadd(outils, "command", label="Créer un rapport de bug", state="normal",
+    tkadd(outils, "command", label=mltext("menu.tools.bugreport"), state="normal",
           background=.MenuBackground,
           command = function()
       {
@@ -468,11 +469,11 @@ mainInterface.create.f <- function()
       })
     tkadd(outils, "separator", background=.MenuBackground)
 
-    tkadd(outils, "command", label="mise à jour (site de téléchargement)", state="normal",
+    tkadd(outils, "command", label=mltext("menu.tools.update"), state="normal",
           background=.MenuBackground,
           command = function()
       {
-          browseURL("http://www.projet-pampa.fr/wiki/doku.php/wp2:telechargement")
+          browseURL("https://github.com/yreecht/Plateforme_PAMPA/releases")
       })
 
     ## tkadd(outils, "command", label="Langue", state="disabled", command = test.f)
@@ -484,14 +485,15 @@ mainInterface.create.f <- function()
     ## Menu deroulant de l'aide
 
     ## Accès aux documentations :
-    tkadd(pampainfos, "command", label="Documentation en ligne",
+    tkadd(pampainfos, "command", label=mltext("menu.help.online.doc"),
           background=.MenuBackground,
+          state="disabled",
           command = function()
       {
-          browseURL("http://www.projet-pampa.fr/wiki/doku.php/wp2:wp2#documentation")
+          browseURL("https://github.com/yreecht/Plateforme_PAMPA/wiki")
       })
 
-    tkadd(pampainfos, "command", label="Documentation (locale)",
+    tkadd(pampainfos, "command", label=mltext("menu.help.local.doc"),
           background=.MenuBackground,
           command = function()
       {
@@ -500,17 +502,18 @@ mainInterface.create.f <- function()
                          dir(paste(basePath, "/Scripts_Biodiv/Doc", sep="")), perl=TRUE)])
       })
 
-    tkadd(pampainfos, "command", label="Forum d'entraide",
+    tkadd(pampainfos, "command", label=mltext("menu.help.forum"),
           background=.MenuBackground,
+          state="disabled",
           command = function()
       {
-          browseURL("http://www.projet-pampa.fr/forum/viewforum.php?id=2")
+          browseURL("")
       })
 
 
     ## À propos... :
     tkadd(pampainfos, "separator", background=.MenuBackground)
-    tkadd(pampainfos, "command", label="À propos de la plateforme...", command = apropos.f,
+    tkadd(pampainfos, "command", label=mltext("menu.help.about"), command = apropos.f,
           background=.MenuBackground)
 
     ## #########################################################################
@@ -534,7 +537,7 @@ mainInterface.create.f <- function()
 
     ## Frames d'aide :
     titreAideContextuelle <- tklabel(F.aide, #width=106,
-                                     text="Vous pouvez...",
+                                     text=mltext("helpframe.Ucan"),
                                      background="#FFF07F", justify="left",
                                      font=tkfont.create(family="arial", size=10))
 
@@ -574,7 +577,7 @@ mainInterface.create.f <- function()
     ## Zone d'information sur l'espace de travail :
     tkgrid(ResumerEspaceTravail <-
            tklabel(frameOverall,
-                   text=paste("Espace de travail : ", "non sélectionné."),
+                   text=mltext("workspace.none"),
                    background=.FrameBackground,
                    width=117,
                    font=tkfont.create(size=9)))
@@ -588,7 +591,7 @@ mainInterface.create.f <- function()
 
     tkgrid(ResumerAMPetType <-
            tklabel(frameOverall,
-                   text="Aucun jeu de données chargé pour l'instant !",
+                   text=mltext("datainfo.none"),
                    background=.FrameBackground,
                    font=tkfont.create(size=9)))
 
@@ -602,14 +605,14 @@ mainInterface.create.f <- function()
     ## tkgrid.propagate(frameOverall, "1")
 
     ## Bouton de restauration des données originales :
-    B.DataRestore <- tkbutton(F.titreSelect, text="Restaurer les données",
+    B.DataRestore <- tkbutton(F.titreSelect, text=mltext("B.DataRestore"),
                               command=function()
                           {
                               restoreData.f(baseEnv=.baseEnv, dataEnv=.dataEnv)
                           })
 
     ## Titre des critères de sélection :
-    L.criteres <- tklabel(F.titreSelect, text="       Critère(s) de sélection :", background="#FFEE70",
+    L.criteres <- tklabel(F.titreSelect, text=mltext("L.criteres"), background="#FFEE70",
                           font=tkfont.create(size=8), foreground="darkred"## , width=110
                           )
 
@@ -624,7 +627,7 @@ mainInterface.create.f <- function()
     ## Info sur les critères de sélection :
     frameUpper <- tkframe(frameOverall, relief="groove", borderwidth=0)
 
-    MonCritere <- tklabel(frameUpper, text="Tout",
+    MonCritere <- tklabel(frameUpper, text=mltext("criterion.all"),
                           wraplength=750, justify="left",
                           background=.FrameBackground)
 
@@ -649,12 +652,18 @@ mainInterface.create.f <- function()
     ## Zone d'information sur les données et sélections (tableau) :
 
     ## Matrice pour remplire un tclarray (pour convenance) :
-    ArrayEtatFichier <- matrix(c("Type de fichier", "Nom de fichier", "Nb champs", "Nb enregistrements", "",
-                                 " Fichier d'unités d'observations ", "non sélectionné", "NA", "NA", "NA",
-                                 " Fichier d'observations ", "non sélectionné", "NA", "NA", "NA",
-                                 " Référentiel espèce général ", "non sélectionné", "NA", "NA", "NA",
-                                 " Référentiel espèce local (optionnel) ", "non sélectionné", "NA", "NA", "NA",
-                                 " Référentiel spatial (optionnel) ", "non sélectionné", "NA", "NA", "NA"),
+    ArrayEtatFichier <- matrix(c(mltext("array.datafiles.type"), mltext("array.datafiles.name"),
+                                 mltext("array.datafiles.nbFields"), mltext("array.datafiles.nbRec"), "",
+                                 mltext("array.datafiles.unitobs"), mltext("array.datafiles.not.selected"),
+                                 "NA", "NA", "NA",
+                                 mltext("array.datafiles.obs"), mltext("array.datafiles.not.selected"),
+                                 "NA", "NA", "NA",
+                                 mltext("array.datafiles.refesp"), mltext("array.datafiles.not.selected"),
+                                 "NA", "NA", "NA",
+                                 mltext("array.datafiles.refesp.local"), mltext("array.datafiles.not.selected"),
+                                 "NA", "NA", "NA",
+                                 mltext("array.datafiles.refespa"), mltext("array.datafiles.not.selected"),
+                                 "NA", "NA", "NA"),
                                nrow=6, ncol=5, byrow=TRUE)
 
     ## Création d'un tableau tcl :
@@ -667,7 +676,7 @@ mainInterface.create.f <- function()
         {
             tclarray[[i, j]] <- ArrayEtatFichier[i+1, j+1] # !!! décalage de 1 dans les indices.
         }
-    }
+    } ## [mlog]
 
     ## Création d'une table tk utilisant ce tableau :
     tclRequire("Tktable")

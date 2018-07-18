@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-07-17 15:05:00 yreecht>
+# Time-stamp: <2018-07-18 15:27:34 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2018 Ifremer - Tous droits réservés.
@@ -33,7 +33,7 @@
 
 ## ** Version **
 options(versionPAMPA = "3.0-Intl-alpha1",
-        defaultLang = "en")
+        defaultLang = "fr")
 
 ## Platform-specific treatment:
 ## Identification du dossier parent (d'installation) :
@@ -51,7 +51,8 @@ if(basename(fileCall) == "Main.R")
     ## message("Dossier non-trouvé")
     if (.Platform$OS.type == "windows")
     {
-        setwd("C:/PAMPA/")
+        ## setwd("C:/PAMPA/")
+        setwd("y:/Other_projects/Ifremer/PAMPA/PAMPA_Platform_dev/")
     }else{}                             # Rien !
 }
 
@@ -63,14 +64,16 @@ nameWorkspace <- basePath
 
 ## #############################################################################################################
 ## Chargement des fonctions de la plateforme pour :
-                                                                                       # Mise en forme du code :
+                                                                                       # Code formating
+                                                                                       # [ML status]:
 ## ...les fonctions communes de base :                                                 # -----------------------
 source("./Scripts_Biodiv/Load_packages.R", encoding="latin1")                          # OK
 source("./Scripts_Biodiv/Fonctions_base.R", encoding="latin1")                         # OK
+source("./Scripts_Biodiv/Functions_Multilingual.R", encoding="latin1")
 
 ## ...la création de l'interface :
-source("./Scripts_Biodiv/Interface_fonctions.R", encoding="latin1")                    # OK
-source("./Scripts_Biodiv/Interface_principale.R", encoding="latin1")                   # OK [mlo]
+source("./Scripts_Biodiv/Interface_fonctions.R", encoding="latin1")                    # OK [mld]
+source("./Scripts_Biodiv/Interface_principale.R", encoding="latin1")                   # OK [mld]
 
 ## anciennes fonctions annexes de visualisation des données (corrigées) :
 source("./Scripts_Biodiv/Gestionmessages.R", encoding="latin1")                        # done
@@ -138,6 +141,7 @@ if (is.null(getOption("GraphPAMPA")))   # uniquement si pas déjà initialisées (c
     initialiseOptions.f()
 }
 
+options("P.GUIlang" = "en")
 ## On lance l'interface :
 mainInterface.create.f()
 

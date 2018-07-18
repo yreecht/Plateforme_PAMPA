@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-07-12 10:57:47 yreecht>
+# Time-stamp: <2018-07-18 12:36:17 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
@@ -98,7 +98,7 @@ initialiseOptions.f <- function()
             P.graphWMF = FALSE,                 # Sauvegarde des graphiques affichés à l'écran en WMF (Windows) ?
             P.pdfEmbedFonts = TRUE,             # Inclusion des polices dans les pdfs ?
             P.lang = "fr",                      # Langue des graphiques ("fr" ou "en")... n'affecte que les axes.
-            P.GUIlang = "en",                   # Language for the GUI.
+            P.GUIlang = "fr",                   # Language for the GUI.
             P.barplotStat="moyenne",            # Statistique des barplots ("mean", "moyenne", "médiane" ou "median").
             P.barplotErrorBar=TRUE,             # Doit-on afficher les barres d'erreur (sd/quantiles) sur les barplots ?
             P.saveData=TRUE,                    # Sauvegarde des données de graphiques et analyses ?

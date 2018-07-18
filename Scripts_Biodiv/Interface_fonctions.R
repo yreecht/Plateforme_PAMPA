@@ -1,8 +1,8 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-01-11 13:07:21 yreecht>
+# Time-stamp: <2018-07-18 15:27:28 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
-##   Copyright (C) 2008-2017 Ifremer - Tous droits réservés.
+##   Copyright (C) 2008-2018 Ifremer - Tous droits réservés.
 ##
 ##   Ce programme est un logiciel libre ; vous pouvez le redistribuer ou le
 ##   modifier suivant les termes de la "GNU General Public License" telle que
@@ -134,11 +134,11 @@ winSmartPlace.f <- function(win, xoffset=0, yoffset=0)
 
     if (! is.tkwin(win))
     {
-        warning("Non mais c'est quoi ce programmeur qui essaye de déplacer des non-fenêtres ?!")
+        warning(mltext("warn.move.not.window"))
     }else{
         if (! as.logical(as.integer(tclvalue(tkwinfo("exists", win)))))
         {
-            warning("Tentative de déplacer une fenêtre déjà détruite !")
+            warning(mltext("warn.move.destroyed.window"))
         }else{
             ## Largeur de la fenêtre :
             width <- as.integer(tclvalue(tkwinfo("width", win)))
@@ -175,11 +175,11 @@ winRaise.f <- function(win)
 
     if (! is.tkwin(win))
     {
-        warning("Non mais c'est quoi ce programmeur qui essaye de déplacer des non-fenêtres ?!")
+        warning(mltext("warn.move.not.window"))
     }else{
         if (! as.logical(as.integer(tclvalue(tkwinfo("exists", win)))))
         {
-            warning("Tentative de déplacer une fenêtre déjà détruite !")
+            warning(mltext("warn.move.destroyed.window"))
         }else{
             ## Mettre la fenêtre au premier plan :
             tkwm.deiconify(win)
@@ -200,16 +200,16 @@ quitConfirm.f <- function(win)
     Done <- tclVar("0")
     WinConfirm <- tktoplevel()
 
-    tkwm.title(WinConfirm, "Confirmation...")
+    tkwm.title(WinConfirm, mltext("WinConfirm.title"))
 
     ## Boutons :
-    OK.but <- tkbutton(WinConfirm, text = "   Oui   ",
+    OK.but <- tkbutton(WinConfirm, text = mltext("WinConfirm.Yes"),
                        command = function() tclvalue(Done) <- 1)
 
-    All.but <- tkbutton(WinConfirm, text = " Oui + R ",
+    All.but <- tkbutton(WinConfirm, text = mltext("WinConfirm.Yes.R"),
                         command = function() tclvalue(Done) <- 2)
 
-    Cancel.but <- tkbutton(WinConfirm, text = "   Non   ",
+    Cancel.but <- tkbutton(WinConfirm, text = mltext("WinConfirm.No"),
                            command = function() tclvalue(Done) <- 3)
 
     ## Placement des éléments graphiques :
@@ -218,8 +218,8 @@ quitConfirm.f <- function(win)
 
     ## Question sensible au contexte (à améliorer) :
     tkgrid(tklabel(WinConfirm, text=ifelse(win$ID == ".1",
-                                           "Voulez vous vraiment quitter le programme ?",
-                                           "Voulez vous vraiment fermer cette fenêtre ?")),
+                                           mltext("WinConfirm.quitprog.msg"),
+                                           mltext("WinConfirm.quitwin.msg"))),
            row=1, column=1, columnspan=3)
 
     tkgrid(tklabel(WinConfirm, text=" "), row=1, column=4)
@@ -388,10 +388,10 @@ infoLoading.f <- function(msg="", icon="info", button=FALSE,
         ## Titre de fenêtre :
         tkwm.title(WinInfoLoading,
                    switch(titleType,
-                          "load"="Infos de chargement",
-                          "check"="Vérification des sélections",
-                          "warning"="Avertissement...",
-                          "Infos de chargement"))
+                          "load" = mltext("WinInfoLoading.title.load"),
+                          "check" = mltext("WinInfoLoading.title.check"),
+                          "warning" = mltext("WinInfoLoading.title.warning"),
+                          mltext("WinInfoLoading.title.default")))
 
         ## Il faudra refaire le cadre principal d'info de chargement :
         assign("makeGlobalFrame", TRUE, envir=.InfoLoading)
@@ -447,7 +447,7 @@ infoLoading.f <- function(msg="", icon="info", button=FALSE,
     }else{
         ## Création du bouton "OK" :
         OK.button <- tkbutton(FramePrinc,
-                              text="   OK   ",
+                              text = mltext("OK.button"),
                               command=command)
 
         tkgrid(OK.button, columnspan=3)
@@ -546,7 +546,7 @@ apropos.f <- function()
     .FrameBackground <- "#FFF6BF"
     WinApropos <- tktoplevel(bg="white")
 
-    tkwm.title(WinApropos, "À propos de la plateforme")
+    tkwm.title(WinApropos, mltext("WinApropos.title"))
 
     TX.develop <- tktext(WinApropos, bg=.FrameBackground,
                          ## state="disabled",
@@ -557,33 +557,33 @@ apropos.f <- function()
     ## Placement des éléments graphiques :
     tkgrid(tklabel(WinApropos,
                    bg="white",
-                   text=paste("Plateforme PAMPA \"Ressources & Biodiversité\" : version ", getOption("versionPAMPA"), sep=""),
+                   text=paste(mltext("WinApropos.version"), getOption("versionPAMPA"), sep=""),
                    padx=10, pady=15))
 
     tkgrid(TX.develop, sticky="ew", padx=3, pady=10, ipadx=3)
     tkgrid(TX.finance, sticky="ew", padx=3, pady=10, ipadx=3)
 
-    tkgrid(tkbutton(WinApropos, text="   OK   ",
+    tkgrid(tkbutton(WinApropos, text=mltext("OK.button"),
                     command = function(){tkdestroy(WinApropos)}),
            pady=7)
 
     ## Textes sur l'équipe de développement :
-    licence <- "GNU GPL version >= 2"
+    licence <- mltext("WinApropos.license")
     tkinsert(TX.develop, "0.0",
-             paste(" Logiciel distribué sous licence ", licence, ",",
-                   "\n développé au sein de l'Ifremer.", sep=""))
+             paste(mltext("WinApropos.TX.dev.1"), licence, ",",
+                   mltext("WinApropos.TX.dev.2"), sep=""))
     tktag.add(TX.develop, "licence",
               paste("1.end -", nchar(licence) + 2, " chars", sep=""), # calcul du début de plage du texte de licence.
               "1.end -1 chars")                                      # fin de plage du text de licence (- ",").
 
-    tkinsert(TX.develop, "end", "\n\n Developpeurs :")
+    tkinsert(TX.develop, "end", mltext("WinApropos.TX.dev.3"))
     tktag.add(TX.develop, "title1", "end -1 lines linestart", "end -1 lines lineend")
 
     tkinsert(TX.develop, "end",
              "\n\tYves REECHT, Romain DAVID, Jérémie HABASQUE, Bastien PREUSS")
     tktag.add(TX.develop, "text1", "end -2 lines linestart", "end")
 
-    tkinsert(TX.develop, "end", "\n\n Contacts : ")
+    tkinsert(TX.develop, "end", mltext("WinApropos.TX.dev.4"))
     tktag.add(TX.develop, "title2", "end -1 lines linestart", "end")
 
     email <- "Yves.Reecht@marine.ie"
@@ -608,7 +608,7 @@ apropos.f <- function()
 
     ## ...apparence du texte de licence :
     tktag.bind(TX.develop, "licence", "<1>",
-               function() browseURL("http://www.gnu.org/licenses/licenses.fr.html#GPL"))
+               function() browseURL(mltext("link.GPL2")))
     tktag.bind(TX.develop, "licence", "<Enter>",
                function() tkconfigure(TX.develop, cursor="hand2"))
     tktag.bind(TX.develop, "licence", "<Leave>",
@@ -644,15 +644,15 @@ apropos.f <- function()
 
     ## ##################################################
     ## Texte "partenaires" :
-    tkinsert(TX.finance, "0.0", " Financements :")
+    tkinsert(TX.finance, "0.0", mltext("WinApropos.TX.fund.1"))
     tktag.add(TX.finance, "financement", "0.0", "1.end")
 
     financeurs <- c("Projet Liteau III.",
                     "Agence des Aires Marines Protégées.",
                     "Ifrecor.")
     links <- c("http://www1.liteau.net/index.php/projet/liteau-iii",
-               "http://www.aires-marines.fr/",
-               "http://www.ifrecor.org/")
+               mltext("link.AAMP"),
+               "http://www.ifrecor.com/")
 
     tkinsert(TX.finance, "end",
              paste("\n\t* ", paste(financeurs, collapse="\n\t* "), sep=""))
@@ -666,10 +666,10 @@ apropos.f <- function()
                   paste("end -", nbF + 1 -i, " lines lineend -1 chars", sep=""))
     }
 
-    tkinsert(TX.finance, "end", "\n\n Autres partenaires : ")
+    tkinsert(TX.finance, "end", mltext("WinApropos.TX.fund.2"))
     tktag.add(TX.finance, "title2", "end -1 lines linestart", "end -1 lines lineend")
 
-    tkinsert(TX.finance, "end", "\n Retrouvez les tous sur le site institutionnel PAMPA : \n ")
+    tkinsert(TX.finance, "end", mltext("WinApropos.TX.fund.3"))
 
     linkP <- "https://wwz.ifremer.fr/pampa/Partenaires"
     tkinsert(TX.finance, "end", linkP)
@@ -749,7 +749,7 @@ initInnerTkProgressBar.f <- function(title="Progression :", min = 0, max = 100,
                                                              envir=.InfoLoading,
                                                              inherits=FALSE)))))
     {
-        warning("pas de fenêtre pour la progressBar")
+        warning(mltext("warn.no.progress.window"))
 
     }else{
         ## Note : objet de fenêtre déjà chargé lors du test !
@@ -901,7 +901,7 @@ reconfigureInnerProgressBar.f <- function(min=NULL, max=NULL, ...)
             {
                 tkconfigure(get("InnerPG", envir=.InfoLoading),...)
             }else{
-                warning("Pas d'options de configuration de la barre de progression !")
+                warning(mltext("warn.no.progress.option"))
             }
         }
     }else{
@@ -1072,10 +1072,10 @@ updateSummaryTable.f <- function(tclarray, filePathes, Data, table1)
     if ( ! is.na(filePathes["locrefesp"]))
     {
         tclarray[["4,1"]] <- basename(filePathes["locrefesp"])
-        tclarray[["4,2"]] <- "inclus dans"
-        tclarray[["4,3"]] <- "ref. esp. général"
+        tclarray[["4,2"]] <- mltext("tclarray.included")
+        tclarray[["4,3"]] <- mltext("tclarray.4.3")
     }else{
-        tclarray[["4,1"]] <- "non sélectionné"
+        tclarray[["4,1"]] <- mltext("tclarray.not.selected")
         tclarray[["4,2"]] <- "-"
         tclarray[["4,3"]] <- "-"
     }
@@ -1083,10 +1083,10 @@ updateSummaryTable.f <- function(tclarray, filePathes, Data, table1)
     if ( ! is.na(filePathes["refspa"]))
     {
         tclarray[["5,1"]] <- basename(filePathes["refspa"])
-        tclarray[["5,2"]] <- "inclus dans"
-        tclarray[["5,3"]] <- "les unités d'obs."
+        tclarray[["5,2"]] <- mltext("tclarray.included")
+        tclarray[["5,3"]] <- mltext("tclarray.5.3")
     }else{
-        tclarray[["5,1"]] <- "non sélectionné"
+        tclarray[["5,1"]] <- mltext("tclarray.not.selected")
         tclarray[["5,2"]] <- "-"
         tclarray[["5,3"]] <- "-"
     }
@@ -1106,7 +1106,7 @@ updateInterface.load.f <- function(baseEnv, tabObs)
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date:  3 janv. 2012, 15:55
 
-    runLog.f(msg=c("Modification des menus suite au chargement des données :"))
+    runLog.f(msg=c(mltext("logmsg.modif.menu.load")))
 
 
     ## Réactivation des menus qui nécessitent le chargement préalable :
@@ -1178,21 +1178,23 @@ updateInterface.load.f <- function(baseEnv, tabObs)
 
     ## Nombre d'espèces réellement restantes dans les observations :
     tkconfigure(ResumerSituationEspecesSelectionnees,
-                text = paste("-> Nombre de codes espèce",
-                             ifelse(getOption("P.selection"), " restants", ""),
-                             " dans le fichier d'observation",
+                text = paste(mltext("sum.nb.sp.obs.1"),
+                             ifelse(getOption("P.selection"), mltext("sum.nb.left"), ""),
+                             mltext("sum.nb.in.obs"),
                              ifelse(getOption("P.selection"),
-                                    " (peut différer du nombre retenu !) : ", " : "),
+                                    mltext("sum.nb.diff"),
+                                    paste0(mltext("semicolon"), " ")),
                              length(unique(tabObs[ , "code_espece"])), sep=""),
                 state="normal")
 
     ## Nombre d'espèces réellement restantes dans les observations :
     tkconfigure(ResumerSituationUnitobsSelectionnees,
-                text = paste("-> Nombre d'unités d'observations",
-                             ifelse(getOption("P.selection"), " restantes", ""),
-                             " dans le fichier d'observations",
+                text = paste(mltext("sum.nb.unitobs.obs.1"),
+                             ifelse(getOption("P.selection"),  mltext("sum.nb.left"), ""),
+                             mltext("sum.nb.in.obs"),
                              ifelse(getOption("P.selection"),
-                                    " (peut différer du nombre retenu !) : ", " : "),
+                                    mltext("sum.nb.diff"),
+                                    paste0(mltext("semicolon"), " ")),
                              length(unique(tabObs[ , "unite_observation"])), sep=""),
                 state="normal")
 
@@ -1233,14 +1235,14 @@ updateInterface.select.f <- function(criterion, tabObs, baseEnv)
         && getOption("P.selection"))
     {
         tkinsert(table1, "cols", "end", 1)
-        tclarray[[0, 4]] <- "Sélection"
+        tclarray[[0, 4]] <- mltext("tclarray.0.4")
     }
 
-    tclarray[[1, 4]] <- nlevels(tabObs[ , "unite_observation"]) # Nombre d'unitobs conservées (! peut différer du nombre
-                                        # dans le fichier d'observation).
-    tclarray[[2, 4]] <- nrow(tabObs)       # Nombre d'observations
-    tclarray[[3, 4]] <- nlevels(tabObs[ , "code_espece"]) # Nombre d'espèces conservées (! peut différer du nombre dans
-                                        # le fichier d'observation).
+    tclarray[[1, 4]] <- nlevels(tabObs[ , "unite_observation"]) # Nombre d'unitobs conservées
+                                        # (! peut différer du nombre dans le fichier d'observation).
+    tclarray[[2, 4]] <- nrow(tabObs)    # Nombre d'observations
+    tclarray[[3, 4]] <- nlevels(tabObs[ , "code_espece"]) # Nombre d'espèces conservées
+                                        # (! peut différer du nombre dans le fichier d'observation).
     tclarray[[4, 4]] <- "-"
     tclarray[[5, 4]] <- "-"
 
@@ -1248,7 +1250,8 @@ updateInterface.select.f <- function(criterion, tabObs, baseEnv)
     ColAutoWidth.f(table1)
 
     ## Information sur les critères :
-    if((tmp <- tclvalue(tkcget(MonCritere, "-text"))) == "Tout") # ou bien : tcl(.Tk.ID(MonCritere), "cget", "-text")
+    if((tmp <- tclvalue(tkcget(MonCritere, "-text"))) == mltext("criterion.all"))
+                                        # ou bien : tcl(.Tk.ID(MonCritere), "cget", "-text")
     {                                   # Si pas de sélection précédente, on affiche seulement le nouveau critère...
         tkconfigure(MonCritere, text=criterion)
     }else{                              # ...sinon on l'ajoute aux existants.
@@ -1256,7 +1259,7 @@ updateInterface.select.f <- function(criterion, tabObs, baseEnv)
     }
 
     ## Titre du cadre de sélection en gras :
-    if (criterion != "Tout")
+    if (criterion !=  mltext("criterion.all"))
     {
         tkconfigure(L.criteres, font=tkfont.create(weight="bold", size=8))
     }else{
@@ -1265,21 +1268,23 @@ updateInterface.select.f <- function(criterion, tabObs, baseEnv)
 
     ## Nombre d'espèces réellement restantes dans les observations :
     tkconfigure(ResumerSituationEspecesSelectionnees,
-                text = paste("-> Nombre de codes espèce",
-                             ifelse(getOption("P.selection"), " restants", ""),
-                             " dans le fichier d'observation",
+                text = paste(mltext("sum.nb.sp.obs.1"),
+                             ifelse(getOption("P.selection"), mltext("sum.nb.left"), ""),
+                             mltext("sum.nb.in.obs"),
                              ifelse(getOption("P.selection"),
-                                    " (peut différer du nombre retenu !) : ", " : "),
+                                    mltext("sum.nb.diff"),
+                                    paste0(mltext("semicolon"), " ")),
                              length(unique(tabObs[ , "code_espece"])), sep=""),
                 state="normal")
 
     ## Nombre d'espèces réellement restantes dans les observations :
     tkconfigure(ResumerSituationUnitobsSelectionnees,
-                text = paste("-> Nombre d'unités d'observations",
-                             ifelse(getOption("P.selection"), " restantes", ""),
-                             " dans le fichier d'observations",
+                text = paste(mltext("sum.nb.unitobs.obs.1"),
+                             ifelse(getOption("P.selection"),  mltext("sum.nb.left"), ""),
+                             mltext("sum.nb.in.obs"),
                              ifelse(getOption("P.selection"),
-                                    " (peut différer du nombre retenu !) : ", " : "),
+                                    mltext("sum.nb.diff"),
+                                    paste0(mltext("semicolon"), " ")),
                              length(unique(tabObs[ , "unite_observation"])), sep=""),
                 state="normal")
 
@@ -1337,15 +1342,17 @@ updateInterface.restore.f <- function(criterion="Tout", tabObs, baseEnv)
 
     ## Nombre d'espèces réellement restantes dans les observations :
     tkconfigure(ResumerSituationEspecesSelectionnees,
-                text = paste("-> Nombre d'espèces",
-                             " dans le fichier d'observation : ",
+                text = paste(mltext("sum.nb.sp.obs.2"),
+                             mltext("sum.nb.in.obs"),
+                             mltext("semicolon"), " ",
                              length(unique(tabObs[ , "code_espece"])), sep=""),
                 state="normal")
 
     ## Nombre d'espèces réellement restantes dans les observations :
     tkconfigure(ResumerSituationUnitobsSelectionnees,
-                text = paste("-> Nombre d'unités d'observations",
-                             " dans le fichier d'observations : ",
+                text = paste(mltext("sum.nb.unitobs.obs.1"),
+                             mltext("sum.nb.in.obs"),
+                             mltext("semicolon"), " ",
                              length(unique(tabObs[ , "unite_observation"])), sep=""),
                 state="normal")
 

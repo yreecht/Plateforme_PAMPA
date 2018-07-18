@@ -1,8 +1,8 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-07-17 16:30:53 yreecht>
+# Time-stamp: <2018-07-18 12:26:00 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
-##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
+##   Copyright (C) 2008-2018 Ifremer - Tous droits réservés.
 ##
 ##   Ce programme est un logiciel libre ; vous pouvez le redistribuer ou le
 ##   modifier suivant les termes de la "GNU General Public License" telle que
@@ -58,7 +58,7 @@ mainInterface.create.f <- function()
 
     tkwm.maxsize(W.main,
                  tkwinfo("screenwidth", W.main),
-                 as.numeric(tclvalue(tkwinfo("screenheight", W.main))) - 30)             # taille maximale de la fenetre
+                 as.numeric(tclvalue(tkwinfo("screenheight", W.main))) - 30) # taille maximale de la fenetre
     ## tkwm.minsize(W.main, 800, 500)              # taille minimale de la fenetre
 
     ## Couleurs :
@@ -371,7 +371,7 @@ mainInterface.create.f <- function()
       })
 
     ## MRT espèces :
-    tkadd(modelesInferentiels, "command", label=mltext("menu.stats.MRT.esp"), sep=""),
+    tkadd(modelesInferentiels, "command", label=mltext("menu.stats.MRT.esp"),
           background=.MenuBackground,
           command=function ()
       {
@@ -692,12 +692,12 @@ mainInterface.create.f <- function()
     ## Nombres effectifs "d'espèces" et d'unités d'observation :
     ResumerSituationEspecesSelectionnees <-
         tklabel(frameOverall,
-                text="-> Nombre de codes espèce dans le fichier d'observation : NA",
+                text= paste0(mltext("sum.nb.sp.obs"), "NA"),
                 background=.FrameBackground, state="disabled")
 
     ResumerSituationUnitobsSelectionnees <-
         tklabel(frameOverall,
-                text="-> Nombre d'unités d'observation dans le fichier d'observation : NA",
+                text=paste0(mltext("sum.nb.unitobs.obs"), "NA"),
                 background=.FrameBackground, state="disabled")
 
     tkgrid(ResumerSituationEspecesSelectionnees, columnspan=3, sticky="w", padx=5)
@@ -712,7 +712,7 @@ mainInterface.create.f <- function()
 
     tkgrid(F.log, sticky="ew", columnspan=4, padx=5, pady=5)
 
-    TitreSuiviOperation <- tklabel(F.log, text="Rapport de chargement/sélection/export :", background="#FFFFFF",
+    TitreSuiviOperation <- tklabel(F.log, text=mltext("F.log.title"), background="#FFFFFF",
                                    anchor="w")
 
     ## ... zone de texte dédiée avec son "ascenceur" :
@@ -735,7 +735,7 @@ mainInterface.create.f <- function()
     tcl("update")
     tkfocus(txt.w)
 
-    runLog.f(msg=c("Chargement de l'interface :"))
+    runLog.f(msg=c(mltext("logmsg.loadingGUI")))
 
     tkfocus(W.main)
 

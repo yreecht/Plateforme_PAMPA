@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2013-02-12 11:25:34 Yves>
+# Time-stamp: <2018-07-18 12:24:53 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
@@ -88,7 +88,7 @@ loadPackages.f <- function()
 
     ## Packages nécessaires au bon fonctionnement de la plateforme PAMPA WP2 :
     requiredPack <- c("R.utils", "tcltk", "tkrplot", "vegan", "MASS",
-                      "mvpart", "multcomp", "gamlss", "maps", "maptools", ## "Hmisc"
+                      "rpart", "multcomp", "gamlss", "maps", "maptools", ## "Hmisc"
                       "TeachingDemos", "rgeos", "sp", "rgdal", "geosphere")
 
     ## Packages installés :

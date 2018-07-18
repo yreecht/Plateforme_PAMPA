@@ -1,12 +1,108 @@
 msgid,fr,en
-W.main.title,Indicateurs relatifs Ã  la biodiversitÃ© et aux ressources,Biodiversity and Resource indicators
-MB.import,DonnÃ©es,Data
-MB.selection,SÃ©lection et recalcul,Subsetting
+W.main.title,Indicateurs relatifs à la biodiversité et aux ressources,Biodiversity and Resource indicators
+MB.import,Données,Data
+MB.selection,Sélection et recalcul,Subsetting
 MB.traitement,Graphiques,Graphics
 MB.analyse,Statistiques,Statistics
 MB.outils,Outils,Tools
 MB.pampainfos,Aide,Help
 B.quit.main, Quitter... ,   Exit...   
 B.graphicsOFF,Fermer les graphiques,Close all graphics
-menu.import.manual,Choix des dossiers et fichiers de donnÃ©es...,Manual selection of directory and files...
-menu.import.default,Dossiers et fichiers par dÃ©faut,Default directory and files
+menu.import.manual,Choix des dossiers et fichiers de données...,Manual selection of directory and files...
+menu.import.default,Dossiers et fichiers par défaut,Default directory and files
+menu.import.test.refesp,Test du référentiel (espèces concernées),QC of the reference table (species)
+menu.import.design,Plan d'échantillonnage basique,Basic sampling design
+menu.import.info.sp,Info données par espèces,Data information by species
+menu.import.info.unitobs,Info données par unité d'observation,Data information by observation unit
+menu.select.refesp,Selon un champ du référentiel espèce...,By field of the species ref. Table
+menu.select.unitobs,Selon un champ des unités d'observation...,By field of the observation units
+menu.select.sp.list,Par liste d'espèces (fichier),By species (list file)
+msg.ongoing.dev,En développement !,Implementation in progress!
+menu.select.restore,Restaurer les données originales,Restore original data
+menu.sub.szsp,Par espèce ou classe de taille d'espèce :,By species or species-size class:
+menu.graphs.boxplots,"Graphiques en ""boîtes à moustaches"" (boxplots)...",Boxplots...
+menu.graphs.barplots,Graphiques en barres (barplots)...,Barplots...
+menu.graphs.occ.freq,Fréquences d'occurrence (/espèce sur des unité d'observation)...,"Occurrence frequency (/species, over observation units)..."
+menu.graphs.maps,Cartes,Maps
+menu.graphs.maps.barplots,"Graphiques en barres ou boîtes à moustaches, par zone...","Barplots or boxplots, by zone..."
+menu.graphs.maps.symbols,"Symboles de taille variable ou échelle de couleur, par zone...","Variable size symbols or colour-scale, by zone..."
+menu.graphs.aggr.szsp,"Plusieurs espèces ou classes de taille, agrégées par unité d'observation :","Several species or size classes, aggregated by observation unit:"
+menu.graphs.occ.freq.unitobs,Fréquences d'occurrence (/facteurs d'unité d'observation)...,Occurrence frequency (/observation units factor)...
+menu.graphs.boxplots.zone,"Graphiques en barres ou boîtes à moustaches, par zone...","Barplots or boxplots, by zone..."
+menu.graphs.maps.symbols.zone,"Symboles de taille variable ou échelle de couleur, par zone...","Variable size symbols or colour-scale, by zone..."
+menu.stats.sp.unitobs,"Modèles linéaires, métrique /espèce/unité d'observation...","Linear model, metrics /species/observation unit..."
+menu.stats.MRT.esp,"Arbres de régression multivariée, métrique / espèces / unité d'observation...",
+menu.stats.unitobs,"Modèles linéaires, métrique /unité d'observation (dont biodiversité)...",
+menu.stats.MRT.unitobs,"Arbres de régression multivariée, métrique /unité d'observation (dont biodiversité)...",
+menu.tools.export.opt,Options d'export...,
+menu.tools.graph.opt,Options graphiques...,
+menu.tools.link.unitobs.refspa,Lier les unités d'observations et le référentiel spatial...,
+menu.tools.reorder.fact.unitobs,Réorganiser des facteurs des unités d'observation...,
+menu.tools.reorder.fact.refesp,Réorganiser des facteurs du référentiel espèces...,
+menu.tools.edit.conf,Éditer le fichier de configuration,
+menu.tools.bugreport,Créer un rapport de bug,
+menu.tools.update,mise à jour (site de téléchargement),
+menu.help.online.doc,Documentation en ligne,
+menu.help.local.doc,Documentation (locale),
+menu.help.forum,Forum d'entraide,
+menu.help.about,À propos de la plateforme...,
+helpframe.Ucan,Vous pouvez...,You can...
+workspace.none,Espace de travail : non sélectionné.,
+datainfo.none,Aucun jeu de données chargé pour l'instant !,
+B.DataRestore,Restaurer les données,
+L.criteres,       Critère(s) de sélection :,
+criterion.all,Tout,
+array.datafiles.type,Type de fichier,
+array.datafiles.name,Nom de fichier,
+array.datafiles.nbFields,Nb champs,
+array.datafiles.nbRec,Nb enregistrements,
+array.datafiles.unitobs, Fichier d'unités d'observations ,
+array.datafiles.not.selected,non sélectionné,
+array.datafiles.obs, Fichier d'observations ,
+array.datafiles.refesp, Référentiel espèce général ,
+array.datafiles.refesp.local, Référentiel espèce local (optionnel) ,
+array.datafiles.refespa, Référentiel spatial (optionnel) ,
+sum.nb.sp.obs,-> Nombre de codes espèce dans le fichier d'observation : ,
+sum.nb.unitobs.obs,-> Nombre d'unités d'observation dans le fichier d'observation : ,
+F.log.title,Rapport de chargement/sélection/export :,
+logmsg.loadingGUI,Chargement de l'interface :,
+warn.move.not.window,Non mais c'est quoi ce programmeur qui essaye de déplacer des non-fenêtres ?!,Attempt to move an non-window!
+warn.move.destroyed.window,Tentative de déplacer une fenêtre déjà détruite !,Attempt to move an already destroyed window!
+WinConfirm.title,Confirmation...,Confirmation...
+WinConfirm.Yes,   Oui   ,   Yes   
+WinConfirm.Yes.R, Oui + R , Yes + R 
+WinConfirm.No,   Non   ,   No    
+WinConfirm.quitprog.msg,Voulez vous vraiment quitter le programme ?,Do you really want to quit?
+WinConfirm.quitwin.msg,Voulez vous vraiment fermer cette fenêtre ?,Do you really want to close the window?
+WinInfoLoading.title.load,Infos de chargement,Loading information
+WinInfoLoading.title.check,Vérification des sélections,Checking selections
+WinInfoLoading.title.warning,Avertissement...,Warning...
+WinInfoLoading.title.default,Infos de chargement,Loading information
+OK.button,   OK   ,   OK   
+WinApropos.title,À propos de la plateforme,About the PAMPA platform
+WinApropos.version,"Plateforme PAMPA ""Ressources & Biodiversité"" : version ","PAMPA ""Resources & Biodiversity"" platform: version "
+WinApropos.license,GNU GPL version >= 2,GNU GPL version >= 2
+WinApropos.TX.dev.1, Logiciel distribué sous licence , Software license: 
+WinApropos.TX.dev.2,\n développé au sein de l'Ifremer.,\n developed at Ifremer.
+WinApropos.TX.dev.3,\n\n Developpeurs :,\n\n Developers:
+WinApropos.TX.dev.4,\n\n Contacts : ,\n\n Contact information: 
+WinApropos.TX.fund.1, Financements :, Fundings: 
+WinApropos.TX.fund.2,\n\n Autres partenaires : ,\n\n Other partners: 
+WinApropos.TX.fund.3,\n Retrouvez les tous sur le site institutionnel PAMPA : \n ,\n Find them all on the institutional PAMPA website: \n 
+link.AAMP,http://www.aires-marines.fr/,http://www.aires-marines.com/
+link.GPL2,http://www.gnu.org/licenses/licenses.fr.html#GPL,http://www.gnu.org/licenses/licenses.en.html#GPL
+warn.no.progress.window,Pas de fenêtre pour la progressBar,No window for the progressBar!
+warn.no.progress.option,Pas d'options de configuration de la barre de progression !,No config option for the progressBar!
+tclarray.included,inclus dans,included in
+tclarray.4.3,ref. esp. général,general sp. ref.
+tclarray.not.selected,non sélectionné,not selected
+tclarray.5.3,les unités d'obs.,the obs. units
+logmsg.modif.menu.load,Modification des menus suite au chargement des données :,Menu update after loading the data:
+sum.nb.sp.obs.1,-> Nombre de codes espèce,-> Number of species code
+sum.nb.left, restants, left
+sum.nb.in.obs, dans le fichier d'observation, in the observation file
+sum.nb.diff, (peut différer du nombre retenu !) : , (might vary from selected!): 
+semicolon, :,:
+sum.nb.unitobs.obs.1,-> Nombre d'unités d'observations,-> Number of observation units
+tclarray.0.4,Sélection,Selection
+sum.nb.sp.obs.2,-> Nombre d'espèces,-> Number of species

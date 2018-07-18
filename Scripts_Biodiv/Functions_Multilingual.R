@@ -1,7 +1,7 @@
 #-*- coding: latin-9 -*-
 
 ### File: Functions_Multilingual.R
-### Time-stamp: <2018-07-12 11:24:05 yreecht>
+### Time-stamp: <2018-07-18 15:14:28 yreecht>
 ###
 ### Created: 09/07/2018	15:37:32
 ### Author: Yves Reecht
@@ -35,7 +35,9 @@ mltext <- function(msgid)
                                  " !! No Text !! "
                              }else{
                                  ifelse(test = nchar(transl[i, lang]),
-                                        yes = transl[i, lang],
+                                        yes = gsub("\\\\n", "\n",
+                                                   gsub("\\\\t", "\t",
+                                                        transl[i, lang])),
                                         no = ifelse(nchar(transl[i, "en"]),
                                                     transl[i, "en"],
                                                     " !! No Text !! "))

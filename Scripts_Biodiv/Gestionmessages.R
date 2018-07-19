@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2013-04-24 17:39:10 yves>
+# Time-stamp: <2018-07-19 18:18:06 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
@@ -30,83 +30,83 @@ gestionMSGerreur.f <- function (nameerror, variable, env=.GlobalEnv)
     MSG <-
         switch(nameerror,
                "recouvrementsansLIT"={
-                   paste("Le champ obs$type n'est pas 'LIT', vous ne pouvez pas calculer",
-                         " un % de recouvrement avec des espèces non benthiques\n", sep="")
+                   paste(mltext("error.recouvrementsansLIT.1"),
+                         mltext("error.recouvrementsansLIT.2"), sep="")
                },
                "noWorkspace"={
-                   "Aucun espace de travail n'est choisi ou opérationnel\n"
+                   mltext("error.noWorkspace")
                },
                "nbChampUnitobs"={
-                   paste("Votre fichier 'Unites d'observation' ne comporte pas le bon nombre de champs!",
-                         " Il devrait en contenir 35. Corrigez le et recommencez l'importation.\n", sep="")
+                   paste(mltext("error.nbChampUnitobs.1"),
+                         mltext("error.nbChampUnitobs.2"), sep="")
                },
-               "nbChampUnitobs"={
-                   paste("Votre fichier 'Unites d'observation' ne comporte pas le bon nombre de champs!",
-                         " Il devrait en contenir 35. Corrigez le et recommencez l'importation.\n", sep="")
-               },
+               ## "nbChampUnitobs"={
+               ##     paste("Votre fichier 'Unites d'observation' ne comporte pas le bon nombre de champs!",
+               ##           " Il devrait en contenir 35. Corrigez le et recommencez l'importation.\n", sep="")
+               ## },
                "nbChampEsp"={
-                   paste("Votre fichier 'référentiel espèces' ne comporte pas le bon nombre de champs!",
-                         " Il devrait en contenir 124. Corrigez le et recommencez l'importation.\n", sep="")
+                   paste(mltext("error.nbChampEsp.1"),
+                         mltext("error.nbChampEsp.2"), sep="")
                },
                "nbChampObs"={
-                   paste("Votre fichier 'observations' ne comporte pas le bon nombre de champs!",
-                         " Il devrait en contenir 11 . Corrigez le et recommencez l'importation.\n", sep="")
+                   paste(mltext("error.nbChampObs.1"),
+                         mltext("error.nbChampObs.2"), sep="")
                },
                "UnitobsDsObsUnitobs"={
-                   paste("Votre fichier 'observations' ne comporte pas les mêmes unitobs que votre fichier",
-                         " 'Unites d'observation'. Corrigez les et recommencez l'importation.\n", sep="")
+                   paste(mltext("error.UnitobsDsObsUnitobs.1"),
+                         mltext("error.UnitobsDsObsUnitobs.1"), sep="")
                },
                "CaractereInterditDsObs"={
-                   "Votre fichier observations contient des \"&\". Corrigez les et recommencez l'importation.\n"
+                   mltext("error.CaractereInterditDsObs")
                },
                "CaractereInterditDsUnitObs"={
-                   "Votre fichier unités d'observations contient des \".\" Corrigez les et recommencez l'importation.\n"
+                   mltext("error.CaractereInterditDsUnitObs")
                },
                "ZeroEnregistrement"={
-                   "Graphique impossible - pas d'enregistrements dans votre sélection.\n"
+                   mltext("error.ZeroEnregistrement")
                },
                "UneSeuleValeurRegroupement"={
-                   "Graphique sans intérêt - votre critère de regroupement n'a qu'une seule valeur.\n"
+                   mltext("error.UneSeuleValeurRegroupement")
                },
                "CritereMalRenseigne50"={
-                   paste("Graphique sans intérêt - le critère de regroupement sélectionné",
-                         " est renseigné pour moins de 50% des observations.\n", sep="")
+                   paste(mltext("error.CritereMalRenseigne50.1"),
+                         mltext("error.CritereMalRenseigne50.2"), sep="")
                },
                "CaractereInterdit"={
-                   paste("Votre table ", variable,
-                         " contient des caractères déconseillés par le référentiel des données ('espaces',',',';' ",
-                         "\n-> vous devez corriger le problème pour ne pas rencontrer d'erreurs.\n", sep="")
+                   paste(mltext("error.CaractereInterdit.1"), variable,
+                         mltext("error.CaractereInterdit.2"),
+                         mltext("error.CaractereInterdit.3"), sep="")
                },
                ## Message par défaut :
-               "message à renseigner")
+               mltext("error.noMsg"))
 
     ## gestionMSGerreur.f(nbChampUnitobs)
     ## langue = EN
 
-    tkinsert(get("helpframe", envir=env), "end", paste("\nERREUR : ", MSG, sep=""))
+    tkinsert(get("helpframe", envir=env), "end", paste(mltext("error.prefix"), MSG, sep=""))
     tkyview.moveto(get("helpframe", envir=env), 1)
 }
 
 gestionMSGaide.f <- function (namemsg, env=.GlobalEnv)
 {
-    runLog.f(msg=c("Envoie d'un message d'aide dans l'interface :"))
+    runLog.f(msg=c(mltext("logmsg.helpmsg")))
 
     ## Message :
     MSG <-
         switch(namemsg,
                "ZeroEnregistrement"={
-                   paste("Attention : votre sélection ne contient plus d'enregistrement",
-                         ", veuillez restaurer ou recharger les données (CTRL + a) !\n", sep="")
+                   paste(mltext("helpmsg.ZeroEnregistrement.1"),
+                         mltext("helpmsg.ZeroEnregistrement.2"), sep="")
                },
                "etapeImport"={
-                   paste("  * charger les \"Dossiers et fichiers par défaut\" (CTRL + a).",
-                         "\n  * choisir les dossier/fichiers un à un (CTRL + n).",
-                         "\n\t(actions également accessibles par le menu \"Données\")",
+                   paste(mltext("helpmsg.etapeImport.1"),
+                         mltext("helpmsg.etapeImport.2"),
+                         mltext("helpmsg.etapeImport.3"),
                          sep="")
                },
                "SelectionOuTraitement"={
-                   paste("  * restreindre votre sélection de données (menu \"Sélection et recalcul\").\n",
-                         "  * commencer les traitements standards (graphiques & analyses statistiques).",
+                   paste(mltext("helpmsg.SelectionOuTraitement.1"),
+                         mltext("helpmsg.SelectionOuTraitement.2"),
                          "\n", sep="")
                },
                ## "startsansficher"={
@@ -115,10 +115,10 @@ gestionMSGaide.f <- function (namemsg, env=.GlobalEnv)
                ##           fileNameRefesp, " ne sont pas les bons, Veuillez les modifier\n", sep="")
                ## },
                "etapeselected"={
-                   paste("  * restaurer les données originales (sans sélection) :",
-                         " menu \"Sélection et recalcul\" ou bouton ci-dessous à droite.",
-                         "\n  * faire d'autres sélections (imbriquées avec les sélections courantes).",
-                         "\n  * commencer les traitements standards (graphiques & analyses statistiques).",
+                   paste(mltext("helpmsg.etapeselected.1"),
+                         mltext("helpmsg.etapeselected.2"),
+                         mltext("helpmsg.etapeselected.3"),
+                         mltext("helpmsg.etapeselected.4"),
                          sep="")
                },
                "message à définir")
@@ -150,27 +150,27 @@ add.logFrame.f <- function(msgID, env=dataEnv,...)
                       if (any(!is.element("filePathes",
                                           names(argsSup))))
                       {
-                          stop("Arguments incorrects !")
+                          stop("Wrong argument(s)!")
                       }else{
                           paste("",
                                 paste(rep("=", 100), collapse=""),
-                                paste("\nChargement de données  (",
+                                paste(mltext("logFmsg.loading"),
                                       format(Sys.time(), "%d/%m/%Y\t%H:%M:%S"),
                                       ")", sep=""),
 
-                                paste("\n   Fichier d'observation :", argsSup$filePathes["obs"]),
-                                paste("\n   Fichier d'unités d'observation :", argsSup$filePathes["unitobs"]),
-                                paste("\n   Fichier du référentiel espèces :", argsSup$filePathes["refesp"]),
+                                paste(mltext("logFmsg.obsFile"), argsSup$filePathes["obs"]),
+                                paste(mltext("logFmsg.unitobsFile"), argsSup$filePathes["unitobs"]),
+                                paste(mltext("logFmsg.refespFile"), argsSup$filePathes["refesp"]),
                                 ifelse(is.na(argsSup$filePathes["refspa"]), "",
-                                       paste("\n   Fichier du référentiel spatial :", argsSup$filePathes["refspa"])),
-                                paste("\n   Répertoire des résultats et des exports :", argsSup$filePathes["results"]),
+                                       paste(mltext("logFmsg.refspaFile"), argsSup$filePathes["refspa"])),
+                                paste(mltext("logFmsg.exportPath"), argsSup$filePathes["results"]),
                                 "\n", sep="")
                       }
                   },
                   "restauration"={
                       paste("",
                             paste(rep("-", 80), collapse=""),
-                            paste("Restauration des données originales  (sans sélection ; ",
+                            paste(mltext("logFmsg.restoreData"),
                                   format(Sys.time(), "%d/%m/%Y\t%H:%M:%S"),
                                   ")", sep=""),
                             "\n", sep="\n")
@@ -179,9 +179,9 @@ add.logFrame.f <- function(msgID, env=dataEnv,...)
                       if (any(!is.element(c("facteur", "selection", "results", "referentiel", "has.SzCl"),
                                           names(argsSup))))
                       {
-                          stop("Arguments incorrects !")
+                          stop("Wrong argument(s)!")
                       }else{
-                          paste("\n",
+                          paste("\n",   # [mlo]
                                 paste(rep("-", 100), collapse=""),
                                 paste("\nSélection des observations selon un critère",
                                       ifelse(argsSup$referentiel == "especes",

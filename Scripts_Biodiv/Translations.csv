@@ -58,14 +58,14 @@ array.datafiles.nbFields,Nb champs,
 array.datafiles.nbRec,Nb enregistrements,
 array.datafiles.unitobs, Fichier d'unités d'observations ,
 array.datafiles.not.selected,non sélectionné,
-array.datafiles.obs, Fichier d'observations ,
-array.datafiles.refesp, Référentiel espèce général ,
-array.datafiles.refesp.local, Référentiel espèce local (optionnel) ,
-array.datafiles.refespa, Référentiel spatial (optionnel) ,
-sum.nb.sp.obs,-> Nombre de codes espèce dans le fichier d'observation : ,
-sum.nb.unitobs.obs,-> Nombre d'unités d'observation dans le fichier d'observation : ,
-F.log.title,Rapport de chargement/sélection/export :,
-logmsg.loadingGUI,Chargement de l'interface :,
+array.datafiles.obs, Fichier d'observations , Observations file 
+array.datafiles.refesp, Référentiel espèce général , Species ref. table 
+array.datafiles.refesp.local, Référentiel espèce local (optionnel) , Local species ref. table (optional) 
+array.datafiles.refespa, Référentiel spatial (optionnel) , Spatial ref. table (optional) 
+sum.nb.sp.obs,-> Nombre de codes espèce dans le fichier d'observation : ,-> Number of species codes in the observations file: 
+sum.nb.unitobs.obs,-> Nombre d'unités d'observation dans le fichier d'observation : ,-> Number of observation units in the observations file: 
+F.log.title,Rapport de chargement/sélection/export :,Report on loading/selections/export:
+logmsg.loadingGUI,Chargement de l'interface :,Loading the GUI:
 warn.move.not.window,Non mais c'est quoi ce programmeur qui essaye de déplacer des non-fenêtres ?!,Attempt to move an non-window!
 warn.move.destroyed.window,Tentative de déplacer une fenêtre déjà détruite !,Attempt to move an already destroyed window!
 WinConfirm.title,Confirmation...,Confirmation...
@@ -106,3 +106,44 @@ semicolon, :,:
 sum.nb.unitobs.obs.1,-> Nombre d'unités d'observations,-> Number of observation units
 tclarray.0.4,Sélection,Selection
 sum.nb.sp.obs.2,-> Nombre d'espèces,-> Number of species
+error.recouvrementsansLIT.1,"Le champ obs$type n'est pas 'LIT', vous ne pouvez pas calculer",
+error.recouvrementsansLIT.2, un % de recouvrement avec des espèces non benthiques\n,
+error.noWorkspace,Aucun espace de travail n'est choisi ou opérationnel\n,
+error.nbChampUnitobs.1,Votre fichier 'Unites d'observation' ne comporte pas le bon nombre de champs!,
+error.nbChampUnitobs.2, Il devrait en contenir 35. Corrigez le et recommencez l'importation.\n,
+error.nbChampEsp.1,Votre fichier 'référentiel espèces' ne comporte pas le bon nombre de champs!,
+error.nbChampEsp.2, Il devrait en contenir 124. Corrigez le et recommencez l'importation.\n,
+error.nbChampObs.1,Votre fichier 'observations' ne comporte pas le bon nombre de champs!,
+error.nbChampObs.2, Il devrait en contenir 11 . Corrigez le et recommencez l'importation.\n,
+error.UnitobsDsObsUnitobs.1,Votre fichier 'observations' ne comporte pas les mêmes unitobs que votre fichier,
+error.UnitobsDsObsUnitobs.2, 'Unites d'observation'. Corrigez les et recommencez l'importation.\n,
+error.CaractereInterditDsObs,"Votre fichier observations contient des \""&\"". Corrigez les et recommencez l'importation.\n",
+error.CaractereInterditDsUnitObs,"Votre fichier unités d'observations contient des \"".\"" Corrigez les et recommencez l'importation.\n",
+error.ZeroEnregistrement,Graphique impossible - pas d'enregistrements dans votre sélection.\n,
+error.UneSeuleValeurRegroupement,Graphique sans intérêt - votre critère de regroupement n'a qu'une seule valeur.\n,
+error.CritereMalRenseigne50.1,Graphique sans intérêt - le critère de regroupement sélectionné,
+error.CritereMalRenseigne50.2, est renseigné pour moins de 50% des observations.\n,
+error.CaractereInterdit.1,Votre table ,
+error.CaractereInterdit.2," contient des caractères déconseillés par le référentiel des données ('espaces',',',';' ",
+error.CaractereInterdit.3,\n-> vous devez corriger le problème pour ne pas rencontrer d'erreurs.\n,
+error.noMsg,message à renseigner,No message available!
+error.prefix,\nERREUR : ,\nERROR: 
+logmsg.helpmsg,Envoie d'un message d'aide dans l'interface :,
+helpmsg.ZeroEnregistrement.1,Attention : votre sélection ne contient plus d'enregistrement,
+helpmsg.ZeroEnregistrement.2,", veuillez restaurer ou recharger les données (CTRL + a) !\n",
+helpmsg.etapeImport.1,"  * charger les \""Dossiers et fichiers par défaut\"" (CTRL + a).",
+helpmsg.etapeImport.2,\n  * choisir les dossier/fichiers un à un (CTRL + n).,
+helpmsg.etapeImport.3,"\n\t(actions également accessibles par le menu \""Données\"")",
+helpmsg.SelectionOuTraitement.1,"  * restreindre votre sélection de données (menu \""Sélection et recalcul\"").\n",
+helpmsg.SelectionOuTraitement.2,  * commencer les traitements standards (graphiques & analyses statistiques).,
+helpmsg.etapeselected.1,  * restaurer les données originales (sans sélection) :,
+helpmsg.etapeselected.2," menu \""Sélection et recalcul\"" ou bouton ci-dessous à droite.",
+helpmsg.etapeselected.3,\n  * faire d'autres sélections (imbriquées avec les sélections courantes).,
+helpmsg.etapeselected.4,\n  * commencer les traitements standards (graphiques & analyses statistiques).,
+logFmsg.loading,\nChargement de données  (,
+logFmsg.obsFile,\n   Fichier d'observation :,
+logFmsg.unitobsFile,\n   Fichier d'unités d'observation :,
+logFmsg.refespFile,\n   Fichier du référentiel espèces :,
+logFmsg.refspaFile,\n   Fichier du référentiel spatial :,
+logFmsg.exportPath,\n   Répertoire des résultats et des exports :,
+logFmsg.restoreData,Restauration des données originales  (sans sélection ; ,

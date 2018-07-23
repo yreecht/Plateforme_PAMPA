@@ -1,8 +1,8 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-07-19 18:18:06 yreecht>
+# Time-stamp: <2018-07-23 16:45:38 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
-##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
+##   Copyright (C) 2008-2018 Ifremer - Tous droits réservés.
 ##
 ##   Ce programme est un logiciel libre ; vous pouvez le redistribuer ou le
 ##   modifier suivant les termes de la "GNU General Public License" telle que
@@ -181,28 +181,28 @@ add.logFrame.f <- function(msgID, env=dataEnv,...)
                       {
                           stop("Wrong argument(s)!")
                       }else{
-                          paste("\n",   # [mlo]
+                          paste("\n",
                                 paste(rep("-", 100), collapse=""),
-                                paste("\nSélection des observations selon un critère",
+                                paste(mltext("logFmsg.selection.1"),
                                       ifelse(argsSup$referentiel == "especes",
-                                             " du référentiel espèces",
-                                             " des unités d'observation"),
+                                             mltext("logFmsg.selection.2"),
+                                             mltext("logFmsg.selection.3")),
                                       " (",
                                       format(Sys.time(), "%d/%m/%Y\t%H:%M:%S"),
                                       ")", sep=""),
-                                paste("\n\n   Facteur :", argsSup$facteur),
-                                paste("\n   Modalités :",
+                                paste(mltext("logFmsg.selection.4"), argsSup$facteur),
+                                paste(mltext("logFmsg.selection.5"),
                                       paste(argsSup$selection, collapse=", ")),
-                                paste("\n\nFichiers exportés dans ", argsSup$results, " :", sep=""),
+                                paste(mltext("logFmsg.selection.6"), argsSup$results, " :", sep=""),
                                 ifelse(isTRUE(argsSup$has.SzCl),
-                                       paste("\n   - métriques par unité d'observation / esp. / cl. de taille :",
+                                       paste(mltext("logFmsg.selection.7"),
                                              "UnitobsEspeceClassetailleMetriques_selection.csv"),
                                        ""),
-                                paste("\n   - métriques par unité d'observation / esp. :",
+                                paste(mltext("logFmsg.selection.8"),
                                       "UnitobsEspeceMetriques_selection.csv"),
-                                paste("\n   - métriques par unité d'observation :",
+                                paste(mltext("logFmsg.selection.9"),
                                       "UnitobsMetriques_selection.csv"),
-                                paste("\n   - plan d'échantillonnage basique (année - statut de protection) :",
+                                paste(mltext("logFmsg.selection.10"),
                                       "PlanEchantillonnage_basique_selection.csv"),
                                 "\n\n", sep="")
                       }
@@ -211,21 +211,21 @@ add.logFrame.f <- function(msgID, env=dataEnv,...)
                       if (any(!is.element(c("results", "has.SzCl"),
                                           names(argsSup))))
                       {
-                          stop("Arguments incorrects !")
+                          stop("Wrong argument(s)!")
                       }else{
                           paste("\n",
                                 paste(rep("-", 100), collapse=""),
-                                paste("\nFichiers exportés dans ", argsSup$results, sep=""),
+                                paste(mltext("logFmsg.files.1"), argsSup$results, sep=""),
                                 paste("\n   (avant ", format(Sys.time(), "%d/%m/%Y\t%H:%M:%S"), ") :", sep=""),
                                 ifelse(isTRUE(argsSup$has.SzCl),
-                                       paste("\n   - métriques par unité d'observation / esp. / cl. de taille :",
+                                       paste(mltext("logFmsg.files.2"),
                                              "UnitobsEspeceClassetailleMetriques.csv"),
                                        ""),
-                                paste("\n   - métriques par unité d'observation / esp. :",
+                                paste(mltext("logFmsg.files.3"),
                                       "UnitobsEspeceMetriques.csv"),
-                                paste("\n   - métriques par unité d'observation :",
+                                paste(mltext("logFmsg.files.4"),
                                       "UnitobsMetriques.csv"),
-                                paste("\n   - plan d'échantillonnage basique (année - statut de protection) :",
+                                paste(mltext("logFmsg.files.5"),
                                       "PlanEchantillonnage_basique.csv"),
                                 "\n\n", sep="")
                       }
@@ -234,11 +234,11 @@ add.logFrame.f <- function(msgID, env=dataEnv,...)
                       if (any(!is.element(c("file"),
                                           names(argsSup))))
                       {
-                          stop("Arguments incorrects !")
+                          stop("Wrong argument(s)!")
                       }else{
                           paste("",
                                 paste(rep("-", 100), collapse=""),
-                                "Enregistrement des informations sur le référentiel espèce dans le fichier :",
+                                mltext("logFmsg.saveInfoRefspe.1"),
                                 paste("   ", argsSup$file, format(Sys.time(), "  (%d/%m/%Y\t%H:%M:%S)"), sep=""),
                                 "\n", sep="\n")
                       }

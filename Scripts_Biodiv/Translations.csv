@@ -147,3 +147,19 @@ logFmsg.refespFile,\n   Fichier du référentiel espèces :,
 logFmsg.refspaFile,\n   Fichier du référentiel spatial :,
 logFmsg.exportPath,\n   Répertoire des résultats et des exports :,
 logFmsg.restoreData,Restauration des données originales  (sans sélection ; ,
+logFmsg.selection.1,\nSélection des observations selon un critère,\nSelection of observations based on criteria on
+logFmsg.selection.2, du référentiel espèces, species reference
+logFmsg.selection.3, des unités d'observation, observation units
+logFmsg.selection.4,\n\n   Facteur :,\n\n   Factor:
+logFmsg.selection.5,\n   Modalités :,\n   Levels:
+logFmsg.selection.6,\n\nFichiers exportés dans ,\n\nFile exported as 
+logFmsg.selection.7,\n   - métriques par unité d'observation / esp. / cl. de taille :,
+logFmsg.selection.8,\n   - métriques par unité d'observation / esp. :,
+logFmsg.selection.9,\n   - métriques par unité d'observation :,
+logFmsg.selection.10,\n   - plan d'échantillonnage basique (année - statut de protection) :,
+logFmsg.files.1,\nFichiers exportés dans ,
+logFmsg.files.2,\n   - métriques par unité d'observation / esp. / cl. de taille :,
+logFmsg.files.3,\n   - métriques par unité d'observation / esp. :,
+logFmsg.files.4,\n   - métriques par unité d'observation :,
+logFmsg.files.5,\n   - plan d'échantillonnage basique (année - statut de protection) :,
+logFmsg.saveInfoRefspe.1,Enregistrement des informations sur le référentiel espèce dans le fichier :,

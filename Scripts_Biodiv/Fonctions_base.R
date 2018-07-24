@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
-##   Copyright (C) 2008-2012 Ifremer - Tous droits réservés.
+##   Copyright (C) 2008-2018 Ifremer - Tous droits réservés.
 ##
 ##   Ce programme est un logiciel libre ; vous pouvez le redistribuer ou le
 ##   modifier suivant les termes de la "GNU General Public License" telle que
@@ -83,7 +83,7 @@ dropLevels.f <- function(df, which=NULL)
 
     if (class(df) != "data.frame")
     {
-        stop("'df' doit être une data.frame")
+        stop("'df' must be a data.frame")
     }else{
         if (is.null(which))
         {
@@ -155,7 +155,7 @@ if (!exists("grepl"))
 ########################################################################################################################
 is.peche.f <- function()
 {
-    ## Purpose: Définir s'il s'ajit d'un jeu de données "pêche".
+    ## Purpose: Définir s'il s'agit d'un jeu de données "pêche".
     ## ----------------------------------------------------------------------
     ## Arguments: aucun
     ## ----------------------------------------------------------------------
@@ -163,7 +163,7 @@ is.peche.f <- function()
 
     if (length(getOption("P.obsType")) > 1)
     {
-        stop("Plusieurs types d'observations")
+        stop("Several observation types")
     }else{
         return(is.element(as.character(getOption("P.obsType")),
                           c("EMB", "DEB", "PSCI", "PecRec")))
@@ -302,7 +302,7 @@ errorLog.f <- function(error, niv=-3)
 
     close(logFile)
 
-    message("\n\tIl y a eu une erreur.", "\n\tVoir le fichier log : ", logFileName, "\n")
+    message(mltext("errorLog.f.msg1"), mltext("errorLog.f.msg2"), logFileName, "\n")
 }
 
 
@@ -323,7 +323,7 @@ backupEnv.f <- function(envSource, envSink)
     {
         envSink <- new.env()            # Création s'il est manquant.
     }else{
-        if (! is.environment(envSink)) stop("envSink n'est pas un environnement")
+        if (! is.environment(envSink)) stop("envSink isn't an environnement")
     }
 
     ## Copie des élements :
@@ -355,7 +355,7 @@ listInEnv.f <- function(list, env)
     {
         listNames <- paste("obj", seq(length.out=length(list)), sep="")
 
-        warning("Liste non nommée : les éléments ont été nommés \"obj1\", \"obj2\", etc.")
+        warning("Unnamed list: the elements have been named \"obj1\", \"obj2\", etc.")
     }else{
         listNames <- names(list)
     }
@@ -398,7 +398,7 @@ writeData.f <- function(filename, Data, cols=NULL)
         {
             Data <- do.call(rbind, Data)
         }else{
-            warning("Sauvegarde de données : erreur de programmation !")
+            warning("Data saving: programming error!")
         }
 
     }else{}
@@ -415,7 +415,7 @@ writeData.f <- function(filename, Data, cols=NULL)
                         row.names = FALSE),
              error=function(e)
          {
-             message("Impossible d'écrire dans :", filename)
+             message(mltext("writeData.f.msg"), filename)
              errorLog.f(error=e, niv=-4)
          })
 }
@@ -434,20 +434,20 @@ printGeneralDataInfo.f <- function(dataEnv, baseEnv, File)
     ## Author: Yves Reecht, Date: 11 sept. 2012, 10:36
 
     ## Informations sur les fichiers de données :
-    cat(paste("################\nJeu de données :\n",
-              "\n  * Identification du cas d'étude : ", paste(getOption("P.MPA"), collapse=", "),
-              "\n  * Répertoire de données : ", dataEnv$fileNames["ws"], "/Data/",
-              "\n  * Données d'observation : ", dataEnv$fileNames["obs"],
-              "\n  * Données unités d'observation :) : ", dataEnv$fileNames["unitobs"],
-              "\n  * Référentiel espèces : ", dataEnv$fileNames["refesp"],
-              "\n  * Référentiel spatial : ", dataEnv$fileNames["refspa"], "\n",
+    cat(paste(mltext("printGeneralDataInfo.f.1"),
+              mltext("printGeneralDataInfo.f.2"), paste(getOption("P.MPA"), collapse=", "),
+              mltext("printGeneralDataInfo.f.3"), dataEnv$fileNames["ws"], "/Data/",
+              mltext("printGeneralDataInfo.f.4"), dataEnv$fileNames["obs"],
+              mltext("printGeneralDataInfo.f.5"), dataEnv$fileNames["unitobs"],
+              mltext("printGeneralDataInfo.f.6"), dataEnv$fileNames["refesp"],
+              mltext("printGeneralDataInfo.f.7"), dataEnv$fileNames["refspa"], "\n",
               sep=""),
         file=File)
 
     ## Sélections au niveau de la plateforme :
     cat(ifelse((tmp <- evalq(tclvalue(tkcget(MonCritere, "-text")), envir=.baseEnv)) == "Tout",
-               "\nPas de sélection générale sur les données.\n",
-               paste("\nSélection(s) générale(s):\n\n", tmp, "\n", sep="")),
+               mltext("printGeneralDataInfo.f.8"),
+               paste(mltext("printGeneralDataInfo.f.9"), tmp, "\n", sep="")),
         file=File)
 }
 
@@ -472,29 +472,29 @@ printSelectionInfo.f <- function(metrique, factGraph, factGraphSel, listFact, li
     ## Author: Yves Reecht, Date: 11 sept. 2012, 10:41
 
     cat("\n##################################################\n",
-        "Métrique et facteurs (et éventuelles unité/sélections) :\n",
+        mltext("printSelectionInfo.f.1"),
         sep="", file=File)
 
     ## Informations sur la métrique :
-    cat("\n Métrique :", varNames[metrique, "nom"],
+    cat(mltext("printSelectionInfo.f.2"), varNames[metrique, "nom"],
         paste("(", varNames[metrique, "unite"],"),", sep=""),
         "\n", file=File)
 
     ## Niveau d'agrégation :
-    cat("            agrégée par ",
+    cat(mltext("printSelectionInfo.f.3"),
         switch(agregLevel,
                "CL_espece"=,"CL_unitobs"=,"spCL_unitobs"=,"spCL_espece"={
-                   "classe de taille / "
+                   mltext("printSelectionInfo.f.4")
                }),
         switch(agregLevel,
                "CL_espece"=,"spCL_espece"=,"species"=,"spSpecies"=,"spEspece"={
-                   "espèce / "
+                   mltext("printSelectionInfo.f.5")
                }),
         switch(agregLevel,
                "spUnitobs"=,"spCL_unitobs"=,"spCL_espece"=,"spUnitobs(CL)"=,"spSpecies"=,"spEspece"={
-                   paste(listFact, " (moyenne sur les ", sep="")
+                   paste(listFact, mltext("printSelectionInfo.f.6"), sep="")
               }),
-        "unité d'observation",
+        mltext("printSelectionInfo.f.7"),
         switch(agregLevel,
                "spUnitobs"=,"spCL_unitobs"=,"spCL_espece"=,"spUnitobs(CL)"=,"spSpecies"=,"spEspece"={
                    ")"
@@ -505,23 +505,23 @@ printSelectionInfo.f <- function(metrique, factGraph, factGraphSel, listFact, li
     ## Facteurs de séparation de graphiques/analyses ou sélection d'observations :
     switch(agregLevel,
            "species"=,"CL_espece"=,"espece"={ # Adapté également pour les LMs.
-               cat("\nFacteur de séparation des ",
+               cat(mltext("printSelectionInfo.f.8"),
                    switch(type,
-                          "graph"="graphiques",
-                          "stat"="analyses"),
+                          "graph"=mltext("printSelectionInfo.f.9"),
+                          "stat"=mltext("printSelectionInfo.f.10")),
                    " : ",
-                   ifelse(factGraph == "", "aucun !",
+                   ifelse(factGraph == "", "printSelectionInfo.f.11",
                           ifelse(is.na(factGraphSel[1]),
-                                 paste(varNames.f(factGraph, "nom"), "(attention, aucune sélection !!!)"),
+                                 paste(varNames.f(factGraph, "nom"), mltext("printSelectionInfo.f.12")),
                                  paste(varNames.f(factGraph, "nom"), " (",
                                        paste(factGraphSel, collapse=", "), ")", sep=""))), "\n",
                    sep="", file=File)
            },
            "unitobs"=,"CL_unitobs"=,"unitobs(CL)"=,"spUnitobs"={
-               cat("\nFacteur de sélection des observations à agréger : ",
-                   ifelse(factGraph == "", "aucun (toutes les espèces/classes de taille) !",
+               cat(mltext("printSelectionInfo.f.13"),
+                   ifelse(factGraph == "", mltext("printSelectionInfo.f.14"),
                           ifelse(is.na(factGraphSel[1]),
-                                 paste(varNames.f(factGraph, "nom"), "(aucune sélection)"),
+                                 paste(varNames.f(factGraph, "nom"), mltext("printSelectionInfo.f.15")),
                                  paste(varNames.f(factGraph, "nom"), " (",
                                        paste(factGraphSel, collapse=", "), ")", sep=""))), "\n",
                    sep="", file=File)
@@ -532,9 +532,9 @@ printSelectionInfo.f <- function(metrique, factGraph, factGraphSel, listFact, li
                                  "spUnitobs", "spUnitobs(CL)"))) {type <- "spatialGraph"}
 
     cat(switch(type,
-               "graph"="\nFacteur(s) de regroupement : ",
-               "stat"="\nFacteur(s) de l'analyse : ",
-               "spatialGraph"="\nFacteur d'agrégation spatiale : "), "\n",
+               "graph"=mltext("printSelectionInfo.f.16"),
+               "stat"=mltext("printSelectionInfo.f.17"),
+               "spatialGraph"=mltext("printSelectionInfo.f.18")), "\n",
         file=File)
 
     invisible(sapply(1:length(listFact),
@@ -542,7 +542,7 @@ printSelectionInfo.f <- function(metrique, factGraph, factGraphSel, listFact, li
                  {
                      cat("\n  * ",
                          ifelse(is.na(listFactSel[[i]][1]),
-                                       paste(varNames.f(listFact[i], "nom"), "(aucune sélection)"),
+                                       paste(varNames.f(listFact[i], "nom"), mltext("printSelectionInfo.f.15")),
                                        paste(varNames.f(listFact[i], "nom"), " (",
                                              paste(listFactSel[[i]], collapse=", "), ")", sep="")), "\n",
                          sep="", file=File)
@@ -559,13 +559,16 @@ summary.fr <- function(object, digits = max(3, getOption("digits") - 3),...)
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 13 sept. 2012, 15:47
 
-    if ( ! is.numeric(object)) stop("Erreur de programmation")
+    if ( ! is.numeric(object)) stop("Programming error")
 
     ## Calcul du résumé :
     res <- c(summary(object=object, digits, ...), "sd"=signif(sd(x=object), digits=digits), "N"=length(object))
 
     ## Changement des noms d'éléments :
-    names(res) <- c("Min.", "1er.Quart.", "Médiane", "Moyenne", "3e.Quart.", "Max", "Écart.type", "N")
+    names(res) <- c(mltext("summary.min"), mltext("summary.1stQ"),
+                    mltext("summary.med"), mltext("summary.mean"),
+                    mltext("summary.3rdQ"), mltext("summary.max"),
+                    mltext("summary.sd"), mltext("summary.N"))
 
     return(res)
 }
@@ -592,14 +595,14 @@ printStats.f <- function(Data, metrique, listFact, File, headline=NULL)
             sep="", file=File)
     }else{}
 
-    cat("\n########################\nStatistiques générales :\n\n", file=File)
+    cat(mltext("printStats.f.1"), file=File)
 
     capture.output(print(summary.fr(Data[ , metrique])), file=File, append=TRUE)
 
     if ( ! is.null(listFact))
     {
         cat("\n#########################################",
-            "\nStatistiques par croisement de facteurs :\n\n", file=File, sep="")
+            mltext("printStats.f.2"), file=File, sep="")
 
         ## Calcul du summary pour chaque croisement (existant) de facteur :
         res <- with(Data,
@@ -670,7 +673,7 @@ infoStats.f <- function(filename, Data, agregLevel=c("species", "unitobs"), type
     if (class(Data) == "list")
     {
         cat("\n###################################################",
-            "\nStatistiques par niveaux de facteur de séparation :\n",
+            mltext("infoStats.f.1"),
             sep="", file=File)
 
         invisible(sapply(1:length(Data),

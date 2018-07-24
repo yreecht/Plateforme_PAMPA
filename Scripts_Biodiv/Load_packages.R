@@ -1,8 +1,8 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-07-18 12:24:53 yreecht>
+# Time-stamp: <2018-07-24 09:01:32 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
-##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
+##   Copyright (C) 2008-2018 Ifremer - Tous droits réservés.
 ##
 ##   Ce programme est un logiciel libre ; vous pouvez le redistribuer ou le
 ##   modifier suivant les termes de la "GNU General Public License" telle que
@@ -45,9 +45,9 @@ installPack.f <- function(pack)
     ## Avertissement si des packages manquants ne sont pas disponibles :
     if (any(!is.element(pack, packDispo)))
     {
-        tkmessageBox(message=paste("Le(s) package(s) : \n\n    * '",
+        tkmessageBox(message=paste(mltext("installPack.f.1"),
                                    paste(pack[!is.element(pack, packDispo)], collapse="'\n    * '"),
-                                   "'\n\nn'est (ne sont) pas disponible(s) !", sep=""),
+                                   mltext("installPack.f.2"), sep=""),
                      icon="warning")
 
         res <- "error"
@@ -105,17 +105,19 @@ loadPackages.f <- function()
 
         ## Éléments d'interface :
         WinInstall <- tktoplevel()
-        tkwm.title(WinInstall, "Packages manquants")
+        tkwm.title(WinInstall, mltext("WinInstall.title"))
 
-        B.Install <- tkbutton(WinInstall, text="   Installer   ", command=function(){tclvalue(Done) <- "1"})
-        B.Cancel <- tkbutton(WinInstall, text="   Annuler   ", command=function(){tclvalue(Done) <- "2"})
+        B.Install <- tkbutton(WinInstall, text=mltext("WinInstall.B.Install"),
+                              command=function(){tclvalue(Done) <- "1"})
+        B.Cancel <- tkbutton(WinInstall, text=mltext("WinInstall.B.Cancel"),
+                             command=function(){tclvalue(Done) <- "2"})
 
         tkgrid(tklabel(WinInstall, text=" "))
         tkgrid(tklabel(WinInstall,
-                       text=paste("Le(s) package(s) suivant(s) est (sont) manquant(s) :\n\    * '",
+                       text=paste(mltext("WinInstall.list.1"),
                                   paste(packManquants, collapse="'\n    * '"),
-                                  "'\n\n Vous pouvez lancer leur installation \n",
-                                  "(connection internet active et droits d'administration requis).", sep=""),
+                                  mltext("WinInstall.list.2"),
+                                  mltext("WinInstall.list.3"), sep=""),
                        justify="left"),
                column=1, columnspan=3, sticky="w")
 
@@ -151,7 +153,7 @@ loadPackages.f <- function()
     ## Traitement en fonction du statut de sortie :
     switch(res,
            ok = invisible(sapply(requiredPack, library, character.only=TRUE)),
-           stop(paste("Vous devez installer manuellement le(s) package(s) :\n\n    * '",
+           stop(paste(mltext("WinInstall.list.4"),
                       paste(requiredPack[!is.element(requiredPack, installed.packages()[ , "Package"])],
                             collapse="\n    * '"),
                       "'", sep="")))

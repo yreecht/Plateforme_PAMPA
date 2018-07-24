@@ -163,3 +163,53 @@ logFmsg.files.3,\n   - métriques par unité d'observation / esp. :,
 logFmsg.files.4,\n   - métriques par unité d'observation :,
 logFmsg.files.5,\n   - plan d'échantillonnage basique (année - statut de protection) :,
 logFmsg.saveInfoRefspe.1,Enregistrement des informations sur le référentiel espèce dans le fichier :,
+installPack.f.1,Le(s) package(s) : \n\n    * ',The package(s) : \n\n    * '
+installPack.f.2,'\n\nn'est (ne sont) pas disponible(s) !,'\n\nis (are) not available!
+WinInstall.title,Packages manquants,Missing packages
+WinInstall.B.Install,   Installer   ,    Install    
+WinInstall.B.Cancel,   Annuler   ,   Cancel    
+WinInstall.list.1,Le(s) package(s) suivant(s) est (sont) manquant(s) :\n\    * ',The following packages are missing:\n\    * '
+WinInstall.list.2,'\n\n Vous pouvez lancer leur installation \n,'\n\n You can install them now \n
+WinInstall.list.3,(connection internet active et droits d'administration requis).,(live connection required).
+WinInstall.list.4,Vous devez installer manuellement le(s) package(s) :\n\n    * ',Manual installation required for the following package(s):\n\n    * '
+errorLog.f.msg1,\n\tIl y a eu une erreur.,\n\tThere was an error.
+errorLog.f.msg2,\n\tVoir le fichier log : ,\n\tPlease see the log file: 
+writeData.f.msg,Impossible d'écrire dans :,Cannot write in file:
+printGeneralDataInfo.f.1,################\nJeu de données :\n,####################\nDatasets:\n
+printGeneralDataInfo.f.2,\n  * Identification du cas d'étude : ,\n  * Identification of the case study: 
+printGeneralDataInfo.f.3,\n  * Répertoire de données : ,\n  * Data directory: 
+printGeneralDataInfo.f.4,\n  * Données d'observation : ,\n  * Observation data: 
+printGeneralDataInfo.f.5,\n  * Données unités d'observation : ,\n  * Observation unit data: 
+printGeneralDataInfo.f.6,\n  * Référentiel espèces : ,\n  * Species reference table: 
+printGeneralDataInfo.f.7,\n  * Référentiel spatial : ,\n  * Spatial referential: 
+printGeneralDataInfo.f.8,\nPas de sélection générale sur les données.\n,\nNo general selection on data.\n
+printGeneralDataInfo.f.9,\nSélection(s) générale(s):\n\n,\nGeneral selection(s):\n\n
+printSelectionInfo.f.1,Métrique et facteurs (et éventuelles unité/sélections) :\n,Metrics and factors (and possible units/selections):\n
+printSelectionInfo.f.2,\n Métrique :,\n Metrics:
+printSelectionInfo.f.3,            agrégée par ,            aggregated by 
+printSelectionInfo.f.4,classe de taille / ,size class / 
+printSelectionInfo.f.5,espèce / ,species / 
+printSelectionInfo.f.6, (moyenne sur les , (mean over 
+printSelectionInfo.f.7,unité d'observation,observation units
+printSelectionInfo.f.8,\nFacteur de séparation des ,\n
+printSelectionInfo.f.9,graphiques,Graphics separation factor
+printSelectionInfo.f.10,analyses,Analyses separation factor
+printSelectionInfo.f.11,aucun !,none!
+printSelectionInfo.f.12,"(attention, aucune sélection !!!)",(warning: no selection!!!)
+printSelectionInfo.f.13,\nFacteur de sélection des observations à agréger : ,\nSelection factor for aggregation of observations: 
+printSelectionInfo.f.14,aucun (toutes les espèces/classes de taille) !,none (all species/size classes)!
+printSelectionInfo.f.15,(aucune sélection),(no selection)
+printSelectionInfo.f.16,\nFacteur(s) de regroupement : ,\nGrouping factor(s): 
+printSelectionInfo.f.17,\nFacteur(s) de l'analyse : ,\nAnalyses factor(s): 
+printSelectionInfo.f.18,\nFacteur d'agrégation spatiale : ,\nSpatial aggregation factor(s): 
+summary.min,Min.,Min.
+summary.1stQ,1er.Quart.,1st.Quart
+summary.med,Médiane,Median
+summary.mean,Moyenne,Mean
+summary.3rdQ,3e.Quart.,3rd.Quart
+summary.max,Max.,Max.
+summary.sd,Écart.type,Std.dev
+summary.N,N,N
+printStats.f.1,\n########################\nStatistiques générales :\n\n,\n########################\nBase statistics:\n\n
+printStats.f.2,\nStatistiques par croisement de facteurs :\n\n,\nStatistics by combination of factor levels:\n\n
+infoStats.f.1,\nStatistiques par niveaux de facteur de séparation :\n,\nStatistics by level of splitting factor:\n

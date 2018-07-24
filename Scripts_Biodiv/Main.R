@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-07-23 16:45:54 yreecht>
+# Time-stamp: <2018-07-24 10:06:29 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2018 Ifremer - Tous droits réservés.
@@ -67,9 +67,9 @@ nameWorkspace <- basePath
                                                                                        # Code formating
                                                                                        # [ML status]:
 ## ...les fonctions communes de base :                                                 # -----------------------
-source("./Scripts_Biodiv/Load_packages.R", encoding="latin1")                          # OK
-source("./Scripts_Biodiv/Fonctions_base.R", encoding="latin1")                         # OK
-source("./Scripts_Biodiv/Functions_Multilingual.R", encoding="latin1")
+source("./Scripts_Biodiv/Load_packages.R", encoding="latin1")                          # OK [mld]
+source("./Scripts_Biodiv/Fonctions_base.R", encoding="latin1")                         # OK [mld]
+source("./Scripts_Biodiv/Functions_Multilingual.R", encoding="latin1")                 # [mli]
 
 ## ...la création de l'interface :
 source("./Scripts_Biodiv/Interface_fonctions.R", encoding="latin1")                    # OK [mld]

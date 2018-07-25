@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2013-04-25 18:56:15 yves>
+# Time-stamp: <2018-07-25 13:57:45 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
@@ -1393,7 +1393,7 @@ loadDefault.f <- function(baseEnv, dataEnv)
                              filePathes, Data,
                              get("table1", envir=baseEnv))
     }else{
-        stop("Problème de configuration")
+        stop(mltext("error.config.issue")) # Translation to keep... for the user.
     }
 
     ## Calculs des poids (faits par AMP) :

@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-07-24 10:06:29 yreecht>
+# Time-stamp: <2018-07-24 12:36:37 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2018 Ifremer - Tous droits réservés.
@@ -143,6 +143,7 @@ if (is.null(getOption("GraphPAMPA")))   # uniquement si pas déjà initialisées (c
 
 options("P.GUIlang" = "en")
 ## options("P.GUIlang" = "fr")
+options(error = recover)
 ## On lance l'interface :
 mainInterface.create.f()
 

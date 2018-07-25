@@ -14,8 +14,8 @@ menu.import.test.refesp,Test du référentiel (espèces concernées),QC of the refer
 menu.import.design,Plan d'échantillonnage basique,Basic sampling design
 menu.import.info.sp,Info données par espèces,Data information by species
 menu.import.info.unitobs,Info données par unité d'observation,Data information by observation unit
-menu.select.refesp,Selon un champ du référentiel espèce...,By field of the species ref. Table
-menu.select.unitobs,Selon un champ des unités d'observation...,By field of the observation units
+menu.select.refesp,Selon un champ du référentiel espèce...,By field of the species reference table
+menu.select.unitobs,Selon un champ des unités d'observation...,By field of the observation units table
 menu.select.sp.list,Par liste d'espèces (fichier),By species (list file)
 msg.ongoing.dev,En développement !,Implementation in progress!
 menu.select.restore,Restaurer les données originales,Restore original data
@@ -31,33 +31,33 @@ menu.graphs.occ.freq.unitobs,Fréquences d'occurrence (/facteurs d'unité d'observ
 menu.graphs.boxplots.zone,"Graphiques en barres ou boîtes à moustaches, par zone...","Barplots or boxplots, by zone..."
 menu.graphs.maps.symbols.zone,"Symboles de taille variable ou échelle de couleur, par zone...","Variable size symbols or colour-scale, by zone..."
 menu.stats.sp.unitobs,"Modèles linéaires, métrique /espèce/unité d'observation...","Linear model, metrics /species/observation unit..."
-menu.stats.MRT.esp,"Arbres de régression multivariée, métrique / espèces / unité d'observation...",
-menu.stats.unitobs,"Modèles linéaires, métrique /unité d'observation (dont biodiversité)...",
-menu.stats.MRT.unitobs,"Arbres de régression multivariée, métrique /unité d'observation (dont biodiversité)...",
-menu.tools.export.opt,Options d'export...,
-menu.tools.graph.opt,Options graphiques...,
-menu.tools.link.unitobs.refspa,Lier les unités d'observations et le référentiel spatial...,
-menu.tools.reorder.fact.unitobs,Réorganiser des facteurs des unités d'observation...,
-menu.tools.reorder.fact.refesp,Réorganiser des facteurs du référentiel espèces...,
-menu.tools.edit.conf,Éditer le fichier de configuration,
-menu.tools.bugreport,Créer un rapport de bug,
-menu.tools.update,mise à jour (site de téléchargement),
-menu.help.online.doc,Documentation en ligne,
-menu.help.local.doc,Documentation (locale),
-menu.help.forum,Forum d'entraide,
-menu.help.about,À propos de la plateforme...,
+menu.stats.MRT.esp,"Arbres de régression multivariée, métrique / espèces / unité d'observation...","Multivariate Regression Trees, metrics / species / observation unit..."
+menu.stats.unitobs,"Modèles linéaires, métrique /unité d'observation (dont biodiversité)...","Linear model, metrics / observation unit (incl. biodiversity)..."
+menu.stats.MRT.unitobs,"Arbres de régression multivariée, métrique /unité d'observation (dont biodiversité)...","Multivariate Regression Trees, metrics / observation unit (incl. biodiversity)..."
+menu.tools.export.opt,Options d'export...,Export options...
+menu.tools.graph.opt,Options graphiques...,Graphics options...
+menu.tools.link.unitobs.refspa,Lier les unités d'observations et le référentiel spatial...,Linking observation units and spatial data...
+menu.tools.reorder.fact.unitobs,Réorganiser des facteurs des unités d'observation...,Reorder the observation units factors...
+menu.tools.reorder.fact.refesp,Réorganiser des facteurs du référentiel espèces...,Reorder the species reference table factors...
+menu.tools.edit.conf,Éditer le fichier de configuration,Edit the configuration file
+menu.tools.bugreport,Créer un rapport de bug,Report a bug
+menu.tools.update,mise à jour (site de téléchargement),Update (download website)
+menu.help.online.doc,Documentation en ligne,Online documentation
+menu.help.local.doc,Documentation (locale),Local documentation
+menu.help.forum,Forum d'entraide,Forum
+menu.help.about,À propos de la plateforme...,About PAMPA...
 helpframe.Ucan,Vous pouvez...,You can...
-workspace.none,Espace de travail : non sélectionné.,
-datainfo.none,Aucun jeu de données chargé pour l'instant !,
-B.DataRestore,Restaurer les données,
-L.criteres,       Critère(s) de sélection :,
-criterion.all,Tout,
-array.datafiles.type,Type de fichier,
-array.datafiles.name,Nom de fichier,
-array.datafiles.nbFields,Nb champs,
-array.datafiles.nbRec,Nb enregistrements,
-array.datafiles.unitobs, Fichier d'unités d'observations ,
-array.datafiles.not.selected,non sélectionné,
+workspace.none,Espace de travail : non sélectionné.,Working directory: not selected.
+datainfo.none,Aucun jeu de données chargé pour l'instant !,No dataset selected yet!
+B.DataRestore,Restaurer les données,Restore data
+L.criteres,       Critère(s) de sélection :,       Selection criteria:
+criterion.all,Tout,All
+array.datafiles.type,Type de fichier,File type
+array.datafiles.name,Nom de fichier,File name
+array.datafiles.nbFields,Nb champs,# of fields
+array.datafiles.nbRec,Nb enregistrements,# of records
+array.datafiles.unitobs, Fichier d'unités d'observations , Observation unit file 
+array.datafiles.not.selected,non sélectionné,not selected
 array.datafiles.obs, Fichier d'observations , Observations file 
 array.datafiles.refesp, Référentiel espèce général , Species ref. table 
 array.datafiles.refesp.local, Référentiel espèce local (optionnel) , Local species ref. table (optional) 
@@ -106,63 +106,63 @@ semicolon, :,:
 sum.nb.unitobs.obs.1,-> Nombre d'unités d'observations,-> Number of observation units
 tclarray.0.4,Sélection,Selection
 sum.nb.sp.obs.2,-> Nombre d'espèces,-> Number of species
-error.recouvrementsansLIT.1,"Le champ obs$type n'est pas 'LIT', vous ne pouvez pas calculer",
-error.recouvrementsansLIT.2, un % de recouvrement avec des espèces non benthiques\n,
-error.noWorkspace,Aucun espace de travail n'est choisi ou opérationnel\n,
-error.nbChampUnitobs.1,Votre fichier 'Unites d'observation' ne comporte pas le bon nombre de champs!,
-error.nbChampUnitobs.2, Il devrait en contenir 35. Corrigez le et recommencez l'importation.\n,
-error.nbChampEsp.1,Votre fichier 'référentiel espèces' ne comporte pas le bon nombre de champs!,
-error.nbChampEsp.2, Il devrait en contenir 124. Corrigez le et recommencez l'importation.\n,
-error.nbChampObs.1,Votre fichier 'observations' ne comporte pas le bon nombre de champs!,
-error.nbChampObs.2, Il devrait en contenir 11 . Corrigez le et recommencez l'importation.\n,
-error.UnitobsDsObsUnitobs.1,Votre fichier 'observations' ne comporte pas les mêmes unitobs que votre fichier,
-error.UnitobsDsObsUnitobs.2, 'Unites d'observation'. Corrigez les et recommencez l'importation.\n,
-error.CaractereInterditDsObs,"Votre fichier observations contient des \""&\"". Corrigez les et recommencez l'importation.\n",
-error.CaractereInterditDsUnitObs,"Votre fichier unités d'observations contient des \"".\"" Corrigez les et recommencez l'importation.\n",
+error.recouvrementsansLIT.1,"Le champ obs$type n'est pas 'LIT', vous ne pouvez pas calculer","The observation type is not 'LIT', % overlap with"
+error.recouvrementsansLIT.2, un % de recouvrement avec des espèces non benthiques\n, non-benthic species cannot be evaluated\n
+error.noWorkspace,Aucun espace de travail n'est choisi ou opérationnel\n,No valid working directory selected\n
+error.nbChampUnitobs.1,Votre fichier 'Unites d'observation' ne comporte pas le bon nombre de champs!,The 'Observation unit' file has the wrong number of fields!
+error.nbChampUnitobs.2, Il devrait en contenir 35. Corrigez le et recommencez l'importation.\n, It should have 35. Please correct it and restart the importation.\n
+error.nbChampEsp.1,Votre fichier 'référentiel espèces' ne comporte pas le bon nombre de champs!,The 'Species reference' file has the wrong number of fields!
+error.nbChampEsp.2, Il devrait en contenir 124. Corrigez le et recommencez l'importation.\n, It should have 124. Please correct it and restart the importation.\n
+error.nbChampObs.1,Votre fichier 'observations' ne comporte pas le bon nombre de champs!,The 'Observation' file has the wrong number of fields!
+error.nbChampObs.2, Il devrait en contenir 11 . Corrigez le et recommencez l'importation.\n, It should have 11. Please correct it and restart the importation.\n
+error.UnitobsDsObsUnitobs.1,Votre fichier 'observations' ne comporte pas les mêmes unitobs que votre fichier,Unitobs in the 'Observations' file do not match those in the 'Observation unit'
+error.UnitobsDsObsUnitobs.2, 'Unites d'observation'. Corrigez les et recommencez l'importation.\n, file. Please correct and restart the importation.\n
+error.CaractereInterditDsObs,"Votre fichier observations contient des ""&"". Corrigez les et recommencez l'importation.\n","The 'Observations' file contains some ""&"". Please correct and restart the importation.\n"
+error.CaractereInterditDsUnitObs,"Votre fichier unités d'observations contient des ""."" Corrigez les et recommencez l'importation.\n","The 'Observation unit' file contains some ""."". Please correct and restart the importation.\n"
 error.ZeroEnregistrement,Graphique impossible - pas d'enregistrements dans votre sélection.\n,
 error.UneSeuleValeurRegroupement,Graphique sans intérêt - votre critère de regroupement n'a qu'une seule valeur.\n,
 error.CritereMalRenseigne50.1,Graphique sans intérêt - le critère de regroupement sélectionné,
 error.CritereMalRenseigne50.2, est renseigné pour moins de 50% des observations.\n,
-error.CaractereInterdit.1,Votre table ,
+error.CaractereInterdit.1,Votre table ,Your table 
 error.CaractereInterdit.2," contient des caractères déconseillés par le référentiel des données ('espaces',',',';' ",
 error.CaractereInterdit.3,\n-> vous devez corriger le problème pour ne pas rencontrer d'erreurs.\n,
 error.noMsg,message à renseigner,No message available!
 error.prefix,\nERREUR : ,\nERROR: 
-logmsg.helpmsg,Envoie d'un message d'aide dans l'interface :,
-helpmsg.ZeroEnregistrement.1,Attention : votre sélection ne contient plus d'enregistrement,
-helpmsg.ZeroEnregistrement.2,", veuillez restaurer ou recharger les données (CTRL + a) !\n",
-helpmsg.etapeImport.1,"  * charger les \""Dossiers et fichiers par défaut\"" (CTRL + a).",
-helpmsg.etapeImport.2,\n  * choisir les dossier/fichiers un à un (CTRL + n).,
-helpmsg.etapeImport.3,"\n\t(actions également accessibles par le menu \""Données\"")",
-helpmsg.SelectionOuTraitement.1,"  * restreindre votre sélection de données (menu \""Sélection et recalcul\"").\n",
-helpmsg.SelectionOuTraitement.2,  * commencer les traitements standards (graphiques & analyses statistiques).,
-helpmsg.etapeselected.1,  * restaurer les données originales (sans sélection) :,
-helpmsg.etapeselected.2," menu \""Sélection et recalcul\"" ou bouton ci-dessous à droite.",
-helpmsg.etapeselected.3,\n  * faire d'autres sélections (imbriquées avec les sélections courantes).,
-helpmsg.etapeselected.4,\n  * commencer les traitements standards (graphiques & analyses statistiques).,
-logFmsg.loading,\nChargement de données  (,
-logFmsg.obsFile,\n   Fichier d'observation :,
-logFmsg.unitobsFile,\n   Fichier d'unités d'observation :,
-logFmsg.refespFile,\n   Fichier du référentiel espèces :,
-logFmsg.refspaFile,\n   Fichier du référentiel spatial :,
-logFmsg.exportPath,\n   Répertoire des résultats et des exports :,
-logFmsg.restoreData,Restauration des données originales  (sans sélection ; ,
+logmsg.helpmsg,Envoie d'un message d'aide dans l'interface :,Sending a help message in the GUI:
+helpmsg.ZeroEnregistrement.1,Attention : votre sélection ne contient plus d'enregistrement,Warning: no record in your selection
+helpmsg.ZeroEnregistrement.2,", veuillez restaurer ou recharger les données (CTRL + a) !\n",", please restore or reload the data (CTRL + a) !\n"
+helpmsg.etapeImport.1,"  * charger les ""Dossiers et fichiers par défaut"" (CTRL + a).","  * load the ""Default directory and files"" (CTRL + a)."
+helpmsg.etapeImport.2,\n  * choisir les dossier/fichiers un à un (CTRL + n).,\n  * select manually the directory/files (CTRL + n).
+helpmsg.etapeImport.3,"\n\t(actions également accessibles par le menu ""Données"")","\n\t(actions also available in the menu ""Data"")"
+helpmsg.SelectionOuTraitement.1,"  * restreindre votre sélection de données (menu ""Sélection et recalcul"").\n","  * narrow the data selection (menu ""Subsetting"").\n"
+helpmsg.SelectionOuTraitement.2,  * commencer les traitements standards (graphiques & analyses statistiques).,  * start with standard treatments (graphics & statistical analyses).
+helpmsg.etapeselected.1,  * restaurer les données originales (sans sélection) :,  * restore original data (without selection) :
+helpmsg.etapeselected.2," menu ""Sélection et recalcul"" ou bouton ci-dessous à droite."," menu ""Subsetting"" or top-right button."
+helpmsg.etapeselected.3,\n  * faire d'autres sélections (imbriquées avec les sélections courantes).,\n  * apply further selections (embedded within the current ones).
+helpmsg.etapeselected.4,\n  * commencer les traitements standards (graphiques & analyses statistiques).,  * start with standard treatments (graphics & statistical analyses).
+logFmsg.loading,\nChargement de données  (,\nLoading data  (
+logFmsg.obsFile,\n   Fichier d'observation :,\n   Observations file:
+logFmsg.unitobsFile,\n   Fichier d'unités d'observation :,\n   Observation units file:
+logFmsg.refespFile,\n   Fichier du référentiel espèces :,\n   Species reference table file:
+logFmsg.refspaFile,\n   Fichier du référentiel spatial :,\n   Spatial referential file:
+logFmsg.exportPath,\n   Répertoire des résultats et des exports :,\n   Results and exports directory:
+logFmsg.restoreData,Restauration des données originales  (sans sélection ; ,Restoration of original data (without selection; 
 logFmsg.selection.1,\nSélection des observations selon un critère,\nSelection of observations based on criteria on
 logFmsg.selection.2, du référentiel espèces, species reference
 logFmsg.selection.3, des unités d'observation, observation units
 logFmsg.selection.4,\n\n   Facteur :,\n\n   Factor:
 logFmsg.selection.5,\n   Modalités :,\n   Levels:
-logFmsg.selection.6,\n\nFichiers exportés dans ,\n\nFile exported as 
-logFmsg.selection.7,\n   - métriques par unité d'observation / esp. / cl. de taille :,
-logFmsg.selection.8,\n   - métriques par unité d'observation / esp. :,
-logFmsg.selection.9,\n   - métriques par unité d'observation :,
-logFmsg.selection.10,\n   - plan d'échantillonnage basique (année - statut de protection) :,
-logFmsg.files.1,\nFichiers exportés dans ,
-logFmsg.files.2,\n   - métriques par unité d'observation / esp. / cl. de taille :,
-logFmsg.files.3,\n   - métriques par unité d'observation / esp. :,
-logFmsg.files.4,\n   - métriques par unité d'observation :,
-logFmsg.files.5,\n   - plan d'échantillonnage basique (année - statut de protection) :,
-logFmsg.saveInfoRefspe.1,Enregistrement des informations sur le référentiel espèce dans le fichier :,
+logFmsg.selection.6,\n\nFichiers exportés dans ,\n\nFile exported to 
+logFmsg.selection.7,\n   - métriques par unité d'observation / esp. / cl. de taille :,\n   - metrics by observation unit / sp. / size cl.:
+logFmsg.selection.8,\n   - métriques par unité d'observation / esp. :,\n   - metrics by observation unit / sp.:
+logFmsg.selection.9,\n   - métriques par unité d'observation :,\n   - metrics by observation unit:
+logFmsg.selection.10,\n   - plan d'échantillonnage basique (année - statut de protection) :,\n   - basic sampling design (year – protection status) :
+logFmsg.files.1,\nFichiers exportés dans ,\nFile exported to 
+logFmsg.files.2,\n   - métriques par unité d'observation / esp. / cl. de taille :,\n   - metrics by observation unit / sp. / size cl.:
+logFmsg.files.3,\n   - métriques par unité d'observation / esp. :,\n   - metrics by observation unit / sp.:
+logFmsg.files.4,\n   - métriques par unité d'observation :,\n   - metrics by observation unit:
+logFmsg.files.5,\n   - plan d'échantillonnage basique (année - statut de protection) :,\n   - basic sampling design (year – protection status) :
+logFmsg.saveInfoRefspe.1,Enregistrement des informations sur le référentiel espèce dans le fichier :,Saving species reference information within the file:
 installPack.f.1,Le(s) package(s) : \n\n    * ',The package(s) : \n\n    * '
 installPack.f.2,'\n\nn'est (ne sont) pas disponible(s) !,'\n\nis (are) not available!
 WinInstall.title,Packages manquants,Missing packages
@@ -213,3 +213,4 @@ summary.N,N,N
 printStats.f.1,\n########################\nStatistiques générales :\n\n,\n########################\nBase statistics:\n\n
 printStats.f.2,\nStatistiques par croisement de facteurs :\n\n,\nStatistics by combination of factor levels:\n\n
 infoStats.f.1,\nStatistiques par niveaux de facteur de séparation :\n,\nStatistics by level of splitting factor:\n
+error.config.issue,Problème de configuration,Configuration issue!

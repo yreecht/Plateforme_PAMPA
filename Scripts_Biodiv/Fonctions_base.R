@@ -331,6 +331,12 @@ backupEnv.f <- function(envSource, envSink)
                      function(x, Nx, env)
                  {
                      i <- sys.call()[[2]][[3]]
+
+                     if (is.symbol(x = i)) # for compatibility R > 3.1
+                     {
+                         i <- eval(i, sys.frame(-1))
+                     }
+                     
                      assign(Nx[i], x, envir=env)
                  },
                      Nx=names(as.list(envSource)),
@@ -366,8 +372,12 @@ listInEnv.f <- function(list, env)
                      ## Numéro d'itération :
                      i <- sys.call()[[2]][[3]]
 
+                     if (is.symbol(x = i)) # for compatibility R > 3.1
+                     {
+                         i <- eval(i, sys.frame(-1))
+                     }
                      ## Assignement :
-                     assign(xN[i], x, envir=env)
+                     assign(x = xN[i], value = x, envir=env)
                  },
                      xN=listNames, env=env))
 }

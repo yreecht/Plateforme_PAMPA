@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-07-24 12:36:37 yreecht>
+# Time-stamp: <2018-08-07 09:57:25 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2018 Ifremer - Tous droits réservés.
@@ -68,15 +68,15 @@ nameWorkspace <- basePath
                                                                                        # [ML status]:
 ## ...les fonctions communes de base :                                                 # -----------------------
 source("./Scripts_Biodiv/Load_packages.R", encoding="latin1")                          # OK [mld]
-source("./Scripts_Biodiv/Fonctions_base.R", encoding="latin1")                         # OK [mld]
+source("./Scripts_Biodiv/Functions_base.R", encoding="latin1")                         # OK [mld]
 source("./Scripts_Biodiv/Functions_Multilingual.R", encoding="latin1")                 # [mli]
 
 ## ...la création de l'interface :
-source("./Scripts_Biodiv/Interface_fonctions.R", encoding="latin1")                    # OK [mld]
-source("./Scripts_Biodiv/Interface_principale.R", encoding="latin1")                   # OK [mld]
+source("./Scripts_Biodiv/Interface_functions.R", encoding="latin1")                    # OK [mld]
+source("./Scripts_Biodiv/Interface_main.R", encoding="latin1")                   # OK [mld]
 
 ## anciennes fonctions annexes de visualisation des données (corrigées) :
-source("./Scripts_Biodiv/Gestionmessages.R", encoding="latin1")                        # done [mld]
+source("./Scripts_Biodiv/Messages_management.R", encoding="latin1")                        # done [mld]
 source("./Scripts_Biodiv/Testfichier.R", encoding="latin1")                            # done
 source("./Scripts_Biodiv/View.R", encoding="latin1")                                   # done
 

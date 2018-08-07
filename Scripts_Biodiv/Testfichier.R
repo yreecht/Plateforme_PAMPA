@@ -1,8 +1,8 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2013-04-24 17:37:01 yves>
+# Time-stamp: <2018-08-07 10:48:22 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
-##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
+##   Copyright (C) 2008-2018 Ifremer - Tous droits réservés.
 ##
 ##   Ce programme est un logiciel libre ; vous pouvez le redistribuer ou le
 ##   modifier suivant les termes de la "GNU General Public License" telle que
@@ -21,7 +21,7 @@
 ## essais de rendre générique après avec unitobs et obs
 testfileref.f <- function (dataEnv, baseEnv)
 {
-    ## Récupération des données :
+    ## Get the data :
     filePathes <- get("filePathes", envir=dataEnv)
     fileNames <- get("fileNames", envir=dataEnv)
     refesp <- get("refesp", envir=dataEnv)
@@ -29,14 +29,14 @@ testfileref.f <- function (dataEnv, baseEnv)
 
     imageAMP <- get("imageAMP", envir=baseEnv)
 
-    runLog.f(msg=c("Informations sur le référentiel espèces :"))
+    runLog.f(msg=c(mltext("logmsg.info.spref")))
 
     tclRequire("Tktable")
-    ## Déclaration des objets fenetre, tableau
+    ## Declaration of window and table objects:
     W.test <- tktoplevel(width = 100)
     tclarrayRefEsp <- tclArray()
 
-    ## Fonctions activées par les boutons de la fenêtre
+    ## Functions associated with window's buttons:
     FermerWinTest <- function ()
     {
         tkdestroy(W.test)
@@ -45,15 +45,15 @@ testfileref.f <- function (dataEnv, baseEnv)
 
     EnregistrerWinTest <- function ()
     {
-        FichierCSV <- paste(filePathes["results"], "Infos_", fileNames["refesp"], ".csv", sep="")
+        FichierCSV <- paste(filePathes["results"], "Info_", fileNames["refesp"], ".csv", sep="")
         write.csv2(dataframeRefEsp, file=FichierCSV, row.names = FALSE)
 
         add.logFrame.f(msgID="InfoRefSpeEnregistre", env = baseEnv, file=FichierCSV)
     }
 
     ## Déclaration des objets bouton
-    Fermer.but <- tkbutton(W.test, text="Fermer", command=FermerWinTest)
-    Enregistrer.but <- tkbutton(W.test, text="Enregistrer en CSV", command=EnregistrerWinTest)
+    Fermer.but <- tkbutton(W.test, text=mltext("filetest.B.close"), command=FermerWinTest)
+    Enregistrer.but <- tkbutton(W.test, text=mltext("filetest.B.save.csv"), command=EnregistrerWinTest)
 
     ## Sélection des valeurs de la table espèces correspondant au jeux de données
     sites <- getOption("P.MPA")
@@ -78,17 +78,17 @@ testfileref.f <- function (dataEnv, baseEnv)
 
     ## construction de l'objet dataframe
     dataframeRefEsp <- as.data.frame(names(refesp))
-    colnames(dataframeRefEsp)[1]="Nom_Champ"
-    dataframeRefEsp[, 2]=""
-    dataframeRefEsp[, 3]=""
-    colnames(dataframeRefEsp)[2]="Nb_Valeurs"
-    colnames(dataframeRefEsp)[3]="%_renseignement"
+    colnames(dataframeRefEsp)[1] <- mltext("filetest.arr.fieldName")
+    dataframeRefEsp[, 2] <- ""
+    dataframeRefEsp[, 3] <- ""
+    colnames(dataframeRefEsp)[2] <- mltext("filetest.arr.nbVal")
+    colnames(dataframeRefEsp)[3] <- mltext("filetest.arr.pcFilled")
 
     ## construction de l'objet tableau
-    tclarrayRefEsp[[0, 0]] <- "Champ #"
-    tclarrayRefEsp[[0, 1]] <- "Nom"
-    tclarrayRefEsp[[0, 2]] <- "Nb de valeurs"
-    tclarrayRefEsp[[0, 3]] <- "% renseigné"
+    tclarrayRefEsp[[0, 0]] <- mltext("filetest.arr.0.0")
+    tclarrayRefEsp[[0, 1]] <- mltext("filetest.arr.0.1")
+    tclarrayRefEsp[[0, 2]] <- mltext("filetest.arr.0.2")
+    tclarrayRefEsp[[0, 3]] <- mltext("filetest.arr.0.3")
 
     for (nbChamp in (1:dim(especes.select)[2]))
     {
@@ -109,7 +109,7 @@ testfileref.f <- function (dataEnv, baseEnv)
     }
 
     ## construction de la fenêtre
-    tkwm.title(W.test, paste("Informations sur ", fileNames["refesp"]))
+    tkwm.title(W.test, paste(mltext("filetest.info"), fileNames["refesp"]))
     frameOverwintest <- tkframe(W.test)
     imgAsLabelwintest <- tklabel(frameOverwintest, image=imageAMP, bg="white")
 
@@ -118,8 +118,8 @@ testfileref.f <- function (dataEnv, baseEnv)
 
     tkgrid(imgAsLabelwintest,
            tklabel(frameOverwintest,
-                   text=paste("Taux de renseignement des champs de ", fileNames["refesp"],
-                              "\npour le jeu de données (tient compte des sélections)\n", fileNames["obs"]),
+                   text=paste(mltext("filetest.frameOverwintest.1"), fileNames["refesp"],
+                              mltext("filetest.frameOverwintest.2"), fileNames["obs"]),
                    relief="groove", borderwidth=2,
                    bg="yellow", justify="left"),
            padx=5, sticky="e")
@@ -127,24 +127,27 @@ testfileref.f <- function (dataEnv, baseEnv)
     tkgrid.configure(imgAsLabelwintest, sticky="w")
 
     ## tkgrid.configure(frameOverwintest, columnspan=1, column=1)
-    tkgrid(tklabel(W.test, text=paste("Nombre de champs de ", fileNames["refesp"], " : ", dim(especes.select)[2])),
+    tkgrid(tklabel(W.test, text=paste(mltext("filetest.W.test.1"), fileNames["refesp"],
+                                      mltext("semicolon"),
+                                      dim(especes.select)[2])),
            Enregistrer.but)
 
     tkgrid(tklabel(W.test,
-                   text=paste("Nombre d'espèces référencées pour ",
-                              paste(sites, collapse=", "), " : ",
+                   text=paste(mltext("filetest.W.test.2"),
+                              paste(sites, collapse=", "),
+                              mltext("semicolon"),
                    nrow(subset(refesp,
                                apply(refesp[, espSite, drop=FALSE], 1,
                                      function(x) any(x == "oui")))))))
 
     tkgrid(tklabel(W.test,
-                   text=paste("Nombre d'espèces du jeux de données ", fileNames["obs"], " : ",
+                   text=paste(mltext("filetest.W.test.3"), fileNames["obs"], " : ",
                    length(unique(obs$code_espece)))), Fermer.but)
 
     tkgrid(tklabel(W.test,
                    text=paste(## "\nInformations sur les ", length(unique(obs$code_espece)),
                               ## "espèces \nDU JEU DE DONNEES ",
-                              "\n\nVous pouvez copier-coller ce tableau dans Excel", sep="")))
+                              mltext("filetest.W.test.4"), sep="")))
 
     tableTestRefEsp <- tkwidget(W.test, "table",
                                 variable=tclarrayRefEsp, rows=ncol(especes.select) + 1, cols=4,

@@ -20,6 +20,7 @@ menu.select.sp.list,Par liste d'espèces (fichier),By species (list file)
 msg.ongoing.dev,En développement !,Implementation in progress!
 menu.select.restore,Restaurer les données originales,Restore original data
 menu.sub.szsp,Par espèce ou classe de taille d'espèce :,By species or species-size class:
+menu.sub.aggr.szsp,"Plusieurs espèces ou classes de taille, agrégées par unité d'observation :","Several species or species-size class, aggregated by observation unit:"
 menu.graphs.boxplots,"Graphiques en ""boîtes à moustaches"" (boxplots)...",Boxplots...
 menu.graphs.barplots,Graphiques en barres (barplots)...,Barplots...
 menu.graphs.occ.freq,Fréquences d'occurrence (/espèce sur des unité d'observation)...,"Occurrence frequency (/species, over observation units)..."
@@ -119,13 +120,13 @@ error.UnitobsDsObsUnitobs.1,Votre fichier 'observations' ne comporte pas les mêm
 error.UnitobsDsObsUnitobs.2, 'Unites d'observation'. Corrigez les et recommencez l'importation.\n, file. Please correct and restart the importation.\n
 error.CaractereInterditDsObs,"Votre fichier observations contient des ""&"". Corrigez les et recommencez l'importation.\n","The 'Observations' file contains some ""&"". Please correct and restart the importation.\n"
 error.CaractereInterditDsUnitObs,"Votre fichier unités d'observations contient des ""."" Corrigez les et recommencez l'importation.\n","The 'Observation unit' file contains some ""."". Please correct and restart the importation.\n"
-error.ZeroEnregistrement,Graphique impossible - pas d'enregistrements dans votre sélection.\n,
-error.UneSeuleValeurRegroupement,Graphique sans intérêt - votre critère de regroupement n'a qu'une seule valeur.\n,
-error.CritereMalRenseigne50.1,Graphique sans intérêt - le critère de regroupement sélectionné,
-error.CritereMalRenseigne50.2, est renseigné pour moins de 50% des observations.\n,
+error.ZeroEnregistrement,Graphique impossible - pas d'enregistrements dans votre sélection.\n,Graphics not produced – no record in the subset.\n
+error.UneSeuleValeurRegroupement,Graphique sans intérêt - votre critère de regroupement n'a qu'une seule valeur.\n,Trivial graphics – grouping factor has only one level.\n
+error.CritereMalRenseigne50.1,Graphique sans intérêt - le critère de regroupement sélectionné,Unrelevant graphics – the grouping factor is filled
+error.CritereMalRenseigne50.2, est renseigné pour moins de 50% des observations.\n, for less than 50% of observations.\n
 error.CaractereInterdit.1,Votre table ,Your table 
-error.CaractereInterdit.2," contient des caractères déconseillés par le référentiel des données ('espaces',',',';' ",
-error.CaractereInterdit.3,\n-> vous devez corriger le problème pour ne pas rencontrer d'erreurs.\n,
+error.CaractereInterdit.2," contient des caractères déconseillés par le référentiel des données ('espaces',',',';' "," contains characters no recommended in the data specifications ('<spaces>',',',';' "
+error.CaractereInterdit.3,\n-> vous devez corriger le problème pour ne pas rencontrer d'erreurs.\n,\n-> please correct to avoid errors.\n
 error.noMsg,message à renseigner,No message available!
 error.prefix,\nERREUR : ,\nERROR: 
 logmsg.helpmsg,Envoie d'un message d'aide dans l'interface :,Sending a help message in the GUI:
@@ -139,7 +140,7 @@ helpmsg.SelectionOuTraitement.2,  * commencer les traitements standards (graphiq
 helpmsg.etapeselected.1,  * restaurer les données originales (sans sélection) :,  * restore original data (without selection) :
 helpmsg.etapeselected.2," menu ""Sélection et recalcul"" ou bouton ci-dessous à droite."," menu ""Subsetting"" or top-right button."
 helpmsg.etapeselected.3,\n  * faire d'autres sélections (imbriquées avec les sélections courantes).,\n  * apply further selections (embedded within the current ones).
-helpmsg.etapeselected.4,\n  * commencer les traitements standards (graphiques & analyses statistiques).,  * start with standard treatments (graphics & statistical analyses).
+helpmsg.etapeselected.4,\n  * commencer les traitements standards (graphiques & analyses statistiques).,\n  * start with standard treatments (graphics & statistical analyses).
 logFmsg.loading,\nChargement de données  (,\nLoading data  (
 logFmsg.obsFile,\n   Fichier d'observation :,\n   Observations file:
 logFmsg.unitobsFile,\n   Fichier d'unités d'observation :,\n   Observation units file:
@@ -214,3 +215,20 @@ printStats.f.1,\n########################\nStatistiques générales :\n\n,\n######
 printStats.f.2,\nStatistiques par croisement de facteurs :\n\n,\nStatistics by combination of factor levels:\n\n
 infoStats.f.1,\nStatistiques par niveaux de facteur de séparation :\n,\nStatistics by level of splitting factor:\n
 error.config.issue,Problème de configuration,Configuration issue!
+logmsg.info.spref,Informations sur le référentiel espèces :,Informations on the species reference table:
+filetest.B.close,Fermer,Close
+filetest.B.save.csv,Enregistrer en CSV,Save as a CSV
+filetest.arr.fieldName,Nom_Champ,Field_name
+filetest.arr.nbVal,Nb_Valeurs,Nb_values
+filetest.arr.pcFilled,%_renseignement,%_filled
+filetest.arr.0.0,Champ #,Field #
+filetest.arr.0.1,Nom,Name
+filetest.arr.0.2,Nb de valeurs,Values #
+filetest.arr.0.3,% renseigné,% filled
+filetest.info,Informations sur ,Information on 
+filetest.frameOverwintest.1,Taux de renseignement des champs de ,Filling rate of fields from 
+filetest.frameOverwintest.2,\npour le jeu de données (tient compte des sélections)\n,\n(current dataset with subsetting)\n
+filetest.W.test.1,Nombre de champs de ,Number of fields in 
+filetest.W.test.2,Nombre d'espèces référencées pour ,Number of species documented in 
+filetest.W.test.3,Nombre d'espèces du jeux de données ,Number of species in the data set 
+filetest.W.test.4,\n\nVous pouvez copier-coller ce tableau dans un tableur de votre choix.,\n\nYou can copy-paste this table in your favourite spreadsheet.

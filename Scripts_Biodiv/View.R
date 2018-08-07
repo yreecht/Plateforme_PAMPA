@@ -1,8 +1,8 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2013-01-29 17:48:52 yves>
+# Time-stamp: <2018-08-07 16:05:10 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
-##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
+##   Copyright (C) 2008-2018 Ifremer - Tous droits réservés.
 ##
 ##   Ce programme est un logiciel libre ; vous pouvez le redistribuer ou le
 ##   modifier suivant les termes de la "GNU General Public License" telle que
@@ -33,6 +33,8 @@ Voirentableau <- function(Montclarray, title="", height=-1, width=-1, nrow=-1, n
            ## winRaise.f(W.main)
        })
 
+    resultDir <- get("filePathes", envir = .dataEnv)["results"]
+
     ## Fonctions activées par les boutons de la fenêtre
     FermerWintb <- function()
     {
@@ -41,15 +43,16 @@ Voirentableau <- function(Montclarray, title="", height=-1, width=-1, nrow=-1, n
 
     EnregistrerWintb <- function()
     {
-        FichierCSV <- paste(NomDossierTravail, "Tableau_", title, ".csv", sep="")
+        FichierCSV <- paste(resultDir, mltext("table.file.prefix"), title, ".csv", sep="")
+        message(FichierCSV)
         write.csv2(dataframetb, file=FichierCSV, row.names = FALSE)
 
         add.logFrame.f(msgID="InfoRefSpeEnregistre", env = .GlobalEnv, file=FichierCSV)
     }
 
     ## Déclaration des objets bouton
-    Fermer.but <- tkbutton(tb, text="Fermer", command=FermerWintb)
-    Enregistrer.but <- tkbutton(tb, text="Enregistrer en CSV", command=EnregistrerWintb)
+    Fermer.but <- tkbutton(tb, text = mltext("filetest.B.close"), command=FermerWintb)
+    Enregistrer.but <- tkbutton(tb, text = mltext("filetest.B.save.csv"), command=EnregistrerWintb)
 
     ## ICI CONTINUER LA MISE EN FORME
     dataframetb <- data.frame(1:nrow)
@@ -58,7 +61,7 @@ Voirentableau <- function(Montclarray, title="", height=-1, width=-1, nrow=-1, n
     {
         for (nbCol in (1:ncol))
         {
-            dataframetb[nbChamps, nbCol] <- "a remplir" # tclvalue(Montclarray[[nbCol, nbChamps]])
+            dataframetb[nbChamps, nbCol] <- mltext("table.incomplete") # tclvalue(Montclarray[[nbCol, nbChamps]])
             ## A FINIR!!!
         }
     }
@@ -89,7 +92,7 @@ Voirentableau <- function(Montclarray, title="", height=-1, width=-1, nrow=-1, n
 
     tkgrid.configure(LB.titre, sticky="new")
 
-    tkgrid(tklabel(tb, text=paste("\n***", "\nVous pouvez copier-coller ce tableau dans Excel")))
+    tkgrid(tklabel(tb, text=paste("\n***", mltext("table.spreadsheet.copy"))))
 
     tkgrid(Enregistrer.but, Fermer.but, pady=5, padx=5)
 
@@ -116,21 +119,23 @@ Voirentableau <- function(Montclarray, title="", height=-1, width=-1, nrow=-1, n
 ########################################################################################################################
 VoirPlanEchantillonnage.f <- function(dataEnv)
 {
-    runLog.f(msg=c("Affichage du plan d'échantillonnage :"))
+    runLog.f(msg=c(mltext("logmsg.print.sampling.design")))
 
     resultsDir <- get("filePathes", envir=dataEnv)["results"]
 
     myRarrayPE <- read.csv2(paste(resultsDir,
-                                  "PlanEchantillonnage_basique",
-                                  ifelse(getOption("P.selection"), "_selection", ""),
+                                  "PlanEchantillonnage_basique", ## mltext("sampling.file.prefix"),
+                                  ifelse(getOption("P.selection"),
+                                         "_selection", ## mltext("sampling.file.sufix"),
+                                         ""),
                                   ".csv", sep=""),
                             row.names=1)
 
     tclarrayPE <- tclArray()
     ## tclarrayPE[[0, ]] <- c("Année", "Type", "Fréquence")
 
-    tclarrayPE[[0, 0]] <- paste("\tStatut de protection ",
-                                "\n  Année\t\t\t", sep="")
+    tclarrayPE[[0, 0]] <- paste(mltext("sampling.arr.0.0.1"),
+                                mltext("sampling.arr.0.0.2"), sep="")
 
     ## Remplissage du tableau tcl :
     for (i in (1:nrow(myRarrayPE)))
@@ -149,7 +154,7 @@ VoirPlanEchantillonnage.f <- function(dataEnv)
     }
 
     pe <- tktoplevel()
-    tkwm.title(pe, "Plan d'échantillonnage")
+    tkwm.title(pe, mltext("sampling.title"))
     tablePlanEch <- tkwidget(pe, "table", variable=tclarrayPE, rows=dim(myRarrayPE)[1]+1, cols=3,
                              titlerows=1, titlecol=1,
                              selectmode="extended", colwidth=30, background="white")
@@ -172,17 +177,23 @@ VoirInformationsDonneesEspeces.f <- function(dataEnv, image)
     unitSp <- get("unitSp", envir=dataEnv)
     refesp <- get("refesp", envir=dataEnv)
     unitobs <- get("unitobs", envir=dataEnv)
-    nombres <- ifelse(is.benthos.f(), "colonie", getOption("P.nbName"))
+    nombres <- ifelse(is.benthos.f(), mltext("unit.colony"), getOption("P.nbName"))
 
     Nbesp <- length(unique(unitSp[ , "code_espece"]))
 
     tclarrayID <- tclArray()
-    tclarrayID[[0, 0]] <- "Espèce"
-    tclarrayID[[0, 1]] <- paste("Nb ", ifelse(is.benthos.f(), "colonies", "indiv"),
-                                " min/unitobs", sep="")
-    tclarrayID[[0, 2]] <- paste("Nb ", ifelse(is.benthos.f(), "colonies", "indiv"),
-                                " max/unitobs", sep="")
-    tclarrayID[[0, 3]] <- "Fréquence d'occurrence"
+    tclarrayID[[0, 0]] <- mltext("infoSpecies.arr.0.0")
+    tclarrayID[[0, 1]] <- paste(mltext("info.arr.Nb"),
+                                ifelse(is.benthos.f(),
+                                       mltext("info.arr.col"),
+                                       mltext("info.arr.ind")),
+                                mltext("infoSpecies.arr.0.1"), sep="")
+    tclarrayID[[0, 2]] <- paste(mltext("info.arr.Nb"),
+                                ifelse(is.benthos.f(),
+                                       mltext("info.arr.col"),
+                                       mltext("info.arr.ind")),
+                                mltext("infoSpecies.arr.0.2"), sep="")
+    tclarrayID[[0, 3]] <- mltext("infoSpecies.arr.0.3")
 
     mini <- tapply(unitSp[ , nombres], unitSp[ , "code_espece"], min, na.rm=TRUE)
     maxi <- tapply(unitSp[ , nombres], unitSp[ , "code_espece"], max, na.rm=TRUE)
@@ -210,14 +221,14 @@ VoirInformationsDonneesEspeces.f <- function(dataEnv, image)
                                c("Phylum", "espece")]))
 
     tableInfodonnees <- Voirentableau(tclarrayID,
-                                      title="Informations par espèce",
-                                      infos=paste("Informations par espèce :",
-                                                  " \n\n\t* nombre de catégories observées = ", nrow(tmp),
-                                                  " \n\t* nombre de catégories taxinomiques (biotiques) observées = ",
+                                      title=mltext("infoSpecies.title"),
+                                      infos=paste(mltext("infoSpecies.info.title"),
+                                                  mltext("infoSpecies.info.cat"), nrow(tmp),
+                                                  mltext("infoSpecies.info.tax"),
                                                   sum(!is.na(tmp[ , "Phylum"])),
-                                                  " \n\t* nombre d'espèces observées = ",
+                                                  mltext("infoSpecies.info.sp"),
                                                   sum(!is.na(tmp[ , "espece"]) & tmp[ , "espece"] != "sp."),
-                                                  " \n\nCes informations tiennent compte des sélections en cours.", sep=""),
+                                                  mltext("infoSpecies.info.subset"), sep=""),
                                       height=Nbesp, width=4, nrow=Nbesp + 1, ncol=4,
                                       image=image)
 }#fin VoirInformationsDonneesEspeces
@@ -228,19 +239,21 @@ VoirInformationsDonneesUnitobs.f <- function(dataEnv, image)
     obs <- get("obs", envir=dataEnv)
     unitobs <- get("unitobs", envir=dataEnv)
     unitSp <- get("unitSp", envir=dataEnv)
-    nombres <- ifelse(is.benthos.f(), "colonie", getOption("P.nbName"))
+    nombres <- ifelse(is.benthos.f(), mltext("unit.colony"), getOption("P.nbName"))
 
     Nbunitobs <- nlevels(obs[ , "unite_observation"]) ## length(unique(unitobs[ , "unite_observation"]))
 
     tclarrayID <- tclArray()
 
-    tclarrayID[[0, 0]] <- "Unité d'observation"    #
-    tclarrayID[[0, 1]] <- "Site"                   #
-    tclarrayID[[0, 2]] <- "Biotope"                #
-    tclarrayID[[0, 3]] <- "Nb \"espèces\""              #
-    tclarrayID[[0, 4]] <- paste("Nb ",
-                                ifelse(is.benthos.f(), "colonies", "indiv"),
-                                " max/espèce", sep="")    #
+    tclarrayID[[0, 0]] <- mltext("infoUnitobs.arr.0.0")    #
+    tclarrayID[[0, 1]] <- mltext("infoUnitobs.arr.0.1")                   #
+    tclarrayID[[0, 2]] <- mltext("infoUnitobs.arr.0.2")                #
+    tclarrayID[[0, 3]] <- mltext("infoUnitobs.arr.0.3")              #
+    tclarrayID[[0, 4]] <- paste(mltext("info.arr.Nb"),
+                                ifelse(is.benthos.f(),
+                                       mltext("info.arr.col"),
+                                       mltext("info.arr.ind")),
+                                mltext("infoUnitobs.arr.0.4"), sep="")    #
 
     pacha <- unitSp[ , c("unite_observation", "code_espece", nombres, "pres_abs"), drop=FALSE]
 
@@ -268,9 +281,9 @@ VoirInformationsDonneesUnitobs.f <- function(dataEnv, image)
     }
 
     tableInfodonnees <- Voirentableau(tclarrayID,
-                                      title="Informations par unitobs",
-                                      infos=paste("Informations par unité d'observation :",
-                                                  "\n\n! tiennent compte des sélections en cours.",
+                                      title=mltext("infoUnitobs.title"),
+                                      infos=paste(mltext("infoUnitobs.info.title"),
+                                                  mltext("infoUnitobs.info.subset"),
                                                   sep=""),
                                       height=Nbunitobs, width=5, nrow=Nbunitobs + 1, ncol=5,
                                       image=image)

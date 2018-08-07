@@ -229,6 +229,37 @@ filetest.info,Informations sur ,Information on
 filetest.frameOverwintest.1,Taux de renseignement des champs de ,Filling rate of fields from 
 filetest.frameOverwintest.2,\npour le jeu de données (tient compte des sélections)\n,\n(current dataset with subsetting)\n
 filetest.W.test.1,Nombre de champs de ,Number of fields in 
-filetest.W.test.2,Nombre d'espèces référencées pour ,Number of species documented in 
+filetest.W.test.2,Nombre d'espèces référencées pour ,Number of species documented for 
 filetest.W.test.3,Nombre d'espèces du jeux de données ,Number of species in the data set 
 filetest.W.test.4,\n\nVous pouvez copier-coller ce tableau dans un tableur de votre choix.,\n\nYou can copy-paste this table in your favourite spreadsheet.
+table.file.prefix,Tableau_,Table_
+table.incomplete,a remplir,Incomplete
+table.spreadsheet.copy,\nVous pouvez copier-coller ce tableau dans un tableur de votre choix.,\nYou can copy-paste this table in your favourite spreadsheet.
+logmsg.print.sampling.design,Affichage du plan d'échantillonnage :,Display the sampling design:
+sampling.file.prefix,PlanEchantillonnage_basique,Basic_SamplingDesign
+sampling.file.sufix,_selection,_subset
+sampling.arr.0.0.1,\tStatut de protection ,\tProtection status 
+sampling.arr.0.0.2,\n  Année\t\t\t,\n  Year\t\t\t
+sampling.title,Plan d'échantillonnage,Sampling design
+unit.colony,colonie,Colony
+infoSpecies.arr.0.0,Espèce,Species
+info.arr.Nb,Nb ,# 
+info.arr.col,colonies,colonies
+info.arr.ind,indiv,indiv
+infoSpecies.arr.0.1, min/unitobs, min/unitobs
+infoSpecies.arr.0.2, max/unitobs, max/unitobs
+infoSpecies.arr.0.3,Fréquence d'occurrence,Occurrence frequency
+infoSpecies.title,Informations par espèce,Information by species
+infoSpecies.info.title,Informations par espèce :,Information by species:
+infoSpecies.info.cat, \n\n\t* nombre de catégories observées = , \n\n\t* number of observed categories = 
+infoSpecies.info.tax, \n\t* nombre de catégories taxinomiques (biotiques) observées = , \n\t* number of taxonomic (biotic) observed categories = 
+infoSpecies.info.sp, \n\t* nombre d'espèces observées = , \n\t* number of observed species = 
+infoSpecies.info.subset, \n\nCes informations tiennent compte des sélections en cours., \n\These information account for current subset criteria.
+infoUnitobs.arr.0.0,Unité d'observation,observation units
+infoUnitobs.arr.0.1,Site,Site
+infoUnitobs.arr.0.2,Biotope,Biotop
+infoUnitobs.arr.0.3,"Nb ""espèces""","# ""species"""
+infoUnitobs.arr.0.4, max/espèce, max/species
+infoUnitobs.title,Informations par unitobs,Information by unitobs
+infoUnitobs.info.title,Informations par unité d'observation :,Information by observation unit:
+infoUnitobs.info.subset,\n\n! tiennent compte des sélections en cours.,\n\n! account for current subset criteria.

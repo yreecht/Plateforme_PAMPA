@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-08-09 13:31:37 yreecht>
+# Time-stamp: <2018-08-09 14:02:42 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2018 Ifremer - Tous droits réservés.
@@ -77,11 +77,11 @@ source("./Scripts_Biodiv/Interface_main.R", encoding="latin1")                  
 
 ## anciennes fonctions annexes de visualisation des données (corrigées) :
 source("./Scripts_Biodiv/Messages_management.R", encoding="latin1")                    # done [mld]
-source("./Scripts_Biodiv/Testfichier.R", encoding="latin1")                            # done [mld]
+source("./Scripts_Biodiv/Test_files.R", encoding="latin1")                            # done [mld]
 source("./Scripts_Biodiv/View.R", encoding="latin1")                                   # done [mld]
 
 ## ...le chargement des données :
-source("./Scripts_Biodiv/Chargement_fichiers.R", encoding="latin1")                    # OK [mld]
+source("./Scripts_Biodiv/Load_files.R", encoding="latin1")                    # OK [mld]
 source("./Scripts_Biodiv/Chargement_manuel_fichiers.R", encoding="latin1")             # OK
 source("./Scripts_Biodiv/Calcul_poids.R", encoding="latin1")                           # OK
 source("./Scripts_Biodiv/Lien_unitobs-refspa.R", encoding="latin1")                    # OK

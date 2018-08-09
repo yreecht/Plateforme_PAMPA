@@ -1,8 +1,8 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-07-25 13:57:45 yreecht>
+# Time-stamp: <2018-08-09 13:31:12 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
-##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
+##   Copyright (C) 2008-2018 Ifremer - Tous droits réservés.
 ##
 ##   Ce programme est un logiciel libre ; vous pouvez le redistribuer ou le
 ##   modifier suivant les termes de la "GNU General Public License" telle que
@@ -81,7 +81,7 @@ reorderFactors.f <- function(Data, which, type, warnings=FALSE)
                                             levels(Data[ , which[i]])[!is.element(levels(Data[ , which[i]]),
                                                                                   getOption(option))]))
             }else{
-                stop("Pas un facteur !")
+                stop("Not a factor!")
             }
 
             ##assign("Data", Data, envir=env)
@@ -91,7 +91,8 @@ reorderFactors.f <- function(Data, which, type, warnings=FALSE)
             ## On affiche la nature de l'erreur (comme un warning) si besoin :
             if (warnings)
             {
-                warning("la colonne ", which[i], " n'a put être réordonnée :\n\t\t", e)
+                warning(mltext("warn.field.not.reordered.1"), which[i],
+                        mltext("warn.field.not.reordered.2"), e)
             }else{}
         })
     }
@@ -155,7 +156,7 @@ PlanEchantillonnageBasic.f <- function(tabUnitobs, tabObs, filePathes)
 
     write.csv2(PlanEchantillonnage,
                file=paste(filePathes["results"],
-                          "PlanEchantillonnage_basique",
+                          "PlanEchantillonnage_basique", # [ml?]
                           ifelse(getOption("P.selection"), "_selection", ""),
                           ".csv", sep=""), row.names=TRUE)
 }
@@ -257,13 +258,13 @@ exportMetrics.f <- function(unitSpSz, unitSp, unit, obs, unitobs, refesp, filePa
     assign("DataUnitobs", unitobs, envir=.GlobalEnv)
     assign("DataRefesp", refesp, envir=.GlobalEnv)
 
-    infoLoading.f(msg=paste("Des tables supplémentaires (pour calculs aditionnels) on été créées :",
+    infoLoading.f(msg=paste(mltext("infoExport.1"),
                             ifelse(! is.null(unitSpSz) && prod(dim(unitSpSz)),
-                                   "\n\t* TableUnitSpSz : métriques par classe de taille/espèce/unité d'observation.",
+                                   mltext("infoExport.2"),
                                    ""),
-                            "\n\t* TableUnitSp : métriques par espèce/unité d'observation.",
-                            "\n\t* TableUnit : métriques (dont biodiversité) par unité d'observation.",
-                            "\n\t* DataObs, DataUnitobs, DataRefesp : tables de données.", sep=""),
+                            mltext("infoExport.3"),
+                            mltext("infoExport.4"),
+                            mltext("infoExport.5"), sep=""),
                   icon="info")
 
     ## Sauvegardes dans des fichiers :
@@ -312,8 +313,8 @@ exportMetrics.f <- function(unitSpSz, unitSp, unit, obs, unitobs, refesp, filePa
                         row.names = FALSE),
              error=function(e)
          {
-             infoLoading.f(msg=paste("Impossible d'écrire le fichier ", fileNm,
-                                     ".\nIl est possible qu'il soit ouvert par une autre application", sep=""),
+             infoLoading.f(msg=paste(mltext("infoExport.6"), fileNm,
+                                     mltext("infoExport.7"), sep=""),
                            icon="warning")
 
              errorLog.f(error=e, niv=-4)
@@ -361,7 +362,7 @@ selectionObs.SVR.f <- function()
     Level <- tclVar(dminDefault)        # tclVar pour le seuil (initialisée au défaut).
 
     WinSVR <- tktoplevel()
-    tkwm.title(WinSVR, "Sélection des observations")
+    tkwm.title(WinSVR, mltext("selectionObs.SVR.title"))
 
     FrameInfo <- tkframe(WinSVR, borderwidth=2, relief="groove")
 
@@ -389,7 +390,7 @@ selectionObs.SVR.f <- function()
 
     tkgrid(tklabel(WinSVR, text="\t"),
            CB.supprObs,
-           tklabel(WinSVR, text="  Ne conserver que les observations pour lesquelles Dmin =< "),
+           tklabel(WinSVR, text=mltext("selectionObs.SVR.Dmin")),
            E.supprLevel,
            tklabel(WinSVR, text="m ?\t "))
 
@@ -412,7 +413,7 @@ selectionObs.SVR.f <- function()
                    return(as.numeric(tclvalue(Level)))
                },
                "2"={                    # Le seuil n'est pas numérique :
-                   tkmessageBox(message="Vous devez choisir un seuil numérique (séparateur '.')",
+                   tkmessageBox(message=mltext("selectionObs.SVR.Dmin.war"),
                                 icon="error")
                    tclvalue(Done) <- "0"
                    tkfocus(E.supprLevel)
@@ -447,14 +448,14 @@ testFiles.f <- function(filePathes)
 
         ## Message d'erreur dans les infos de chargement :
         infoLoading.f(msg=paste(ifelse(pluriel,
-                                       "Les fichiers suivants n'existent pas ou ne sont pas accessibles :",
-                                       "Le fichier suivant n'existe pas ou n'est pas accessible :"),
+                                       mltext("testFiles.1p"),
+                                       mltext("testFiles.1s")),
                                 "\n\t",
                                 paste(filePathes[required[idx]], collapse="\n\t"),
                                 sep=""),
                       icon="error")
 
-        stop("Erreur de fichier (inexistant ou non lisible)")
+        stop(mltext("testFiles.file.error"))
     }else{
         ## ... sinon on passe au tests sur le répertoire de résultats :
         if (file.access(filePathes["results"], mode=0) == -1)
@@ -466,12 +467,12 @@ testFiles.f <- function(filePathes)
             if (file.access(filePathes["results"], mode=4) == -1)
             {
                 ## Message d'erreur dans les infos de chargement s'il n'existe pas :
-                infoLoading.f(msg=paste("Impossible d'écrire dans le dossier de résultats :\n",
+                infoLoading.f(msg=paste(mltext("testFiles.dir.error"),
                                         filePathes["results"],
                                         sep=""),
                               icon="error")
 
-                stop("Dossier de résultats non accessible en écriture")
+                stop(mltext("testFiles.dir.error.2"))
             }else{}
         }
 
@@ -536,13 +537,13 @@ testConfig.f <- function(requiredVar, fileNames=NULL, dataEnv=NULL)
     ## Récupération de fileNames (si NULL) :
     if (all(is.null(c(fileNames, dataEnv))))
     {                                   # Erreur si pas définit
-        stop("\"fileNames\" ou \"dataEnv\" doit être défini !")
+        stop(mltext("testConfig.error.1"))
     }else{
         ## Dans l'environnement des données si non passé en paramètre :
         if (is.null(fileNames))
         {
             fileNames <- tryCatch(get("fileNames", envir=dataEnv),
-                                  error=function(e) stop("FileName n'existe pas dans l'environnement des données !"))
+                                  error=function(e) stop(mltext("testConfig.error.2")))
         }else{}
     }
 
@@ -555,14 +556,15 @@ testConfig.f <- function(requiredVar, fileNames=NULL, dataEnv=NULL)
 
         ## Demande pour l'ouverture du fichier de configuration :
         if(tclvalue(tkmessageBox(message=paste(ifelse(pluriel,
-                                                      "Les variables suivantes ne sont pas définies ",
-                                                      "La variable suivante n'est pas définie "),
-                                               "dans votre fichier \"", basePath, "/Scripts_Biodiv/Config.R\" :\n\n\t*  ",
+                                                      mltext("testConfig.error.3p"),
+                                                      mltext("testConfig.error.3s")),
+                                               mltext("testConfig.error.4"),
+                                               basePath, "/Scripts_Biodiv/Config.R\" :\n\n\t*  ",
                                                paste(requiredVar[! existVar], collapse="\n\t*  "),
-                                               "\n\nVoulez-vous éditer ce fichier ?",
-                                               "\n\t(ouverture automatiquement de la sauvegarde également, si elle existe).",
+                                               mltext("testConfig.error.5"),
+                                               mltext("testConfig.error.6"),
                                                sep=""),
-                                 icon="warning", type="yesno", title="Configuration imcomplète",
+                                 icon="warning", type="yesno", title=mltext("testConfig.error.7"),
                                  default="no")) == "yes")
         {
             if (exists("shell.exec", mode="function"))
@@ -638,8 +640,8 @@ loadRefEspece.old.f <- function(refesp)
         refesp[refesp=="-999"] <- NA
     }
 
-    infoLoading.f(msg=paste("Vous utilisez un référentiel espèces à l'ancien format...",
-                            "\n Il est possible qu'il ne soit plus maintenu.", sep=""),
+    infoLoading.f(msg=paste(mltext("loadRefEspece.old.info.1"),
+                            mltext("loadRefEspece.old.info.2"), sep=""),
                   icon="warning")
 
     return(refesp)
@@ -718,7 +720,7 @@ loadRefEspeces.new.f <- function(refesp, pathRefesp.local)
         ## Le référentiel local a 13 colonnes obligatoires :
         if (ncol(refesp.local) < 14)
         {
-            infoLoading.f(msg="Référentiel espèces local incorrect !", icon="warning")
+            infoLoading.f(msg=mltext("loadRefEspeces.new.error"), icon="warning")
         }else{
             ## S'il est correct...
             ## Renommage des 13, premières colonnes pour éviter les fautes de frappes :
@@ -736,7 +738,7 @@ loadRefEspeces.new.f <- function(refesp, pathRefesp.local)
             refesp <- priority.merge.f(first=refesp.local, second=refesp, by="code_espece", exclude="Identifiant")
         }
     }else{
-        infoLoading.f(msg=paste("Pas de référentiel espèces local défini, ou fichier illisible."), icon="warning")
+        infoLoading.f(msg=paste(mltext("loadRefEspeces.new.no.local")), icon="warning")
     }
 
     return(refesp)
@@ -747,7 +749,7 @@ loadRefEspeces.new.f <- function(refesp, pathRefesp.local)
 loadRefEspeces.f <- function (pathRefesp, pathRefesp.local=NA, baseEnv=.GlobalEnv)
 {
     ## rm(especes)
-    runLog.f(msg=c("Chargement du référentiel espèces :"))
+    runLog.f(msg=c(mltext("loadRefEspeces.info")))
 
     ## Importation des caracteristiques des especes
     especes <- read.table(pathRefesp, sep="\t", dec=".", quote="", header=TRUE, encoding="latin1")
@@ -800,18 +802,18 @@ chooseInList.f <- function(modList, fieldName, selectMode, ordered)
     ## Author: Yves Reecht, Date: 12 janv. 2012, 18:00
 
     W.fact <- tktoplevel(width = 80)
-    tkwm.title(W.fact, paste("Selection des valeurs de ", fieldName, sep=""))
+    tkwm.title(W.fact, paste(mltext("chooseInList.title"), fieldName, sep=""))
 
     scr <- tkscrollbar(W.fact, repeatinterval=5, command=function(...)tkyview(tl, ...))
 
     tl <- tklistbox(W.fact, height=20, width=50, selectmode=selectMode,
                     yscrollcommand=function(...)tkset(scr, ...), background="white")
 
-    tkgrid(tklabel(W.fact, text=paste("Liste des valeurs de \"", fieldName,
+    tkgrid(tklabel(W.fact, text=paste(mltext("chooseInList.1"), "\"", fieldName,
                                       "\" :\n",
                                       ifelse(selectMode == "single",
-                                             "Une seule sélection possible.",
-                                             "Plusieurs sélections possibles."), sep="")))
+                                             mltext("chooseInList.2"),
+                                             mltext("chooseInList.3")), sep="")))
 
     tkgrid(tl, scr)
     tkgrid.configure(scr, rowspan=4, sticky="ensw")
@@ -867,8 +869,8 @@ checkType.unitobs.f <- function(unitobs)
 
     if (length(unique(unitobs$type)) > 1)
     {
-        tkmessageBox(message=paste("Un seul type d'observation à la fois peut être analysé :\n\n",
-                                   "Choisissez le type d'observation que vous souhaitez analyser.", sep=""),
+        tkmessageBox(message=paste(mltext("checkType.unitobs.msg.1"),
+                                   mltext("checkType.unitobs.msg.2"), sep=""),
                      icon="warning", type="ok")
 
         while (is.null(selectType <- chooseInList.f(modList=unitobs[ ,"type"],
@@ -877,7 +879,7 @@ checkType.unitobs.f <- function(unitobs)
                                                     ordered=TRUE)))
         {}
 
-        message(paste("Type d'observation sélectionné :", selectType))
+        message(paste(mltext("checkType.unitobs.msg.3"), selectType))
 
         ## Suppression des niveaux de facteur inutilisés :
         unitobs <- dropLevels.f(subset(unitobs, unitobs$type == selectType))
@@ -913,13 +915,13 @@ checkUnitobs.in.obs.f <- function(obs, unitobs)
     if ( ! all(idxTmp <- is.element(obs$unite_observation, unitobs$unite_observation)))
     {
         ## Ajout du message pour le chargement :
-        infoLoading.f(msg=paste("Attention, la Table obs contient ",
+        infoLoading.f(msg=paste(mltext("checkUnitobs.in.obs.info.1"),
                                 sum( ! idxTmp),
-                                " (sur ",
+                                mltext("checkUnitobs.in.obs.info.2"),
                                 nrow(obs),
-                                ") enregistrements ",
-                                "\navec des unités d'observation absentes dans la table unitobs.",
-                                "\nCes observations ont été supprimées.",
+                                mltext("checkUnitobs.in.obs.info.3"),
+                                mltext("checkUnitobs.in.obs.info.4"),
+                                mltext("checkUnitobs.in.obs.info.5"),
                                 sep=""),
                      icon="warning")
 
@@ -1009,17 +1011,17 @@ loadRefspa.f <- function(pathRefspa, baseEnv=.GlobalEnv)
     if (missing(pathRefspa) || is.null(pathRefspa) || is.na(pathRefspa) || length(pathRefspa) == 0 ||
         ! file.exists(pathRefspa))
     {
-        infoLoading.f(msg="Pas de référentiel spatial défini ou fichier inexistant !", icon="warning")
+        infoLoading.f(msg=mltext("loadRefspa.info.1"), icon="warning")
 
         ## Si type d'observation == "OBSIND", un shapefile est requis :
         if(getOption("P.obsType") == "OBSIND")
         {
-            infoLoading.f(msg=paste("Type d'observation \"OBSIND\" :",
-                                    "   un référentiel spatial spatial sous forme de shapefile (.shp) est requis !",
+            infoLoading.f(msg=paste(mltext("loadRefspa.info.2"),
+                                    mltext("loadRefspa.info.3"),
                                     sep=""),
                           icon="error")
 
-            stop("Référentiel shapefile non défini !")
+            stop(mltext("loadRefspa.info.4"))
         }else{}
 
         return(NULL)
@@ -1040,12 +1042,12 @@ loadRefspa.f <- function(pathRefspa, baseEnv=.GlobalEnv)
             ## Si type d'observation == "OBSIND", un shapefile est requis :
             if(getOption("P.obsType") == "OBSIND")
             {
-                infoLoading.f(msg=paste("Type d'observation \"OBSIND\" :",
-                                        "   un référentiel spatial spatial sous forme de shapefile (.shp) est requis !",
+                infoLoading.f(msg=paste(mltext("loadRefspa.info.2"),
+                                        mltext("loadRefspa.info.3"),
                                         sep=""),
                               icon="error")
 
-                stop("Référentiel shapefile non défini !")
+                stop(mltext("loadRefspa.info.4"))
             }else{}
 
             ## ...Sinon, chargement sous forme de fichier texte :
@@ -1103,11 +1105,11 @@ loadObservations.f <- function(pathObs)
                                       "poids", "nombre", "dmin", "dmax")
                },
                {
-                   infoLoading.f(msg=paste("Le fichier d'observations n'a pas le bon nombre de colonnes !",
-                                           "\n(Attention, les interpolations sont maintenant externalisées)", sep=""),
+                   infoLoading.f(msg=paste(mltext("loadObservations.info.1"),
+                                           mltext("loadObservations.info.2"), sep=""),
                                  icon="error")
 
-                   stop("Le fichier d'observations ne contient pas le bon nombre de colonnes")
+                   stop(mltext("loadObservations.info.3"))
                })
 
         obs$rotation <- as.numeric(obs$rotation)
@@ -1252,7 +1254,7 @@ loadData.f <- function(filePathes, dataEnv, baseEnv=.GlobalEnv)
     pampaProfilingStart.f()
 
     runLog.f(msg=c("--------------------------------------------------------------------------------",
-                   "Nouveau chargement des données :"))
+                   mltext("loadData.info.1")))
 
 
     add.logFrame.f(msgID="dataLoadingNew", env = baseEnv,
@@ -1275,7 +1277,7 @@ loadData.f <- function(filePathes, dataEnv, baseEnv=.GlobalEnv)
     ## Chargement des fichiers :
 
     ## Fichier d'unités d'observations :
-    stepInnerProgressBar.f(n=0, msg="Chargement du référentiel d'unités d'observation")
+    stepInnerProgressBar.f(n=0, msg=mltext("loadData.info.2"))
 
     refUnitobs <- loadUnitobs.f(pathUnitobs=filePathes["unitobs"])
 
@@ -1295,14 +1297,14 @@ loadData.f <- function(filePathes, dataEnv, baseEnv=.GlobalEnv)
     ## Information sur l'(les) AMP sélectionnées et le type d'observations analysées :
     tkconfigure(get("ResumerAMPetType", envir=baseEnv),
                 text=paste(ifelse(length(getOption("P.MPA")) < 2,
-                                  "Cas d'étude : ",
-                                  "Cas d'étude : "),
+                                  mltext("loadData.info.3s"),
+                                  mltext("loadData.info.3p")),
                            paste(getOption("P.MPA"), collapse=", "),
-                           " ; type d'observation : ",
+                           mltext("loadData.info.4"),
                            getOption("P.obsType"), sep=""))
 
     ## Fichier de référentiel spatial :
-    stepInnerProgressBar.f(n=1, msg="Chargement du référentiel spatial...")
+    stepInnerProgressBar.f(n=1, msg=mltext("loadData.info.5"))
 
     refSpatial <- loadRefspa.f(pathRefspa=filePathes["refspa"])
 
@@ -1325,7 +1327,7 @@ loadData.f <- function(filePathes, dataEnv, baseEnv=.GlobalEnv)
     }
 
     ## Fichier d'observations :
-    stepInnerProgressBar.f(n=1, msg="Chargement du fichier d'observations...")
+    stepInnerProgressBar.f(n=1, msg=mltext("loadData.info.6"))
 
     tabObs <- loadObservations.f(pathObs=filePathes["obs"])
 
@@ -1342,7 +1344,7 @@ loadData.f <- function(filePathes, dataEnv, baseEnv=.GlobalEnv)
     tabObs <- checkUnitobs.in.obs.f(obs=tabObs, unitobs=refUnitobs) # Réduction aux unitobs existantes.
 
     ## Fichier du référentiel espèces :
-    stepInnerProgressBar.f(n=1, msg="Chargement du référentiel espèces")
+    stepInnerProgressBar.f(n=1, msg=mltext("loadData.info.7"))
 
     refEspeces <- loadRefEspeces.f(pathRefesp=filePathes["refesp"],
                                    pathRefesp.local=filePathes["locrefesp"], baseEnv=baseEnv)
@@ -1410,7 +1412,7 @@ loadDefault.f <- function(baseEnv, dataEnv)
     ## Calcul des tables de métriques :
     metrics <- calcTables.f(obs=Data$obs, unitobs=Data$unitobs, refesp=Data$refesp, dataEnv=dataEnv)
 
-    stepInnerProgressBar.f(n=2, msg="Finalisation du calcul des tables de métriques")
+    stepInnerProgressBar.f(n=2, msg=mltext("loadDefault.info.1"))
 
     ## Assignement des tables de métriques dans l'environnement adéquat :
     listInEnv.f(list=metrics, env=dataEnv)
@@ -1424,7 +1426,7 @@ loadDefault.f <- function(baseEnv, dataEnv)
            envir=dataEnv)
 
     ## Export des tables de métriques :
-    stepInnerProgressBar.f(n=1, msg="Export des tables de métriques dans des fichiers")
+    stepInnerProgressBar.f(n=1, msg=mltext("loadDefault.info.2"))
 
     exportMetrics.f(unitSpSz=metrics$unitSpSz, unitSp=metrics$unitSp, unit=metrics$unit,
                     obs=Data$obs, unitobs=Data$unitobs, refesp=Data$refesp,
@@ -1464,9 +1466,9 @@ tryCatchLoad.f <- function(expr, baseEnv=.GlobalEnv,...)
     tryCatch(expr=expr,
              error=function(e)
          {
-             infoLoading.f(msg=paste("Il y a eu une erreur lors du chargement des données.",
-                                     "\nVérifiez vos jeux de données ou contactez le développeur",
-                                     "\nsi le problème persiste.",
+             infoLoading.f(msg=paste(mltext("tryCatchLoad.error.1"),
+                                     mltext("tryCatchLoad.error.2"),
+                                     mltext("tryCatchLoad.error.3"),
                                      sep=""),
                            icon="error")
 

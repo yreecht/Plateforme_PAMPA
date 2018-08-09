@@ -263,3 +263,65 @@ infoUnitobs.arr.0.4, max/espèce, max/species
 infoUnitobs.title,Informations par unitobs,Information by unitobs
 infoUnitobs.info.title,Informations par unité d'observation :,Information by observation unit:
 infoUnitobs.info.subset,\n\n! tiennent compte des sélections en cours.,\n\n! account for current subset criteria.
+warn.field.not.reordered.1,la colonne ,the field 
+warn.field.not.reordered.2, n'a put être réordonnée :\n\t\t, could not be reordered:\n\t\t
+infoExport.1,Des tables supplémentaires (pour calculs aditionnels) on été créées :,Additional tables (for complementary calculations) have been created:
+infoExport.2,\n\t* TableUnitSpSz : métriques par classe de taille/espèce/unité d'observation.,\n\t* TableUnitSpSz : metrics per size class/species/observation unit.
+infoExport.3,\n\t* TableUnitSp : métriques par espèce/unité d'observation.,\n\t* TableUnitSp : metrics per species/observation unit.
+infoExport.4,\n\t* TableUnit : métriques (dont biodiversité) par unité d'observation.,\n\t* TableUnit : metrics (incl. biodiversity) per observation unit.
+infoExport.5,"\n\t* DataObs, DataUnitobs, DataRefesp : tables de données.","\n\t* DataObs, DataUnitobs, DataRefesp : data tables."
+infoExport.6,Impossible d'écrire le fichier ,Cannot write the file 
+infoExport.7,.\nIl est possible qu'il soit ouvert par une autre application,.\nIt might be open in another program.
+selectionObs.SVR.title,Sélection des observations,Selection of observations
+selectionObs.SVR.Dmin,  Ne conserver que les observations pour lesquelles Dmin =< ,  Only keep observations with Dmin =< 
+selectionObs.SVR.Dmin.war,Vous devez choisir un seuil numérique (séparateur '.'),The threshold must be numerical (decimal separator '.')
+testFiles.1p,Les fichiers suivants n'existent pas ou ne sont pas accessibles :,The following files do not exist or cannot be accessed:
+testFiles.1s,Le fichier suivant n'existe pas ou n'est pas accessible :,The following file does not exist or cannot be accessed:
+testFiles.file.error,Erreur de fichier (inexistant ou non lisible),File error (absent or cannot be read)
+testFiles.dir.error,Impossible d'écrire dans le dossier de résultats :\n,Cannot write in the results directory:\n
+testFiles.dir.error.2,Dossier de résultats non accessible en écriture,Cannot write in the results directory
+testConfig.error.1,"""fileNames"" ou ""dataEnv"" doit être défini !","""fileNames"" or ""dataEnv"" must be defined!"
+testConfig.error.2,FileName n'existe pas dans l'environnement des données !,FileName does not exists in the data environment!
+testConfig.error.3p,Les variables suivantes ne sont pas définies ,The following variables are not defined 
+testConfig.error.3s,La variable suivante n'est pas définie ,The following variable is not defined 
+testConfig.error.4,"dans votre fichier ""","in the file """
+testConfig.error.5,\n\nVoulez-vous éditer ce fichier ?,\n\nDo you want to edit this file?
+testConfig.error.6,"\n\t(ouvre automatiquement de la sauvegarde également, si elle existe).","\n\t(also open the backup, if found)."
+testConfig.error.7,Configuration imcomplète,Incomplete configuration
+loadRefEspece.old.info.1,Vous utilisez un référentiel espèces à l'ancien format...,You are using a old format of the species reference table...
+loadRefEspece.old.info.2,\n Il est possible qu'il ne soit plus maintenu.,\n It might not be maintained any more.
+loadRefEspeces.new.error,Référentiel espèces local incorrect !,Species reference table in the wrong format!
+loadRefEspeces.new.no.local,"Pas de référentiel espèces local défini, ou fichier illisible.","No local species reference table defined, or file cannot be read."
+loadRefEspeces.info,Chargement du référentiel espèces :,Loading the species reference table:
+chooseInList.title,Selection des valeurs de ,Selection of levels from 
+chooseInList.1,Liste des valeurs de ,List of values from 
+chooseInList.2,Une seule sélection possible.,Single selection only.
+chooseInList.3,Plusieurs sélections possibles.,Multiple selection allowed.
+checkType.unitobs.msg.1,Un seul type d'observation à la fois peut être analysé :\n\n,Only one observation type can be analysed at once:\n\n
+checkType.unitobs.msg.2,Choisissez le type d'observation que vous souhaitez analyser.,Please select the type to be analysed.
+checkType.unitobs.msg.3,Type d'observation sélectionné :,Selected observation type:
+checkUnitobs.in.obs.info.1,"Attention, la table ""obs"" contient ","Warning, the table ""obs"" contains "
+checkUnitobs.in.obs.info.2, (sur , (out of 
+checkUnitobs.in.obs.info.3,) enregistrements ,) records 
+checkUnitobs.in.obs.info.4,\navec des unités d'observation absentes dans la table unitobs.,\nwith observation units missing in the unitobs table.
+checkUnitobs.in.obs.info.5,\nCes observations ont été supprimées.,\nThese records were disregarded.
+loadRefspa.info.1,Pas de référentiel spatial défini ou fichier inexistant !,No spatial reference defined or file not found!
+loadRefspa.info.2,"Type d'observation ""OBSIND"" :","Observation type is  ""OBSIND"":"
+loadRefspa.info.3, un référentiel spatial sous forme de shapefile (.shp) est requis !, a spatial referential must be provided as a shapefile (.shp)!
+loadRefspa.info.4,Référentiel shapefile non défini !,Shapefile not provided!
+loadObservations.info.1,Le fichier d'observations n'a pas le bon nombre de colonnes !,Wrong number of columns in the observation file!
+loadObservations.info.2,"\n(Attention, les interpolations sont maintenant externalisées)",\n(Not that interpolations are now carried out by an external script)
+loadObservations.info.3,Le fichier d'observations ne contient pas le bon nombre de colonnes,Wrong number of columns in the observation file
+loadData.info.1,Nouveau chargement des données :,Loading new data:
+loadData.info.2,Chargement du référentiel d'unités d'observation,Loading the observation units reference table
+loadData.info.3p,Cas d'étude : ,Sites: 
+loadData.info.3s,Cas d'étude : ,Site: 
+loadData.info.4, ; type d'observation : ,; observation type: 
+loadData.info.5,Chargement du référentiel spatial...,Loading the spatial referential...
+loadData.info.6,Chargement du fichier d'observations...,Loading the observations file...
+loadData.info.7,Chargement du référentiel espèces,Loading the species reference table
+loadDefault.info.1,Finalisation du calcul des tables de métriques,Finalising metrics tables calculations
+loadDefault.info.2,Export des tables de métriques dans des fichiers,Exporting metrics tables in files
+tryCatchLoad.error.1,Il y a eu une erreur lors du chargement des données.,There were errors while loading the data.
+tryCatchLoad.error.2,\nVérifiez vos jeux de données ou contactez le développeur,\nPlease check your data or contact a developer
+tryCatchLoad.error.3,\nsi le problème persiste.,\nif the issue persists.

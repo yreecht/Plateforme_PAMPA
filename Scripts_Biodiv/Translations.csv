@@ -80,6 +80,7 @@ WinInfoLoading.title.check,Vérification des sélections,Checking selections
 WinInfoLoading.title.warning,Avertissement...,Warning...
 WinInfoLoading.title.default,Infos de chargement,Loading information
 OK.button,   OK   ,   OK   
+Cancel.button,   Annuler   ,   Cancel    
 WinApropos.title,À propos de la plateforme,About the PAMPA platform
 WinApropos.version,"Plateforme PAMPA ""Ressources & Biodiversité"" : version ","PAMPA ""Resources & Biodiversity"" platform: version "
 WinApropos.license,GNU GPL version >= 2,GNU GPL version >= 2
@@ -322,6 +323,60 @@ loadData.info.6,Chargement du fichier d'observations...,Loading the observations
 loadData.info.7,Chargement du référentiel espèces,Loading the species reference table
 loadDefault.info.1,Finalisation du calcul des tables de métriques,Finalising metrics tables calculations
 loadDefault.info.2,Export des tables de métriques dans des fichiers,Exporting metrics tables in files
+loadDefault.info.3,Fin de chargement !,Loading completed!
 tryCatchLoad.error.1,Il y a eu une erreur lors du chargement des données.,There were errors while loading the data.
 tryCatchLoad.error.2,\nVérifiez vos jeux de données ou contactez le développeur,\nPlease check your data or contact a developer
 tryCatchLoad.error.3,\nsi le problème persiste.,\nif the issue persists.
+chooseWS.info.1,""" changé en """,""" changed to """
+chooseWS.info.2,\n\nLe dossier de donnée est un sous-répertoire de l'espace de travail.,\n\nThe data directory is a sub-folder of the working space.
+logmsg.manual.unitobs,Choix manuel du fichiers d'unités d'observations :,Manual selection of the observation units file:
+logmsg.manual.obs,Choix manuel du fichiers d'observations :,Manual selection of the observations file:
+logmsg.manual.refesp,Choix manuel du fichiers du référentiel espèces :,Manual selection of the species reference table file:
+logmsg.manual.refesp.local,Choix manuel du fichiers du référentiel espèces local :,Manual selection of the local species reference table file:
+logmsg.manual.refspa,Choix manuel du fichiers du référentiel spatial :,Manual selection of the spatial reference file:
+logmsg.manual.load.interface,Interface de choix manuel des fichiers de données.,Interface for the manual selection of data files.
+chooseFiles.title,Choix des fichiers de données à importer,Manual selection of files to import
+chooseFiles.info.1,"L'espace de travail est le répertoire qui contient le dossier ""Data"".","The working space contains the ""Data"" directory."
+chooseFiles.info.2,\nNe pas selectionner ce dernier !,\nPlease do not select this one!
+chooseFiles.BT.1,Table de données d'unités d'observation,Observation unit table
+chooseFiles.BT.2,Table de données d'observations,Observations table
+chooseFiles.BT.3,Référentiel espèces,Species reference table
+chooseFiles.BT.32,Référentiel espèces local (OPTIONNEL),Local species reference table (OPTIONAL)
+chooseFiles.BT.clear, Effacer ,  Clear  
+chooseFiles.BT.4,Référentiel spatial (OPTIONNEL),Spatial reference file (OPTIONAL)
+chooseFiles.BT.OK, Valider ,  Load  
+chooseFiles.BT.Cancel,  Annuler  ,  Cancel  
+chooseFiles.info.none,RIEN !!!,NONE!!!
+chooseFiles.info.default,non sélectionné - par défaut :,not selected – default:
+logmsg.sizeclass,Attribution des individus à des classes de taille :,Attributing individuals to size classes:
+logmsg.meansize.szcl,Calcul des tailles moyennes d'après les classes de taille :,Calculation of mean sizes based on the size classes:
+logmsg.meanweight.szcl,Calcul des poids moyens d'après les classes de taille :,Calculation of mean weights based on size classes:
+logmsg.weight.summary,Affichage du bilan calculs de poids :,Displaying the summary of weight calculations:
+summarize.calcWeight.info.1, : les poids sont renseignés pour ,: weights filled for 
+summarize.calcWeight.info.2, observations, records
+summarize.calcWeight.info.3, et se répartissent comme suit :, and distributed as:
+summarize.calcWeight.info.4, poids observés., observed weights.
+summarize.calcWeight.info.5, calculs d'après des tailles estimées, calculated from estimated size
+summarize.calcWeight.info.6, sur la base des classes de tailles., based on size classe.
+summarize.calcWeight.info.7," poids moyens par classe de taille (P, M, G) par espèce."," mean weight by size class (S, M, G) by species."
+summarize.calcWeight.info.8,\n\nLes estimations de biomasses dépendent de ces poids.,\n\nThe biomass estimates are based on these weights.
+logmsg.weightMPA.calc,Calcul des poids :,Calculation of weights:
+calcWeight.info.1,Calcul des poids,Calculation of weights
+calcWeight.info.2,Calcul des poids pour l'AMP :,Estimation of weights for the MPA:
+logmsg.link.unitobs.refspa,Interface de choix du lien unités d'observation et référentiel spatial.,Interface for selecting the link between observation units and spatial referential.
+selectLink.interface.title,Lien unités d'observation -- référentiel spatial,Link observation units – spatial reference table
+selectLink.interface.H1.1,Veuillez choisir les colonnes correspondantes dans les données d'unités,Please select the the corresponding field in the observation units
+selectLink.interface.H1.2, d'observation et le référentiel spatial., and spatial reference table data.
+selectLink.interface.H2.1,"Dans la colonne du référentiel spatial, la valeur de chaque ligne doit",Values must be unique in the spatial field selected
+selectLink.interface.H2.2, être unique pour que le lien se fasse correctement., for the link to work properly.
+selectLink.interface.field.1,Colonne des unités d'observation : ,Observation unit field: 
+selectLink.interface.field.2,Colonne du référentiel spatial : ,Spatial reference field: 
+selectLink.interface.H1.3,Le champs du référentiel spatial n'est pas unique !\n,The spatial reference key is not unique!\n
+selectLink.interface.H1.4,Pas de correspondance trouvée !\n,No matching values found!\n
+selectLink.interface.H1.5,Veuillez corriger la sélection.,Please correct the selections.
+mergeSpaUnitobs.info.1,"Référentiel spatial incorrect,","Improper spatial reference,"
+mergeSpaUnitobs.info.2,\nvous ne pourrez pas traiter vos données aux différentes échelles spatiales !,\nthe data cannot be analysed at these spatial scales!
+mergeSpaUnitobs.info.3,"Le chargement du référentiel spatial géoréférencé a été effectué,","The geo-referenced spatial data have been loaded,"
+mergeSpaUnitobs.info.4,\nvous pourrez avoir accès à l'ensemble des fonctionnalités cartographiques.,\nyou have now access to all mapping functionalities.
+mergeSpaUnitobs.info.5,Le référentiel spatial qui a été chargé n'est pas géoréférencé.,The spatial data loaded are not geo-referenced.
+mergeSpaUnitobs.info.6,\nL'ensemble des fonctionnalités cartographiques ne seront pas disponibles.,\nyou will not have access to mapping functionalities.

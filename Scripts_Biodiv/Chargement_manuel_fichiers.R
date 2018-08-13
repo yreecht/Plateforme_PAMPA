@@ -1,8 +1,8 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2015-11-29 14:15:38 yreecht>
+# Time-stamp: <2018-08-13 12:14:23 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
-##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
+##   Copyright (C) 2008-2018 Ifremer - Tous droits réservés.
 ##
 ##   Ce programme est un logiciel libre ; vous pouvez le redistribuer ou le
 ##   modifier suivant les termes de la "GNU General Public License" telle que
@@ -69,7 +69,7 @@ loadManual.f <- function(baseEnv, dataEnv)
                                  filePathes, Data,
                                  get("table1", envir=baseEnv))
         }else{
-            stop("Problème de configuration")
+            stop(mltext("error.config.issue"))
         }
 
         ## Calculs des poids (faits par AMP) :
@@ -86,7 +86,7 @@ loadManual.f <- function(baseEnv, dataEnv)
         ## Calcul des tables de métriques :
         metrics <- calcTables.f(obs=Data$obs, unitobs=Data$unitobs, refesp=Data$refesp, dataEnv=dataEnv)
 
-        stepInnerProgressBar.f(n=2, msg="Finalisation du calcul des tables de métriques")
+        stepInnerProgressBar.f(n=2, msg=mltext("loadDefault.info.1"))
 
         ## Assignement des tables de métriques dans l'environnement adéquat :
         listInEnv.f(list=metrics, env=dataEnv)
@@ -101,7 +101,7 @@ loadManual.f <- function(baseEnv, dataEnv)
                envir=dataEnv)
 
         ## Export des tables de métriques :
-        stepInnerProgressBar.f(n=1, msg="Export des tables de métriques dans des fichiers")
+        stepInnerProgressBar.f(n=1, msg=mltext("loadDefault.info.2"))
 
         exportMetrics.f(unitSpSz=metrics$unitSpSz, unitSp=metrics$unitSp, unit=metrics$unit,
                         obs=Data$obs, unitobs=Data$unitobs, refesp=Data$refesp,
@@ -114,7 +114,7 @@ loadManual.f <- function(baseEnv, dataEnv)
                                  prod(dim(metrics$unitSpSz))))
 
         ## Fin des informations de chargement (demande de confirmation utilisateur) :
-        stepInnerProgressBar.f(n=2, msg="Fin de chargement !",
+        stepInnerProgressBar.f(n=2, msg=mltext("loadDefault.info.3"),
                                font=tkfont.create(weight="bold", size=9), foreground="darkred")
 
         updateInterface.load.f(baseEnv=baseEnv, tabObs=Data$obs)
@@ -149,8 +149,8 @@ chooseWS.f <- function(dir=getwd(), env=NULL)
         if (as.logical(length(grep("[dD]ata$", dir))) && !file.exists(paste(dir, "/Data", sep="")))
         {
             dir <- sub("/[dD]ata$", "", (oldDir <- dir))
-            tkmessageBox(message=paste("\"", oldDir, "\" changé en \"", dir, "\" !",
-                         "\n\nLe dossier de donnée est un sous-répertoire de l'espace de travail.", sep=""),
+            tkmessageBox(message=paste("\"", oldDir, mltext("chooseWS.info.1"), dir, "\" !",
+                         mltext("chooseWS.info.2"), sep=""),
                          icon="warning")
         }else{}
 
@@ -178,7 +178,7 @@ chooseUnitobs.f <- function(dir=getwd(), env=NULL)
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 14 déc. 2011, 18:45
 
-    runLog.f(msg=c("Choix manuel du fichiers d'unités d'observations :"))
+    runLog.f(msg=c(mltext("logmsg.manual.unitobs")))
 
     nameUnitobs <- tclvalue(tkgetOpenFile(initialdir=paste(dir, "/Data/", sep=""),
                                           filetypes = "{{Text files} {.txt .csv}} {{All files} *}"))
@@ -214,7 +214,7 @@ chooseObservations.f <- function(dir=getwd(), env=NULL)
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 14 déc. 2011, 18:45
 
-    runLog.f(msg=c("Choix manuel du fichiers d'observations :"))
+    runLog.f(msg=c(mltext("logmsg.manual.obs")))
 
     namefileObs <- tclvalue(tkgetOpenFile(initialdir=paste(dir, "/Data/", sep=""),
                                           filetypes = "{{Text files} {.txt .csv}} {{All files} *}"))
@@ -251,7 +251,7 @@ chooseRefesp.f <- function(dir=getwd(), env=NULL)
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 14 déc. 2011, 18:50
 
-    runLog.f(msg=c("Choix manuel du fichiers du référentiel espèces :"))
+    runLog.f(msg=c(mltext("logmsg.manual.refesp")))
 
     namefileRef <- tclvalue(tkgetOpenFile(initialdir=paste(dir, "/Data/", sep=""),
                                           filetypes = "{{Text files} {.txt .csv}} {{All files} *}"))
@@ -286,7 +286,7 @@ chooseRefesp.local.f <- function(dir=getwd(), env=NULL)
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 15 janv. 2013, 17:14
 
-    runLog.f(msg=c("Choix manuel du fichiers du référentiel espèces local :"))
+    runLog.f(msg=c(mltext("logmsg.manual.refesp.local")))
 
     namefileRef <- tclvalue(tkgetOpenFile(initialdir=paste(dir, "/Data/", sep=""),
                                           filetypes = "{{Text files} {.txt .csv}} {{All files} *}"))
@@ -323,7 +323,7 @@ chooseRefspa.f <- function(dir=getwd(), env=NULL)
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 14 déc. 2011, 18:55
 
-    runLog.f(msg=c("Choix manuel du fichiers du référentiel espèces :"))
+    runLog.f(msg=c(mltext("logmsg.manual.refspa")))
 
     namefileRef <- tclvalue(tkgetOpenFile(initialdir=paste(dir, "/Data/", sep=""),
                                           filetypes = "{{Text & Shape files} {.txt .csv .shp}} {{All files} *}"))
@@ -358,12 +358,12 @@ chooseFiles.f <- function(dataEnv)
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 14 déc. 2011, 18:31
 
-    runLog.f(msg=c("Interface de choix manuel des fichiers de données."))
+    runLog.f(msg=c(mltext("logmsg.manual.load.interface")))
 
 
     ## ########################################################
     tt <- tktoplevel(height=50, width=300)
-    tkwm.title(tt, "Choix des fichiers de données à importer")
+    tkwm.title(tt, mltext("chooseFiles.title"))
 
     ## Variables :
     Done <- tclVar(0)
@@ -392,8 +392,8 @@ chooseFiles.f <- function(dataEnv)
 
     ## Information importante :
     L.Info <-  tklabel(tt,
-                       text=paste("L'espace de travail est le répertoire qui contient le dossier \"Data\".",
-                                  "\nNe pas selectionner ce dernier !", sep=""),
+                       text=paste(mltext("chooseFiles.info.1"),
+                                  mltext("chooseFiles.info.2"), sep=""),
                        bg="#FFFBCF", foreground="darkred",
                        font=tkfont.create(family="arial", ## weight="bold",
                                           size=9),#,
@@ -414,7 +414,7 @@ chooseFiles.f <- function(dataEnv)
                            },
                                justify="left")
 
-    button.widget1 <- tkbutton(tt, text="Table de données d'unités d'observation",
+    button.widget1 <- tkbutton(tt, text=mltext("chooseFiles.BT.1"),
                                command=function()
                            {
                                if ( ! is.null(unitobsTmp <- chooseUnitobs.f(dir=workSpaceTmp, env=env)))
@@ -426,7 +426,7 @@ chooseFiles.f <- function(dataEnv)
                            },
                                justify="left")
 
-    button.widget2 <- tkbutton(tt, text="Table de données d'observations",
+    button.widget2 <- tkbutton(tt, text=mltext("chooseFiles.BT.2"),
                                command=function()
                            {
                                if ( ! is.null(obsTmp <- chooseObservations.f(dir=workSpaceTmp, env=env)))
@@ -438,7 +438,7 @@ chooseFiles.f <- function(dataEnv)
                            },
                                justify="left")
 
-    button.widget3 <- tkbutton(tt, text="Référentiel espèces",
+    button.widget3 <- tkbutton(tt, text=mltext("chooseFiles.BT.3"),
                                command=function()
                            {
                                if ( ! is.null(refespTmp <- chooseRefesp.f(dir=workSpaceTmp, env=env)))
@@ -450,7 +450,7 @@ chooseFiles.f <- function(dataEnv)
                            },
                                justify="left")
 
-    button.widget32 <- tkbutton(tt, text="Référentiel espèces local (OPTIONNEL)",
+    button.widget32 <- tkbutton(tt, text=mltext("chooseFiles.BT.32"),
                                 command=function()
                             {
                                 if ( ! is.null(locrefespTmp <- chooseRefesp.local.f(dir=workSpaceTmp, env=env)))
@@ -462,17 +462,17 @@ chooseFiles.f <- function(dataEnv)
                             },
                                 justify="left")
 
-    B.clear32 <- tkbutton(tt, text=" Effacer ",
+    B.clear32 <- tkbutton(tt, text=mltext("chooseFiles.BT.clear"),
                           command=function()
                       {
                           assign("locrefespTmp",
                                  NA,
                                  envir=env)
 
-                          tkconfigure(SummaryRefEspLoc, text="RIEN !!!")
+                          tkconfigure(SummaryRefEspLoc, text=mltext("chooseFiles.info.none"))
                       })
 
-    button.widget4 <- tkbutton(tt, text="Référentiel spatial (OPTIONNEL)",
+    button.widget4 <- tkbutton(tt, text=mltext("chooseFiles.BT.4"),
                                command=function()
                            {
                                if ( ! is.null(refspaTmp <- chooseRefspa.f(dir=workSpaceTmp, env=env)))
@@ -484,22 +484,22 @@ chooseFiles.f <- function(dataEnv)
                            },
                                justify="left")
 
-    B.clear4 <- tkbutton(tt, text=" Effacer ",
+    B.clear4 <- tkbutton(tt, text=mltext("chooseFiles.BT.clear"),
                          command=function()
                      {
                          assign("locrefespTmp",
                                 NA,
                                 envir=env)
 
-                         tkconfigure(SummaryRefSpa, text="RIEN !!!")
+                         tkconfigure(SummaryRefSpa, text=mltext("chooseFiles.info.none"))
                      })
 
     FrameBT <- tkframe(tt)
 
-    OK.but <- tkbutton(FrameBT, text=" Valider ",
+    OK.but <- tkbutton(FrameBT, text=mltext("chooseFiles.BT.OK"),
                        command=function(){tclvalue(Done) <- "1"})
 
-    B.Cancel <- tkbutton(FrameBT, text="  Annuler  ",
+    B.Cancel <- tkbutton(FrameBT, text=mltext("chooseFiles.BT.Cancel"),
                          command=function(){tclvalue(Done) <- "2"})
 
     tkgrid(L.Info,
@@ -507,40 +507,46 @@ chooseFiles.f <- function(dataEnv)
            pady=3, padx=5, sticky="ew")
 
     tkgrid(button.widget0,
-           SummaryWS <- tklabel(tt, text=paste("non sélectionné - par défaut :",
+           SummaryWS <- tklabel(tt, text=paste(mltext("chooseFiles.info.default"),
                                                ifelse(!is.na(workSpaceTmp),
-                                                      workSpaceTmp, "RIEN !!!"))),
+                                                      workSpaceTmp,
+                                                      mltext("chooseFiles.info.none")))),
            pady=3, padx=5, sticky="w")
 
     tkgrid(button.widget1,
-           SummaryUnitobs <- tklabel(tt, text=paste("non sélectionné - par défaut :",
+           SummaryUnitobs <- tklabel(tt, text=paste(mltext("chooseFiles.info.default"),
                                                     ifelse(!is.na(unitobsTmp),
-                                                           unitobsTmp, "RIEN !!!"))),
+                                                           unitobsTmp,
+                                                           mltext("chooseFiles.info.none")))),
            pady=3, padx=5, sticky="w")
 
     tkgrid(button.widget2,
-           SummaryObs <- tklabel(tt, text=paste("non sélectionné - par défaut :",
+           SummaryObs <- tklabel(tt, text=paste(mltext("chooseFiles.info.default"),
                                                 ifelse(!is.na(obsTmp),
-                                                       obsTmp, "RIEN !!!"))),
+                                                       obsTmp,
+                                                       mltext("chooseFiles.info.none")))),
            pady=3, padx=5, sticky="w")
 
     tkgrid(button.widget3,
-           SummaryRefEsp <- tklabel(tt, text=paste("non sélectionné - par défaut :",
+           SummaryRefEsp <- tklabel(tt, text=paste(mltext("chooseFiles.info.default"),
                                                    ifelse(!is.na(refespTmp),
-                                                          refespTmp, "RIEN !!!"))),
+                                                          refespTmp,
+                                                          mltext("chooseFiles.info.none")))),
            pady=3, padx=5, sticky="w")
 
     tkgrid(button.widget32,
-           SummaryRefEspLoc <- tklabel(tt, text=paste("non sélectionné - par défaut :",
+           SummaryRefEspLoc <- tklabel(tt, text=paste(mltext("chooseFiles.info.default"),
                                                       ifelse(!is.na(locrefespTmp),
-                                                             locrefespTmp, "RIEN !!!"))),
+                                                             locrefespTmp,
+                                                             mltext("chooseFiles.info.none")))),
            B.clear32,
            pady=3, padx=5, sticky="w")
 
     tkgrid(button.widget4,
-           SummaryRefSpa <- tklabel(tt, text=paste("non sélectionné - par défaut :",
+           SummaryRefSpa <- tklabel(tt, text=paste(mltext("chooseFiles.info.default"),
                                                    ifelse(!is.na(refspaTmp),
-                                                          refspaTmp, "RIEN !!!"))),
+                                                          refspaTmp,
+                                                          mltext("chooseFiles.info.none")))),
            B.clear4,
            pady=3, padx=5, sticky="w")
 

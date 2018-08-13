@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2013-07-07 19:18:30 yreecht>
+# Time-stamp: <2018-08-13 13:23:19 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
@@ -44,14 +44,14 @@ selectLink.interface.f <- function(unitobs, refspa,
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 22 nov. 2012, 11:01
 
-    runLog.f(msg=c("Interface de choix du lien unités d'observation et référentiel spatial."))
+    runLog.f(msg=c(mltext("logmsg.link.unitobs.refspa")))
 
     ## .BGcolor <- "#FFFBCF"
     .BGcolor <- "#F7F5CE"
 
     ## Fenêtre principale :
     WinLink <- tktoplevel(background="white")
-    tkwm.title(WinLink, "Lien unités d'observation -- référentiel spatial")
+    tkwm.title(WinLink, mltext("selectLink.interface.title"))
 
     ## Variables :
     Done <- tclVar(0)
@@ -89,16 +89,16 @@ selectLink.interface.f <- function(unitobs, refspa,
     ##                   background=.BGcolor)
 
     L.help1 <- tklabel(F.help,
-                      text=paste("Veuillez choisir les colonnes correspondantes dans les données d'unités",
-                                  " d'observation et le référentiel spatial.", sep=""),
+                      text=paste(mltext("selectLink.interface.H1.1"),
+                                 mltext("selectLink.interface.H1.2"), sep=""),
                       wraplength=500,
                       font=tkfont.create(weight="normal", size=10),
                       foreground="darkred",
                       background=.BGcolor, justify="left")
 
     L.help2 <- tklabel(F.help,
-                      text=(paste("Dans la colonne du référentiel spatial, la valeur de chaque ligne doit",
-                                  " être unique pour que le lien se fasse correctement.",
+                      text=(paste(mltext("selectLink.interface.H2.1"),
+                                  mltext("selectLink.interface.H2.2"),
                       sep="")),
                       wraplength=500,
                       font=tkfont.create(weight="normal", size=10),
@@ -126,10 +126,10 @@ selectLink.interface.f <- function(unitobs, refspa,
     ## Boutons :
     F.BT <- tkframe(WinLink, background="white")
 
-    B.OK <- tkbutton(F.BT, text="  OK  ", # bg=.BGcolor,
+    B.OK <- tkbutton(F.BT, text=mltext("OK.button"), # bg=.BGcolor,
                      command=function(){tclvalue(Done) <- 1})
 
-    B.Cancel <- tkbutton(F.BT, text=" Annuler ", # bg=.BGcolor,
+    B.Cancel <- tkbutton(F.BT, text=mltext("Cancel.button"), # bg=.BGcolor,
                          command=function(){tclvalue(Done) <- 2})
 
     ## #### Placement des éléments :
@@ -140,11 +140,11 @@ selectLink.interface.f <- function(unitobs, refspa,
 
     tkgrid(F.help, sticky="ew", columnspan=2)
 
-    tkgrid(tklabel(F.unitobs, text="Colonne des unités d'observation : ", background="white"),
+    tkgrid(tklabel(F.unitobs, text=mltext("selectLink.interface.field.1"), background="white"),
            padx=4, pady=4, sticky="w")
     tkgrid(CB.unitobs, padx=4, pady=4, sticky="w")
 
-    tkgrid(tklabel(F.refspa, text="Colonne du référentiel spatial : ", background="white"),
+    tkgrid(tklabel(F.refspa, text=mltext("selectLink.interface.field.2"), background="white"),
            padx=4, pady=4, sticky="w")
     tkgrid(CB.refspa, padx=4, pady=4, sticky="w")
 
@@ -197,9 +197,9 @@ selectLink.interface.f <- function(unitobs, refspa,
                 ## Avertissement :
                 tkconfigure(L.help1,
                             text=paste(ifelse(tmpUniq,
-                                              "Le champs du référentiel spatial n'est pas unique !\n",
-                                              "Pas de correspondance trouvée !\n"),
-                                       "Veuillez corriger la sélection.", sep=""),
+                                              mltext("selectLink.interface.H1.3"),
+                                              mltext("selectLink.interface.H1.4")),
+                                       mltext("selectLink.interface.H1.5"), sep=""),
                             font=tkfont.create(weight="bold", size=10),
                             justify="left")
 
@@ -312,8 +312,8 @@ mergeSpaUnitobs.f <- function(unitobs, refspa, type="auto")
 
         if (type[1] == "auto")
         {
-            infoLoading.f(msg=paste("Référentiel spatial incorrect,",
-                                    "\nvous ne pourrez pas traiter vos données aux différentes échelles spatiales !",
+            infoLoading.f(msg=paste(mltext("mergeSpaUnitobs.info.1"),
+                                    mltext("mergeSpaUnitobs.info.2"),
                                     sep=""),
                           icon="warning")
         }else{}
@@ -336,13 +336,13 @@ mergeSpaUnitobs.f <- function(unitobs, refspa, type="auto")
         {
             if (isPoly)
             {
-                infoLoading.f(msg=paste("Le chargement du référentiel spatial géoréférencé a été effectué,",
-                                        "\nvous pourrez avoir accès à l'ensemble des fonctionnalités cartographiques.",
+                infoLoading.f(msg=paste(mltext("mergeSpaUnitobs.info.3"),
+                                        mltext("mergeSpaUnitobs.info.4"),
                                         sep=""),
                               icon="info")
             }else{
-                infoLoading.f(msg=paste("Le référentiel spatial qui a été chargé n'est pas géoréférencé.",
-                                        "\nL'ensemble des fonctionnalités cartographiques ne seront pas disponibles.",
+                infoLoading.f(msg=paste(mltext("mergeSpaUnitobs.info.5"),
+                                        mltext("mergeSpaUnitobs.info.6"),
                                         sep=""),
                               icon="info")
             }

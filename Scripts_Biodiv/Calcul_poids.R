@@ -1,8 +1,8 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2012-01-18 17:06:02 yreecht>
+# Time-stamp: <2018-08-13 12:53:49 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
-##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
+##   Copyright (C) 2008-2018 Ifremer - Tous droits réservés.
 ##
 ##   Ce programme est un logiciel libre ; vous pouvez le redistribuer ou le
 ##   modifier suivant les termes de la "GNU General Public License" telle que
@@ -40,7 +40,7 @@ sizeClasses.f <- function(Data, refesp,
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 15 déc. 2011, 11:33
 
-    runLog.f(msg=c("Attribution des individus à des classes de taille :"))
+    runLog.f(msg=c(mltext("logmsg.sizeclass")))
 
     if (any(idx <- (( ! is.na(Data[ , vars["sz"]])) &
                     is.na(Data[ , vars["szcl"]]))))
@@ -106,7 +106,7 @@ addMeanSize.f <- function(Data,
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 26 août 2010, 16:20
 
-    runLog.f(msg=c("Calcul des tailles moyennes d'après les classes de taille :"))
+    runLog.f(msg=c(mltext("logmsg.meansize.szcl")))
 
     res <- Data[ , vars["sz"]]
     classes.taille <- Data[ , vars["szcl"]]
@@ -158,7 +158,7 @@ meanWeight.SzCl.f <- function(Data, refesp,
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 11 oct. 2010, 14:58
 
-    runLog.f(msg=c("Calcul des poids moyens d'après les classes de taille :"))
+    runLog.f(msg=c(mltext("logmsg.meanweight.szcl")))
 
     refespTmp <- as.matrix(refesp[ , c("poids.moyen.petits", "poids.moyen.moyens", "poids.moyen.gros")])
     row.names(refespTmp) <- as.character(refesp[ , vars["sp"]] )
@@ -193,27 +193,27 @@ summarize.calcWeight.f <- function(x, MPA)
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date:  7 déc. 2010, 13:56
 
-    runLog.f(msg=c("Affichage du bilan calculs de poids :"))
+    runLog.f(msg=c(mltext("logmsg.weight.summary")))
 
-    infoLoading.f(msg=paste(MPA, " : les poids sont renseignés pour ",
-                  sum(x[-1]), "/", x["total"], " observations",
+    infoLoading.f(msg=paste(MPA, mltext("summarize.calcWeight.info.1"),
+                  sum(x[-1]), "/", x["total"], mltext("summarize.calcWeight.info.2"),
                   ifelse(sum(x[-1]) > 0,
                          paste(         # Info complémentaires si des poids estimés...
-                               " et se répartissent comme suit :",
-                               "\n\t*  ", x["obs"], " poids observés.",
+                               mltext("summarize.calcWeight.info.3"),
+                               "\n\t*  ", x["obs"], mltext("summarize.calcWeight.info.4"),
                                "\n\t*  ", x["taille"], " calculs d'après la taille observée.",
                                ifelse(any(x[-(1:3)] > 0),
                                       paste("\n\t*  ", x["taille.moy"],
-                                            " calculs d'après des tailles estimées",
-                                            " sur la base des classes de tailles.",
+                                            mltext("summarize.calcWeight.info.5"),
+                                            mltext("summarize.calcWeight.info.6"),
                                             ifelse(!is.na(x["poids.moy"]),
                                                    paste("\n\t*  ", x["poids.moy"],
-                                                         " poids moyens par classe de taille (P, M, G), ",
-                                                         " par espèce.", sep=""),
+                                                         mltext("summarize.calcWeight.info.7"),
+                                                         sep=""),
                                                    ""),
                                             sep=""),
                                       ""),
-                               "\n\nLes estimations de biomasses dépendent de ces poids.",
+                               mltext("summarize.calcWeight.info.8"),
                                sep=""),
                          "."),          # ...sinon rien.
                   sep=""),
@@ -250,11 +250,11 @@ calcWeightMPA.f <- function(Data, refesp, MPA,
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date:  6 déc. 2010, 11:57
 
-    runLog.f(msg=c("Calcul des poids :"))
+    runLog.f(msg=c(mltext("logmsg.weightMPA.calc")))
 
     ## Identification des différents cas :
     casSite <- c("BA"="Med", "BO"="Med", "CB"="Med", "CR"="Med", "STM"="Med", # [!!!] STM provisoire en attendant mieux.
-                 "MAY"="MAY", "RUN"="MAY")
+                 "MAY"="MAY", "RUN"="MAY") ## [!!!] add possibility of an option for generic use.
 
     ## L'AMP est mise au format désiré (on ne peut traiter qu'un élément à la fois) :
     MPA <- as.character(MPA[1])
@@ -349,7 +349,7 @@ calcWeight.f <- function(Data)
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 16 déc. 2011, 11:34
 
-    stepInnerProgressBar.f(n=1, msg="Calcul des poids")
+    stepInnerProgressBar.f(n=1, msg=mltext("calcWeight.info.1"))
 
     Data$obs <- do.call(rbind,          # Réassemblage de la...
                         lapply(unique(Data$unitobs[ , getOption("P.MPAfield")]), # ...liste des observations par cas
@@ -357,7 +357,7 @@ calcWeight.f <- function(Data)
                                function(i, obs, unitobs, refesp)
                            {
                                stepInnerProgressBar.f(n=0,
-                                                      msg=paste("Calcul des poids pour l'AMP :", i))
+                                                      msg=paste(mltext("calcWeight.info.2"), i))
 
                                ## Sélection des observations du cas d'étude i :
                                obs <- obs[is.element(obs$unite_observation,

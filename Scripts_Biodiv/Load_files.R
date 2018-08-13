@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-08-09 14:02:45 yreecht>
+# Time-stamp: <2018-08-13 11:45:10 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2018 Ifremer - Tous droits réservés.
@@ -1439,7 +1439,7 @@ loadDefault.f <- function(baseEnv, dataEnv)
                              prod(dim(metrics$unitSpSz))))
 
     ## Fin des informations de chargement (demande de confirmation utilisateur) :
-    stepInnerProgressBar.f(n=2, msg="Fin de chargement !",
+    stepInnerProgressBar.f(n=2, msg=mltext("loadDefault.info.3"),
                            font=tkfont.create(weight="bold", size=9), foreground="darkred")
 
     updateInterface.load.f(baseEnv=baseEnv, tabObs=Data$obs)

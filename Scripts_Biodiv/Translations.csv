@@ -380,3 +380,13 @@ mergeSpaUnitobs.info.3,"Le chargement du référentiel spatial géoréférencé a été 
 mergeSpaUnitobs.info.4,\nvous pourrez avoir accès à l'ensemble des fonctionnalités cartographiques.,\nyou have now access to all mapping functionalities.
 mergeSpaUnitobs.info.5,Le référentiel spatial qui a été chargé n'est pas géoréférencé.,The spatial data loaded are not geo-referenced.
 mergeSpaUnitobs.info.6,\nL'ensemble des fonctionnalités cartographiques ne seront pas disponibles.,\nyou will not have access to mapping functionalities.
+agregations.generic.war.1,Un des facteurs annexes est surement un sous-ensemble,One of the suppl. factors is probably a subset
+agregations.generic.war.2, du(des) facteur(s) de regroupement des observations., of the observations grouping factor(s).
+calc.biomass.info.1,Calcul de biomasse impossible : ,Cannot estimate the biomass: 
+calc.biomass.info.2,\nles poids ne sont pas renseignés ou ne peuvent être calculés.,\nweights are not filled or cannot be calculated.
+calc.unitSpSz.err.1,"\n\tType d'observation ""","\n\tObservation type """
+calc.unitSpSz.err.2,""" inconnu pour le calcul des métriques par classe de taille !",""" unknown for the calculation of metrics by size class!"
+calc.unitSp.err.1,"\n\tType d'observation ""","\n\tObservation type """
+calc.unitSp.err.2,""" inconnu pour le calcul des métriques par espèce !",""" unknown for the calculation of metrics by species!"
+calc.unit.info.1,Calcul des métriques par unité d'observation...,Calculating metrics observation unit...
+logmsg.calcTables,Création des tables de base (calcul de métriques) :,Creating base tables (metrics calculation):

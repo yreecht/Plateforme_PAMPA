@@ -1,8 +1,8 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2013-04-26 09:35:57 yves>
+# Time-stamp: <2018-08-21 16:53:44 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
-##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
+##   Copyright (C) 2008-2018 Ifremer - Tous droits réservés.
 ##
 ##   Ce programme est un logiciel libre ; vous pouvez le redistribuer ou le
 ##   modifier suivant les termes de la "GNU General Public License" telle que
@@ -255,7 +255,7 @@ agregation.f <- function(metric, Data, factors, casMetrique, dataEnv,
                                                   na.rm=TRUE))
                          })
            },
-           stop("Pas implémenté !")
+           stop("Not implemented!")
            )
 
     ## Nom des dimensions
@@ -332,7 +332,7 @@ agregations.generic.f <- function(Data, metrics, factors, listFact=NULL, unitSpS
                           by=c("code_espece", "unite_observation", "classe_taille"),
                           suffixes=c("", ".y"))
         }else{
-            if (is.null(unitSp)) stop("unitSp doit être défini")
+            if (is.null(unitSp)) stop("unitSp must be defined")
 
             Data <- merge(Data,
                           unitSp[ , c("code_espece", "unite_observation", "traces.lisibles")],
@@ -346,7 +346,7 @@ agregations.generic.f <- function(Data, metrics, factors, listFact=NULL, unitSpS
     {
         if (is.element("classe_taille", colnames(Data)))
         {
-            if (is.null(unitSpSz)) stop("unitSpSz doit être défini")
+            if (is.null(unitSpSz)) stop("unitSpSz must be defined")
 
             Data <- merge(Data,
                           unitSpSz[ , c("code_espece", "unite_observation", "classe_taille", nbName)],
@@ -361,7 +361,7 @@ agregations.generic.f <- function(Data, metrics, factors, listFact=NULL, unitSpS
             Data <- merge(Data,
                           as.data.frame(as.table(nbTot), responseName="nombre.tot"))
         }else{
-            if (is.null(unitSp)) stop("unitSp doit être défini")
+            if (is.null(unitSp)) stop("unitSp must be defined")
 
             Data <- merge(Data,
                           unitSp[ , c("code_espece", "unite_observation", nbName)], # [!!!] unitSpSz ?
@@ -471,8 +471,8 @@ agregations.generic.f <- function(Data, metrics, factors, listFact=NULL, unitSpS
     ## d'agrégation des observations) :
     if (any(sapply(reslong[ , listFact], function(x){any(is.null(unlist(x)))})))
     {
-        warning(paste("Un des facteurs annexes est surement un sous-ensemble",
-                      " du(des) facteur(s) de regroupement des observations.", sep=""))
+        warning(paste(mltext("agregations.generic.war.1"),
+                      mltext("agregations.generic.war.2"), sep=""))
         return(NULL)
     }else{
         return(reslong)

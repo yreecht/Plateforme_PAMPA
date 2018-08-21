@@ -1,8 +1,8 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2013-07-07 18:59:48 yreecht>
+# Time-stamp: <2018-08-21 16:12:56 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
-##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
+##   Copyright (C) 2008-2018 Ifremer - Tous droits réservés.
 ##
 ##   Ce programme est un logiciel libre ; vous pouvez le redistribuer ou le
 ##   modifier suivant les termes de la "GNU General Public License" telle que
@@ -32,21 +32,21 @@
 ########################################################################################################################
 loadShapefile.f <- function(directory, layer)
 {
-    ## Purpose: chargement du référentiel spatial sous forme de shapefile.
+    ## Purpose: Load the spatial reference object from a shapefile.
     ## ----------------------------------------------------------------------
-    ## Arguments: directory : répertoire où se trouve le shapefile.
-    ##            layer : nom de la couche (nom de fichiers sans extension).
+    ## Arguments: directory : where the shapefile is located.
+    ##            layer : layer name (filname, without extension).
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 19 nov. 2012, 17:12
 
-    ## Lecture du shapefile :
+    ## Read the shapefile :
     refspa <- readOGR(dsn=directory, layer=layer,
                       encoding=getOption("P.shapefileEncoding"), verbose=FALSE)
 
     colnames(refspa@data) <- gsub("_", ".", colnames(refspa@data), fixed=TRUE)
     colnames(refspa@data)[1] <- "OBJECTID"
 
-    ## Définition du système de coordonnées (sans projection) pour les calculs de surface :
+    ## Define the coordinate (without projection) for surface area processing :
     crsArea <- CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")
 
     refspa <- spCbind(refspa,
@@ -54,7 +54,7 @@ loadShapefile.f <- function(directory, layer)
                                                                         CRSobj=crsArea)) / (10^6), # en km² !
                                  row.names=row.names(refspa@data)))
 
-    ## Ajout des centroïdes :
+    ## Add centroids :
     tmpCentr <- as.data.frame(coordinates(refspa),
                               row.names=row.names(refspa@data))
 
@@ -68,22 +68,23 @@ loadShapefile.f <- function(directory, layer)
 ########################################################################################################################
 overlayUnitobs.f <- function(unitobs, refspa)
 {
-    ## Purpose: Attribution des unités d'observation à des zones du
-    ##          référentiel spatial
+    ## Purpose: Attribute the observation units to zones of the
+    ##          spatial reference table.
     ## ----------------------------------------------------------------------
-    ## Arguments: unitobs : table des unités d'observation.
-    ##            refspa : référentiel spatial ("SpatialPolygonsDataFrame").
+    ## Arguments: unitobs : observation unit table.
+    ##            refspa : spatial reference object
+    ##                     ("SpatialPolygonsDataFrame").
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 20 nov. 2012, 17:35
 
-    ## Spatialisation des unitobs :
+    ## Georefences unitobs :
     spaUnitobs <- SpatialPointsDataFrame(coords=cbind(x=unitobs$longitude,
                                                       y=unitobs$latitude),
                                          data=unitobs,
                                          proj4string=refspa@proj4string,
                                          match.ID=TRUE)
 
-    ## Correspondance avec les zones :
+    ## Create the link to zones :
     unitobs <- cbind(unitobs,
                      "OBJECTID"=as.character(over(x=spaUnitobs, y=refspa)[ , "OBJECTID"]))
 

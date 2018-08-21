@@ -1,8 +1,8 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2013-04-25 18:23:28 yves>
+# Time-stamp: <2018-08-21 16:13:46 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
-##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
+##   Copyright (C) 2008-2018 Ifremer - Tous droits réservés.
 ##
 ##   Ce programme est un logiciel libre ; vous pouvez le redistribuer ou le
 ##   modifier suivant les termes de la "GNU General Public License" telle que

@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
-##   Copyright (C) 2008-2012 Ifremer - Tous droits réservés.
+##   Copyright (C) 2008-2018 Ifremer - Tous droits réservés.
 ##
 ##   Ce programme est un logiciel libre ; vous pouvez le redistribuer ou le
 ##   modifier suivant les termes de la "GNU General Public License" telle que
@@ -265,8 +265,8 @@ calc.biomass.f <- function(Data, unitobs)
                        as.numeric(unitobs[idx , "fraction_echantillonnee"]))))
     }else{
         ## alerte que les calculs de biomasse sont impossibles
-        infoLoading.f(msg=paste("Calcul de biomasse impossible : ",
-                                "\nles poids ne sont pas renseignés ou ne peuvent être calculés.", sep=""),
+        infoLoading.f(msg=paste(mltext("calc.biomass.info.1"),
+                                mltext("calc.biomass.info.2"), sep=""),
                       icon="warning")
 
         return(NA)
@@ -565,8 +565,8 @@ calc.unitSpSz.f <- function(obs, unitobs, refesp, dataEnv)
                                calc.tables.OBSIND.f(obs=obs, unitobs=unitobs, dataEnv=dataEnv, factors=factors)
                            },
                        {
-                           stop("\n\tType d'observation \"", getOption("P.obsType"),
-                              "\" inconnu pour le calcul des métriques par classe de taille !")
+                           stop(mltext("calc.unitSpSz.err.1"), getOption("P.obsType"),
+                                mltext("calc.unitSpSz.err.2"))
                            NULL
                        })
     }else{
@@ -636,8 +636,8 @@ calc.unitSp.f <- function(unitSpSz, obs, unitobs, dataEnv)
         unitSp <- switch(getOption("P.obsType"),
                          SVR=calc.unitSp.SVR.f(unitSpSz=unitSpSz, obs=obs, dataEnv=dataEnv),
                          LIT={
-                             warning(paste("Depuis quand les métriques par classe de taille sont calculées ",
-                                           "pour du benthos ?", sep=""))
+                             warning(paste("Trying to calculate metrics by size class",
+                                           " for the benthos...!", sep=""))
 
                              calc.unitSp.LIT.f(obs=obs, unitobs=unitobs, dataEnv=dataEnv)
                          },
@@ -669,7 +669,7 @@ calc.unitSp.f <- function(unitSpSz, obs, unitobs, dataEnv)
                              calc.unitSp.LIT.f(obs=obs, unitobs=unitobs, dataEnv=dataEnv)
                          },
                          "PIT"={
-                             warning("Protocole PIT pas implémenté pour l'instant !")
+                             warning("PIT protocol not implemented yet!")
                              ## calc.unitSpSz.PIT.f()
                          },
                          "Transect"={
@@ -677,7 +677,7 @@ calc.unitSp.f <- function(unitSpSz, obs, unitobs, dataEnv)
                              calc.tables.Transect.f(obs=obs, unitobs=unitobs, dataEnv=dataEnv, factors=factors)
                          },
                          "Fixe"={
-                             warning("Protocole \"Point fixe\" pas implémenté pour l'instant !")
+                             warning("\"Fix point\" protocol not implemented yet!")
                              ## calc.unitSpSz.Fixe.f()
                          },
                          ## Traces de tortues :
@@ -691,8 +691,8 @@ calc.unitSp.f <- function(unitSpSz, obs, unitobs, dataEnv)
                                calc.tables.OBSIND.f(obs=obs, unitobs=unitobs, dataEnv=dataEnv, factors=factors)
                            },
                      {
-                         stop("\n\tType d'observation \"", getOption("P.obsType"),
-                              "\" inconnu pour le calcul des métriques par espèce !")
+                         stop(mltext("calc.unitSp.err.1"), getOption("P.obsType"),
+                              mltext("calc.unitSp.err.2"))
                          NULL
                      })
     }
@@ -771,7 +771,7 @@ calc.unit.f <- function(unitSp, obs, refesp, unitobs, dataEnv)
     ## Author: Yves Reecht, Date: 21 déc. 2011, 10:08
 
     ## Informations :
-    stepInnerProgressBar.f(n=1, msg="Calcul des métriques par unité d'observation...")
+    stepInnerProgressBar.f(n=1, msg=mltext("calc.unit.info.1"))
 
     pampaProfilingStart.f()
 
@@ -830,7 +830,7 @@ calcTables.f <- function(obs, unitobs, refesp, dataEnv)
 
     pampaProfilingStart.f()
 
-    runLog.f(msg=c("Création des tables de base (calcul de métriques) :"))
+    runLog.f(msg=c(mltext("logmsg.calcTables")))
 
     ## Métriques par classe de taille par espèce par unité d'observation :
     unitSpSz <- calc.unitSpSz.f(obs=obs, unitobs=unitobs, refesp=refesp, dataEnv=dataEnv)

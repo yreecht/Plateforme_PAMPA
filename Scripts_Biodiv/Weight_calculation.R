@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-08-13 12:53:49 yreecht>
+# Time-stamp: <2018-08-21 15:53:59 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2018 Ifremer - Tous droits réservés.
@@ -18,7 +18,7 @@
 ##   ce programme ; si ce n'est pas le cas, consultez :
 ##   <http://www.gnu.org/licenses/>.
 
-### File: Calcul_poids.R
+### File: Weight_calculation.R
 ### Created: <2012-01-18 17:06:02 yreecht>
 ###
 ### Author: Yves Reecht

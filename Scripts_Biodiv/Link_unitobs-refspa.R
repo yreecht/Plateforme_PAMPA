@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-08-13 13:23:19 yreecht>
+# Time-stamp: <2018-08-21 15:55:59 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
@@ -18,7 +18,7 @@
 ##   ce programme ; si ce n'est pas le cas, consultez :
 ##   <http://www.gnu.org/licenses/>.
 
-### File: Lien_unitobs-refspa.R
+### File: Link_unitobs-refspa.R
 ### Created: <2012-11-22 10:58:17 yves>
 ###
 ### Author: Yves Reecht

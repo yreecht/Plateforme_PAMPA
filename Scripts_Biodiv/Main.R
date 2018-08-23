@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-08-21 17:12:51 yreecht>
+# Time-stamp: <2018-08-23 17:29:23 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2018 Ifremer - Tous droits réservés.
@@ -85,13 +85,13 @@ source("./Scripts_Biodiv/Load_files.R", encoding="latin1")                      
 source("./Scripts_Biodiv/Load_files_manually.R", encoding="latin1")                    # OK [mld]
 source("./Scripts_Biodiv/Weight_calculation.R", encoding="latin1")                     # OK [mld]
 source("./Scripts_Biodiv/Link_unitobs-refspa.R", encoding="latin1")                    # OK [mld]
-source("./Scripts_Biodiv/Chargement_shapefile.R", encoding="latin1")                   # OK [mld]
-source("./Scripts_Biodiv/Chargement_OBSIND.R", encoding="latin1")                      # OK [mli]
+source("./Scripts_Biodiv/Load_shapefile.R", encoding="latin1")                         # OK [mld]
+source("./Scripts_Biodiv/Load_OBSIND.R", encoding="latin1")                            # OK [mli]
 
 ## ...les calculs de tables de métriques :
-source("./Scripts_Biodiv/Agregations_generiques.R", encoding="latin1")                 # OK [mld]
-source("./Scripts_Biodiv/Calcul_tables_metriques.R", encoding="latin1")                # OK [mld]
-source("./Scripts_Biodiv/Calcul_tables_metriques_LIT.R", encoding="latin1")            # OK
+source("./Scripts_Biodiv/Generic_aggregations.R", encoding="latin1")                   # OK [mld]
+source("./Scripts_Biodiv/Calculate_metrics_tables.R", encoding="latin1")               # OK [mld]
+source("./Scripts_Biodiv/Calcul_tables_metriques_LIT.R", encoding="latin1")            # OK [mlo]
 source("./Scripts_Biodiv/Calcul_tables_metriques_SVR.R", encoding="latin1")            # OK
 source("./Scripts_Biodiv/Traces_tortues.R", encoding="latin1")                         # OK
 

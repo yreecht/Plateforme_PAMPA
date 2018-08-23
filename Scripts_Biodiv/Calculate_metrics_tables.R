@@ -17,7 +17,7 @@
 ##   ce programme ; si ce n'est pas le cas, consultez :
 ##   <http://www.gnu.org/licenses/>.
 
-### File: Calcul_tables_metriques.R
+### File: Calculate_metrics_tables.R
 ### Time-stamp: <2012-02-24 19:58:32 Yves>
 ###
 ### Author: Yves Reecht

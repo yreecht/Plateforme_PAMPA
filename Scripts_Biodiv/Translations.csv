@@ -390,3 +390,9 @@ calc.unitSp.err.1,"\n\tType d'observation ""","\n\tObservation type """
 calc.unitSp.err.2,""" inconnu pour le calcul des métriques par espèce !",""" unknown for the calculation of metrics by species!"
 calc.unit.info.1,Calcul des métriques par unité d'observation...,Calculating metrics observation unit...
 logmsg.calcTables,Création des tables de base (calcul de métriques) :,Creating base tables (metrics calculation):
+statRotations.err.1,\n\tL'unité d'observation doit faire partie des facteurs d'agrégation !!\n,\n\tThe observation unit must be part of the aggregation factors!!\n
+calc.tables.SVR.info.1,Statistiques pour vidéos rotatives (étape longue),Statistics for rotative videos (may run for a while)
+calc.tables.SVR.info.2,Calcul des métriques par unité d'observation,Calculate metrics by observation unit
+calc.tables.SVR.info.3,", espèce et classe de taille...",", species and size class..."
+calc.tables.SVR.info.4, et espèce..., and species...
+calc.unitSp.SVR.err.1,Problème dans le calcul des statistiques SVR !,Issue with SVR statistics calculation!

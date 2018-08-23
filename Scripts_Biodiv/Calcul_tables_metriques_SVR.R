@@ -1,8 +1,8 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2013-04-24 17:37:44 yves>
+# Time-stamp: <2018-08-23 17:48:40 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
-##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
+##   Copyright (C) 2008-2018 Ifremer - Tous droits réservés.
 ##
 ##   Ce programme est un logiciel libre ; vous pouvez le redistribuer ou le
 ##   modifier suivant les termes de la "GNU General Public License" telle que
@@ -55,7 +55,7 @@ statRotations.f <- function(facteurs, obs, dataEnv=.GlobalEnv)
         ## Les rotations non renseignés apparaissent en NA et on veut FALSE :
         rotations[is.na(rotations)] <- FALSE
     }else{
-        stop("\n\tL'unité d'observation doit faire partie des facteurs d'agrégation !!\n")
+        stop(mltext("statRotations.err.1"))
     }
 
     ## ###########################################################
@@ -200,7 +200,7 @@ calc.density.SVR.f <- function(Data, obs, metric="densite",
 
         return(Data)
     }else{
-        stop("Métrique de densité inconnue !")
+        stop("Unknown metrics!")
     }
 }
 
@@ -276,7 +276,7 @@ stat.biomass.SVR.f <- function(Data, obs, metric,
 
         return(Data)
     }else{
-        stop("Métrique de biomasse inconnue !")
+        stop("Biomass metrics unknown!")
     }
 }
 
@@ -295,7 +295,7 @@ calc.tables.SVR.f <- function(obs,
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 21 déc. 2011, 14:33
 
-    stepInnerProgressBar.f(n=1, msg="Statistiques pour vidéos rotatives (étape longue)")
+    stepInnerProgressBar.f(n=1, msg=mltext("calc.tables.SVR.info.1"))
 
     ## Calcul des statistiques de nombres :
     statRotations <- statRotations.f(facteurs=factors,
@@ -306,10 +306,10 @@ calc.tables.SVR.f <- function(obs,
     nbr <- statRotations[["nombresMean"]]
 
     switch(is.element("classe_taille", factors),
-           "TRUE"=stepInnerProgressBar.f(n=7, msg=paste("Calcul des métriques par unité d'observation, ",
-                                                        "espèce et classe de taille...", sep="")),
-           "FALSE"=stepInnerProgressBar.f(n=7, msg=paste("Calcul des métriques par unité d'observation et ",
-                                                         "espèce...", sep="")))
+           "TRUE"=stepInnerProgressBar.f(n=7, msg=paste(mltext("calc.tables.SVR.info.2"),
+                                                        mltext("calc.tables.SVR.info.3"), sep="")),
+           "FALSE"=stepInnerProgressBar.f(n=7, msg=paste(mltext("calc.tables.SVR.info.2"),
+                                                         mltext("calc.tables.SVR.info.4"), sep="")))
 
     ## Création de la data.frame de résultats (avec nombres, unitobs, ):
     res <- calc.numbers.f(nbr)
@@ -385,7 +385,7 @@ calc.unitSp.SVR.f <- function(unitSpSz, obs, dataEnv)
                                 ifelse(all(is.na(x)), NA, mean(x,...))
                             }, na.rm=TRUE)))
 
-    if ( ! isTRUE(all.equal(unitSp$nombre, nbTest))) stop("Problème dans le calcul des statistiques SVR !")
+    if ( ! isTRUE(all.equal(unitSp$nombre, nbTest))) stop(mltext("calc.unitSp.SVR.err.1"))
 
     ## nombre max :
     unitSp[ , "nombreMax"] <- as.vector(t(apply(nbTmp,
@@ -458,7 +458,7 @@ calc.unit.SVR.f <- function(unitSp, obs, refesp, unitobs, dataEnv,
                                 ifelse(all(is.na(x)), NA, mean(x,...))
                             }, na.rm=TRUE)))
 
-    if ( ! isTRUE(all.equal(unit$nombre, nbTest))) stop("Problème dans le calcul des statistiques SVR !")
+    if ( ! isTRUE(all.equal(unit$nombre, nbTest))) stop(mltext("calc.unitSp.SVR.err.1"))
 
     ## nombre max :
     unit[ , "nombreMax"] <- as.vector(t(apply(nbTmp,

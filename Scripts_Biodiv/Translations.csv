@@ -1,36 +1,36 @@
 msgid,fr,en
-W.main.title,Indicateurs relatifs à la biodiversité et aux ressources,Biodiversity and Resource indicators
+W.main.title,Indicateurs relatifs à la biodiversité et aux ressources,Biodiversity and fished resource indicators
 MB.import,Données,Data
 MB.selection,Sélection et recalcul,Subsetting
 MB.traitement,Graphiques,Graphics
-MB.analyse,Statistiques,Statistics
+MB.analyse,Statistiques,Analysis
 MB.outils,Outils,Tools
 MB.pampainfos,Aide,Help
 B.quit.main, Quitter... ,   Exit...   
 B.graphicsOFF,Fermer les graphiques,Close all graphics
 menu.import.manual,Choix des dossiers et fichiers de données...,Manual selection of directory and files...
 menu.import.default,Dossiers et fichiers par défaut,Default directory and files
-menu.import.test.refesp,Test du référentiel (espèces concernées),QC of the reference table (species)
-menu.import.design,Plan d'échantillonnage basique,Basic sampling design
-menu.import.info.sp,Info données par espèces,Data information by species
-menu.import.info.unitobs,Info données par unité d'observation,Data information by observation unit
-menu.select.refesp,Selon un champ du référentiel espèce...,By field of the species reference table
-menu.select.unitobs,Selon un champ des unités d'observation...,By field of the observation units table
-menu.select.sp.list,Par liste d'espèces (fichier),By species (list file)
+menu.import.test.refesp,Test du référentiel (espèces concernées),Check of the species reference table
+menu.import.design,Plan d'échantillonnage basique,Sampling design
+menu.import.info.sp,Info données par espèces,Data information per species
+menu.import.info.unitobs,Info données par unité d'observation,Data information per station
+menu.select.refesp,Selon un champ du référentiel espèce...,Based on species characteristics
+menu.select.unitobs,Selon un champ des unités d'observation...,Based on the station characteristics
+menu.select.sp.list,Par liste d'espèces (fichier),For a list of species (file)
 msg.ongoing.dev,En développement !,Implementation in progress!
 menu.select.restore,Restaurer les données originales,Restore original data
-menu.sub.szsp,Par espèce ou classe de taille d'espèce :,By species or species-size class:
-menu.sub.aggr.szsp,"Plusieurs espèces ou classes de taille, agrégées par unité d'observation :","Several species or species-size class, aggregated by observation unit:"
+menu.sub.szsp,Par espèce ou classe de taille d'espèce :,Per species or species size class:
+menu.sub.aggr.szsp,"Plusieurs espèces ou classes de taille, agrégées par unité d'observation :","Several species or species-size class, aggregated per station:"
 menu.graphs.boxplots,"Graphiques en ""boîtes à moustaches"" (boxplots)...",Boxplots...
 menu.graphs.barplots,Graphiques en barres (barplots)...,Barplots...
 menu.graphs.occ.freq,Fréquences d'occurrence (/espèce sur des unité d'observation)...,"Occurrence frequency (/species, over observation units)..."
 menu.graphs.maps,Cartes,Maps
-menu.graphs.maps.barplots,"Graphiques en barres ou boîtes à moustaches, par zone...","Barplots or boxplots, by zone..."
-menu.graphs.maps.symbols,"Symboles de taille variable ou échelle de couleur, par zone...","Variable size symbols or colour-scale, by zone..."
-menu.graphs.aggr.szsp,"Plusieurs espèces ou classes de taille, agrégées par unité d'observation :","Several species or size classes, aggregated by observation unit:"
+menu.graphs.maps.barplots,"Graphiques en barres ou boîtes à moustaches, par zone...",Barplots or boxplots per zone...
+menu.graphs.maps.symbols,"Symboles de taille variable ou échelle de couleur, par zone...",Variable size symbols or colour scale per zone...
+menu.graphs.aggr.szsp,"Plusieurs espèces ou classes de taille, agrégées par unité d'observation :","Several species or size classes, aggregated per station:"
 menu.graphs.occ.freq.unitobs,Fréquences d'occurrence (/facteurs d'unité d'observation)...,Occurrence frequency (/observation units factor)...
-menu.graphs.boxplots.zone,"Graphiques en barres ou boîtes à moustaches, par zone...","Barplots or boxplots, by zone..."
-menu.graphs.maps.symbols.zone,"Symboles de taille variable ou échelle de couleur, par zone...","Variable size symbols or colour-scale, by zone..."
+menu.graphs.boxplots.zone,"Graphiques en barres ou boîtes à moustaches, par zone...",Barplots or boxplots per zone...
+menu.graphs.maps.symbols.zone,"Symboles de taille variable ou échelle de couleur, par zone...",Variable size symbols or colour scale per zone...
 menu.stats.sp.unitobs,"Modèles linéaires, métrique /espèce/unité d'observation...","Linear model, metrics /species/observation unit..."
 menu.stats.MRT.esp,"Arbres de régression multivariée, métrique / espèces / unité d'observation...","Multivariate Regression Trees, metrics / species / observation unit..."
 menu.stats.unitobs,"Modèles linéaires, métrique /unité d'observation (dont biodiversité)...","Linear model, metrics / observation unit (incl. biodiversity)..."
@@ -155,14 +155,14 @@ logFmsg.selection.3, des unités d'observation, observation units
 logFmsg.selection.4,\n\n   Facteur :,\n\n   Factor:
 logFmsg.selection.5,\n   Modalités :,\n   Levels:
 logFmsg.selection.6,\n\nFichiers exportés dans ,\n\nFile exported to 
-logFmsg.selection.7,\n   - métriques par unité d'observation / esp. / cl. de taille :,\n   - metrics by observation unit / sp. / size cl.:
-logFmsg.selection.8,\n   - métriques par unité d'observation / esp. :,\n   - metrics by observation unit / sp.:
-logFmsg.selection.9,\n   - métriques par unité d'observation :,\n   - metrics by observation unit:
+logFmsg.selection.7,\n   - métriques par unité d'observation / esp. / cl. de taille :,\n   - metrics per station / sp. / size cl.:
+logFmsg.selection.8,\n   - métriques par unité d'observation / esp. :,\n   - metrics per station / sp.:
+logFmsg.selection.9,\n   - métriques par unité d'observation :,\n   - metrics per station:
 logFmsg.selection.10,\n   - plan d'échantillonnage basique (année - statut de protection) :,\n   - basic sampling design (year – protection status) :
 logFmsg.files.1,\nFichiers exportés dans ,\nFile exported to 
-logFmsg.files.2,\n   - métriques par unité d'observation / esp. / cl. de taille :,\n   - metrics by observation unit / sp. / size cl.:
-logFmsg.files.3,\n   - métriques par unité d'observation / esp. :,\n   - metrics by observation unit / sp.:
-logFmsg.files.4,\n   - métriques par unité d'observation :,\n   - metrics by observation unit:
+logFmsg.files.2,\n   - métriques par unité d'observation / esp. / cl. de taille :,\n   - metrics per station / sp. / size cl.:
+logFmsg.files.3,\n   - métriques par unité d'observation / esp. :,\n   - metrics per station / sp.:
+logFmsg.files.4,\n   - métriques par unité d'observation :,\n   - metrics per station:
 logFmsg.files.5,\n   - plan d'échantillonnage basique (année - statut de protection) :,\n   - basic sampling design (year – protection status) :
 logFmsg.saveInfoRefspe.1,Enregistrement des informations sur le référentiel espèce dans le fichier :,Saving species reference information within the file:
 installPack.f.1,Le(s) package(s) : \n\n    * ',The package(s) : \n\n    * '
@@ -188,7 +188,7 @@ printGeneralDataInfo.f.8,\nPas de sélection générale sur les données.\n,\nNo gen
 printGeneralDataInfo.f.9,\nSélection(s) générale(s):\n\n,\nGeneral selection(s):\n\n
 printSelectionInfo.f.1,Métrique et facteurs (et éventuelles unité/sélections) :\n,Metrics and factors (and possible units/selections):\n
 printSelectionInfo.f.2,\n Métrique :,\n Metrics:
-printSelectionInfo.f.3,            agrégée par ,            aggregated by 
+printSelectionInfo.f.3,            agrégée par ,            aggregated per 
 printSelectionInfo.f.4,classe de taille / ,size class / 
 printSelectionInfo.f.5,espèce / ,species / 
 printSelectionInfo.f.6, (moyenne sur les , (mean over 
@@ -213,8 +213,8 @@ summary.max,Max.,Max.
 summary.sd,Écart.type,Std.dev
 summary.N,N,N
 printStats.f.1,\n########################\nStatistiques générales :\n\n,\n########################\nBase statistics:\n\n
-printStats.f.2,\nStatistiques par croisement de facteurs :\n\n,\nStatistics by combination of factor levels:\n\n
-infoStats.f.1,\nStatistiques par niveaux de facteur de séparation :\n,\nStatistics by level of splitting factor:\n
+printStats.f.2,\nStatistiques par croisement de facteurs :\n\n,\nStatistics per combination of factor levels:\n\n
+infoStats.f.1,\nStatistiques par niveaux de facteur de séparation :\n,\nStatistics per level of splitting factor:\n
 error.config.issue,Problème de configuration,Configuration issue!
 logmsg.info.spref,Informations sur le référentiel espèces :,Informations on the species reference table:
 filetest.B.close,Fermer,Close
@@ -250,8 +250,8 @@ info.arr.ind,indiv,indiv
 infoSpecies.arr.0.1, min/unitobs, min/unitobs
 infoSpecies.arr.0.2, max/unitobs, max/unitobs
 infoSpecies.arr.0.3,Fréquence d'occurrence,Occurrence frequency
-infoSpecies.title,Informations par espèce,Information by species
-infoSpecies.info.title,Informations par espèce :,Information by species:
+infoSpecies.title,Informations par espèce,Information per species
+infoSpecies.info.title,Informations par espèce :,Information per species:
 infoSpecies.info.cat, \n\n\t* nombre de catégories observées = , \n\n\t* number of observed categories = 
 infoSpecies.info.tax, \n\t* nombre de catégories taxinomiques (biotiques) observées = , \n\t* number of taxonomic (biotic) observed categories = 
 infoSpecies.info.sp, \n\t* nombre d'espèces observées = , \n\t* number of observed species = 
@@ -261,8 +261,8 @@ infoUnitobs.arr.0.1,Site,Site
 infoUnitobs.arr.0.2,Biotope,Biotop
 infoUnitobs.arr.0.3,"Nb ""espèces""","# ""species"""
 infoUnitobs.arr.0.4, max/espèce, max/species
-infoUnitobs.title,Informations par unitobs,Information by unitobs
-infoUnitobs.info.title,Informations par unité d'observation :,Information by observation unit:
+infoUnitobs.title,Informations par unitobs,Information per station
+infoUnitobs.info.title,Informations par unité d'observation :,Information per station:
 infoUnitobs.info.subset,\n\n! tiennent compte des sélections en cours.,\n\n! account for current subset criteria.
 warn.field.not.reordered.1,la colonne ,the field 
 warn.field.not.reordered.2, n'a put être réordonnée :\n\t\t, could not be reordered:\n\t\t
@@ -358,7 +358,7 @@ summarize.calcWeight.info.3, et se répartissent comme suit :, and distributed as
 summarize.calcWeight.info.4, poids observés., observed weights.
 summarize.calcWeight.info.5, calculs d'après des tailles estimées, calculated from estimated size
 summarize.calcWeight.info.6, sur la base des classes de tailles., based on size classe.
-summarize.calcWeight.info.7," poids moyens par classe de taille (P, M, G) par espèce."," mean weight by size class (S, M, G) by species."
+summarize.calcWeight.info.7," poids moyens par classe de taille (P, M, G) par espèce."," mean weight per size class (S, M, G) per species."
 summarize.calcWeight.info.8,\n\nLes estimations de biomasses dépendent de ces poids.,\n\nThe biomass estimates are based on these weights.
 logmsg.weightMPA.calc,Calcul des poids :,Calculation of weights:
 calcWeight.info.1,Calcul des poids,Calculation of weights
@@ -385,14 +385,14 @@ agregations.generic.war.2, du(des) facteur(s) de regroupement des observations.,
 calc.biomass.info.1,Calcul de biomasse impossible : ,Cannot estimate the biomass: 
 calc.biomass.info.2,\nles poids ne sont pas renseignés ou ne peuvent être calculés.,\nweights are not filled or cannot be calculated.
 calc.unitSpSz.err.1,"\n\tType d'observation ""","\n\tObservation type """
-calc.unitSpSz.err.2,""" inconnu pour le calcul des métriques par classe de taille !",""" unknown for the calculation of metrics by size class!"
+calc.unitSpSz.err.2,""" inconnu pour le calcul des métriques par classe de taille !",""" unknown for the calculation of metrics per size class!"
 calc.unitSp.err.1,"\n\tType d'observation ""","\n\tObservation type """
-calc.unitSp.err.2,""" inconnu pour le calcul des métriques par espèce !",""" unknown for the calculation of metrics by species!"
+calc.unitSp.err.2,""" inconnu pour le calcul des métriques par espèce !",""" unknown for the calculation of metrics per species!"
 calc.unit.info.1,Calcul des métriques par unité d'observation...,Calculating metrics observation unit...
 logmsg.calcTables,Création des tables de base (calcul de métriques) :,Creating base tables (metrics calculation):
 statRotations.err.1,\n\tL'unité d'observation doit faire partie des facteurs d'agrégation !!\n,\n\tThe observation unit must be part of the aggregation factors!!\n
 calc.tables.SVR.info.1,Statistiques pour vidéos rotatives (étape longue),Statistics for rotative videos (may run for a while)
-calc.tables.SVR.info.2,Calcul des métriques par unité d'observation,Calculate metrics by observation unit
+calc.tables.SVR.info.2,Calcul des métriques par unité d'observation,Calculate metrics per station
 calc.tables.SVR.info.3,", espèce et classe de taille...",", species and size class..."
 calc.tables.SVR.info.4, et espèce..., and species...
 calc.unitSp.SVR.err.1,Problème dans le calcul des statistiques SVR !,Issue with SVR statistics calculation!

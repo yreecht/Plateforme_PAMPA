@@ -508,12 +508,12 @@ calc.unitSpSz.f <- function(obs, unitobs, refesp, dataEnv)
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 16 déc. 2011, 11:51
 
-    runLog.f(msg=c("Calcul des métriques par unité d'observation, espèce et classe de taille :"))
+    runLog.f(msg=c(mltext("logmsg.calc.unitSpSz")))
 
     pampaProfilingStart.f()
 
     ## Informations :
-    stepInnerProgressBar.f(n=2, msg="Calcul des métriques par unité d'observation, espèce et classe de taille...")
+    stepInnerProgressBar.f(n=2, msg=mltext("calc.unitSpSz.info.1"))
 
     ## Définition des types d'observation nécessitant les mêmes méthodes de calcul :
     casObsType <- c("SVR"="SVR",
@@ -624,7 +624,7 @@ calc.unitSp.f <- function(unitSpSz, obs, unitobs, dataEnv)
     ## Author: Yves Reecht, Date: 21 déc. 2011, 10:04
 
     ## Informations :
-    stepInnerProgressBar.f(n=1, msg="Calcul des métriques par unité d'observation et espèce...")
+    stepInnerProgressBar.f(n=1, msg=mltext("calc.unitSp.info.1"))
 
     pampaProfilingStart.f()
 

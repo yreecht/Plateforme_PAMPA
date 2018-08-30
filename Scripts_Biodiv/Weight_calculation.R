@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-08-21 15:53:59 yreecht>
+# Time-stamp: <2018-08-30 13:47:49 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2018 Ifremer - Tous droits réservés.
@@ -201,19 +201,19 @@ summarize.calcWeight.f <- function(x, MPA)
                          paste(         # Info complémentaires si des poids estimés...
                                mltext("summarize.calcWeight.info.3"),
                                "\n\t*  ", x["obs"], mltext("summarize.calcWeight.info.4"),
-                               "\n\t*  ", x["taille"], " calculs d'après la taille observée.",
+                               "\n\t*  ", x["taille"], mltext("summarize.calcWeight.info.5"),
                                ifelse(any(x[-(1:3)] > 0),
                                       paste("\n\t*  ", x["taille.moy"],
-                                            mltext("summarize.calcWeight.info.5"),
                                             mltext("summarize.calcWeight.info.6"),
+                                            mltext("summarize.calcWeight.info.7"),
                                             ifelse(!is.na(x["poids.moy"]),
                                                    paste("\n\t*  ", x["poids.moy"],
-                                                         mltext("summarize.calcWeight.info.7"),
+                                                         mltext("summarize.calcWeight.info.8"),
                                                          sep=""),
                                                    ""),
                                             sep=""),
                                       ""),
-                               mltext("summarize.calcWeight.info.8"),
+                               mltext("summarize.calcWeight.info.9"),
                                sep=""),
                          "."),          # ...sinon rien.
                   sep=""),

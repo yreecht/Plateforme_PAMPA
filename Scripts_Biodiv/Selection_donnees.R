@@ -1,8 +1,8 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2013-03-26 19:27:24 yves>
+# Time-stamp: <2018-08-30 13:02:08 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
-##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
+##   Copyright (C) 2008-2018 Ifremer - Tous droits réservés.
 ##
 ##   Ce programme est un logiciel libre ; vous pouvez le redistribuer ou le
 ##   modifier suivant les termes de la "GNU General Public License" telle que
@@ -59,7 +59,7 @@ change.levelsOrder.f <- function(Data)
                                  })]
 
     WinOrder <- tktoplevel(background="white")
-    tkwm.title(WinOrder, "Choisissez l'ordre des modalités d'un facteur")
+    tkwm.title(WinOrder, mltext("change.levelsOrder.title"))
 
     ## #### Éléments de l'interface :
 
@@ -83,7 +83,7 @@ change.levelsOrder.f <- function(Data)
                           background="white",
                           yscrollcommand=function(...)tkset(SCR.levels,...))
 
-    B.up <- tkbutton(F.list, text="Monter",
+    B.up <- tkbutton(F.list, text=Capitalize.f(mltext("KW.up")),
                      width=10,
                      command=function()
                  {
@@ -107,7 +107,7 @@ change.levelsOrder.f <- function(Data)
                      tcl("update")
                  })
 
-    B.down <- tkbutton(F.list, text="Descendre",
+    B.down <- tkbutton(F.list, text=Capitalize.f(mltext("KW.down")),
                        width=10,
                        command=function()
                    {
@@ -131,8 +131,8 @@ change.levelsOrder.f <- function(Data)
                        tcl("update")
                    })
 
-    B.alpha <- tkbutton(F.list, text="Tri alphabétique",
-                        width=12,
+    B.alpha <- tkbutton(F.list, text=mltext("change.levelsOrder.orderAlpha"),
+                        width=15,
                         command=function()
                    {
                        levList <- as.character(tclObj(Levels))
@@ -146,8 +146,8 @@ change.levelsOrder.f <- function(Data)
                        tcl("update")
                    })
 
-    B.num <- tkbutton(F.list, text="Tri numérique",
-                      width=12,
+    B.num <- tkbutton(F.list, text=mltext("change.levelsOrder.orderNum"),
+                      width=15,
                       command=function()
                   {
                       levList <- as.character(tclObj(Levels))
@@ -169,8 +169,8 @@ change.levelsOrder.f <- function(Data)
                       tcl("update")
                   })
 
-    B.inverse <- tkbutton(F.list, text="Inverser l'ordre",
-                          width=12,
+    B.inverse <- tkbutton(F.list, text=mltext("change.levelsOrder.orderInv"),
+                          width=15,
                           command=function()
                       {
                           levList <- as.character(tclObj(Levels))
@@ -184,7 +184,7 @@ change.levelsOrder.f <- function(Data)
                           tcl("update")
                       })
 
-    B.cancel1 <- tkbutton(F.list, text="Réinitialiser ce facteur",
+    B.cancel1 <- tkbutton(F.list, text=mltext("change.levelsOrder.orderReset"),
                           command=function()
                       {
                           ## Réinitialisation de la liste :
@@ -195,19 +195,19 @@ change.levelsOrder.f <- function(Data)
                                                                     levels=levels(.DataBackup[ , tclvalue(Factor)])),
                                 envir=env)
                       })
-    tooltipWidget.f(text=paste("Réinitialise l'ordre des modalités, du facteur courant uniquement, ",
-                               "aux valeurs d'origine.", sep=""),
+    tooltipWidget.f(text=paste(mltext("change.levelsOrder.TT.1"),
+                               mltext("change.levelsOrder.TT.2"), sep=""),
                     targetWidget=B.cancel1)
 
     F.button <- tkframe(WinOrder, background="white")
 
-    B.OK <- tkbutton(F.button, text="Valider", width=10,
+    B.OK <- tkbutton(F.button, text=Capitalize.f(mltext("KW.confirm")), width=10,
                      command=function()
                  {
                      tclvalue(Factor) <- "!!Valider¡¡"
                  })
 
-    B.Cancel <- tkbutton(F.button, text="Annuler", width=10,
+    B.Cancel <- tkbutton(F.button, text=Capitalize.f(mltext("KW.cancel")), width=10,
                          command=function()
                      {
                          tclvalue(Factor) <- "!!Annuler¡¡"
@@ -218,7 +218,7 @@ change.levelsOrder.f <- function(Data)
 
     ## #### Placement des éléments :
     tkgrid(tklabel(WinOrder,
-                   text="1) Choisissez un facteur à ré-ordonner :",
+                   text=mltext("change.levelsOrder.Lab.1"),
                    font=tkfont.create(weight="normal", size=10),
                    foreground="darkred",
                    background=.BGcolor),
@@ -226,7 +226,7 @@ change.levelsOrder.f <- function(Data)
     tkgrid(CB.factors, padx=5, pady=5, sticky="w")
 
     tkgrid(tklabel(WinOrder,
-                   text="2) Ré-ordonnez les modalités du facteur :",
+                   text=mltext("change.levelsOrder.Lab.2"),
                    font=tkfont.create(weight="normal", size=10),
                    foreground="darkred",
                    background=.BGcolor),
@@ -259,7 +259,7 @@ change.levelsOrder.f <- function(Data)
                    background=.BGcolor,
                    font=tkfont.create(weight="normal", size=10)),
            tklabel(F.info3,
-                   text="Finalisez ou revenez à l'étape 1 pour ré-ordonner un autre facteur :",
+                   text=mltext("change.levelsOrder.Lab.3"),
                    font=tkfont.create(weight="normal", size=10),
                    foreground="darkred",
                    background=.BGcolor,
@@ -312,7 +312,7 @@ change.levelsOrder.f <- function(Data)
 
     return(Data)
 }
-
+## [mlo]
 
 ########################################################################################################################
 chooseRefespField.f <- function(refesp, obs)

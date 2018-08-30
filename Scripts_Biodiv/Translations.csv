@@ -1,8 +1,14 @@
 msgid,fr,en
+KW.yes,oui,yes
+KW.no,non,no
+KW.up,monter,up
+KW.down,descendre,down
+KW.cancel,annuler,cancel
+KW.confirm,valider,confirm
 W.main.title,Indicateurs relatifs à la biodiversité et aux ressources,Biodiversity and fished resource indicators
 MB.import,Données,Data
 MB.selection,Sélection et recalcul,Subsetting
-MB.traitement,Graphiques,Graphics
+MB.traitement,Outils,Graphics
 MB.analyse,Statistiques,Analysis
 MB.outils,Outils,Tools
 MB.pampainfos,Aide,Help
@@ -356,10 +362,11 @@ summarize.calcWeight.info.1, : les poids sont renseignés pour ,: weights filled 
 summarize.calcWeight.info.2, observations, records
 summarize.calcWeight.info.3, et se répartissent comme suit :, and distributed as:
 summarize.calcWeight.info.4, poids observés., observed weights.
-summarize.calcWeight.info.5, calculs d'après des tailles estimées, calculated from estimated size
-summarize.calcWeight.info.6, sur la base des classes de tailles., based on size classe.
-summarize.calcWeight.info.7," poids moyens par classe de taille (P, M, G) par espèce."," mean weight per size class (S, M, G) per species."
-summarize.calcWeight.info.8,\n\nLes estimations de biomasses dépendent de ces poids.,\n\nThe biomass estimates are based on these weights.
+summarize.calcWeight.info.5, calculs d'après la taille observée., calculated based on observed size
+summarize.calcWeight.info.6, calculs d'après des tailles estimées, calculated based on estimated size
+summarize.calcWeight.info.7, sur la base des classes de tailles., based on size classe.
+summarize.calcWeight.info.8," poids moyens par classe de taille (P, M, G) par espèce."," mean weight per size class (S, M, G) per species."
+summarize.calcWeight.info.9,\n\nLes estimations de biomasses dépendent de ces poids.,\n\nThe biomass estimates are based on these weights.
 logmsg.weightMPA.calc,Calcul des poids :,Calculation of weights:
 calcWeight.info.1,Calcul des poids,Calculation of weights
 calcWeight.info.2,Calcul des poids pour l'AMP :,Estimation of weights for the MPA:
@@ -388,7 +395,10 @@ calc.unitSpSz.err.1,"\n\tType d'observation ""","\n\tObservation type """
 calc.unitSpSz.err.2,""" inconnu pour le calcul des métriques par classe de taille !",""" unknown for the calculation of metrics per size class!"
 calc.unitSp.err.1,"\n\tType d'observation ""","\n\tObservation type """
 calc.unitSp.err.2,""" inconnu pour le calcul des métriques par espèce !",""" unknown for the calculation of metrics per species!"
-calc.unit.info.1,Calcul des métriques par unité d'observation...,Calculating metrics observation unit...
+calc.unit.info.1,Calcul des métriques par unité d'observation...,Calculating metrics per observation unit...
+logmsg.calc.unitSpSz,"Calcul des métriques par unité d'observation, espèce et classe de taille :","Calculating metrics per observation unit, species and size class:"
+calc.unitSpSz.info.1,"Calcul des métriques par unité d'observation, espèce et classe de taille...","Calculating metrics per observation unit, species and size class..."
+calc.unitSp.info.1,Calcul des métriques par unité d'observation et espèce...,Calculating metrics per observation unit and species...
 logmsg.calcTables,Création des tables de base (calcul de métriques) :,Creating base tables (metrics calculation):
 statRotations.err.1,\n\tL'unité d'observation doit faire partie des facteurs d'agrégation !!\n,\n\tThe observation unit must be part of the aggregation factors!!\n
 calc.tables.SVR.info.1,Statistiques pour vidéos rotatives (étape longue),Statistics for rotative videos (may run for a while)
@@ -396,3 +406,19 @@ calc.tables.SVR.info.2,Calcul des métriques par unité d'observation,Calculate me
 calc.tables.SVR.info.3,", espèce et classe de taille...",", species and size class..."
 calc.tables.SVR.info.4, et espèce..., and species...
 calc.unitSp.SVR.err.1,Problème dans le calcul des statistiques SVR !,Issue with SVR statistics calculation!
+obsFormatting.TRATO.info.1p,Il y a ,There are 
+obsFormatting.TRATO.info.1s,Il y a ,There is 
+obsFormatting.TRATO.info.2p, observations de ponte qui présentent des valeurs incorrectes., spawning observations with incorrect values.
+obsFormatting.TRATO.info.2s, observation de ponte qui présente une valeurs incorrecte., spawning observation with an incorrect value.
+obsFormatting.TRATO.info.3p,\nElles ont été modifiées en NA.,\nThey have been modified to NA.
+obsFormatting.TRATO.info.3s,\nElle a été modifiée en NA.,\nIt has been modified to NA.
+change.levelsOrder.title,Choisissez l'ordre des modalités d'un facteur,Selection of levels order
+change.levelsOrder.orderAlpha,Tri alphabétique,Alphabetical order
+change.levelsOrder.orderNum,Tri numérique,Numerical order
+change.levelsOrder.orderInv,Inverser l'ordre,Reverse order
+change.levelsOrder.orderReset,Réinitialiser l’ordre,Reset order
+change.levelsOrder.TT.1,"Réinitialise l'ordre des modalités, du facteur courant uniquement, ",Reset the original order of levels for the current factor.
+change.levelsOrder.TT.2,aux valeurs d'origine.,
+change.levelsOrder.Lab.1,1) Choisissez un facteur à ré-ordonner :,1) Select a factor to re-order:
+change.levelsOrder.Lab.2,2) Ré-ordonnez les modalités du facteur :,2) Re-order the levels:
+change.levelsOrder.Lab.3,Finalisez ou revenez à l'étape 1 pour ré-ordonner un autre facteur :,Confirm or go back to step 1 to re-order another factor:

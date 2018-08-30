@@ -1,8 +1,8 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2013-05-01 16:29:12 yves>
+# Time-stamp: <2018-08-30 12:21:16 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
-##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
+##   Copyright (C) 2008-2018 Ifremer - Tous droits réservés.
 ##
 ##   Ce programme est un logiciel libre ; vous pouvez le redistribuer ou le
 ##   modifier suivant les termes de la "GNU General Public License" telle que
@@ -48,7 +48,11 @@ obsFormatting.TRATO.f <- function(obs)
     ponte[ponte == ""] <- NA
 
     ## Recherche des données incorrectes => NAs :
-    if (sum(tmp <- ! (is.na(ponte) | is.element(ponte, c("oui", "oui?", "non", "non?", "NL")))))
+    if (sum(tmp <- ! (is.na(ponte) | is.element(ponte,
+                                                c(paste0(rep(c(tolower(mltext("KW.yes")),
+                                                               tolower(mltext("KW.no"))), each = 2),
+                                                         c("", "?")),
+                                                  "NL"))))) # [ml?]                                               
     {
         ## Changées en NAs :
         ponte[tmp] <- NA
@@ -57,14 +61,16 @@ obsFormatting.TRATO.f <- function(obs)
         pl <- sum(tmp) > 1
 
         ## Message d'avertissement :
-        infoLoading.f(msg=paste("Il y a ", sum(tmp),
-                                " observation", ifelse(pl, "s", ""),
-                                " de ponte qui présente",
+        infoLoading.f(msg=paste(ifelse(pl,
+                                       mltext("obsFormatting.TRATO.info.1p"),
+                                       mltext("obsFormatting.TRATO.info.1s")),
+                                sum(tmp),
                                 ifelse(pl,
-                                       "nt des valeurs incorrectes.", " une valeurs incorrecte."),
+                                       mltext("obsFormatting.TRATO.info.2p"),
+                                       mltext("obsFormatting.TRATO.info.2s")),
                                 ifelse(pl,
-                                       "\nElles ont été modifiées en NA.",
-                                       "\nElle a été modifiée en NA."),
+                                       mltext("obsFormatting.TRATO.info.3p"),
+                                       mltext("obsFormatting.TRATO.info.3s")),
                                 sep=""),
                       icon="warning")
     }else{}
@@ -93,32 +99,40 @@ calc.nestingSuccess.f <- function(obs,
     ## Author: Yves Reecht, Date: 18 janv. 2013, 15:57
 
     ## Nombre de pontes (sûres + supposées) :
-    pontes <- as.vector(tapply(subset(obs, grepl("^oui\\??$", obs$ponte))[ , "nombre"],
-                                as.list(subset(obs, grepl("^oui\\??$", obs$ponte))[ , factors]),
-                                function(x)
-                            {
-                                ifelse(all(is.na(x)),
-                                               as.numeric(NA),
-                                               ifelse(all(is.element(na.omit(x), "NL")),
-                                                      0,
-                                                      sum(x, na.rm=TRUE)))
-                            }))
+    pontes <- as.vector(tapply(subset(obs, grepl(paste0("^", mltext("KW.yes"), "\\??$"),
+                                                 obs$ponte))[ , "nombre"],
+                               as.list(subset(obs, grepl(paste0("^", mltext("KW.yes"), "\\??$"),
+                                                         obs$ponte))[ , factors]),
+                               FUN = function(x)
+                               {
+                                   ifelse(all(is.na(x)),
+                                          as.numeric(NA),
+                                   ifelse(all(is.element(na.omit(x), "NL")), # [ml?]
+                                          0,
+                                          sum(x, na.rm=TRUE)))
+                               }))
 
 
     ## Correction de NAs à la place de 0 dans pontes lorsque aucune traces observées mais nombre valide (0) :
     pontes[is.na(pontes) & ! is.na(Data[ , nbName])] <- 0
 
     ## Nombre de traces lisibles :
-    traces.lisibles <- as.vector(tapply(subset(obs, grepl("^(oui|non)\\??$", obs$ponte))[ , "nombre"],
-                                        as.list(subset(obs, grepl("^(oui|non)\\??$", obs$ponte))[ , factors]),
-                                        function(x)
-                                    {
-                                        ifelse(all(is.na(x)),
-                                               as.numeric(NA),
-                                               ifelse(all(is.element(na.omit(x), "NL")),
-                                                      0,
-                                                      sum(x, na.rm=TRUE)))
-                                    }))
+    traces.lisibles <- as.vector(tapply(subset(obs,
+                                               grepl(paste0("^(", mltext("KW.yes"), "|",
+                                                            mltext("KW.no"), ")\\??$"), # "^(yes|no)\\??$"
+                                                     obs$ponte))[ , "nombre"],
+                                        as.list(subset(obs,
+                                                       grepl(paste0("^(", mltext("KW.yes"), "|",
+                                                                    mltext("KW.no"), ")\\??$"),
+                                                             obs$ponte))[ , factors]),
+                                        FUN = function(x)
+                                        {
+                                            ifelse(all(is.na(x)),
+                                                   as.numeric(NA),
+                                            ifelse(all(is.element(na.omit(x), "NL")),
+                                                   0,
+                                                   sum(x, na.rm=TRUE)))
+                                        }))
 
     ## Correction de NAs à la place de 0 dans traces lisibles lorsque aucune traces observées mais nombre valide (0) :
     traces.lisibles[is.na(traces.lisibles) & ! is.na(Data[ , nbName])] <- 0

@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: debug.R
-### Time-stamp: <2018-08-21 15:56:01 yreecht>
+### Time-stamp: <2018-09-04 10:02:45 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -32,7 +32,7 @@ init.debug.f <- function(loadMain=FALSE)
 
     if (loadMain) source("./Scripts_Biodiv/Main.R", encoding="latin1")
 
-    ## source(paste(devDir, "Scripts_Biodiv/Agregations_generiques.R", sep=""), encoding="latin1")
+    ## source(paste(devDir, "Scripts_Biodiv/Generic_aggregations.R", sep=""), encoding="latin1")
     ## source(paste(devDir, "Scripts_Biodiv/Arbres_regression_esp_generiques.R", sep=""), encoding="latin1")
     ## source(paste(devDir, "Scripts_Biodiv/Arbres_regression_unitobs_generiques.R", sep=""), encoding="latin1")
     ## source(paste(devDir, "Scripts_Biodiv/Barplots_occurrence.R", sep=""), encoding="latin1")
@@ -40,9 +40,9 @@ init.debug.f <- function(loadMain=FALSE)
     ## source(paste(devDir, "Scripts_Biodiv/Boxplots_esp_generiques.R", sep=""), encoding="latin1")
     ## source(paste(devDir, "Scripts_Biodiv/Boxplots_unitobs_generiques.R", sep=""), encoding="latin1")
     ## source(paste(devDir, "Scripts_Biodiv/Weight_calculation.R", sep=""), encoding="latin1")
-    ## source(paste(devDir, "Scripts_Biodiv/Calcul_tables_metriques.R", sep=""), encoding="latin1")
-    ## source(paste(devDir, "Scripts_Biodiv/Calcul_tables_metriques_LIT.R", sep=""), encoding="latin1")
-    ## source(paste(devDir, "Scripts_Biodiv/Calcul_tables_metriques_SVR.R", sep=""), encoding="latin1")
+    ## source(paste(devDir, "Scripts_Biodiv/Calculate_metrics_tables.R", sep=""), encoding="latin1")
+    ## source(paste(devDir, "Scripts_Biodiv/Calculate_metrics_tables_LIT.R", sep=""), encoding="latin1")
+    ## source(paste(devDir, "Scripts_Biodiv/Calculate_metrics_tables_SVR.R", sep=""), encoding="latin1")
     ## source(paste(devDir, "Scripts_Biodiv/Load_files.R", sep=""), encoding="latin1")
     ## source(paste(devDir, "Scripts_Biodiv/Load_files_manually.R", sep=""), encoding="latin1")
     ## source(paste(devDir, "Scripts_Biodiv/Functions_base.R", sep=""), encoding="latin1")
@@ -56,12 +56,12 @@ init.debug.f <- function(loadMain=FALSE)
     ## source(paste(devDir, "Scripts_Biodiv/Modeles_lineaires_esp_generiques.R", sep=""), encoding="latin1")
     ## source(paste(devDir, "Scripts_Biodiv/Modeles_lineaires_unitobs_generiques.R", sep=""), encoding="latin1")
     ## source(paste(devDir, "Scripts_Biodiv/Nombres_SVR.R", sep=""), encoding="latin1")
-    ## source(paste(devDir, "Scripts_Biodiv/Selection_donnees.R", sep=""), encoding="latin1")
+    ## source(paste(devDir, "Scripts_Biodiv/Data_subsets.R", sep=""), encoding="latin1")
     ## source(paste(devDir, "Scripts_Biodiv/Selection_variables_fonctions.R", sep=""), encoding="latin1")
     ## source(paste(devDir, "Scripts_Biodiv/Selection_variables_interface.R", sep=""), encoding="latin1")
     ## source(paste(devDir, "Scripts_Biodiv/Variables_carto.R", sep=""), encoding="latin1")
     ## source(paste(devDir, "Scripts_Biodiv/View.R", sep=""), encoding="latin1")
-    ## source(paste(devDir, "Scripts_Biodiv/Agregations_generiques.R", sep=""), encoding="latin1")
+    ## source(paste(devDir, "Scripts_Biodiv/Generic_aggregations.R", sep=""), encoding="latin1")
 }
 
 

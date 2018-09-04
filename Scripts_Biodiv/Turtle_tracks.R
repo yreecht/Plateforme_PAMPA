@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-08-30 12:21:16 yreecht>
+# Time-stamp: <2018-09-04 10:00:44 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2018 Ifremer - Tous droits réservés.
@@ -18,7 +18,7 @@
 ##   ce programme ; si ce n'est pas le cas, consultez :
 ##   <http://www.gnu.org/licenses/>.
 
-### File: Traces_tortues.R
+### File: Turtle_tracks.R
 ### Created: <2013-01-17 17:35:11 yves>
 ###
 ### Author: Yves Reecht

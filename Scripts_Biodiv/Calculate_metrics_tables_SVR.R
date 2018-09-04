@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-08-23 17:48:40 yreecht>
+# Time-stamp: <2018-09-04 09:59:00 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2018 Ifremer - Tous droits réservés.
@@ -18,7 +18,7 @@
 ##   ce programme ; si ce n'est pas le cas, consultez :
 ##   <http://www.gnu.org/licenses/>.
 
-### File: Calcul_tables_metriques_SVR.R
+### File: Calculate_metrics_tables_SVR.R
 ### Created: <2012-01-19 13:37:52 yreecht>
 ###
 ### Author: Yves Reecht

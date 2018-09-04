@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-09-04 10:06:07 yreecht>
+# Time-stamp: <2018-09-04 10:43:55 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2018 Ifremer - Tous droits réservés.
@@ -312,7 +312,6 @@ change.levelsOrder.f <- function(Data)
 
     return(Data)
 }
-## [mlo]
 
 ########################################################################################################################
 chooseRefespField.f <- function(refesp, obs)
@@ -324,12 +323,12 @@ chooseRefespField.f <- function(refesp, obs)
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date:  4 janv. 2012, 17:47
 
-    runLog.f(msg=c("Choix d'un Facteur dans le référentiel espèces :"))
+    runLog.f(msg=c(mltext("logmsg.chooseRefespField")))
 
     Done <- tclVar("0")                 # Variable de statut d'exécussion.
 
     W.selRef <- tktoplevel()
-    tkwm.title(W.selRef, "Selection du facteur du référentiel des espèces")
+    tkwm.title(W.selRef, mltext("chooseRefespField.title"))
 
     ## Ascenceur :
     SCR <- tkscrollbar(W.selRef, repeatinterval=5,
@@ -340,7 +339,7 @@ chooseRefespField.f <- function(refesp, obs)
                            background="white")
 
     ## Placement des éléments :
-    tkgrid(tklabel(W.selRef, text="Liste des facteurs du référentiel des espèces"))
+    tkgrid(tklabel(W.selRef, text=mltext("chooseRefespField.LB.1")))
 
     tkgrid(LI.fields, SCR)
     tkgrid.configure(SCR, rowspan=4, sticky="ensw")
@@ -356,7 +355,7 @@ chooseRefespField.f <- function(refesp, obs)
     facts <- sort(names(esptmp))
 
     ## ici, on liste les AMP qui ne correspondent pas au jeu de données :
-    listeSite <- c("RUN" , "MAY" , "BA" , "BO" , "CB" , "CR" , "STM" , "NC")
+    listeSite <- c("RUN" , "MAY" , "BA" , "BO" , "CB" , "CR" , "STM" , "NC") ## [!!!] not very generic
     listeSiteExclus <- subset(listeSite,
                               ! is.element(listeSite, getOption("P.MPA")))
 
@@ -377,7 +376,7 @@ chooseRefespField.f <- function(refesp, obs)
     F.button <- tkframe(W.selRef)
 
     ## Bouton OK :
-    B.OK <- tkbutton(F.button, text="  OK  ",
+    B.OK <- tkbutton(F.button, text=mltext("OK.button"),
                        command=function()
                    {
                        assign("factesp",
@@ -388,7 +387,7 @@ chooseRefespField.f <- function(refesp, obs)
                    })
 
     ## Bouton d'annulation :
-    B.Cancel <- tkbutton(F.button, text=" Annuler ",
+    B.Cancel <- tkbutton(F.button, text=mltext("Cancel.button"),
                          command=function(){tclvalue(Done) <- 2})
 
     tkgrid(B.OK, tklabel(F.button, text="\t"), B.Cancel, padx=10)
@@ -423,7 +422,7 @@ selectionEsp.f <- function(refesp, obs)
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date:  4 janv. 2012, 17:38
 
-    runLog.f(msg=c("Sélection sur un critère du référentiel espèces :"))
+    runLog.f(msg=c(mltext("logmsg.selectionEsp")))
 
     factSp <- chooseRefespField.f(refesp=refesp, obs=obs)
 
@@ -479,7 +478,7 @@ selectionOnRefesp.f <- function(dataEnv, baseEnv)
 
     on.exit(winRaise.f(get("W.main", envir=baseEnv)))
 
-    runLog.f(msg=c("Sélection des enregistrement selon un critère du référentiel espèces :"))
+    runLog.f(msg=c(mltext("logmsg.selectionOnRefesp")))
 
     ## Récupération des données :
     obs <- get("obs", envir=dataEnv)
@@ -508,7 +507,7 @@ selectionOnRefesp.f <- function(dataEnv, baseEnv)
     ## Sélection des observations :
     selection <- selectionEsp.f(refesp=refesp, obs=obs)
 
-    infoGeneral.f(msg="Sélection et recalcul selon un critère du référentiel espèces :",
+    infoGeneral.f(msg=mltext("selectionOnRefesp.info.1"),
                   waitCursor=TRUE,
                   font=tkfont.create(weight="bold", size=9), foreground="darkred")
 
@@ -580,8 +579,8 @@ selectionOnRefesp.f <- function(dataEnv, baseEnv)
                         filePathes=filePathes, baseEnv=baseEnv)
 
         ## Information de l'utilisateur :
-        infoLoading.f(msg=paste("Les métriques ont été",
-                                " recalculées pour la sélection d'espèces.",
+        infoLoading.f(msg=paste(mltext("selectionOnRef.info.2"),
+                                mltext("selectionOnRefesp.info.3"),
                       sep=""),
                       icon="info",
                       font=tkfont.create(weight="bold", size=9))
@@ -605,7 +604,7 @@ selectionOnRefesp.f <- function(dataEnv, baseEnv)
 
         infoLoading.f(button=TRUE, WinRaise=W.main)
     }else{
-        infoLoading.f(msg="Abandon !")
+        infoLoading.f(msg=mltext("selectionOnRef.info.4"))
         infoLoading.f(button=TRUE, WinRaise=W.main)
     }
 }
@@ -625,7 +624,7 @@ chooseUnitobsField.f <- function(unitobs, obs)
     Done <- tclVar("0")                 # Variable de statut d'exécussion.
 
     W.select <- tktoplevel()
-    tkwm.title(W.select, "Selection du facteur de groupement des unites d'observation")
+    tkwm.title(W.select, mltext("chooseUnitobsField.title"))
 
     SCR <- tkscrollbar(W.select, repeatinterval=5,
                        command=function(...)tkyview(LI.fields, ...))
@@ -634,7 +633,7 @@ chooseUnitobsField.f <- function(unitobs, obs)
                            yscrollcommand=function(...)tkset(SCR, ...),
                            background="white")
 
-    tkgrid(tklabel(W.select, text="Liste des facteurs de groupement"))
+    tkgrid(tklabel(W.select, text=mltext("chooseUnitobsField.LB.1")))
     tkgrid(LI.fields, SCR)
     tkgrid.configure(SCR, rowspan=4, sticky="ensw")
     tkgrid.configure(LI.fields, rowspan=4, sticky="ensw")
@@ -657,7 +656,7 @@ chooseUnitobsField.f <- function(unitobs, obs)
     F.button <- tkframe(W.select)
 
     ## Bouton OK :
-    B.OK <- tkbutton(F.button, text="  OK  ",
+    B.OK <- tkbutton(F.button, text=mltext("OK.button"),
                        command=function()
                    {
                        assign("factunitobs",
@@ -668,7 +667,7 @@ chooseUnitobsField.f <- function(unitobs, obs)
                    })
 
     ## Bouton d'annulation :
-    B.Cancel <- tkbutton(F.button, text=" Annuler ",
+    B.Cancel <- tkbutton(F.button, text=mltext("Cancel.button"),
                          command=function(){tclvalue(Done) <- 2})
 
     tkgrid(B.OK, tklabel(F.button, text="\t"), B.Cancel, padx=10)
@@ -703,7 +702,7 @@ selectionUnitobs.f <- function(unitobs, obs)
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date:  5 janv. 2012, 21:11
 
-    runLog.f(msg=c("Sélection sur un critère du référentiel des unités d'observation :"))
+    runLog.f(msg=c(mltext("logmsg.selectionUnitobs")))
 
     factunitobs <- chooseUnitobsField.f(unitobs=unitobs, obs=obs)
 
@@ -758,7 +757,7 @@ selectionOnUnitobs.f <- function(dataEnv, baseEnv)
 
     on.exit(winRaise.f(get("W.main", envir=baseEnv)))
 
-    runLog.f(msg=c("Sélection des enregistrement selon un critère du référentiel des unités d'observation :"))
+    runLog.f(msg=c(mltext("logmsg.selectionOnUnitobs")))
 
     ## Récupération des données :
     obs <- get("obs", envir=dataEnv)
@@ -788,7 +787,7 @@ selectionOnUnitobs.f <- function(dataEnv, baseEnv)
 
     selection <- selectionUnitobs.f(unitobs=unitobs, obs=obs)
 
-    infoGeneral.f(msg="Sélection et recalcul selon un critère du référentiel d'unités d'observation :",
+    infoGeneral.f(msg=mltext("selectionOnUnitobs.info.1"),
                   waitCursor=TRUE,
                   font=tkfont.create(weight="bold", size=9), foreground="darkred")
 
@@ -859,8 +858,8 @@ selectionOnUnitobs.f <- function(dataEnv, baseEnv)
                         filePathes=filePathes, baseEnv=baseEnv)
 
         ## Information de l'utilisateur :
-        infoLoading.f(msg=paste("Les métriques ont été",
-                      " recalculées sur la sélection d'unités d'observation.",
+        infoLoading.f(msg=paste(mltext("selectionOnRef.info.2"),
+                                mltext("selectionOnUnitobs.info.3"),
                       sep=""),
                       icon="info",
                       font=tkfont.create(weight="bold", size=9))
@@ -879,7 +878,7 @@ selectionOnUnitobs.f <- function(dataEnv, baseEnv)
 
         infoLoading.f(button=TRUE, WinRaise=W.main)
     }else{
-        infoLoading.f(msg="Abandon !")
+        infoLoading.f(msg=mltext("selectionOnRef.info.4"))
         infoLoading.f(button=TRUE, WinRaise=W.main)
     }
 }
@@ -905,7 +904,7 @@ restoreData.f <- function(baseEnv, dataEnv)
 
     add.logFrame.f(msgID="restauration", env = baseEnv)
 
-    tkmessageBox(message=paste("Données originales restaurée."## , dim(obs)[1],
+    tkmessageBox(message=paste0(mltext("restoreData.info")## , dim(obs)[1],
                  ## "enregistrements dans la table des observations"
                  ))
 

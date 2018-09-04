@@ -422,3 +422,19 @@ change.levelsOrder.TT.2,aux valeurs d'origine.,
 change.levelsOrder.Lab.1,1) Choisissez un facteur à ré-ordonner :,1) Select a factor to re-order:
 change.levelsOrder.Lab.2,2) Ré-ordonnez les modalités du facteur :,2) Re-order the levels:
 change.levelsOrder.Lab.3,Finalisez ou revenez à l'étape 1 pour ré-ordonner un autre facteur :,Confirm or go back to step 1 to re-order another factor:
+logmsg.chooseRefespField,Choix d'un Facteur dans le référentiel espèces :,Selection of a factor in the species reference table:
+chooseRefespField.title,Selection du facteur du référentiel des espèces,Selection of a species reference factor
+chooseRefespField.LB.1,Liste des facteurs du référentiel des espèces,List of species reference factors
+logmsg.selectionEsp,Sélection sur un critère du référentiel espèces :,Subset based on a field of the species reference table:
+logmsg.selectionOnRefesp,Sélection des enregistrement selon un critère du référentiel espèces :,Subset of records based upon a field of the species reference table:
+selectionOnRefesp.info.1,Sélection et recalcul selon un critère du référentiel espèces :,Subset and metrics calculation based on a field of the species reference table:
+selectionOnRef.info.2,Les métriques ont été recalculées,Metrics have been recalculated
+selectionOnRefesp.info.3, pour la sélection d'espèces., for the species-based subset.
+selectionOnRef.info.4,Abandon !,Canceled!
+chooseUnitobsField.title,Selection du facteur de groupement des unites d'observation,Selection of a factor in the station characteristics:
+chooseUnitobsField.LB.1,Liste des facteurs de groupement,List of grouping factors
+logmsg.selectionUnitobs,Sélection sur un critère du référentiel des unités d'observation :,Subset on a field of the station characteristics:
+logmsg.selectionOnUnitobs,Sélection des enregistrement selon un critère du référentiel des unités d'observation :,Subset of records based upon a field of the station characteristics:
+selectionOnUnitobs.info.1,Sélection et recalcul selon un critère du référentiel d'unités d'observation :,Subset and metrics calculation based on a field of the station characteristics:
+selectionOnUnitobs.info.3, sur la sélection d'unités d'observation., for the station characteristics-based subset.
+restoreData.info,Données originales restaurée.,Original data restored.

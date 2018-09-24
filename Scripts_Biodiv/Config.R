@@ -11,6 +11,14 @@
 ## fileNameRefspa <- "<référentiel_spatial.txt|.shp>"
 ## nameWorkspace <- "C:/PAMPA"
 
+
+#### CB transects UVC :
+siteEtudie <- "CB"
+fileNameUnitobs <- "CB_UVC_Couronne_UNITOBS.txt"
+fileNameObs <- "CB_UVC_Couronne_OBS.txt"
+fileNameRefesp <- "PAMPA-WP1-Meth-5-RefSpMed 191010.txt"
+nameWorkspace <- "C:/PAMPA/WD_CB_UVC"
+
 ## Vous pouvez également définir des options par défaut personnalisées (donne également accès aux
 ## options "cachées") :
 

@@ -1,8 +1,8 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-07-18 12:36:17 yreecht>
+# Time-stamp: <2018-09-08 19:54:37 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
-##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
+##   Copyright (C) 2008-2018 Ifremer - Tous droits réservés.
 ##
 ##   Ce programme est un logiciel libre ; vous pouvez le redistribuer ou le
 ##   modifier suivant les termes de la "GNU General Public License" telle que
@@ -155,7 +155,7 @@ changeColor.f <- function(color, colTclVal, widgetName, envBase, env)
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date:  7 nov. 2012, 17:00
 
-    color <- tclvalue(tcl("tk_chooseColor", initialcolor=color, title="Choisir une couleur"))
+    color <- tclvalue(tcl("tk_chooseColor", initialcolor=color, title=mltext("changeColor.title")))
 
     if (nchar(color) > 0)
     {
@@ -194,7 +194,8 @@ addBarplotOccOptFrame.f <- function(env)
 
     ## Objets pour le choix des options :
     F.barplotOpt <- tkwidget(WinOpt, "labelframe",
-                             text="Options des \"graphiques en barres\" sur les occurrences", padx=4, pady=4,
+                             text=mltext("addBarplotOccOptFrame.LB.1"),
+                             padx=4, pady=4,
                              height=30,
                              borderwidth=2, relief="groove",
                              font=tkfont.create(weight="bold", size=10),
@@ -226,16 +227,16 @@ addBarplotOccOptFrame.f <- function(env)
     ## #### Placement des éléments sur la grille :
     tkgrid(B.NbObs,
            tklabel(F.barplot1,
-                   text=" Afficher les nombres d'unités d'observation par barre ?",
+                   text=mltext("addBarplotOccOptFrame.Lbopt.1"),
                    bg=.BGcolor),
            sticky="w", padx=4, pady=1)
-    tkgrid(tklabel(F.NbObs, text=" Couleur des nombres d'unités d'observations : ", bg=.BGcolor),
+    tkgrid(tklabel(F.NbObs, text=mltext("addBarplotOccOptFrame.Lbopt.2"), bg=.BGcolor),
            C.NbObsCol)
     tkgrid(F.NbObs,  sticky="w", padx=4, pady=1, columnspan=1, column=1)
 
     tkgrid(B.warnings,
            tklabel(F.barplot1,
-                   text=paste(" Afficher les avertissements ?\n",
+                   text=paste(" Afficher les avertissements ?\n", # [mlo]
                               "    (faibles effectifs)", sep=""),
                    bg=.BGcolor, justify="left"),
            sticky="w", padx=4, pady=2)

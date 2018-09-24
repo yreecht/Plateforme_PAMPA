@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-09-04 10:44:31 yreecht>
+# Time-stamp: <2018-09-08 19:42:57 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2018 Ifremer - Tous droits réservés.
@@ -103,7 +103,7 @@ source("./Scripts_Biodiv/Turtle_tracks.R", encoding="latin1")                   
 source("./Scripts_Biodiv/Data_subsets.R", encoding="latin1")                           # OK [mld]
 
 ## ...options graphiques et générales :
-source("./Scripts_Biodiv/Options.R", encoding="latin1")                                # OK
+source("./Scripts_Biodiv/Options.R", encoding="latin1")                                # OK [mlo]
 
 ##################################################
 ## Analyses et graphiques :

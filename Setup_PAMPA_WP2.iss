@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "PAMPA Ressources & Biodiversité"
-#define MyAppVersion "2.8-beta3"
+#define MyAppVersion "2.8.1"
 #define MyAppPublisher "Ifremer"
 #define MyAppURL "https://github.com/yreecht/Plateforme_PAMPA/releases"
 #define MyAppExeName "PAMPA WP2.bat"

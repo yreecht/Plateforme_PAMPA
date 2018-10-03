@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-09-08 19:54:37 yreecht>
+# Time-stamp: <2018-10-03 21:12:31 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2018 Ifremer - Tous droits réservés.
@@ -236,8 +236,8 @@ addBarplotOccOptFrame.f <- function(env)
 
     tkgrid(B.warnings,
            tklabel(F.barplot1,
-                   text=paste(" Afficher les avertissements ?\n", # [mlo]
-                              "    (faibles effectifs)", sep=""),
+                   text=paste(mltext("addBarplotOccOptFrame.smallN.1"), # [mlo]
+                              mltext("addBarplotOccOptFrame.smallN.2"), sep=""),
                    bg=.BGcolor, justify="left"),
            sticky="w", padx=4, pady=2)
 
@@ -272,7 +272,8 @@ addCartoSubplotFrame.f <- function(env)
 
     ## Objets pour le choix des options :
     F.subplotOpt <- tkwidget(WinOpt, "labelframe",
-                             text="Options des \"graphiques en barres\"", padx=4, pady=4,
+                             text=mltext("addCartoSubplotFrame.LB.1"),
+                             padx=4, pady=4,
                              height=30,
                              borderwidth=2, relief="groove",
                              font=tkfont.create(weight="bold", size=10),
@@ -289,23 +290,23 @@ addCartoSubplotFrame.f <- function(env)
     B.legendCarto <- tkcheckbutton(F.subplot1, variable=P.options[["P.colorLegendCarto"]])
 
     F.stat <- tkframe(F.subplot1, background=.BGcolor, pady=2)
-    CB.stat <- ttkcombobox(F.stat, value=c("moyenne", "médiane"),
+    CB.stat <- ttkcombobox(F.stat, value=c(mltext("stat.mean"), mltext("stat.median")), ## [ml?]
                            textvariable=P.options[["P.barplotStat"]],
                            state="readonly", width=8, background=.BGcolor)
 
     ## #### Placement des éléments sur la grille :
-    tkgrid(tklabel(F.colorZones, text="Palette de couleurs des zones : ", bg=.BGcolor),
+    tkgrid(tklabel(F.colorZones, text=mltext("addCartoSubplotFrame.colPal"), bg=.BGcolor),
            CB.colPaletteZones)
     tkgrid(F.colorZones, sticky="w", padx=4, columnspan=2)
 
     tkgrid(B.legendCarto,
             tklabel(F.subplot1,
-                   text=" Afficher la légende des couleurs (facteur de second niveau) ?",
+                   text=mltext("addCartoSubplotFrame.colLeg"),
                    bg=.BGcolor),
            sticky="w", padx=4, pady=2)
 
     tkgrid(tklabel(F.stat,
-                   text="Type de statistique à représenter sur les barplots : ",
+                   text=mltext("addCartoSubplotFrame.statType"),
                    bg=.BGcolor, justify="left"),
            CB.stat,
            sticky="w")
@@ -343,7 +344,8 @@ addBarplotOptFrame.f <- function(env)
 
     ## Objets pour le choix des options :
     F.barplotOpt <- tkwidget(WinOpt, "labelframe",
-                             text="Options des \"graphiques en barres\"", padx=4, pady=4,
+                             text=mltext("addBarplotOptFrame.LB.1"),
+                             padx=4, pady=4,
                              height=30,
                              borderwidth=2, relief="groove",
                              font=tkfont.create(weight="bold", size=10),
@@ -373,7 +375,7 @@ addBarplotOptFrame.f <- function(env)
     B.warnings <- tkcheckbutton(F.barplot1, variable=P.options[["P.warnings"]])
 
     F.stat <- tkframe(F.barplot1, background=.BGcolor, pady=2)
-    CB.stat <- ttkcombobox(F.stat, value=c("moyenne", "médiane"),
+    CB.stat <- ttkcombobox(F.stat, value=c(mltext("stat.mean"), mltext("stat.median")),
                            textvariable=P.options[["P.barplotStat"]],
                            state="readonly", width=8, background=.BGcolor)
     ##
@@ -382,22 +384,22 @@ addBarplotOptFrame.f <- function(env)
     ## #### Placement des éléments sur la grille :
     tkgrid(B.NbObs,
            tklabel(F.barplot1,
-                   text=" Afficher les nombres d'enregistrement par barre ?",
+                   text=mltext("addBarplotOptFrame.dispN"),
                    bg=.BGcolor),
            sticky="w", padx=4, pady=1)
-    tkgrid(tklabel(F.NbObs, text=" Couleur des nombres d'enregistrement : ", bg=.BGcolor),
+    tkgrid(tklabel(F.NbObs, text=mltext("addBarplotOptFrame.colN"), bg=.BGcolor),
            C.NbObsCol)
     tkgrid(F.NbObs,  sticky="w", padx=4, pady=1, columnspan=1, column=1)
 
     tkgrid(B.warnings,
            tklabel(F.barplot1,
-                   text=paste(" Afficher les avertissements ?\n",
-                              "    (faibles effectifs)", sep=""),
+                   text=paste(mltext("addBarplotOccOptFrame.smallN.1"),
+                              mltext("addBarplotOccOptFrame.smallN.2"), sep=""),
                    bg=.BGcolor, justify="left"),
            sticky="w", padx=4, pady=2)
 
     tkgrid(tklabel(F.stat,
-                   text="Type de statistique à représenter sur les barplots : ",
+                   text=mltext("addBarplotOptFrame.statType"),
                    bg=.BGcolor, justify="left"),
            CB.stat,
            sticky="w")
@@ -405,8 +407,8 @@ addBarplotOptFrame.f <- function(env)
 
     tkgrid(B.errBar,
            tklabel(F.barplot1,
-                   text=paste(" Afficher les barres d'erreur ?\n",
-                              "    (écart type/écart inter-quartiles selon la statistique)", sep=""),
+                   text=paste(mltext("addBarplotOptFrame.errorBar.1"),
+                              mltext("addBarplotOptFrame.errorBar.2"), sep=""),
                    bg=.BGcolor, justify="left"),
            sticky="w", padx=4, pady=1)
 
@@ -441,7 +443,8 @@ addBoxplotOptFrame.f <- function(env)
 
     ## Objets pour le choix des options :
     F.boxplotOpt <- tkwidget(WinOpt, "labelframe",
-                             text="Options des graphiques en \"boîtes à moustaches\"", padx=4, pady=4,
+                             text=mltext("addBoxplotOptFrame.LB.1"),
+                             padx=4, pady=4,
                              height=30,
                              borderwidth=2, relief="groove",
                              font=tkfont.create(weight="bold", size=10),
@@ -459,7 +462,7 @@ addBoxplotOptFrame.f <- function(env)
     FrameExclu <- tkframe(F.boxplot1, bg=.BGcolor)
     FrameExclu2 <- tkframe(FrameExclu, bg=.BGcolor)
     E.GraphPartMax <- tkentry(FrameExclu2, width="5", textvariable=P.options[["P.GraphPartMax"]])
-    tooltipWidget.f(text="Attention ! \nséparateur décimal : \".\" ",
+    tooltipWidget.f(text=mltext("addBoxplotOptFrame.sepdec"),
                     targetWidget=E.GraphPartMax, yskip=0)
 
     B.NbObs <- tkcheckbutton(F.boxplot1, variable=P.options[["P.NbObs"]])
@@ -561,7 +564,7 @@ addBoxplotOptFrame.f <- function(env)
 
     ## #### Placement des éléments sur la grille :
 
-    tkgrid(tklabel(FrameExclu, text=paste(" Ne pas représenter les valeurs extrêmes",
+    tkgrid(tklabel(FrameExclu, text=paste(" Ne pas représenter les valeurs extrêmes", ## [mlo]
                            "", sep=" "), bg=.BGcolor), sticky="w")
     tkgrid(tklabel(FrameExclu2, text="    (supérieures à ", bg=.BGcolor, justify="left"),
            E.GraphPartMax,

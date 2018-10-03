@@ -5,6 +5,8 @@ KW.up,monter,up
 KW.down,descendre,down
 KW.cancel,annuler,cancel
 KW.confirm,valider,confirm
+stat.mean,moyenne,mean
+stat.median,médiane,median
 W.main.title,Indicateurs relatifs à la biodiversité et aux ressources,Biodiversity and fished resource indicators
 MB.import,Données,Data
 MB.selection,Sélection et recalcul,Subsetting
@@ -438,3 +440,22 @@ logmsg.selectionOnUnitobs,Sélection des enregistrement selon un critère du référ
 selectionOnUnitobs.info.1,Sélection et recalcul selon un critère du référentiel d'unités d'observation :,Subset and metrics calculation based on a field of the station characteristics:
 selectionOnUnitobs.info.3, sur la sélection d'unités d'observation., for the station characteristics-based subset.
 restoreData.info,Données originales restaurée.,Original data restored.
+changeColor.title,Choisir une couleur,Choose a colour
+addBarplotOccOptFrame.LB.1,"Options des ""graphiques en barres"" sur les occurrences",Options for occurrence barplots
+addBarplotOccOptFrame.Lbopt.1, Afficher les nombres d'unités d'observation par barre ?, Display the number of stations per bar?
+addBarplotOccOptFrame.Lbopt.2, Couleur des nombres d'unités d'observations : , Colours for station numbers: 
+addBarplotOccOptFrame.smallN.1, Afficher les avertissements ?\n, Display warnings?\n
+addBarplotOccOptFrame.smallN.2,    (faibles effectifs),    (low numbers)
+addCartoSubplotFrame.LB.1,"Options des ""graphiques en barres""",Barplot options
+addCartoSubplotFrame.colPal,Palette de couleurs des zones : ,Colour pallet for zones: 
+addCartoSubplotFrame.colLeg, Afficher la légende des couleurs (facteur de second niveau) ?, Display the colour legend (2nd level factor) ?
+addCartoSubplotFrame.statType,Type de statistique à représenter sur les barplots : ,Statistics for the bars: 
+addBarplotOptFrame.LB.1,"Options des ""graphiques en barres""",Options for barplots
+addBarplotOptFrame.dispN, Afficher les nombres d'enregistrement par barre ?, Display the number of records per bar?
+addBarplotOptFrame.colN, Couleur des nombres d'enregistrement : , Colour for record numbers: 
+addBarplotOptFrame.statType,Type de statistique à représenter sur les barplots : ,Statistics for the bars: 
+addBarplotOptFrame.errorBar.1, Afficher les barres d'erreur ?\n, Display error bars?\n
+addBarplotOptFrame.errorBar.2,    (écart type/écart inter-quartiles selon la statistique),"    (std dev./inter-quartile range, depending on the central statistics)"
+addBoxplotOptFrame.LB.1,"Options des graphiques en ""boîtes à moustaches""",Boxplot options
+addBoxplotOptFrame.sepdec,"Attention ! \nséparateur décimal : ""."" ","Decimal separator ""."" "
+addBoxplotOptFrame.,,

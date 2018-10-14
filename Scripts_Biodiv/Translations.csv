@@ -7,6 +7,9 @@ KW.cancel,annuler,cancel
 KW.confirm,valider,confirm
 stat.mean,moyenne,mean
 stat.median,médiane,median
+OK.button,   OK   ,   OK   
+Cancel.button,   Annuler   ,   Cancel    
+Reset.button, Réinitialiser ,     Reset     
 W.main.title,Indicateurs relatifs à la biodiversité et aux ressources,Biodiversity and fished resource indicators
 MB.import,Données,Data
 MB.selection,Sélection et recalcul,Subsetting
@@ -87,8 +90,6 @@ WinInfoLoading.title.load,Infos de chargement,Loading information
 WinInfoLoading.title.check,Vérification des sélections,Checking selections
 WinInfoLoading.title.warning,Avertissement...,Warning...
 WinInfoLoading.title.default,Infos de chargement,Loading information
-OK.button,   OK   ,   OK   
-Cancel.button,   Annuler   ,   Cancel    
 WinApropos.title,À propos de la plateforme,About the PAMPA platform
 WinApropos.version,"Plateforme PAMPA ""Ressources & Biodiversité"" : version ","PAMPA ""Resources & Biodiversity"" platform: version "
 WinApropos.license,GNU GPL version >= 2,GNU GPL version >= 2
@@ -458,4 +459,53 @@ addBarplotOptFrame.errorBar.1, Afficher les barres d'erreur ?\n, Display error b
 addBarplotOptFrame.errorBar.2,    (écart type/écart inter-quartiles selon la statistique),"    (std dev./inter-quartile range, depending on the central statistics)"
 addBoxplotOptFrame.LB.1,"Options des graphiques en ""boîtes à moustaches""",Boxplot options
 addBoxplotOptFrame.sepdec,"Attention ! \nséparateur décimal : ""."" ","Decimal separator ""."" "
-addBoxplotOptFrame.,,
+addBoxplotOptFrame.extrVal.1, Ne pas représenter les valeurs extrêmes, Do not display extreme values
+addBoxplotOptFrame.extrVal.2,    (supérieures à ,    (greater than 
+addBoxplotOptFrame.extrVal.3, x la valeur max) ? \n, x the max value)? \n
+addBoxplotOptFrame.recNum, Afficher les nombres d'enregistrement par boîte à moustache ?, Display the number of records by box?
+addBoxplotOptFrame.recNumCol, Couleur des nombres d'enregistrement : , Colour of record numbers: 
+addBoxplotOptFrame.Warn.1, Afficher les avertissements ?\n, Display warnings?\n
+addBoxplotOptFrame.Warn.2,    (faibles effectifs + maximum exclus),    (low numbers + excluded max)
+addBoxplotOptFrame.grpSep, Afficher les séparateurs de groupes (facteur de premier niveau) ?, Display group separator (first level factor)?
+addBoxplotOptFrame.grpSepCol, Couleur des séparateurs : , Colour of separators: 
+addBoxplotOptFrame.colLeg, Afficher la légende des couleurs (facteur de second niveau) ?, Display a colour legend (second level factor)?
+addBoxplotOptFrame.MeanP, Afficher les moyennes (points) sur les boxplot ?, Display the means (points) on the boxes?
+addBoxplotOptFrame.MeanPcol, Couleur des points : , Colour of points: 
+addBoxplotOptFrame.MeanPcex, Facteur multiplicatif des tailles de points : , Point size multiplicator: 
+addBoxplotOptFrame.MeanPpch, Type de point : , Point type: 
+addBoxplotOptFrame.MeanV, Afficher les valeurs des moyennes sur les boxplot ?, Display the mean values on the boxplots?
+addBoxplotOptFrame.MeanVcol, Couleur de caractères des valeurs : , Colour for mean values: 
+addBoxplotOptFrame.MeanVdec, Nombre de chiffres décimaux : , Number of decimals: 
+tuneGraphOptions.Title,Choix des options graphiques,Graphics options
+tuneGraphOptions.commOpt.title,Options graphiques générales,Common graphical options
+tuneGraphOptions.TT.dec,"Attention ! \nséparateur décimal : ""."" ","!!! \ndecimal separator: ""."" "
+tuneGraphOptions.TT.titleLang.1,"Attention, l'anglais (\""en\"") ne s'applique pas aux titres de graphiques. ","Caution, English (""en"") only applies for labels, not titles. "
+tuneGraphOptions.TT.titleLang.2,\nVeuillez désactiver les titres s'il est sélectionné.,\nDe-activate titles if selected.
+tuneGraphOptions.TT.embChar.1,Évite les erreurs d'affichage de caractères \nsur d'autres ordinateurs...,Avoid mis-displayed characters\n on other machines...
+tuneGraphOptions.TT.embChar.2,\nNécessite que Ghostscript soit installé pour fonctionner.,\nRequires Ghostscript installed to work properly.
+tuneGraphOptions.colPal,Palette de couleurs : ,Colour palette: 
+tuneGraphOptions.langAxes,Langue des noms d'axes et variables : ,Language for axis labels: 
+tuneGraphOptions.simplGraph.1, Graphique pour publication ?\n,Simplified graphics for publishing
+tuneGraphOptions.simplGraph.2,"    (plus petit, sans titre).","    (smaller, no title)."
+tuneGraphOptions.graphTitle, Afficher le titre de graphique ?, Graphics with titles?
+tuneGraphOptions.axesLab, Afficher le nom des axes ?, Display axes labels?
+tuneGraphOptions.cex,Facteur multiplicatif des tailles de texte : ,Text size (multiple) : 
+tuneGraphOptions.minNobs.1,Supprimer les graphiques ayant moins de ,Do not produce graphics with less than 
+tuneGraphOptions.minNobs.2, observations, observations
+tuneGraphOptions.pdfOut, Fichiers PDF ?, PDF files?
+tuneGraphOptions.onePageMode, Créer un fichier par page (PDF) ?, One file per page (PDF)?
+tuneGraphOptions.embFonts, Inclure les fontes dans les fichiers PDF ?, Embed fonts in PDF?
+tuneGraphOptions.pngOut, Fichiers PNG ?, PNG files?
+tuneGraphOptions.wmfOut.1, Fichiers WMF ?\n, WMF files?\n
+tuneGraphOptions.wmfOut.2,    (en plus de l'affichage à l'écran ; Windows uniquement),    (+displayed on screen; Windows only)
+tuneGraphOptions.multiGraph.1, Plusieurs graphiques par page (, Multiple graphics perpage (
+tuneGraphOptions.multiGraph.2, lignes x , rows x 
+tuneGraphOptions.multiGraph.3, colonnes), columns)
+tuneGraphOptions.LB.F.1,Aspect des graphiques :,Graphics look:
+tuneGraphOptions.LB.F.2,Sorties dans des fichiers :,Output options:
+generalOptions.title,Choix des options d'export (analyses/graphiques),Export options (analyses/graphics)
+generalOptions.OutputTitle,Sauvgardes pour chaque analyse ou graphique :,Save for each analyse or graphics:
+generalOptions.saveData,...données du graphique ou de l'analyse\n(fichier *.csv) ? ,...data subset used (*.csv file)? 
+generalOptions.saveStats,...informations sur les données et statistiques\n(fichier *.stat) ? ,...information on data et statistics\n(*.stat file)? 
+generalOptions.err.Opt.1,Erreur : Option PAMPA ',Error : PAMPA option '
+generalOptions.err.Opt.2,' non définie., not defined.

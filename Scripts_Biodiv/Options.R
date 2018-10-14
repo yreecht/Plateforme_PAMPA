@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-10-03 21:12:31 yreecht>
+# Time-stamp: <2018-10-14 14:38:04 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2018 Ifremer - Tous droits réservés.
@@ -236,7 +236,7 @@ addBarplotOccOptFrame.f <- function(env)
 
     tkgrid(B.warnings,
            tklabel(F.barplot1,
-                   text=paste(mltext("addBarplotOccOptFrame.smallN.1"), # [mlo]
+                   text=paste(mltext("addBarplotOccOptFrame.smallN.1"),
                               mltext("addBarplotOccOptFrame.smallN.2"), sep=""),
                    bg=.BGcolor, justify="left"),
            sticky="w", padx=4, pady=2)
@@ -564,11 +564,11 @@ addBoxplotOptFrame.f <- function(env)
 
     ## #### Placement des éléments sur la grille :
 
-    tkgrid(tklabel(FrameExclu, text=paste(" Ne pas représenter les valeurs extrêmes", ## [mlo]
+    tkgrid(tklabel(FrameExclu, text=paste(mltext("addBoxplotOptFrame.extrVal.1"), ## [mlo]
                            "", sep=" "), bg=.BGcolor), sticky="w")
-    tkgrid(tklabel(FrameExclu2, text="    (supérieures à ", bg=.BGcolor, justify="left"),
+    tkgrid(tklabel(FrameExclu2, text=mltext("addBoxplotOptFrame.extrVal.2"), bg=.BGcolor, justify="left"),
            E.GraphPartMax,
-           tklabel(FrameExclu2, text=" x la valeur max) ? \n", bg=.BGcolor),
+           tklabel(FrameExclu2, text=mltext("addBoxplotOptFrame.extrVal.3"), bg=.BGcolor),
            sticky="nw")
     tkgrid(FrameExclu2, sticky="w")
 
@@ -576,60 +576,60 @@ addBoxplotOptFrame.f <- function(env)
 
     tkgrid(B.NbObs,
            tklabel(F.boxplot1,
-                   text=" Afficher les nombres d'enregistrement par boîte à moustache ?",
+                   text=mltext("addBoxplotOptFrame.recNum"),
                    bg=.BGcolor),
            sticky="w", padx=4, pady=1)
-    tkgrid(tklabel(F.NbObs, text=" Couleur des nombres d'enregistrement : ", bg=.BGcolor),
+    tkgrid(tklabel(F.NbObs, text=mltext("addBoxplotOptFrame.recNumCol"), bg=.BGcolor),
            C.NbObsCol)
     tkgrid(F.NbObs,  sticky="w", padx=4, pady=1, columnspan=1, column=1)
 
     tkgrid(B.warnings,
            tklabel(F.boxplot1,
-                   text=paste(" Afficher les avertissements ?\n",
-                              "    (faibles effectifs + maximum exclus)", sep=""),
+                   text=paste(mltext("addBoxplotOptFrame.Warn.1"),
+                              mltext("addBoxplotOptFrame.Warn.2"), sep=""),
                    bg=.BGcolor, justify="left"),
            sticky="w", padx=4, pady=2)
 
     tkgrid(B.sepGroupes,
            tklabel(F.boxplot1,
-                   text=" Afficher les séparateurs de groupes (facteur de premier niveau) ?",
+                   text=mltext("addBoxplotOptFrame.grpSep"),
                    bg=.BGcolor),
            sticky="w", padx=4, pady=1)
-    tkgrid(tklabel(F.sepGroupes, text=" Couleur des séparateurs : ", bg=.BGcolor),
+    tkgrid(tklabel(F.sepGroupes, text=mltext("addBoxplotOptFrame.grpSepCol"), bg=.BGcolor),
            C.sepGroupesCol)
     tkgrid(F.sepGroupes,  sticky="w", padx=4, pady=1, columnspan=1, column=1)
 
     tkgrid(B.legendeCouleurs,
             tklabel(F.boxplot2,
-                   text=" Afficher la légende des couleurs (facteur de second niveau) ?",
+                   text=mltext("addBoxplotOptFrame.colLeg"),
                    bg=.BGcolor),
            sticky="w", padx=4, pady=2)
 
     tkgrid(B.pointMoyenne,
            tklabel(F.boxplot2,
-                   text=" Afficher les moyennes (points) sur les boxplot ?",
+                   text=mltext("addBoxplotOptFrame.MeanP"),
                    bg=.BGcolor),
            sticky="w", padx=4, pady=2)
-    tkgrid(tklabel(F.PMcol, text=" Couleur des points : ", bg=.BGcolor),
+    tkgrid(tklabel(F.PMcol, text=mltext("addBoxplotOptFrame.MeanPcol"), bg=.BGcolor),
            C.pointMoyenneCol)
     tkgrid(F.PMcol, sticky="w")
-    tkgrid(tklabel(F.PMcex, text=" Facteur multiplicatif des tailles de points : ", bg=.BGcolor),
+    tkgrid(tklabel(F.PMcex, text=mltext("addBoxplotOptFrame.MeanPcex"), bg=.BGcolor),
            E.pointMoyenneCex)
     tkgrid(F.PMcex, sticky="w")
-    tkgrid(tklabel(F.PMpch, text=" Type de point : ", bg=.BGcolor),
+    tkgrid(tklabel(F.PMpch, text=mltext("addBoxplotOptFrame.MeanPpch"), bg=.BGcolor),
            E.pointMoyennePch)
     tkgrid(F.PMpch, sticky="w")
     tkgrid(F.pointMoyenne,  sticky="w", padx=4, pady=1, columnspan=1, column=1)
 
     tkgrid(B.valMoyenne,
            tklabel(F.boxplot2,
-                   text=" Afficher les valeurs des moyennes sur les boxplot ?",
+                   text=mltext("addBoxplotOptFrame.MeanV"),
                    bg=.BGcolor),
            sticky="w", padx=4, pady=2)
-    tkgrid(tklabel(F.VMcol, text=" Couleur de caractères des valeurs : ", bg=.BGcolor),
+    tkgrid(tklabel(F.VMcol, text=mltext("addBoxplotOptFrame.MeanVcol"), bg=.BGcolor),
            C.valMoyenneCol, sticky="w")
     tkgrid(F.VMcol, sticky="w")
-    tkgrid(tklabel(F.VMdec, text=" Nombre de chiffres décimaux : ", bg=.BGcolor),
+    tkgrid(tklabel(F.VMdec, text=mltext("addBoxplotOptFrame.MeanVdec"), bg=.BGcolor),
            E.NbDecimal, sticky="w")
     tkgrid(F.VMdec, sticky="w")
     tkgrid(F.valMoyenne,  sticky="w", padx=4, pady=1, columnspan=1, column=1)
@@ -682,7 +682,7 @@ tuneGraphOptions.f <- function(graphType="none")
     P.options.old <- options()[names(getOption("P.optionsClass"))] # Pour pouvoir restorer les options (Cancel)
 
     WinOpt <- tktoplevel(background=.BGcolor)
-    tkwm.title(WinOpt, "Choix des options graphiques")
+    tkwm.title(WinOpt, mltext("tuneGraphOptions.Title"))
 
     ## Ajout optionnel d'un cadre spécifique au type de graphique :
     env2 <- switch(graphType,
@@ -705,7 +705,7 @@ tuneGraphOptions.f <- function(graphType="none")
 
     ## Frame générale :
     F.generalOpt <- tkwidget(WinOpt, "labelframe",
-                             text="Options graphiques générales", padx=4, pady=4,
+                             text=mltext("tuneGraphOptions.commOpt.title"), padx=4, pady=4,
                              height=30,
                              borderwidth=2, relief="groove",
                              font=tkfont.create(weight="bold", size=10),
@@ -721,7 +721,7 @@ tuneGraphOptions.f <- function(graphType="none")
 
     F.Entry2 <- tkframe(F.general1, background=.BGcolor, pady=2)
     E.cex <- tkentry(F.Entry2, width="3", textvariable=P.options[["P.cex"]])
-    tooltipWidget.f(text="Attention ! \nséparateur décimal : \".\" ",
+    tooltipWidget.f(text=mltext("tuneGraphOptions.TT.dec"),
                     targetWidget=E.cex, yskip=0)
 
     F.checkBox <- tkframe(F.general1, background=.BGcolor, pady=2)
@@ -738,8 +738,8 @@ tuneGraphOptions.f <- function(graphType="none")
     CB.lang <- ttkcombobox(F.lang, value=c("fr", "en"),
                            textvariable=P.options[["P.lang"]],
                            state="readonly", width=6, background=.BGcolor)
-    tooltipWidget.f(text=paste("Attention, l'anglais (\"en\") ne s'applique pas aux titres de graphiques. ",
-                               "\nVeuillez désactiver les titres s'il est sélectionné."),
+    tooltipWidget.f(text=paste(mltext("tuneGraphOptions.TT.titleLang.1"), # [ml?]
+                               mltext("tuneGraphOptions.TT.titleLang.2")),
                     targetWidget=CB.lang, yskip=0, width=450,
                     font=tkfont.create(weight="bold", size=9))
 
@@ -756,8 +756,8 @@ tuneGraphOptions.f <- function(graphType="none")
     F.PDF2 <- tkframe(F.PDF, background=.BGcolor)
     B.PDFunFichierPage <- tkcheckbutton(F.PDF2, variable=P.options[["P.PDFunFichierPage"]])## , bg=.BGcolor)
     B.PDFembedFont <- tkcheckbutton(F.PDF2, variable=P.options[["P.pdfEmbedFonts"]])## , bg=.BGcolor)
-    tooltipWidget.f(text=paste("Évite les erreurs d'affichage de caractères \nsur d'autres ordinateurs...",
-                               "\nNécessite que Ghostscript soit installé pour fonctionner."),
+    tooltipWidget.f(text=paste(mltext("tuneGraphOptions.TT.embChar.1"),
+                               mltext("tuneGraphOptions.TT.embChar.2")),
                     targetWidget=B.PDFembedFont, yskip=18, width=500)
 
     F.PNG <- tkframe(F.general2, background=.BGcolor)
@@ -777,11 +777,11 @@ tuneGraphOptions.f <- function(graphType="none")
 
     ## Boutons :
     FrameBT <- tkframe(WinOpt, background=.BGcolor)
-    B.OK <- tkbutton(FrameBT, text="  OK  ", # bg=.BGcolor,
+    B.OK <- tkbutton(FrameBT, text=mltext("OK.button"), # bg=.BGcolor,
                      command=function(){tclvalue(Done) <- 1})
-    B.Cancel <- tkbutton(FrameBT, text=" Annuler ", # bg=.BGcolor,
+    B.Cancel <- tkbutton(FrameBT, text=mltext("Cancel.button"), # bg=.BGcolor,
                          command=function(){tclvalue(Done) <- 2})
-    B.Reinit <- tkbutton(FrameBT, text=" Réinitialiser ", # bg=.BGcolor,
+    B.Reinit <- tkbutton(FrameBT, text=mltext("Reset.button"), # bg=.BGcolor,
                          command=function()
                      {
                          initialiseOptions.f()
@@ -804,83 +804,83 @@ tuneGraphOptions.f <- function(graphType="none")
 
     ## #### Placement des éléments sur la grille :
     ## ... aspect des graphiques :
-    tkgrid(tklabel(F.color, text="Palette de couleurs : ", bg=.BGcolor),
+    tkgrid(tklabel(F.color, text=mltext("tuneGraphOptions.colPal"), bg=.BGcolor),
            CB.colPalette)
     tkgrid(F.color, sticky="w", padx=4)
 
-    tkgrid(tklabel(F.lang, text="Langue des noms d'axes et variables : ", bg=.BGcolor),
+    tkgrid(tklabel(F.lang, text=mltext("tuneGraphOptions.langAxes"), bg=.BGcolor),
            CB.lang)
     tkgrid(F.lang, sticky="w", padx=4)
 
     tkgrid(B.graphPaper,
            tklabel(F.checkBox,
-                   text=paste(" Graphique pour publication ?\n",
-                              "    (plus petit, sans titre)", sep=""),
+                   text=paste(mltext("tuneGraphOptions.simplGraph.1"),
+                              mltext("tuneGraphOptions.simplGraph.2"), sep=""),
                    bg=.BGcolor, justify="left"),
            sticky="w", pady=2)
     tkgrid(B.title,
-           tklabel(F.checkBox, text=" Afficher le titre de graphique ?", bg=.BGcolor, justify="left"),
+           tklabel(F.checkBox, text=mltext("tuneGraphOptions.graphTitle"), bg=.BGcolor, justify="left"),
            sticky="w", pady=2)
     tkgrid(B.axesLabels,
-           tklabel(F.checkBox, text=" Afficher le nom des axes ?", bg=.BGcolor, justify="left"),
+           tklabel(F.checkBox, text=mltext("tuneGraphOptions.axesLab"), bg=.BGcolor, justify="left"),
            sticky="w", pady=2)
     tkgrid(F.checkBox, sticky="w", padx=4)
 
-    tkgrid(tklabel(F.Entry2, text="Facteur multiplicatif des tailles de texte : ", bg=.BGcolor),
+    tkgrid(tklabel(F.Entry2, text=mltext("tuneGraphOptions.cex"), bg=.BGcolor),
            E.cex,
            sticky="w")
     tkgrid(F.Entry2, sticky="w", padx=4)
 
-    tkgrid(tklabel(F.Entry, text="Supprimer les graphiques ayant moins de ", bg=.BGcolor),
+    tkgrid(tklabel(F.Entry, text=mltext("tuneGraphOptions.minNobs.1"), bg=.BGcolor),
            E.minNbObs,
-           tklabel(F.Entry, text=" observations", bg=.BGcolor),
+           tklabel(F.Entry, text=mltext("tuneGraphOptions.minNobs.2"), bg=.BGcolor),
            sticky="w")
     tkgrid(F.Entry, sticky="w", padx=4)
 
     ## ... sorties fichiers :
     tkgrid(B.graphPDF,
-           L.PDF <- tklabel(F.PDF1, text=" Fichiers PDF ?", bg=.BGcolor, justify="left"),
+           L.PDF <- tklabel(F.PDF1, text=mltext("tuneGraphOptions.pdfOut"), bg=.BGcolor, justify="left"),
            sticky="w")
     tkgrid(tklabel(F.PDF2, text="   ", bg=.BGcolor),
            B.PDFunFichierPage,
-           tklabel(F.PDF2, text=" Créer un fichier par page (PDF) ?", bg=.BGcolor),
+           tklabel(F.PDF2, text=mltext("tuneGraphOptions.onePageMode"), bg=.BGcolor),
            sticky="w")
     tkgrid(tklabel(F.PDF2, text="   ", bg=.BGcolor),
            B.PDFembedFont,
-           tklabel(F.PDF2, text=" Inclure les fontes dans les fichiers PDF ?", bg=.BGcolor),
+           tklabel(F.PDF2, text=mltext("tuneGraphOptions.embFonts"), bg=.BGcolor),
            sticky="w")
     tkgrid(F.PDF1, sticky="w", columnspan=2)
     tkgrid(F.PDF2, sticky="w", columnspan=2)
     tkgrid(F.PDF, sticky="w", padx=4, pady=2)
 
     tkgrid(B.graphPNG,
-           tklabel(F.PNG, text=" Fichiers PNG ?", bg=.BGcolor),
+           tklabel(F.PNG, text=mltext("tuneGraphOptions.pngOut"), bg=.BGcolor),
            sticky="w")
     tkgrid(F.PNG, sticky="w", padx=4, pady=2)
 
     tkgrid(B.graphWMF,
            tklabel(F.WMF,
-                   text=paste(" Fichiers WMF ?\n",
-                              "    (en plus de l'affichage à l'écran ; Windows uniquement)", sep=""),
+                   text=paste(mltext("tuneGraphOptions.wmfOut.1"),
+                              mltext("tuneGraphOptions.wmfOut.2"), sep=""),
                    bg=.BGcolor, justify="left"),
            sticky="w")
     tkgrid(F.WMF, sticky="w", padx=4, pady=2)
 
     tkgrid(B.plusGraph,
-           tklabel(F.general2, text=" Plusieurs graphiques par page (", bg=.BGcolor),
+           tklabel(F.general2, text=mltext("tuneGraphOptions.multiGraph.1"), bg=.BGcolor),
            CB.nrow,
-           tklabel(F.general2, text=" lignes x ", bg=.BGcolor),
+           tklabel(F.general2, text=mltext("tuneGraphOptions.multiGraph.2"), bg=.BGcolor),
            CB.ncol,
-           tklabel(F.general2, text=" colonnes)", bg=.BGcolor), sticky="w")
+           tklabel(F.general2, text=mltext("tuneGraphOptions.multiGraph.3"), bg=.BGcolor), sticky="w")
     tkgrid(F.plusGraph, sticky="ew", padx=4, pady=2)
 
     ## Options générales:
-    tkgrid(tklabel(F.generalOpt, text="Aspect des graphiques :",
+    tkgrid(tklabel(F.generalOpt, text=mltext("tuneGraphOptions.LB.F.1"),
                    font=tkfont.create(weight="normal", size=10),
                    foreground="darkred", background=.BGcolor,
                    justify="left"),
            S.general,
-           tklabel(F.generalOpt, text="Sorties dans des fichiers :",
+           tklabel(F.generalOpt, text=mltext("tuneGraphOptions.LB.F.2"),
                    font=tkfont.create(weight="normal", size=10),
                    foreground="darkred", background=.BGcolor,
                    justify="left"),
@@ -1023,7 +1023,7 @@ generalOptions.f <- function()
     P.options.old <- options()[names(options("P.optionsClass")[[1]])] # Pour pouvoir restorer les options (Cancel)
 
     WinOpt <- tktoplevel()
-    tkwm.title(WinOpt, "Choix des options d'export (analyses/graphiques)")
+    tkwm.title(WinOpt, mltext("generalOptions.title"))
 
     ## Objets pour le choix des options :
 
@@ -1032,11 +1032,11 @@ generalOptions.f <- function()
 
     ## Boutons :
     FrameBT <- tkframe(WinOpt)
-    B.OK <- tkbutton(FrameBT, text="  OK  ",
+    B.OK <- tkbutton(FrameBT, text=mltext("OK.button"),
                      command=function(){tclvalue(Done) <- 1})
-    B.Cancel <- tkbutton(FrameBT, text=" Annuler ",
+    B.Cancel <- tkbutton(FrameBT, text=mltext("Cancel.button"),
                          command=function(){tclvalue(Done) <- 2})
-    B.Reinit <- tkbutton(FrameBT, text=" Réinitialiser ",
+    B.Reinit <- tkbutton(FrameBT, text=mltext("Reset.button"),
                          command=function()
                      {
                          initialiseOptions.f()
@@ -1050,17 +1050,17 @@ generalOptions.f <- function()
 
     tkgrid(tklabel(WinOpt))
     tkgrid(tklabel(WinOpt,
-                   text="Sauvgardes pour chaque analyse ou graphique :",
+                   text=mltext("generalOptions.OutputTitle"),
                    background=.Background, justify="left"),
            sticky="ew", padx=5, pady=3, columnspan=2)
 
     tkgrid(tklabel(WinOpt,
-                   text="...données du graphique ou de l'analyse\n(fichier *.csv) ? ",
+                   text=mltext("generalOptions.saveData"),
                    justify="right"),
            B.saveData, sticky="es", padx=3, pady=5)
 
     tkgrid(tklabel(WinOpt,
-                   text="...informations sur les données et statistiques\n(fichier *.stat) ? ",
+                   text=mltext("generalOptions.saveStats"),
                    justify="right"),
            B.saveStats, sticky="es", padx=3, pady=5)
 
@@ -1096,7 +1096,8 @@ generalOptions.f <- function()
                                                                  split="*_*", fixed=TRUE))),
                               numeric=as.numeric(unlist(strsplit(tclvalue(P.options[[name]]),
                                                                  split="*_*", fixed=TRUE))),
-                              stop("Erreur : Option PAMPA '", name, "' non définie"))
+                              stop(mltext("generalOptions.err.Opt.1"), name,
+                                   mltext("generalOptions.err.Opt.2")))
                    }, simplify=FALSE))
      }
 

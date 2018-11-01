@@ -509,3 +509,21 @@ generalOptions.saveData,...données du graphique ou de l'analyse\n(fichier *.csv)
 generalOptions.saveStats,...informations sur les données et statistiques\n(fichier *.stat) ? ,...information on data et statistics\n(*.stat file)? 
 generalOptions.err.Opt.1,Erreur : Option PAMPA ',Error : PAMPA option '
 generalOptions.err.Opt.2,' non définie., not defined.
+agregationTableParCritere.f.W.1,Un des facteurs annexes est surement un sous-ensemble,One of the secondary factors is probably a subset 
+agregationTableParCritere.f.W.2, du(des) facteur(s) de regroupement des observations., of the observation grouping factor(s).
+calcBiodiv.f.info.1,Calculs de biodiversité impossibles !,Biodiversity metrics not calculable!
+calcBiodiv.f.info.2.s,non identifié,not identified
+calcBiodiv.f.info.2.p,non identifiés,not identified
+calcBiodiv.f.info.3," au niveau de l'espèce (\""sp.\"")\n   "," at the species (\""sp.\"") level\n   "
+calcBiodiv.f.info.4.s,a été supprimé,has been suppressed
+calcBiodiv.f.info.4.p,ont été supprimés,have been suppressed
+calcBiodiv.f.info.5, pour le calcul des indices de biodiversité., for calculation of the biodiversity metrics.
+calcBiodivTaxo.f.info.1,Indices de diversité taxinomique non-calculables !,Taxonomic diversity indices not calculable!
+calcBiodivTaxo.f.msg.1,La valeur théorique de Delta est :,The theoretical value for Delta is:
+calcBiodivTaxo.f.msg.2,La valeur théorique de Delta* est :,The theoretical value for Delta* is:
+calcBiodivTaxo.f.msg.3,La valeur théorique de Delta+ est :,The theoretical value for Delta+ is:
+calcBiodivTaxo.f.Warn.1,Nombre de Familles < 2 : les indices de diversité taxonomique ne peuvent être calculés.,Number of Families < 2: the taxonomic diversity indices cannot be calculated.
+calcBiodivTaxo.f.Warn.2,Nombre de genres < 2 : les indices de diversité taxonomique ne peuvent être calculés.,Number of Genus < 2: the taxonomic diversity indices cannot be calculated.
+agregation.info.f.title,Information,Information
+agregation.info.f.info.1,\tAgrégation des données en cours...\n,\tAggregating data...\n
+agregation.info.f.info.2,(cette fenêtre se fermera automatiquement)\n,(this window will close automatically)\n

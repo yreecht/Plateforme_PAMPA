@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2015-11-30 11:53:36 yreecht>
+# Time-stamp: <2018-11-01 17:59:51 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
@@ -92,7 +92,7 @@ champsMetriques.f <- function(nomTable, nextStep, dataEnv)
 
     if (!is.character(nomTable))
     {
-        stop("'nomTable' doit être une chaîne de caractères !")
+        stop("'nomTable' must be a character string!")
     }else{
         switch(nomTable,
                ## Table unitSp (métriques d'observation) :
@@ -284,7 +284,7 @@ champsReferentiels.f <- function(nomTable, dataEnv, nextStep=NA)
 
     if (!is.character(nomTable))
     {
-        stop("'nomTable' doit être une chaîne de caractères !")
+        stop("'nomTable' must be a character string!")
     }else{
         ## Champs principaux :
         cPrincip <- c(
@@ -581,7 +581,7 @@ agregationTableParCritere.f <- function(Data, metrique, facteurs, dataEnv, listF
         {
             unitSpSz <- get("unitSpSz", envir=dataEnv)
 
-            if (is.null(unitSpSz)) stop("unitSpSz doit être défini")
+            if (is.null(unitSpSz)) stop("unitSpSz must be defined")
 
             Data <- merge(Data,
                           unitSpSz[ , c("code_espece", "unite_observation", "classe_taille", "traces.lisibles")],
@@ -590,7 +590,7 @@ agregationTableParCritere.f <- function(Data, metrique, facteurs, dataEnv, listF
         }else{
             unitSp <- get("unitSp", envir=dataEnv)
 
-            if (is.null(unitSp)) stop("unitSp doit être défini")
+            if (is.null(unitSp)) stop("unitSp must be defined")
 
             Data <- merge(Data,
                           unitSp[ , c("code_espece", "unite_observation", "traces.lisibles")],
@@ -841,7 +841,7 @@ agregationTableParCritere.f <- function(Data, metrique, facteurs, dataEnv, listF
                                                   na.rm=TRUE))
                          })
            },
-           stop("Pas implémenté !")
+           stop("Operation not implemented!")
            )
 
     ## Nom des dimensions
@@ -912,8 +912,8 @@ agregationTableParCritere.f <- function(Data, metrique, facteurs, dataEnv, listF
     ## d'agrégation des observations) :
     if (any(sapply(reslong[ , listFact], function(x){any(is.null(unlist(x)))})))
     {
-        warning(paste("Un des facteurs annexes est surement un sous-ensemble",
-                      " du(des) facteur(s) de regroupement des observations.", sep=""))
+        warning(paste(mltext("agregationTableParCritere.f.W.1"),
+                      mltext("agregationTableParCritere.f.W.2"), sep=""))
         return(NULL)
     }else{
         return(reslong)
@@ -934,7 +934,7 @@ presAbs.f <- function(nombres, logical=FALSE)
 
     if (any(nombres < 0, na.rm=TRUE))
     {
-        stop("effectifs inférieurs à 0 !")
+        stop("Negative abundances!")
     }else{}
 
     if (logical)
@@ -987,7 +987,7 @@ calcBiodiv.f <- function(Data, refesp, MPA, unitobs="unite_observation", code.es
     {
         if (printInfo)
         {
-            infoLoading.f(msg = paste("Calculs de biodiversité impossibles !"## ,
+            infoLoading.f(msg = paste(mltext("calcBiodiv.f.info.1")## ,
                                       ## "\n   La table de contingence n'a pas été calculée."
                           ), icon = "warning")
         }else{}
@@ -1003,11 +1003,15 @@ calcBiodiv.f <- function(Data, refesp, MPA, unitobs="unite_observation", code.es
         if (nlevels(DataTmp[ , code.especes]) > nlevels(Data[ , code.especes]))
         {
             nsup <- nlevels(DataTmp[ , code.especes]) - nlevels(Data[ , code.especes])
-            infoLoading.f(msg=paste(nsup, " \"code_espece\" non identifié",
-                                    ifelse(nsup > 1 , "s", ""),
-                                    " au niveau de l'espèce (\"sp.\")\n   ",
-                                    ifelse(nsup > 1, "ont été supprimés", "a été supprimé"),
-                                    " pour le calcul des indices de biodiversité.",
+            infoLoading.f(msg=paste(nsup, " \"code_espece\" ",
+                                    ifelse(nsup > 1 ,
+                                           mltext("calcBiodiv.f.info.2.p"),
+                                           mltext("calcBiodiv.f.info.2.s")),
+                                    mltext("calcBiodiv.f.info.3"),
+                                    ifelse(nsup > 1,
+                                           mltext("calcBiodiv.f.info.4.p"),
+                                           mltext("calcBiodiv.f.info.4.s")),
+                                    mltext("calcBiodiv.f.info.5"),
                                     sep=""))
         }else{}
     }else{}
@@ -1071,14 +1075,14 @@ calcBiodiv.f <- function(Data, refesp, MPA, unitobs="unite_observation", code.es
             {
                 df.biodiv$RS.relative.site.phylum <- (df.biodiv$richesse_specifique /
                                                       nrow(subset(refesp,
-                                                                  is.element(Observee, c("oui", "O")) &
-                                                                  is.element(Phylum, phylums)))) * 100
+                                                                  is.element(Observee, c("oui", "O", "yes", "Y")) &
+                                                                  is.element(Phylum, phylums)))) * 100 # [ml?]
             }else{}
         }else{
             df.biodiv$RS.relative.site.phylum <- (df.biodiv$richesse_specifique /
                                                   nrow(subset(refesp,
                                                               is.element(eval(parse(text=paste("Obs", MPA, sep=""))),
-                                                                         c("oui", "O")) &
+                                                                         c("oui", "O", "yes", "Y")) &
                                                               is.element(Phylum, phylums)))) * 100
         }
     }
@@ -1274,7 +1278,7 @@ calcBiodivTaxo.f <- function(Data, refesp, unitobs="unite_observation", code.esp
                                         {
                                             if (printInfo)
                                             {
-                                                infoLoading.f(msg="Indices de diversité taxinomique non-calculables !",
+                                                infoLoading.f(msg=mltext("calcBiodivTaxo.f.info.1"),
                                                               icon="warning")
                                             }else{}
 
@@ -1294,9 +1298,9 @@ calcBiodivTaxo.f <- function(Data, refesp, unitobs="unite_observation", code.esp
                 ## affichage des valeurs attendues :
                 if (printInfo)
                 {
-                    message(paste("La valeur théorique de Delta est :" , round(divTaxo[["ED"]], 3)))
-                    message(paste("La valeur théorique de Delta* est :" , round(divTaxo[["EDstar"]], 3)))
-                    message(paste("La valeur théorique de Delta+ est :" , round(divTaxo[["EDplus"]], 3)))
+                    message(paste(mltext("calcBiodivTaxo.f.msg.1") , round(divTaxo[["ED"]], 3)))
+                    message(paste(mltext("calcBiodivTaxo.f.msg.2") , round(divTaxo[["EDstar"]], 3)))
+                    message(paste(mltext("calcBiodivTaxo.f.msg.3") , round(divTaxo[["EDplus"]], 3)))
                 }else{}
             }else{
                 divTaxo <- NULL
@@ -1316,10 +1320,10 @@ calcBiodivTaxo.f <- function(Data, refesp, unitobs="unite_observation", code.esp
         }else{                              # nombre de genre < 2.
             switch(sum(sapply(sp.taxon, function(x)length(unique(x))) > 1),
                    "1"={
-                       warning("Nombre de Familles < 2 : les indices de diversité taxonomique ne peuvent être calculés.")
+                       warning(mltext("calcBiodivTaxo.f.Warn.1"))
                    },
                    "0"={
-                       warning("Nombre de genres < 2 : les indices de diversité taxonomique ne peuvent être calculés.")
+                       warning(mltext("calcBiodivTaxo.f.Warn.2"))
                    })
         }
     }
@@ -1337,15 +1341,15 @@ agregation.info.f <- function()
 
     WinInfo <- tktoplevel()
 
-    tkwm.title(WinInfo, "Information")
+    tkwm.title(WinInfo, mltext("agregation.info.f.title"))
 
     tkgrid(tklabel(WinInfo, text="\t "),
-           tklabel(WinInfo, text="\tAgrégation des données en cours...\n"),
+           tklabel(WinInfo, text=mltext("agregation.info.f.info.1")),
            tklabel(WinInfo, text="\t "),
            sticky="w")
     tkgrid(tklabel(WinInfo, text="\t "),
            tklabel(WinInfo,
-                   text=paste("(cette fenêtre se fermera automatiquement)\n", sep="")),
+                   text=paste(mltext("agregation.info.f.info.2"), sep="")),
            sticky="w")
     tkfocus(WinInfo)
     winSmartPlace.f(WinInfo)

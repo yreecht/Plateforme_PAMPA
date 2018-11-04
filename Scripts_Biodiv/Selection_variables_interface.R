@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2013-08-11 18:06:29 yreecht>
+# Time-stamp: <2018-11-04 15:59:43 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
@@ -64,7 +64,7 @@ selectModWindow.f <- function(champ, data, selectmode="multiple", sort=TRUE, pre
 
     if (is.null(title))
     {
-        tkwm.title(winfac, paste("Selection des valeurs de ", champ, sep=""))
+        tkwm.title(winfac, paste(mltext("selectModWindow.f.title"), champ, sep=""))
     }else{
         tkwm.title(winfac, title)
     }
@@ -78,13 +78,13 @@ selectModWindow.f <- function(champ, data, selectmode="multiple", sort=TRUE, pre
 
     ## Boutons :
     FrameB <- tkframe(winfac)
-    B.OK <- tkbutton(FrameB, text=" OK ", command=function()
+    B.OK <- tkbutton(FrameB, text=mltext("OK.button"), command=function()
                 {
                     assign("selection", listMod[as.numeric(tkcurselection(LB))+1], parent.env(environment()))
                     ## assign("tmptk", tkcurselection(LB), envir=.GlobalEnv)
                     tkdestroy(winfac)
                 })
-    B.Cancel <- tkbutton(FrameB, text=" Annuler ", command=function()
+    B.Cancel <- tkbutton(FrameB, text=mltext("Cancel.button"), command=function()
                      {
                          assign("selection", NULL, parent.env(environment()))
                          tkdestroy(winfac)
@@ -94,8 +94,8 @@ selectModWindow.f <- function(champ, data, selectmode="multiple", sort=TRUE, pre
     ## Explications :
     if (is.null(label))
     {
-        tkgrid(tklabel(winfac, text=paste("Liste des valeurs de '", champ,
-                               "' présentes.\n ",
+        tkgrid(tklabel(winfac, text=paste(mltext("selectModWindow.f.CB.1"), champ,
+                               mltext("selectModWindow.f.CB.2"),
                                sep="")), columnspan=2)
     }else{
         tkgrid(tklabel(winfac, text=label), columnspan=2)
@@ -111,9 +111,9 @@ selectModWindow.f <- function(champ, data, selectmode="multiple", sort=TRUE, pre
     if (selectmode == "extended")
     {
         tkgrid(tklabel(winfac,
-                       text=paste("!!Nouveau!! mode de sélection étendu : \n",
-                       "*  utilisez Ctrl et Maj pour les sélections multiples.\n",
-                       "*  Ctrl+a pour tout sélectionner\n", sep=""),
+                       text=paste(mltext("selectModWindow.f.info.1"),
+                       mltext("selectModWindow.f.info.2"),
+                       mltext("selectModWindow.f.info.3"), sep=""),
                        fg="red"), columnspan=2, rowspan=2)
     }else{}
 
@@ -269,7 +269,7 @@ verifVariables.f <- function(metrique, factGraph, factGraphSel, listFact, listFa
                      "spSymbols.esp")) &&
         is.null(factSpatial))
     {
-        infoLoading.f(msg="Vous devez sélectionner un facteur de zone", icon="error", titleType="check")
+        infoLoading.f(msg=mltext("verifVariables.f.info.2"), icon="error", titleType="check")
 
         return.val <- 0
     }else{}
@@ -277,7 +277,7 @@ verifVariables.f <- function(metrique, factGraph, factGraphSel, listFact, listFa
     ## Métrique pas sélectionnée :
     if (metrique == "")
     {
-        infoLoading.f(msg="Vous devez sélectionner une métrique", icon="error", titleType="check")
+        infoLoading.f(msg=mltext("verifVariables.f.info.1"), icon="error", titleType="check")
 
         return.val <- 0
     }else{}
@@ -313,7 +313,7 @@ verifVariables.f <- function(metrique, factGraph, factGraphSel, listFact, listFa
     if (length(listFact[unlist(listFact) != ""]) == 0 &&
         ! is.element(nextStep, c("spSymbols.unitobs", "spSymbols.esp")))
     {
-        infoLoading.f(msg="pas de facteur de regroupement sélectionné !", icon="error", titleType="check")
+        infoLoading.f(msg=mltext("verifVariables.f.info.3"), icon="error", titleType="check")
         return.val <- 0
     }else{}
 
@@ -324,10 +324,10 @@ verifVariables.f <- function(metrique, factGraph, factGraphSel, listFact, listFa
 
     if (sum(champsVide) > 0)
     {
-        infoLoading.f(msg=paste("Champ '",
+        infoLoading.f(msg=paste(mltext("verifVariables.f.info.4"),
                                 sapply(which(champsVide),
                                        function(i){varNames[names(champsVide)[i], "nom"]}),
-                                "' vide", sep="", collapse="\n"),
+                                mltext("verifVariables.f.info.5"), sep="", collapse="\n"),
                       icon="error", titleType="check")
         return.val <- 0
     }else{}
@@ -335,8 +335,8 @@ verifVariables.f <- function(metrique, factGraph, factGraphSel, listFact, listFa
     ## Métrique par classe de taille mais facteur "classe_taille" pas retenu :
     if (tableMetrique == "unitSpSz" & !is.element("classe_taille", facts))
     {
-        infoLoading.f(msg=paste("Attention : représentation d'une métrique par classes de taille\n",
-                                "mais 'classe_taille' n'est pas utilisée comme facteur"),
+        infoLoading.f(msg=paste(mltext("verifVariables.f.info.6"),
+                                mltext("verifVariables.f.info.7")),
                       icon="warning", titleType="check")
 
         return.val <- ifelse(return.val, 1, 0)
@@ -349,8 +349,8 @@ verifVariables.f <- function(metrique, factGraph, factGraphSel, listFact, listFa
                      "barplot.esp", "spSymbols.esp", "spBarBoxplot.esp")) &
         !any(is.element(c("espece", "code_espece", "Identifiant"), facts)))
     {
-        infoLoading.f(msg=paste("Attention : représentation d'une métrique par espèce\n",
-                                "mais 'espece' ou 'code_espece' n'est pas utilisé comme facteur"),
+        infoLoading.f(msg=paste(mltext("verifVariables.f.info.9"),
+                                mltext("verifVariables.f.info.10")),
                       icon="warning", titleType="check")
 
         return.val <- ifelse(return.val, 1, 0)
@@ -364,7 +364,7 @@ verifVariables.f <- function(metrique, factGraph, factGraphSel, listFact, listFa
                      "spBarBoxplot.esp", "spBarBoxplot.unitobs")) &&
         length(listFact[unlist(listFact) != ""]) > 2)
     {
-        infoLoading.f(msg="Utilisez 2 facteurs de regroupement au plus", icon="error", titleType="check")
+        infoLoading.f(msg=mltext("verifVariables.f.info.8"), icon="error", titleType="check")
         return.val <- 0
     }else{}
 
@@ -394,9 +394,9 @@ verifVariables.f <- function(metrique, factGraph, factGraphSel, listFact, listFa
                                           info=TRUE,
                                           dataEnv=dataEnv)))
         {
-            infoLoading.f(msg=paste("Un des facteurs de regroupement est une sous-catégorie",
-                                    "\nd'un des facteurs d'agrégation (e.g. espèce -> Famille).",
-                                    "\n\nLes données ne peuvent être agrégées !", sep=""),
+            infoLoading.f(msg=paste(mltext("verifVariables.f.info.11"),
+                                    mltext("verifVariables.f.info.12"),
+                                    mltext("verifVariables.f.info.13"), sep=""),
                           icon="error")
 
             return.val <- 0
@@ -420,9 +420,9 @@ verifVariables.f <- function(metrique, factGraph, factGraphSel, listFact, listFa
                                                                                                c(metrique, factGraph)), drop=FALSE],
                                                                            function(x)length(unique(x))) == 1]
 
-            infoLoading.f(msg=paste("Il n'y a qu'une seule modalité dans le(s) facteur(s) : \n\t- '",
+            infoLoading.f(msg=paste(mltext("verifVariables.f.info.14"), "\n\t- '",
                                     paste(fact1level, collapse="'\n\t- '"),
-                                    "'\nAnalyse impossible !", sep=""),
+                                    "'\n", mltext("verifVariables.f.info.15"), sep=""),
                           icon="error")
 
             return.val <- 0
@@ -431,9 +431,9 @@ verifVariables.f <- function(metrique, factGraph, factGraphSel, listFact, listFa
         ## Bloquer les analyses à plus de 3 facteurs :
         if (length(listFact[unlist(listFact) != ""]) > 3)
         {
-            infoLoading.f(msg=paste("Vous avez sélectionné trop de facteurs de regroupement : ",
-                                     "\nLes résultats seraient inexploitables !",
-                                     "\n\nVeuillez sélectionner *au plus* trois facteurs de regroupement",
+            infoLoading.f(msg=paste(mltext("verifVariables.f.info.16"),
+                                    mltext("verifVariables.f.info.17"),
+                                    mltext("verifVariables.f.info.18"),
                                      sep=""),
                           icon="error")
 
@@ -442,9 +442,9 @@ verifVariables.f <- function(metrique, factGraph, factGraphSel, listFact, listFa
             if (length(listFact[unlist(listFact) != ""]) >= 3) # On garde la possibilité d'augmenter le seuil de refus
                                         # des analyses, ci-dessus, sans modifier celui-ci.
             {
-                infoLoading.f(msg=paste("Attention :",
-                                        "\n\nÀ partir de trois facteurs de regroupement, les résultats deviennent ",
-                                        "\ndifficiles à interpréter. Préférez des analyses à un ou deux facteur(s).",
+                infoLoading.f(msg=paste(mltext("verifVariables.f.info.19"),
+                                        mltext("verifVariables.f.info.20"),
+                                        mltext("verifVariables.f.info.21"),
                                         sep=""),
                               icon="warning")
 
@@ -735,14 +735,14 @@ titreSelVar.f <- function(type, nextStep)
 
     texts <- list(
         ## Titre de fenêtre :
-        winTitle=c(boxplot.esp="boxplots (métrique/espèce/unité d'observation)",
-                   modele_lineaire="modèles linéaires (métrique/espèce/unité d'observation)",
-                   freq_occurrence="fréquences d'occurrences",
-                   freq_occurrence.unitobs="fréquences d'occurrences",
-                   boxplot.unitobs="boxplots (métrique agrégée/unité d'observation)",
-                   modele_lineaire.unitobs="modèles linéaires (métrique/unité d'observation)",
-                   MRT.unitobs="Arbres de régression (métrique/unité d'observation)",
-                   MRT.esp="Arbres de régression (métrique/espèce/unité d'observation)",
+        winTitle=c(boxplot.esp=mltext("titreSelVar.f.WT.boxplot.esp"),
+                   modele_lineaire=mltext("titreSelVar.f.WT.modele_lineaire"),
+                   freq_occurrence=mltext("titreSelVar.f.WT.freq_occurrence"),
+                   freq_occurrence.unitobs=mltext("titreSelVar.f.WT.freq_occurrence.unitobs"),
+                   boxplot.unitobs=mltext("titreSelVar.f.WT.boxplot.unitobs"),
+                   modele_lineaire.unitobs=mltext("titreSelVar.f.WT.modele_lineaire.unitobs"),
+                   MRT.unitobs=mltext("titreSelVar.f.WT.MRT.unitobs"),
+                   MRT.esp=mltext("titreSelVar.f.WT.MRT.esp"), # [mlo]
                    barplot.unitobs="barplots (métrique agrégée/unité d'observation)",
                    barplot.esp="barplots (métrique/espèce/unité d'observation)",
                    spBarBoxplot.unitobs="barplots/boxplots (métrique agrégée/unité d'observation)",

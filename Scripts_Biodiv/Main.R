@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-11-01 18:00:29 yreecht>
+# Time-stamp: <2018-11-04 16:00:04 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2018 Ifremer - Tous droits réservés.
@@ -110,7 +110,7 @@ source("./Scripts_Biodiv/Options.R", encoding="latin1")                         
 
 ## ...l'interface de sélection des variables :
 source("./Scripts_Biodiv/Selection_variables_fonctions.R", encoding="latin1")          # OK [mld]
-source("./Scripts_Biodiv/Selection_variables_interface.R", encoding="latin1")          # OK
+source("./Scripts_Biodiv/Selection_variables_interface.R", encoding="latin1")          # OK [mlo]
 
 ## ...la création de boxplots (...) :
 source("./Scripts_Biodiv/Fonctions_graphiques.R", encoding="latin1")                   # OK

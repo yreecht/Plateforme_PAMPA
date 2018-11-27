@@ -10,6 +10,9 @@ stat.median,médiane,median
 OK.button,   OK   ,   OK   
 Cancel.button,   Annuler   ,   Cancel    
 Reset.button, Réinitialiser ,     Reset     
+Run.button,  Lancer  ,    Run    
+Quit.button, Quitter ,   Exit   
+GraphOpt.button, Options graphiques... ,  Graphics options...  
 W.main.title,Indicateurs relatifs à la biodiversité et aux ressources,Biodiversity and fished resource indicators
 MB.import,Données,Data
 MB.selection,Sélection et recalcul,Subsetting
@@ -508,7 +511,7 @@ generalOptions.OutputTitle,Sauvgardes pour chaque analyse ou graphique :,Save fo
 generalOptions.saveData,...données du graphique ou de l'analyse\n(fichier *.csv) ? ,...data subset used (*.csv file)? 
 generalOptions.saveStats,...informations sur les données et statistiques\n(fichier *.stat) ? ,...information on data et statistics\n(*.stat file)? 
 generalOptions.err.Opt.1,Erreur : Option PAMPA ',Error : PAMPA option '
-generalOptions.err.Opt.2,' non définie., not defined.
+generalOptions.err.Opt.2,' non définie.,' not defined.
 agregationTableParCritere.f.W.1,Un des facteurs annexes est surement un sous-ensemble,One of the secondary factors is probably a subset 
 agregationTableParCritere.f.W.2, du(des) facteur(s) de regroupement des observations., of the observation grouping factor(s).
 calcBiodiv.f.info.1,Calculs de biodiversité impossibles !,Biodiversity metrics not calculable!
@@ -527,3 +530,68 @@ calcBiodivTaxo.f.Warn.2,Nombre de genres < 2 : les indices de diversité taxonomi
 agregation.info.f.title,Information,Information
 agregation.info.f.info.1,\tAgrégation des données en cours...\n,\tAggregating data...\n
 agregation.info.f.info.2,(cette fenêtre se fermera automatiquement)\n,(this window will close automatically)\n
+selectModWindow.f.title,Selection des valeurs de ,Selection of levels within 
+selectModWindow.f.CB.1,Liste des valeurs de ',Values of the field '
+selectModWindow.f.CB.2,' présentes.\n ,'.\n 
+selectModWindow.f.info.1,!!Nouveau!! mode de sélection étendu : \n,Extended selection mode: \n
+selectModWindow.f.info.2,*  utilisez Ctrl et Maj pour les sélections multiples.\n,*  use Ctrl and Shift for multiple selections.\n
+selectModWindow.f.info.3,*  Ctrl+a pour tout sélectionner\n,*  Ctrl+a to select all\n
+verifVariables.f.info.1,Vous devez sélectionner une métrique,A metrics must be selected
+verifVariables.f.info.2,Vous devez sélectionner un facteur de zone,A spatial factor must be selected
+verifVariables.f.info.3,Pas de facteur de regroupement sélectionné !,No grouping factor selected!
+verifVariables.f.info.4,Champ ',Field '
+verifVariables.f.info.5,' vide,' empty
+verifVariables.f.info.6,Attention : représentation d'une métrique par classes de taille\n,Metrics aggregated by size class\n
+verifVariables.f.info.7,mais 'classe_taille' n'est pas utilisée comme facteur,but 'classe_taille' not used as a factor.
+verifVariables.f.info.8,Utilisez 2 facteurs de regroupement au plus,Use not more than 2 grouping factors.
+verifVariables.f.info.9,Attention : représentation d'une métrique par espèce\n,Metrics aggregated by species\n
+verifVariables.f.info.10,mais 'espece' ou 'code_espece' n'est pas utilisé comme facteur,but 'espece' ou 'code_espece' not used as factor.
+verifVariables.f.info.11,Un des facteurs de regroupement est une sous-catégorie,A grouping factor is a sub-category of
+verifVariables.f.info.12,\nd'un des facteurs d'agrégation (e.g. espèce -> Famille).,\nan aggregation factor (e.g. species -> Family).
+verifVariables.f.info.13,\n\nLes données ne peuvent être agrégées !,\n\nThe data cannot be aggregated!
+verifVariables.f.info.14,Il n'y a qu'une seule modalité dans le(s) facteur(s) : ,Only one level in factor(s): 
+verifVariables.f.info.15,Analyse impossible !,Cannot be analysed!
+verifVariables.f.info.16,Vous avez sélectionné trop de facteurs de regroupement : ,Too many grouping factors selected: 
+verifVariables.f.info.17,\nLes résultats seraient inexploitables !,\nthe results would not be exploitable!
+verifVariables.f.info.18,\n\nVeuillez sélectionner *au plus* trois facteurs de regroupement,\n\nPlease select *no more* then three grouping factors
+verifVariables.f.info.19,Attention :,Warning:
+verifVariables.f.info.20,"\n\nÀ partir de trois facteurs de regroupement, les résultats deviennent ","\n\nFrom three grouping factors, results become difficult to interpret. "
+verifVariables.f.info.21,\ndifficiles à interpréter. Préférez des analyses à un ou deux facteur(s).,\nPrefer analyses with one or two factor(s).
+titreSelVar.f.WT.boxplot.esp,boxplots (métrique/espèce/unité d'observation),boxplots (metrics/species/station)
+titreSelVar.f.WT.modele_lineaire,modèles linéaires (métrique/espèce/unité d'observation),linear models (metrics/species/station)
+titreSelVar.f.WT.freq_occurrence,fréquences d'occurrences,occurrence frequencies
+titreSelVar.f.WT.freq_occurrence.unitobs,fréquences d'occurrences,occurrence frequencies
+titreSelVar.f.WT.boxplot.unitobs,boxplots (métrique agrégée/unité d'observation),boxplots (metrics aggregated/station)
+titreSelVar.f.WT.modele_lineaire.unitobs,modèles linéaires (métrique/unité d'observation),linear models (metrics aggregated/station)
+titreSelVar.f.WT.MRT.unitobs,Arbres de régression (métrique/unité d'observation),multivariate regression trees (metrics aggregated/station)
+titreSelVar.f.WT.MRT.esp,Arbres de régression (métrique/espèce/unité d'observation),multivariate regression trees (metrics/species/station)
+titreSelVar.f.WT.barplot.unitobs,barplots (métrique agrégée/unité d'observation),barplots (metrics aggregated/station)
+titreSelVar.f.WT.barplot.esp,barplots (métrique/espèce/unité d'observation),barplots (metrics/species/station)
+titreSelVar.f.WT.spBarBoxplot.unitobs,barplots/boxplots (métrique agrégée/unité d'observation),barplots/boxplots (metrics aggregated/station)
+titreSelVar.f.WT.spBarBoxplot.esp,barplots/boxplots (métrique/espèce/unité d'observation),barplots/boxplots (metrics/species/station)
+titreSelVar.f.WT.spSymbols.unitobs,symboles/couleurs (métrique agrégée/unité d'observation),symbols/colour scale (metrics aggregated/station)
+titreSelVar.f.WT.spSymbols.esp,symboles/couleurs (métrique/espèce/unité d'observation),symbols/colour scale (metrics/species/station)
+titreSelVar.f.M.repesented,Métrique à représenter : ,Represented metrics: 
+titreSelVar.f.M.explained,Métrique expliquée : ,Explained metrics: 
+titreSelVar.f.M.freq_occurrence,"Métrique calculée : ""fréquence d'occurrence"" (/espèce ; sur unités d'observations)","Calculated metrics: “occurrence frequency” (/species, over stations)"
+titreSelVar.f.M.freq_occurrence.unitobs,"Métrique calculée : ""fréquence d'occurrence"" (/groupe d'espèce ; sur unités d'observations)","Calculated metrics: “occurrence frequency” (/species group, over stations)"
+titreSelVar.f.FS.graphFact,"Créer un graphique par facteur...  (optionnel, 'code_espece' ou 'identifiant' conseillé)","Generate a plot per factor level (optional, 'code_espece' or 'identifiant' recommended)"
+titreSelVar.f.FS.modele_lineaire,"Séparer les analyses par facteur...  (optionnel, 'code_espece' ou 'identifiant' conseillé)","Split the analyses per factor level (optional, 'code_espece' or 'identifiant' recommended)"
+titreSelVar.f.FS.freq_occurrence,"Séparer les graphiques par facteur...  (optionnel, 'code_espece' ou 'identifiant' conseillé)","Split the plots per factor level (optional, 'code_espece' or 'identifiant' recommended)"
+titreSelVar.f.FS.selectSp,"Sélection d'espèce(s) selon un critère...  (optionnel, toutes par défaut)","Subset species... (optional, all by default)"
+titreSelVar.f.FS.MRT.esp,"Séparer les graphiques/analyses par facteur...  (optionnel, 'code_espece' ou 'identifiant' conseillé)","Split the analyses/plots per factor level (optional, 'code_espece' or 'identifiant' recommended)"
+titreSelVar.f.F.graph,Choix du (des) facteur(s) de regroupement (sur un même graphique),Selection of the grouping factor(s) (same plot)
+titreSelVar.f.F.modele_lineaire,Choix du(des) facteur(s) explicatif(s),Selection of the explaining factor(s)
+titreSelVar.f.F.freq_occurrence,Choix du(des) facteur(s) explicatif(s)/de regroupement,Selection of the grouping/explaining factor(s)
+titreSelVar.f.F.MRT,Choix du(des) facteur(s) explicatif(s) (l'ordre n'a pas d'influence),Selection of the explaining factor(s) (the order does not matter)
+titreSelVar.f.tLsp.UnitobsSp,.../ unité d'observation / espèce,.../ station / species
+titreSelVar.f.tLsp.Unitobs,.../ unité d'observation,.../ station
+titreSelVar.f.tLspCT.UnitobsSpCT,.../ unité d'observation / espèce / classes de taille,.../ station / species / size class
+titreSelVar.f.tLspCT.UnitobsCT,.../ unité d'observation / classes de taille,.../ station / size class
+titreSelVar.f.factSpatial,Facteur de regroupement spatial,Spatial grouping factor
+selectionVariables.WT,Sélection des variables pour les ,Selection of variables for the 
+selectionVariables.RB.fGraphRefesp,du référentiel espèces,from the species reference table
+selectionVariables.RB.fGraphUnitobs,d'unité d'observation,from the station characteristics
+selectionVariables.B.fSel, Sélection... , Subset... 
+selectionVariables.Levels,    Modalités (toutes par défaut)  ,        Levels (all by defaults)      
+selectionVariables.Factor,Facteur,Factor

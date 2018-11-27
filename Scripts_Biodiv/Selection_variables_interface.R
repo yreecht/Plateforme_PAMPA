@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-11-04 15:59:43 yreecht>
+# Time-stamp: <2018-11-27 11:58:30 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
@@ -687,14 +687,18 @@ nouvChoixFact.f <- function(level, env)
 
         ## Création d'un bouton de sélection des modalités supplémentaire :
         exprSel <- paste("B.factSel", level + 1,
-                         " <- tkbutton(FrameFact, text=' Sélection... ', command=function()",
+                         " <- tkbutton(FrameFact, text='",
+                         mltext("selectionVariables.B.fSel"),
+                         "', command=function()",
                          " { selectModalites.f(tclvalue(listFacteurs[[", level + 1, "]]), ",
                          "tableMetrique=tclvalue(TableMetrique), env=env, level=",
                          level + 1, ", nextStep=nextStep, dataEnv=dataEnv) ; winRaise.f(WinSelection) })",
                          sep="")
 
         ## Affichage de la combobox et du bouton :
-        exprGrid <- paste("tkgrid(tklabel(FrameFact, text='Facteur ",
+        exprGrid <- paste("tkgrid(tklabel(FrameFact, text='",
+                          mltext("selectionVariables.Factor"),
+                          " ",
                           level + 1, " '",
                           ifelse(exists(".BGcolor", envir=env), ", background=.BGcolor", ""),
                           "), CB.fact", level + 1, ", B.factSel", level + 1,
@@ -742,89 +746,89 @@ titreSelVar.f <- function(type, nextStep)
                    boxplot.unitobs=mltext("titreSelVar.f.WT.boxplot.unitobs"),
                    modele_lineaire.unitobs=mltext("titreSelVar.f.WT.modele_lineaire.unitobs"),
                    MRT.unitobs=mltext("titreSelVar.f.WT.MRT.unitobs"),
-                   MRT.esp=mltext("titreSelVar.f.WT.MRT.esp"), # [mlo]
-                   barplot.unitobs="barplots (métrique agrégée/unité d'observation)",
-                   barplot.esp="barplots (métrique/espèce/unité d'observation)",
-                   spBarBoxplot.unitobs="barplots/boxplots (métrique agrégée/unité d'observation)",
-                   spBarBoxplot.esp="barplots/boxplots (métrique/espèce/unité d'observation)",
-                   spSymbols.unitobs="symboles/couleurs (métrique agrégée/unité d'observation)",
-                   spSymbols.esp="symboles/couleurs (métrique/espèce/unité d'observation)"),
+                   MRT.esp=mltext("titreSelVar.f.WT.MRT.esp"),
+                   barplot.unitobs=mltext("titreSelVar.f.WT.barplot.unitobs"),
+                   barplot.esp=mltext("titreSelVar.f.WT.barplot.esp"),
+                   spBarBoxplot.unitobs=mltext("titreSelVar.f.WT.spBarBoxplot.unitobs"),
+                   spBarBoxplot.esp=mltext("titreSelVar.f.WT.spBarBoxplot.esp"),
+                   spSymbols.unitobs=mltext("titreSelVar.f.WT.spSymbols.unitobs"),
+                   spSymbols.esp=mltext("titreSelVar.f.WT.spSymbols.esp")),
         ## Texte pour le choix métrique :
-        metrique=c(boxplot.esp="Métrique à représenter : ",
-                   modele_lineaire="Métrique expliquée : ",
-                   freq_occurrence="Métrique calculée : \"fréquence d'occurrence\" (/espèce ; sur unités d'observations)",
-                   freq_occurrence.unitobs="Métrique calculée : \"fréquence d'occurrence\" (/groupe d'espèce ; sur unités d'observations)",
-                   boxplot.unitobs="Métrique à représenter",
-                   modele_lineaire.unitobs="Métrique expliquée : ",
-                   MRT.unitobs="Métrique expliquée :",
-                   MRT.esp="Métrique expliquée : ",
-                   barplot.unitobs="Métrique à représenter",
-                   barplot.esp="Métrique à représenter : ",
-                   spBarBoxplot.unitobs="Métrique à représenter",
-                   spBarBoxplot.esp="Métrique à représenter : ",
-                   spSymbols.unitobs="Métrique à représenter",
-                   spSymbols.esp="Métrique à représenter : "),
+        metrique=c(boxplot.esp=mltext("titreSelVar.f.M.repesented"),
+                   modele_lineaire=mltext("titreSelVar.f.M.explained"),
+                   freq_occurrence=mltext("titreSelVar.f.M.freq_occurrence"),
+                   freq_occurrence.unitobs=mltext("titreSelVar.f.M.freq_occurrence.unitobs"),
+                   boxplot.unitobs=mltext("titreSelVar.f.M.repesented"),
+                   modele_lineaire.unitobs=mltext("titreSelVar.f.M.explained"),
+                   MRT.unitobs=mltext("titreSelVar.f.M.explained"),
+                   MRT.esp=mltext("titreSelVar.f.M.explained"),
+                   barplot.unitobs=mltext("titreSelVar.f.M.repesented"),
+                   barplot.esp=mltext("titreSelVar.f.M.repesented"),
+                   spBarBoxplot.unitobs=mltext("titreSelVar.f.M.repesented"),
+                   spBarBoxplot.esp=mltext("titreSelVar.f.M.repesented"),
+                   spSymbols.unitobs=mltext("titreSelVar.f.M.repesented"),
+                   spSymbols.esp=mltext("titreSelVar.f.M.repesented")),
         ## Texte pour le choix d'un facteur de séparation :
-        factSep=c(boxplot.esp="Créer un graphique par facteur...  (optionnel, 'code_espece' ou 'identifiant' conseillé)",
-                  modele_lineaire="Séparer les analyses par facteur...  (optionnel, 'code_espece' ou 'identifiant' conseillé)",
-                  freq_occurrence="Séparer les graphiques par facteur...  (optionnel, 'code_espece' ou 'identifiant' conseillé)",
-                  freq_occurrence.unitobs="Sélection d'espèce(s) selon un critère...  (optionnel, toutes par défaut)",
-                  boxplot.unitobs="Sélection d'espèce(s) selon un critère...  (optionnel, toutes par défaut)",
-                  modele_lineaire.unitobs="Sélection d'espèce(s) selon un critère...  (optionnel, toutes par défaut)",
-                  MRT.unitobs="Sélection d'espèce(s) selon un critère...  (optionnel, toutes par défaut)",
-                  MRT.esp="Séparer les graphiques/analyses par facteur...  (optionnel, 'code_espece' ou 'identifiant' conseillé)",
-                  barplot.unitobs="Sélection d'espèce(s) selon un critère...  (optionnel, toutes par défaut)",
-                  barplot.esp="Créer un graphique par facteur...  (optionnel, 'code_espece' ou 'identifiant' conseillé)",
-                  spBarBoxplot.unitobs="Sélection d'espèce(s) selon un critère...  (optionnel, toutes par défaut)",
-                  spBarBoxplot.esp="Créer un graphique par facteur...  (optionnel, 'code_espece' ou 'identifiant' conseillé)",
-                  spSymbols.unitobs="Sélection d'espèce(s) selon un critère...  (optionnel, toutes par défaut)",
-                  spSymbols.esp="Créer un graphique par facteur...  (optionnel, 'code_espece' ou 'identifiant' conseillé)"),
+        factSep=c(boxplot.esp=mltext("titreSelVar.f.FS.graphFact"),
+                  modele_lineaire=mltext("titreSelVar.f.FS.modele_lineaire"),
+                  freq_occurrence=mltext("titreSelVar.f.FS.freq_occurrence"),
+                  freq_occurrence.unitobs=mltext("titreSelVar.f.FS.selectSp"),
+                  boxplot.unitobs=mltext("titreSelVar.f.FS.selectSp"),
+                  modele_lineaire.unitobs=mltext("titreSelVar.f.FS.selectSp"),
+                  MRT.unitobs=mltext("titreSelVar.f.FS.selectSp"),
+                  MRT.esp=mltext("titreSelVar.f.FS.MRT.esp"),
+                  barplot.unitobs=mltext("titreSelVar.f.FS.selectSp"),
+                  barplot.esp=mltext("titreSelVar.f.FS.graphFact"),
+                  spBarBoxplot.unitobs=mltext("titreSelVar.f.FS.selectSp"),
+                  spBarBoxplot.esp=mltext("titreSelVar.f.FS.graphFact"),
+                  spSymbols.unitobs=mltext("titreSelVar.f.FS.selectSp"),
+                  spSymbols.esp=mltext("titreSelVar.f.FS.graphFact")),
         ## Texte pour le choix du(des) facteur(s) explicatif(s) :
-        facteurs=c(boxplot.esp="Choix du (des) facteur(s) de regroupement (sur un même graphique)",
-                   modele_lineaire="Choix du(des) facteur(s) explicatif(s)",
-                   freq_occurrence="Choix du(des) facteur(s) explicatif(s)/de regroupement",
-                   freq_occurrence.unitobs="Choix du(des) facteur(s) explicatif(s)/de regroupement",
-                   boxplot.unitobs="Choix du (des) facteur(s) de regroupement (sur un même graphique)",
-                   modele_lineaire.unitobs="Choix du(des) facteur(s) explicatif(s)",
-                   MRT.unitobs="Choix du(des) facteur(s) explicatif(s) (l'ordre n'a pas d'influence)",
-                   MRT.esp="Choix du(des) facteur(s) explicatif(s) (l'ordre n'a pas d'influence)",
-                   barplot.unitobs="Choix du (des) facteur(s) de regroupement (sur un même graphique)",
-                   barplot.esp="Choix du (des) facteur(s) de regroupement (sur un même graphique)",
-                   spBarBoxplot.unitobs="Choix du (des) facteur(s) de regroupement (sur un même graphique)",
-                   spBarBoxplot.esp="Choix du (des) facteur(s) de regroupement (sur un même graphique)",
-                   spSymbols.unitobs="Choix du (des) facteur(s) de regroupement (sur un même graphique)",
-                   spSymbols.esp="Choix du (des) facteur(s) de regroupement (sur un même graphique)"),
+        facteurs=c(boxplot.esp=mltext("titreSelVar.f.F.graph"),
+                   modele_lineaire=mltext("titreSelVar.f.F.modele_lineaire"),
+                   freq_occurrence=mltext("titreSelVar.f.F.freq_occurrence"),
+                   freq_occurrence.unitobs=mltext("titreSelVar.f.F.freq_occurrence"),
+                   boxplot.unitobs=mltext("titreSelVar.f.F.graph"),
+                   modele_lineaire.unitobs=mltext("titreSelVar.f.F.modele_lineaire"),
+                   MRT.unitobs=mltext("titreSelVar.f.F.MRT"),
+                   MRT.esp=mltext("titreSelVar.f.F.MRT"),
+                   barplot.unitobs=mltext("titreSelVar.f.F.graph"),
+                   barplot.esp=mltext("titreSelVar.f.F.graph"),
+                   spBarBoxplot.unitobs=mltext("titreSelVar.f.F.graph"),
+                   spBarBoxplot.esp=mltext("titreSelVar.f.F.graph"),
+                   spSymbols.unitobs=mltext("titreSelVar.f.F.graph"),
+                   spSymbols.esp=mltext("titreSelVar.f.F.graph")),
         ## Niveau d'agrégation pour table / espèce :
-        tabListesp=c(boxplot.esp=".../ unité d'observation / espèce",
-                     modele_lineaire=".../ unité d'observation / espèce",
-                     freq_occurrence=".../ unité d'observation / espèce",
-                     freq_occurrence.unitobs=".../ unité d'observation",
-                     boxplot.unitobs=".../ unité d'observation",
-                     modele_lineaire.unitobs=".../ unité d'observation",
-                     MRT.unitobs=".../ unité d'observation",
-                     MRT.esp=".../ unité d'observation / espèce",
-                     barplot.unitobs=".../ unité d'observation",
-                     barplot.esp=".../ unité d'observation / espèce",
-                     spBarBoxplot.unitobs=".../ unité d'observation",
-                     spBarBoxplot.esp=".../ unité d'observation / espèce",
-                     spSymbols.unitobs=".../ unité d'observation",
-                     spSymbols.esp=".../ unité d'observation / espèce"),
+        tabListesp=c(boxplot.esp=mltext("titreSelVar.f.tLsp.UnitobsSp"),
+                     modele_lineaire=mltext("titreSelVar.f.tLsp.UnitobsSp"),
+                     freq_occurrence=mltext("titreSelVar.f.tLsp.UnitobsSp"),
+                     freq_occurrence.unitobs=mltext("titreSelVar.f.tLsp.Unitobs"),
+                     boxplot.unitobs=mltext("titreSelVar.f.tLsp.Unitobs"),
+                     modele_lineaire.unitobs=mltext("titreSelVar.f.tLsp.Unitobs"),
+                     MRT.unitobs=mltext("titreSelVar.f.tLsp.Unitobs"),
+                     MRT.esp=mltext("titreSelVar.f.tLsp.UnitobsSp"),
+                     barplot.unitobs=mltext("titreSelVar.f.tLsp.Unitobs"),
+                     barplot.esp=mltext("titreSelVar.f.tLsp.UnitobsSp"),
+                     spBarBoxplot.unitobs=mltext("titreSelVar.f.tLsp.Unitobs"),
+                     spBarBoxplot.esp=mltext("titreSelVar.f.tLsp.UnitobsSp"),
+                     spSymbols.unitobs=mltext("titreSelVar.f.tLsp.Unitobs"),
+                     spSymbols.esp=mltext("titreSelVar.f.tLsp.UnitobsSp")),
         ## Niveau d'agrégation pour table / classe de taille :
-        tabListespCT=c(boxplot.esp=".../ unité d'observation / espèce / classes de taille",
-                       modele_lineaire=".../ unité d'observation / espèce / classes de taille",
-                       freq_occurrence=".../ unité d'observation / espèce / classes de taille",
-                       freq_occurrence.unitobs=".../ unité d'observation / classes de taille",
-                       boxplot.unitobs=".../ unité d'observation / classes de taille",
-                       modele_lineaire.unitobs=".../ unité d'observation / classes de taille",
-                       MRT.unitobs=".../ unité d'observation / classes de taille",
-                       MRT.esp=".../ unité d'observation / espèce / classes de taille",
-                       barplot.unitobs=".../ unité d'observation / classes de taille",
-                       barplot.esp=".../ unité d'observation / espèce / classes de taille",
-                       spBarBoxplot.unitobs=".../ unité d'observation / classes de taille",
-                       spBarBoxplot.esp=".../ unité d'observation / espèce / classes de taille",
-                       spSymbols.unitobs=".../ unité d'observation / classes de taille",
-                       spSymbols.esp=".../ unité d'observation / espèce / classes de taille"),
-        factSpatial=c(boxplot.esp="Facteur de regroupement spatial",
+        tabListespCT=c(boxplot.esp=mltext("titreSelVar.f.tLspCT.UnitobsSpCT"),
+                       modele_lineaire=mltext("titreSelVar.f.tLspCT.UnitobsSpCT"),
+                       freq_occurrence=mltext("titreSelVar.f.tLspCT.UnitobsSpCT"),
+                       freq_occurrence.unitobs=mltext("titreSelVar.f.tLspCT.UnitobsCT"),
+                       boxplot.unitobs=mltext("titreSelVar.f.tLspCT.UnitobsCT"),
+                       modele_lineaire.unitobs=mltext("titreSelVar.f.tLspCT.UnitobsCT"),
+                       MRT.unitobs=mltext("titreSelVar.f.tLspCT.UnitobsCT"),
+                       MRT.esp=mltext("titreSelVar.f.tLspCT.UnitobsSpCT"),
+                       barplot.unitobs=mltext("titreSelVar.f.tLspCT.UnitobsCT"),
+                       barplot.esp=mltext("titreSelVar.f.tLspCT.UnitobsSpCT"),
+                       spBarBoxplot.unitobs=mltext("titreSelVar.f.tLspCT.UnitobsCT"),
+                       spBarBoxplot.esp=mltext("titreSelVar.f.tLspCT.UnitobsSpCT"),
+                       spSymbols.unitobs=mltext("titreSelVar.f.tLspCT.UnitobsCT"),
+                       spSymbols.esp=mltext("titreSelVar.f.tLspCT.UnitobsSpCT")),
+        factSpatial=c(boxplot.esp=mltext("titreSelVar.f.factSpatial"),
                       modele_lineaire="",
                       freq_occurrence="",
                       freq_occurrence.unitobs="",
@@ -834,10 +838,10 @@ titreSelVar.f <- function(type, nextStep)
                       MRT.esp="",
                       barplot.unitobs="",
                       barplot.esp="",
-                      spBarBoxplot.unitobs="Facteur de regroupement spatial",
-                      spBarBoxplot.esp="Facteur de regroupement spatial",
-                      spSymbols.unitobs="Facteur de regroupement spatial",
-                      spSymbols.esp="Facteur de regroupement spatial")
+                      spBarBoxplot.unitobs=mltext("titreSelVar.f.factSpatial"),
+                      spBarBoxplot.esp=mltext("titreSelVar.f.factSpatial"),
+                      spSymbols.unitobs=mltext("titreSelVar.f.factSpatial"),
+                      spSymbols.esp=mltext("titreSelVar.f.factSpatial"))
         ## =c(boxplot= , modele_lineaire=),
         )
 
@@ -927,7 +931,8 @@ selectionVariables.f <- function(nextStep, dataEnv, baseEnv)
     ## Éléments graphiques :
     WinSelection <- tktoplevel()          # Fenêtre principale
     tkwm.title(WinSelection,
-               paste("Sélection des variables pour les ", titreSelVar.f(type="winTitle", nextStep), sep=""))
+               paste(mltext("selectionVariables.WT"),
+                     titreSelVar.f(type="winTitle", nextStep), sep=""))
 
     ## Métriques :
     FrameMetrique <- tkframe(WinSelection, borderwidth=2, relief="groove")
@@ -960,15 +965,21 @@ selectionVariables.f <- function(nextStep, dataEnv, baseEnv)
     FrameRB <- tkframe(FrameFactGraph)
     FrameGB <- tkframe(FrameFactGraph)
 
-    RB.factGraphRefesp <- tkradiobutton(FrameRB, variable=FactGraphTbl, value="refesp", text="du référentiel espèces")
-    RB.factGraphUnitobs <- tkradiobutton(FrameRB, variable=FactGraphTbl, value="unitobs", text="d'unité d'observation")
+    RB.factGraphRefesp <- tkradiobutton(FrameRB, variable=FactGraphTbl, value="refesp",
+                                        text=mltext("selectionVariables.RB.fGraphRefesp"))
+    RB.factGraphUnitobs <- tkradiobutton(FrameRB, variable=FactGraphTbl, value="unitobs",
+                                         text=mltext("selectionVariables.RB.fGraphUnitobs"))
     CB.factGraph <- ttkcombobox(FrameGB, value="", textvariable=FacteurGraph, state="readonly")
-    B.factGraphSel <- tkbutton(FrameGB, text=" Sélection... ", command=function()
-                           {
-                               selectModalites.f(factor=tclvalue(FacteurGraph), tableMetrique=tclvalue(TableMetrique),
-                                                 env=env, level=0, nextStep=nextStep, dataEnv=dataEnv)
-                               winRaise.f(WinSelection)
-                           })
+    B.factGraphSel <- tkbutton(FrameGB,
+                               text=mltext("selectionVariables.B.fSel"),
+                               command=function()
+                               {
+                                   selectModalites.f(factor=tclvalue(FacteurGraph),
+                                                     tableMetrique=tclvalue(TableMetrique),
+                                                     env=env, level=0,
+                                                     nextStep=nextStep, dataEnv=dataEnv)
+                                   winRaise.f(WinSelection)
+                               })
 
     ## Choix des facteurs de regroupement + modalités :
     FrameFact <- tkframe(WinSelection, borderwidth=2, relief="groove")
@@ -977,17 +988,23 @@ selectionVariables.f <- function(nextStep, dataEnv, baseEnv)
                                                        nextStep=nextStep),
                             textvariable=listFacteurs[[1]], state="readonly")
 
-    B.factSel1 <- tkbutton(FrameFact, text=" Sélection... ", command=function()
-                       {
-                           selectModalites.f(tclvalue(listFacteurs[[1]]), tableMetrique=tclvalue(TableMetrique),
-                                             env=env, level=1, nextStep=nextStep, dataEnv=dataEnv)
-                           winRaise.f(WinSelection)
-                       })
+    B.factSel1 <- tkbutton(FrameFact,
+                           text=mltext("selectionVariables.B.fSel"),
+                           command=function()
+                           {
+                               selectModalites.f(tclvalue(listFacteurs[[1]]),
+                                                 tableMetrique=tclvalue(TableMetrique),
+                                                 env=env, level=1,
+                                                 nextStep=nextStep, dataEnv=dataEnv)
+                               winRaise.f(WinSelection)
+                           })
 
     FrameBT <- tkframe(WinSelection)
-    B.OK <- tkbutton(FrameBT, text="  Lancer  ", command=function(){tclvalue(Done) <- 1})
-    B.Cancel <- tkbutton(FrameBT, text=" Quitter ", command=function(){tclvalue(Done) <- 2})
-    B.optGraph <- tkbutton(FrameBT, text=" Options graphiques... ",
+    B.OK <- tkbutton(FrameBT, text=mltext("Run.button"),
+                     command=function(){tclvalue(Done) <- 1})
+    B.Cancel <- tkbutton(FrameBT, text=mltext("Quit.button"),
+                         command=function(){tclvalue(Done) <- 2})
+    B.optGraph <- tkbutton(FrameBT, text=mltext("GraphOpt.button"),
                            command=function(x)
                        {
                            tuneGraphOptions.f(graphType=switch(nextStep,
@@ -1060,8 +1077,9 @@ selectionVariables.f <- function(nextStep, dataEnv, baseEnv)
 
     ## Choix du facteur de séparation des graphiques :
     tkgrid(FrameFactGraph, column=1, columnspan=3, sticky="ew")
-    tkgrid(tklabel(FrameFactGraph, text=titreSelVar.f(type="factSep", nextStep)), sticky="w", columnspan=2)
-    tkgrid(tklabel(FrameGB, text="    Modalités (toutes par défaut)  "), column=1)
+    tkgrid(tklabel(FrameFactGraph, text=titreSelVar.f(type="factSep", nextStep)),
+           sticky="w", columnspan=2)
+    tkgrid(tklabel(FrameGB, text=mltext("selectionVariables.Levels")), column=1)
     tkgrid(CB.factGraph, B.factGraphSel, sticky="n")
 
     tkgrid(FrameRB, FrameGB, tklabel(FrameFactGraph, text="\n"), sticky="nw")
@@ -1086,8 +1104,11 @@ selectionVariables.f <- function(nextStep, dataEnv, baseEnv)
            columnspan=3, sticky="w")
 
     tkgrid(ttkseparator(FrameFact, orient = "horizontal"), column=0, columnspan=4, sticky="ew")
-    tkgrid(tklabel(FrameFact, text="    Modalités (toutes par défaut)  "), column=2, sticky="w")
-    tkgrid(tklabel(FrameFact, text="Facteur 1 "), CB.fact1, B.factSel1, sticky="n", pady=1)
+    tkgrid(tklabel(FrameFact, text=mltext("selectionVariables.Levels")),
+           column=2, sticky="w")
+    tkgrid(tklabel(FrameFact,
+                   text=paste0(mltext("selectionVariables.Factor")," 1 ")),
+           CB.fact1, B.factSel1, sticky="n", pady=1)
 
     tkgrid(tklabel(WinSelection), column=4)
 
@@ -1135,7 +1156,8 @@ selectionVariables.f <- function(nextStep, dataEnv, baseEnv)
                        modeleLineaireWP2.esp.f(metrique=tclvalue(MetriqueChoisie),
                                                factAna=tclvalue(FacteurGraph), factAnaSel=factGraphSel,
                                                listFact=sapply(listFacteurs, tclvalue), listFactSel=listFactSel,
-                                               tableMetrique=tclvalue(TableMetrique), dataEnv=dataEnv, baseEnv=baseEnv) #
+                                               tableMetrique=tclvalue(TableMetrique),
+                                               dataEnv=dataEnv, baseEnv=baseEnv) #
                    },
                    freq_occurrence={
                        barplotOccurrence.f(factGraph=tclvalue(FacteurGraph), factGraphSel=factGraphSel,
@@ -1151,7 +1173,8 @@ selectionVariables.f <- function(nextStep, dataEnv, baseEnv)
                        WP2boxplot.unitobs.f(metrique=tclvalue(MetriqueChoisie),
                                             factGraph=tclvalue(FacteurGraph), factGraphSel=factGraphSel,
                                             listFact=sapply(listFacteurs, tclvalue), listFactSel=listFactSel,
-                                            tableMetrique=tclvalue(TableMetrique), dataEnv=dataEnv, baseEnv=baseEnv) # OK
+                                            tableMetrique=tclvalue(TableMetrique),
+                                            dataEnv=dataEnv, baseEnv=baseEnv) # OK
                    },
                    modele_lineaire.unitobs={
                         modeleLineaireWP2.unitobs.f(metrique=tclvalue(MetriqueChoisie),
@@ -1188,7 +1211,7 @@ selectionVariables.f <- function(nextStep, dataEnv, baseEnv)
                                             listFact=sapply(listFacteurs, tclvalue), listFactSel=listFactSel,
                                             tableMetrique=tclvalue(TableMetrique), dataEnv=dataEnv, baseEnv=baseEnv) #
                    },
-                   tkmessageBox(message=paste("Aucune action (option '", nextStep, "' pas implémentée).", sep=""),
+                   tkmessageBox(message=paste("Nothing to do (option '", nextStep, "' not implemented).", sep=""),
                                 icon="warning"))
 
             winRaise.f(WinSelection)

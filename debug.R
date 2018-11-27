@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: debug.R
-### Time-stamp: <2018-09-04 10:02:45 yreecht>
+### Time-stamp: <2018-11-27 13:05:09 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -57,8 +57,8 @@ init.debug.f <- function(loadMain=FALSE)
     ## source(paste(devDir, "Scripts_Biodiv/Modeles_lineaires_unitobs_generiques.R", sep=""), encoding="latin1")
     ## source(paste(devDir, "Scripts_Biodiv/Nombres_SVR.R", sep=""), encoding="latin1")
     ## source(paste(devDir, "Scripts_Biodiv/Data_subsets.R", sep=""), encoding="latin1")
-    ## source(paste(devDir, "Scripts_Biodiv/Selection_variables_fonctions.R", sep=""), encoding="latin1")
-    ## source(paste(devDir, "Scripts_Biodiv/Selection_variables_interface.R", sep=""), encoding="latin1")
+    ## source(paste(devDir, "Scripts_Biodiv/Variables_selection_functions.R", sep=""), encoding="latin1")
+    ## source(paste(devDir, "Scripts_Biodiv/Variables_selection_interface.R", sep=""), encoding="latin1")
     ## source(paste(devDir, "Scripts_Biodiv/Variables_carto.R", sep=""), encoding="latin1")
     ## source(paste(devDir, "Scripts_Biodiv/View.R", sep=""), encoding="latin1")
     ## source(paste(devDir, "Scripts_Biodiv/Generic_aggregations.R", sep=""), encoding="latin1")

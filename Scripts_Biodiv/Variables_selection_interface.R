@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-11-27 11:58:30 yreecht>
+# Time-stamp: <2018-11-27 13:03:49 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
@@ -18,7 +18,7 @@
 ##   ce programme ; si ce n'est pas le cas, consultez :
 ##   <http://www.gnu.org/licenses/>.
 
-### File: Selection_variables_interface.R
+### File: Variables_selection_interface.R
 ### Created: <2012-01-18 15:55:46 yreecht>
 ###
 ### Author: Yves Reecht

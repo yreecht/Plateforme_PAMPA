@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-08-21 15:51:00 yreecht>
+# Time-stamp: <2018-11-28 14:57:41 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2018 Ifremer - Tous droits réservés.
@@ -401,7 +401,7 @@ chooseFiles.f <- function(dataEnv)
                        relief="groove", borderwidth=2,
                        justify="left")
 
-    button.widget0 <- tkbutton(tt, text="Espace de travail", ## width=45,
+    button.widget0 <- tkbutton(tt, text=mltext("chooseFiles.info.WD"), ## width=45,
                                command=function()
                            {
                                if ( ! is.null(workSpaceTmp <- chooseWS.f(dir=workSpaceTmp, env=env)))

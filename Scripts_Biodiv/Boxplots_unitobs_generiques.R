@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2013-03-26 18:49:52 yves>
+# Time-stamp: <2018-12-03 09:54:24 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
@@ -138,8 +138,9 @@ WP2boxplot.unitobs.f <- function(metrique, factGraph, factGraphSel, listFact, li
     ## Création du graphique si le nombre d'observations  < au minimum défini dans les options :
     if (nrow(tmpData) < getOption("P.MinNbObs"))
     {
-        warning("Nombre d'observations pour (", paste(iFactGraphSel, collapse=", "), ") < ", getOption("P.MinNbObs"),
-                " : Graphique non créé !\n")
+        warning(mltext("WP2boxplot.W.n.1"),
+                paste(iFactGraphSel, collapse=", "), ") < ", getOption("P.MinNbObs"),
+                mltext("WP2boxplot.W.n.2"))
     }else{
 
         ## Suppression des 'levels' non utilisés :
@@ -240,7 +241,7 @@ WP2boxplot.unitobs.f <- function(metrique, factGraph, factGraphSel, listFact, li
                  lty = 2, lwd = 0.5,
                  mgp=c(2, 0.5, 0))
 
-            legend("topleft", "Nombre d'enregistrements par boîte à moustache",
+            legend("topleft", mltext("WP2boxplot.n.rec"),
                    cex =0.9, col=getOption("P.NbObsCol"), text.col=getOption("P.NbObsCol"), merge=FALSE)
         }else{}
 
@@ -272,7 +273,7 @@ WP2boxplot.unitobs.f <- function(metrique, factGraph, factGraphSel, listFact, li
                 tryCatch(embedFonts(file=graphFile),
                          error=function(e)
                      {
-                         warning("Impossible d'inclure les fontes dans le PDF !")
+                         warning(mltext("WP2boxplot.W.pdfFonts"))
                      })
             }
 

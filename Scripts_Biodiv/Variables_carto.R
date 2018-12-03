@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2013-08-11 17:58:42 yreecht>
+# Time-stamp: <2018-12-03 13:25:45 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
@@ -276,8 +276,8 @@ selectionZone.f <- function(envir)
                                background=.BGcolor)
 
             L.spatialSelect2 <- tklabel(Fselect,
-                                        text=paste("Choix des limites d'après une sélection de zones",
-                                                   " sur le référentiel spatial brut (facteur spatial au choix).",
+                                        text=paste(mltext("selectionZone.L1.1"),
+                                                   mltext("selectionZone.L1.2"),
                                                    sep=""),
                                         font=tkfont.create(weight="normal", size=10),
                                         justify="left",
@@ -288,7 +288,7 @@ selectionZone.f <- function(envir)
             CB.spatial2 <- ttkcombobox(Fselect, value=factSpat, textvariable=FacteurSpatial2,
                                        state="readonly")
 
-            B.factSpatialSel2 <- tkbutton(Fselect, text=" Sélection... ",
+            B.factSpatialSel2 <- tkbutton(Fselect, text=mltext("selectionZone.B.sub"),
                                           command=function()
                                       {
                                           selectModalitesZoneSpatiales.f(env=env, dataEnv=dataEnv,
@@ -297,7 +297,8 @@ selectionZone.f <- function(envir)
                                           winRaise.f(WinSelection)
                                       })
 
-            B.Valid <- tkbutton(Fselect, text=" Valider ",
+            B.Valid <- tkbutton(Fselect,
+                                text=paste0(" ", mltext("KW.confirm"), " "),
                                 command=function()
                             {
                                 bbox.subset.f(refspa=get("refspa", envir=dataEnv),
@@ -308,7 +309,7 @@ selectionZone.f <- function(envir)
 
                                 tkgrid.remove(Fselect)
                             })
-            B.cancel2 <- tkbutton(Fselect, text=" Annuler ",
+            B.cancel2 <- tkbutton(Fselect, text=mltext("Cancel.button"),
                                   command=function()
                               {
                                   tkgrid.remove(Fselect)
@@ -413,7 +414,7 @@ selectionVariables.carto.f <- function(nextStep, dataEnv, baseEnv)
     ## Éléments graphiques :
     WinSelection <- tktoplevel(background="white")          # Fenêtre principale
     tkwm.title(WinSelection,
-               paste("Variables pour les cartes ",
+               paste(mltext("selectionVariables.carto.WT"),
                      titreSelVar.f(type="winTitle", nextStep),
                      sep=""))
 
@@ -423,8 +424,8 @@ selectionVariables.carto.f <- function(nextStep, dataEnv, baseEnv)
     TABvariables <- ttkframe(NB)
     TABzone <- ttkframe(NB)
 
-    tkadd(NB, TABvariables, text="Sélection de métrique")   ### tabid=0
-    tkadd(NB, TABzone, text="Emprise spatiale")  ### tabid=1
+    tkadd(NB, TABvariables, text=mltext("selectionVariables.carto.TAB.var"))   ### tabid=0
+    tkadd(NB, TABzone, text=mltext("selectionVariables.carto.TAB.zone"))  ### tabid=1
 
     Fvariables <- tkframe(TABvariables, background=.BGcolor)
     Fzone <- tkframe(TABzone, background=.BGcolor)
@@ -442,7 +443,7 @@ selectionVariables.carto.f <- function(nextStep, dataEnv, baseEnv)
     CB.spatial <- ttkcombobox(FrameSpatial, value=factSpat, textvariable=FacteurSpatial,
                                state="readonly")
 
-    B.factSpatialSel <- tkbutton(FrameSpatial, text=" Sélection... ",
+    B.factSpatialSel <- tkbutton(FrameSpatial, text=mltext("selectionZone.B.sub"),
                                command=function()
                            {
                                selectModalitesSpatiales.f(factor=tclvalue(FacteurSpatial),
@@ -469,7 +470,7 @@ selectionVariables.carto.f <- function(nextStep, dataEnv, baseEnv)
     RB.unitSp <- tkradiobutton(FrameMetrique, variable=TableMetrique, background=.BGcolor,
                                value="unitSp", text=titreSelVar.f(type="tabListesp", nextStep))
     RB.unit <- tkradiobutton(FrameMetrique, variable=TableMetrique, background=.BGcolor,
-                             value="unit", text="...de biodiversité ( / unité d'observation)")
+                             value="unit", text="...de biodiversité ( / unité d'observation)") # [mlo]
 
     ## Choix du facteur de séparation des graphs + modalités :
     FrameFactGraph <- tkwidget(Fvariables, "labelframe",

@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2013-08-11 18:40:32 yreecht>
+# Time-stamp: <2018-11-28 13:25:14 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
@@ -73,7 +73,7 @@ makeColorPalettes.f <- function()
 }
 
 
-PAMPAcolors.f <- function(n=1, palette=getOption("P.colPalette"), list=FALSE, cartoOnly=FALSE)
+PAMPAcolors.f <- function(n=1, palette=getOption("P.colPalette"), list=FALSE, FUNname=FALSE, cartoOnly=FALSE)
 {
     ## Purpose: retourner n couleurs de la palette "palette".
     ## ----------------------------------------------------------------------
@@ -87,23 +87,62 @@ PAMPAcolors.f <- function(n=1, palette=getOption("P.colPalette"), list=FALSE, ca
     if (list)
     {
         return(switch(as.character(cartoOnly),
-                      "1"=,"TRUE"={c("carto1", "carto2", "topo")},
-                      c("défaut", "bleu", "chaud", "gris", "carto1", "carto2", "topo")))
+                      "1"=,"TRUE"=
+                               {
+                                   mltext(paste0("PAMPAcolors.pal.",
+                                                 c("map1", "map2", "topo")))
+                               },
+                      mltext(paste0("PAMPAcolors.pal.",
+                                    c("default", "blue", "heat", "grey", "map1", "map2", "topo")))))
     }else{}
 
-    if (is.element(palette,
-                   c("default", "défaut", "defaut", "blue", "bleu",
-                     "heat", "chaud", "gray", "grey", "gris",
-                     "carto1", "carto2")) &&
-        ! exists(palette, envir=.GlobalEnv))
+
+    palKey <- c("default", "blue", "heat", "grey", "map1", "map2", "topo")
+    names(palKey) <- mltext(paste0("PAMPAcolors.pal.",
+                                   c("default", "blue", "heat", "grey", "map1", "map2", "topo")))
+
+    palette <- if (palette[1] %in% names(palKey))
+               {
+                   palKey[palette[1]]   # get the hard coded palette name from the translation.
+               }else{
+                   palette[1]
+               }
+
+    if (FUNname)
+    {
+        return(switch(palette,
+                      "default"=,
+                      "defaut"=,        # Accepts some values by default, even if not
+                                        # in the translation table.
+                      "défaut"={".ColorPaletteDefault"},
+                      "bleu"=,
+                      "blue"={".ColorPaletteBlue"},
+                      "chaud"=,
+                      "heat"={".ColorPaletteHeat"},
+                      "grey"=,
+                      "gris"=,
+                      "gray"={".ColorPaletteGray"},
+                      "carto1"=,
+                      "map1"={".ColorPaletteCarto1"},
+                      "carto2"=,
+                      "map2" = {".ColorPaletteCarto2"},
+                      "topo"={"topo.colors"}))
+    }
+
+    ## Creates the palette function if does not exists.
+    if (! is.null(PAMPAcolors.f(palette = palette, FUNname = TRUE)) &&
+        ! exists(PAMPAcolors.f(palette = palette, FUNname = TRUE), envir=.GlobalEnv))
     {
         makeColorPalettes.f()
-    }else{}
+    }else{
+        if (is.null(PAMPAcolors.f(palette = palette, FUNname = TRUE)))
+            stop("Undefined color palette '", palette, "'")
+    }
 
     res <- switch(palette,
                   "default"=,
-                  "defaut"=,
-                  "défaut"={
+                  "defaut"=,            # Accepts some values by default, even if not
+                  "défaut"={            # in the translation table.
                       if (n <= 10)
                       {
                           .ColorPaletteDefault(10)[1:n]
@@ -129,7 +168,8 @@ PAMPAcolors.f <- function(n=1, palette=getOption("P.colPalette"), list=FALSE, ca
                   "gray"={
                       .ColorPaletteGray(n)
                   },
-                  "carto1"={
+                  "carto1"=,
+                  "map1"={
                       if (n <= 5)
                       {
                           .ColorPaletteCarto1(5)[1:n]
@@ -137,7 +177,8 @@ PAMPAcolors.f <- function(n=1, palette=getOption("P.colPalette"), list=FALSE, ca
                           .ColorPaletteCarto1(n)
                       }
                   },
-                  "carto2"={
+                  "carto2"=,
+                  "map2" = {
                       if (n <= 16)
                       {
                           .ColorPaletteCarto2(16)[1:n]
@@ -214,12 +255,12 @@ resFileGraph.f <- function(metrique, factGraph, modSel, listFact, ext, dataEnv,
                              ""),
                       "_",
                       ## si facteur de séparation des analyses :
-                      "Agr-",
+                      mltext("resFileGraph.aggreg.abv"),
                       switch(type,
-                             "espece"="espece+unitobs_",
-                             "CL_espece"="CL+espece+unitobs_",
-                             "unitobs"="unitobs_",
-                             "CL_unitobs"="CL+unitobs_",
+                             "espece"=mltext("resFileGraph.pfx.spSt"),
+                             "CL_espece"=mltext("resFileGraph.pfx.SCspSt"),
+                             "unitobs"=mltext("resFileGraph.pfx.St"),
+                             "CL_unitobs"=mltext("resFileGraph.pfx.SCSt"),
                              ""),
                       switch(type,
                              "espece"={
@@ -227,28 +268,32 @@ resFileGraph.f <- function(metrique, factGraph, modSel, listFact, ext, dataEnv,
                                         "",
                                         paste(factGraph, "(", ifelse(modSel[1] != "",
                                                                      collapse.max.f(modSel, collapse="+"),
-                                                                     "toutes"), ")_", sep=""))
+                                                                     mltext("resFileGraph.all.spSt")),
+                                              ")_", sep=""))
                              },
                              "CL_espece"={
                                  ifelse(factGraph == "",
                                         "",
                                         paste(factGraph, "(", ifelse(modSel[1] != "",
                                                                      collapse.max.f(modSel, collapse="+"),
-                                                                     "toutes"), ")_", sep=""))
+                                                                     mltext("resFileGraph.all.SCspSt")),
+                                              ")_", sep=""))
                              },
                              "unitobs"={
                                  ifelse(factGraph == "",
-                                        "(toutes_espèces)_",
+                                        mltext("resFileGraph.allSp.St"),
                                         paste(factGraph, "(", ifelse(modSel[1] != "",
                                                                      collapse.max.f(modSel, collapse="+"),
-                                                                     "toutes"), ")_", sep=""))
+                                                                     mltext("resFileGraph.all.St")),
+                                              ")_", sep=""))
                              },
                              "CL_unitobs"={
                                  ifelse(factGraph == "",
-                                        "(toutes_espèces)_",
+                                        mltext("resFileGraph.allSp.St"),
                                         paste(factGraph, "(", ifelse(modSel[1] != "",
                                                                      collapse.max.f(modSel, collapse="+"),
-                                                                     "toutes"), ")_", sep=""))
+                                                                     mltext("resFileGraph.all.St")),
+                                              ")_", sep=""))
                              },
                              ""),
                       ## liste des facteurs de l'analyse

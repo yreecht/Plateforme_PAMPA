@@ -333,6 +333,7 @@ loadData.info.4, ; type d'observation : ,; observation type:
 loadData.info.5,Chargement du référentiel spatial...,Loading the spatial referential...
 loadData.info.6,Chargement du fichier d'observations...,Loading the observations file...
 loadData.info.7,Chargement du référentiel espèces,Loading the species reference table
+loadData.info.WD,Espace de travail : ,Working directory: 
 loadDefault.info.1,Finalisation du calcul des tables de métriques,Finalising metrics tables calculations
 loadDefault.info.2,Export des tables de métriques dans des fichiers,Exporting metrics tables in files
 loadDefault.info.3,Fin de chargement !,Loading completed!
@@ -360,6 +361,7 @@ chooseFiles.BT.OK, Valider ,  Load
 chooseFiles.BT.Cancel,  Annuler  ,  Cancel  
 chooseFiles.info.none,RIEN !!!,NONE!!!
 chooseFiles.info.default,non sélectionné - par défaut :,not selected – default:
+chooseFiles.info.WD,Espace de travail,Working directory
 logmsg.sizeclass,Attribution des individus à des classes de taille :,Attributing individuals to size classes:
 logmsg.meansize.szcl,Calcul des tailles moyennes d'après les classes de taille :,Calculation of mean sizes based on the size classes:
 logmsg.meanweight.szcl,Calcul des poids moyens d'après les classes de taille :,Calculation of mean weights based on size classes:
@@ -465,7 +467,7 @@ addBoxplotOptFrame.sepdec,"Attention ! \nséparateur décimal : ""."" ","Decimal s
 addBoxplotOptFrame.extrVal.1, Ne pas représenter les valeurs extrêmes, Do not display extreme values
 addBoxplotOptFrame.extrVal.2,    (supérieures à ,    (greater than 
 addBoxplotOptFrame.extrVal.3, x la valeur max) ? \n, x the max value)? \n
-addBoxplotOptFrame.recNum, Afficher les nombres d'enregistrement par boîte à moustache ?, Display the number of records by box?
+addBoxplotOptFrame.recNum, Afficher les nombres d'enregistrement par boîte à moustache ?, Display the number of records per box?
 addBoxplotOptFrame.recNumCol, Couleur des nombres d'enregistrement : , Colour of record numbers: 
 addBoxplotOptFrame.Warn.1, Afficher les avertissements ?\n, Display warnings?\n
 addBoxplotOptFrame.Warn.2,    (faibles effectifs + maximum exclus),    (low numbers + excluded max)
@@ -482,7 +484,7 @@ addBoxplotOptFrame.MeanVdec, Nombre de chiffres décimaux : , Number of decimals:
 tuneGraphOptions.Title,Choix des options graphiques,Graphics options
 tuneGraphOptions.commOpt.title,Options graphiques générales,Common graphical options
 tuneGraphOptions.TT.dec,"Attention ! \nséparateur décimal : ""."" ","!!! \ndecimal separator: ""."" "
-tuneGraphOptions.TT.titleLang.1,"Attention, l'anglais (\""en\"") ne s'applique pas aux titres de graphiques. ","Caution, English (""en"") only applies for labels, not titles. "
+tuneGraphOptions.TT.titleLang.1,"Attention, l'anglais (""en"") ne s'applique pas aux titres de graphiques. ","Caution, English (""en"") only applies for labels, not titles. "
 tuneGraphOptions.TT.titleLang.2,\nVeuillez désactiver les titres s'il est sélectionné.,\nDe-activate titles if selected.
 tuneGraphOptions.TT.embChar.1,Évite les erreurs d'affichage de caractères \nsur d'autres ordinateurs...,Avoid mis-displayed characters\n on other machines...
 tuneGraphOptions.TT.embChar.2,\nNécessite que Ghostscript soit installé pour fonctionner.,\nRequires Ghostscript installed to work properly.
@@ -517,7 +519,7 @@ agregationTableParCritere.f.W.2, du(des) facteur(s) de regroupement des observat
 calcBiodiv.f.info.1,Calculs de biodiversité impossibles !,Biodiversity metrics not calculable!
 calcBiodiv.f.info.2.s,non identifié,not identified
 calcBiodiv.f.info.2.p,non identifiés,not identified
-calcBiodiv.f.info.3," au niveau de l'espèce (\""sp.\"")\n   "," at the species (\""sp.\"") level\n   "
+calcBiodiv.f.info.3," au niveau de l'espèce (""sp."")\n   "," at the species (""sp."") level\n   "
 calcBiodiv.f.info.4.s,a été supprimé,has been suppressed
 calcBiodiv.f.info.4.p,ont été supprimés,have been suppressed
 calcBiodiv.f.info.5, pour le calcul des indices de biodiversité., for calculation of the biodiversity metrics.
@@ -595,3 +597,70 @@ selectionVariables.RB.fGraphUnitobs,d'unité d'observation,from the station chara
 selectionVariables.B.fSel, Sélection... , Subset... 
 selectionVariables.Levels,    Modalités (toutes par défaut)  ,        Levels (all by defaults)      
 selectionVariables.Factor,Facteur,Factor
+PAMPAcolors.pal.default,défaut,default
+PAMPAcolors.pal.blue,bleu,blue
+PAMPAcolors.pal.heat,chaud,heat
+PAMPAcolors.pal.grey,gris,grey
+PAMPAcolors.pal.map1,carto1,map1
+PAMPAcolors.pal.map2,carto2,map2
+PAMPAcolors.pal.topo,topo,topo
+resFileGraph.pfx.spSt,espece+unitobs_,species+station_
+resFileGraph.pfx.ScspSt,CL+espece+unitobs_,SC+species+station_
+resFileGraph.pfx.St,unitobs_,station_
+resFileGraph.pfx.SCSt,CL+unitobs_,SC+station_
+resFileGraph.all.spSt,toutes,all
+resFileGraph.all.ScspSt,toutes,all
+resFileGraph.all.St,toutes,all
+resFileGraph.allSp.St,(toutes_espèces)_,(all_species)_
+resFileGraph.all.SCSt,toutes,all
+resFileGraph.allSp.SCSt,(toutes_espèces)_,(all_species)_
+resFileGraph.aggreg.abv,Agr-,Agreg-
+graphTitle.vals,Valeurs de ,Values of 
+graphTitle.for, pour , for 
+graphTitle.agg, agrégé, aggregated
+graphTitle.f,e,
+graphTitle.fp,es,
+graphTitle.mp,s,
+graphTitle.bySpSt, par espèce et unité d'observation, per species and station
+graphTitle.bySCSpSt," par classe de tailles, espèce et unité d'observation"," per size class, species and station"
+graphTitle.bySt, par unité d'observation, per station
+graphTitle.byStSC, par unité d'observation, per station
+graphTitle.bySCSt, par classe de tailles et unité d'observation, per size class and station
+graphTitle.biodiv, par unité d'observation, per station
+graphTitle.sep.SpSt,\npour le champ,\nfor the field
+graphTitle.sep.SCSpSt,\npour le champ,\nfor the field
+graphTitle.sep.St.all,\npour toutes les espèces,\nfor all species
+graphTitle.sep.St,\npour les espèces correspondant à,\nfor all species matching
+graphTitle.sep.StSC.all,\npour toutes les classes de taille,\for all size classes
+graphTitle.sep.StSC,\npour les classes de tailles correspondant à,\for size classes matching
+graphTitle.sep.SCSt.all,\npour toutes les espèces,\nfor all species
+graphTitle.sep.SCSt,\npour les espèces correspondant à,\nfor all species matching
+graphTitle.sep.biodiv,\npour les unités d'observation correspondant à,\nfor stations matching
+graphTitle.by,\n selon ,\n by 
+graphTitle.and, et , and 
+plotPetitsEffectifs.rec,Enregistrements,Records
+plotPetitsEffectifs.not.disp,du maximum non affichés\n,of the max truncated\n
+plotPetitsEffectifs.small.n,petit effectif,small number
+WP2boxplot.W.n.1,Nombre d'observations pour ,Observation number for 
+WP2boxplot.W.n.2, : Graphique non créé !\n,: No plot created!\n
+WP2boxplot.n.rec,Nombre d'enregistrements par boîte à moustache,Number of records per box
+WP2boxplot.W.pdfFonts,Impossible d'inclure les fontes dans le PDF !,Cannot embed the fonts in the PDF!
+graphTitle.maps.SpZone, par espèce et zone, per species and zone
+graphTitle.maps.SCSpZone," par classe de taille,  espèce et zone"," per size class, species and zone"
+graphTitle.maps.SCZone, par classe de taille et zone, per size class and zone
+graphTitle.maps.agg.Zone,"\nmoyenne sur les unités d'observations de la zone,","\nmean over stations in the zone,"
+graphTitle.maps.per.Zone,\npar zone,\nper zone
+graphTitle.maps.mod.field,\npour le champ,\nfor the field
+graphTitle.maps.mod.allSp,\npour toutes les espèces,\nfor all species
+graphTitle.maps.mod.selSp,\npour les espèces correspondant à,\nfor all species matching
+graphTitle.maps.mod.allSC,\npour toutes les classes de taille,\nfor all size classes
+graphTitle.maps.mod.selSC,\npour les classes de tailles correspondant à,\for size classes matching
+graphTitle.maps.mod.selSt,\npour les unités d'observation correspondant à,\for stations matching
+subplotCarto.W.1,Un graphique n'a pu être créé :\n,One sub-plot could not be displayed:\n
+symbolCarto.W.1,Un graphique n'a pu être créé correctement :\n,One plot could not be displayed correctly:\n
+selectionZone.L1.1,Choix des limites d'après une sélection de zones,Narrow the spatial extent based on a zone subset
+selectionZone.L1.2, sur le référentiel spatial brut (facteur spatial au choix)., from the spatial reference table (user-defined selection).
+selectionZone.B.sub, Sélection... , Subset... 
+selectionVariables.carto.WT,Variables pour les cartes ,Variables for the maps 
+selectionVariables.carto.TAB.var,Sélection de métrique,Metrics subset
+selectionVariables.carto.TAB.zone,Emprise spatiale,Spatial extent

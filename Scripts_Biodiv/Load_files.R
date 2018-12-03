@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-08-13 11:45:10 yreecht>
+# Time-stamp: <2018-11-28 15:01:58 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2018 Ifremer - Tous droits réservés.
@@ -1351,7 +1351,7 @@ loadData.f <- function(filePathes, dataEnv, baseEnv=.GlobalEnv)
 
     ## Interaction avec l'interface :
     tkconfigure(get("ResumerEspaceTravail", envir=baseEnv), # [!!!] déplacer vers la fin  [yr: 13/12/2011]
-                text=paste("Espace de travail : ", filePathes["ws"]))
+                text=paste(mltext("loadData.info.WD"), filePathes["ws"]))
 
     return(list(obs=tabObs, unitobs=refUnitobs, refesp=refEspeces, refspa=refSpatial))
 

@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2013-09-12 00:19:13 yreecht>
+# Time-stamp: <2018-12-03 13:07:44 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
@@ -134,7 +134,7 @@ agregationSpatiale.f <- function(Data, metrique, facteur, dataEnv)
                                                   na.rm=TRUE))
                          })
            },
-           stop("Pas implémenté !")
+           stop("Not implemented!")
            )
 
     ## Nom des dimensions
@@ -168,64 +168,76 @@ graphTitle.carto.f <- function(metrique, modGraphSel, factGraph, listFact, factS
     ## Author: Yves Reecht, Date: 21 févr. 2013, 17:44
 
     return(paste(ifelse(is.null(model),
-                        "valeurs de ",
-                        paste(model, " pour ", varNames.f(metrique, "article"), sep="")),
+                        mltext("graphTitle.vals"),
+                        paste(model, mltext("graphTitle.for"), varNames.f(metrique, "article"), sep="")),
                  varNames.f(metrique, "nom"),
                  ifelse(is.element(type, c("espece", "unitobs", "CL_espece", "unitobs(CL)")),
-                        paste(" agrégé",
+                        paste(mltext("graphTitle.agg"),
                               switch(varNames.f(metrique, "genre"), # Accord de "agrégé".
-                                     f="e", fp="es", mp="s", ""), sep=""),
+                                     f=mltext("graphTitle.f"),
+                                     fp=mltext("graphTitle.fp"),
+                                     mp=mltext("graphTitle.mp"), ""), sep=""),
                         ""),
                  switch(type,
-                        "espece"=" par espèce et unité d'observation",
-                        "CL_espece"=" par classe de tailles, espèce et unité d'observation",
-                        "unitobs"=" par unité d'observation",
-                        "unitobs(CL)"=" par unité d'observation",
-                        "CL_unitobs"=" par classe de tailles et unité d'observation",
-                        "biodiv"=" par unité d'observation",
-                        "spEspece"=paste(" par espèce et zone '", varNames.f(factSpatial, "name", quote=FALSE), "'", sep=""),
-                        "spCL_espece"=paste(" par classe de taille,  espèce et zone '",
+                        "espece"=mltext("graphTitle.bySpSt"),
+                        "CL_espece"=mltext("graphTitle.bySCSpSt"),
+                        "unitobs"=mltext("graphTitle.bySt"),
+                        "unitobs(CL)"=mltext("graphTitle.byStSC"),
+                        "CL_unitobs"=mltext("graphTitle.bySCSt"),
+                        "biodiv"=mltext("graphTitle.biodiv"),
+                        "spEspece"=paste(mltext("graphTitle.maps.SpZone"),
+                                         " '", varNames.f(factSpatial, "name", quote=FALSE), "'", sep=""),
+                        "spCL_espece"=paste(mltext("graphTitle.maps.SCSpZone"),
+                                            " '",
                                             varNames.f(factSpatial, "name", quote=FALSE), "'", sep=""),
                         "spUnitobs"=,"spUnitobs(CL)"=paste(" par zone '",
                                                            varNames.f(factSpatial, "name", quote=FALSE), "'", sep=""),
-                        "spCL_unitobs"=paste(" par classe de taille et zone '",
+                        "spCL_unitobs"=paste(mltext("graphTitle.maps.SCZone"),
+                                             " '",
                                              varNames.f(factSpatial, "name", quote=FALSE), "'", sep=""),
                         ""),
                  switch(type,
                         "spEspece"=,"spCL_espece"=,"spUnitobs"=,"spUnitobs(CL)"=,
-                        "spCL_unitobs"="\nmoyenne sur les unités d'observations de la zone,",
-                        paste("\npar zone '", varNames.f(factSpatial, "nom", quote=FALSE), "'", sep="")),
+                        "spCL_unitobs"=mltext("graphTitle.maps.agg.Zone"),
+                        paste(mltext("graphTitle.maps.per.Zone"),
+                              " '", varNames.f(factSpatial, "nom", quote=FALSE), "'", sep="")),
                  switch(type,
                         "espece"=,"CL_espece"=,"spEspece"=,"spCL_espece"={
                             ifelse(modGraphSel == "", # Facteur de séparation uniquement si défini.
                                    "",
-                                   paste("\npour le champ '", factGraph, "' = ", modGraphSel, sep=""))
+                                   paste(mltext("graphTitle.maps.mod.field"),
+                                         " '", factGraph, "' = ", modGraphSel, sep=""))
                         },
                         "unitobs"=,"CL_unitobs"=,"spUnitobs"=,"spCL_unitobs"={
                             ifelse(modGraphSel[1] == "", # Facteur de séparation uniquement si défini.
-                                   "\npour toutes les espèces",
-                                   paste("\npour les espèces correspondant à '", factGraph, "' = (",
+                                   mltext("graphTitle.maps.mod.allSp"),
+                                   paste(mltext("graphTitle.maps.mod.selSp"),
+                                         " '", factGraph, "' = (",
                                          paste(modGraphSel, collapse=", "), ")", sep=""))
                         },
                         "unitobs(CL)"=,"spUnitobs(CL)"={
                             ifelse(modGraphSel[1] == "", # Facteur de séparation uniquement si défini.
-                                   "\npour toutes les classes de taille",
-                                   paste("\npour les classes de tailles correspondant à '", factGraph, "' = (",
+                                   mltext("graphTitle.maps.mod.allSC"),
+                                   paste(mltext("graphTitle.maps.mod.selSC"),
+                                         " '", factGraph, "' = (",
                                          paste(modGraphSel, collapse=", "), ")", sep=""))
                         },
                         "biodiv"={
                             ifelse(modGraphSel[1] == "", # Facteur de séparation uniquement si défini.
                                    "",
-                                   paste("\npour les unités d'observation correspondant à '", factGraph, "' = (",
+                                   paste(mltext("graphTitle.maps.mod.selSt"),
+                                         " '", factGraph, "' = (",
                                          paste(modGraphSel, collapse=", "), ")", sep=""))
                         },
                         ""),
                  ifelse(listFact[1] == "",
                         "",
-                        paste("\n selon ",
+                        paste(mltext("graphTitle.by"),
                               paste(sapply(listFact[length(listFact):1],
-                                           function(x)paste(c(varNames.f(x, "article"), varNames.f(x, "nom")), collapse="")),
-                                    collapse=" et "),
+                                           function(x)paste(c(## varNames.f(x, "article")
+                                                              "",
+                                                              varNames.f(x, "nom")), collapse="")),
+                                    collapse="graphTitle.and"),
                               "", sep="")),
                  sep=""))
 }
@@ -623,8 +635,9 @@ subplotCarto.esp.f <- function(graphType,
         ## Passage au graphique suivant si le nombre d'observations  < au minimum défini dans les options.
         if (nrow(tmpDataMod) < getOption("P.MinNbObs"))
         {
-            warning("Nombre d'observations pour ", modGraphSel, " < ", getOption("P.MinNbObs"),
-                    " : Graphique non créé !\n")
+            warning(mltext("WP2boxplot.W.n.1"),
+                    modGraphSel, " < ", getOption("P.MinNbObs"),
+                    mltext("WP2boxplot.W.n.2"))
 
             plotted <- FALSE
             next()
@@ -698,7 +711,7 @@ subplotCarto.esp.f <- function(graphType,
                                                factSpatial=factSpatial, exprBP=exprBP),
                         error=function(e)
                     {
-                        warning("Un graphique n'a pu être créé :\n", e, immediate.=TRUE)
+                        warning(mltext("subplotCarto.W.1"), e, immediate.=TRUE)
                     })
            },
                "barplot"=
@@ -708,7 +721,7 @@ subplotCarto.esp.f <- function(graphType,
                                                metrique=metrique, listFact=listFact),
                         error=function(e)
                     {
-                        warning("Un graphique n'a pu être créé :\n", e, immediate.=TRUE)
+                        warning(mltext("subplotCarto.W.1"), e, immediate.=TRUE)
                     })
            })
 
@@ -809,41 +822,13 @@ subplotCarto.esp.f <- function(graphType,
                 tryCatch(embedFonts(file=tmpFile),
                          error=function(e)
                      {
-                         warning("Impossible d'inclure les fontes dans le PDF !")
+                         warning(mltext("WP2boxplot.W.pdfFonts"))
                      })
 
                 i <- i + 1
             }
         }else{}
     }else{}
-
-    ## ## Sauvegarde en wmf + données restants si pertinent et souhaité :
-    ## if ( ! (getOption("P.graphPNG") || getOption("P.graphPDF")) && # Si pas d'autre sortie fichier.
-    ##     getOption("P.plusieursGraphPage") && length(iFactGraphSel) > 1
-    ##     && plotted)
-    ## {
-    ##     if (.Platform$OS.type == "windows" && isTRUE(getOption("P.graphWMF")))
-    ##     {
-    ##         savePlot(graphFile, type="wmf", device=dev.cur())
-    ##     }else{}
-
-    ##     ## Sauvegarde des données :
-    ##     if (getOption("P.saveData"))
-    ##     {
-    ##         writeData.f(filename=sub("\\%03d", "00X", graphFile),
-    ##                     Data=DataBackup, cols=NULL)
-    ##     }else{}
-
-    ##     ## Sauvegarde des statistiques :
-    ##     if (getOption("P.saveStats"))
-    ##     {
-    ##         infoStats.f(filename=sub("\\%03d", "00X", graphFile), Data=DataBackup,
-    ##                     agregLevel="species", type="graph",
-    ##                     metrique=metrique, factGraph=factGraph, factGraphSel=factGraphSel,
-    ##                     listFact=rev(listFact), listFactSel=rev(listFactSel), # On les remets dans un ordre intuitif.
-    ##                     dataEnv=dataEnv, baseEnv=baseEnv)
-    ##     }else{}
-    ## }else{}
 
     pampaProfilingEnd.f()
 }
@@ -971,8 +956,9 @@ subplotCarto.unitobs.f <- function(graphType,
     ## Création du graphique si le nombre d'observations  < au minimum défini dans les options :
     if (nrow(tmpData) < getOption("P.MinNbObs"))
     {
-        warning("Nombre d'observations pour (", paste(iFactGraphSel, collapse=", "), ") < ", getOption("P.MinNbObs"),
-                " : Graphique non créé !\n")
+        warning(mltext("WP2boxplot.W.n.1"),
+                "(", paste(iFactGraphSel, collapse=", "), ") < ", getOption("P.MinNbObs"),
+                mltext("WP2boxplot.W.n.2"))
     }else{
 
         ## Suppression des 'levels' non utilisés :
@@ -1043,7 +1029,7 @@ subplotCarto.unitobs.f <- function(graphType,
                                                factSpatial=factSpatial, exprBP=exprBP),
                         error=function(e)
                     {
-                        warning("Un graphique n'a pu être créé :\n", e, immediate.=TRUE)
+                        warning(mltext("subplotCarto.W.1"), e, immediate.=TRUE)
                     })
            },
                "barplot"=
@@ -1053,7 +1039,7 @@ subplotCarto.unitobs.f <- function(graphType,
                                                metrique=metrique, listFact=listFact),
                         error=function(e)
                     {
-                        warning("Un graphique n'a pu être créé :\n", e, immediate.=TRUE)
+                        warning(mltext("subplotCarto.W.1"), e, immediate.=TRUE)
                     })
            })
 
@@ -1086,7 +1072,7 @@ subplotCarto.unitobs.f <- function(graphType,
                 tryCatch(embedFonts(file=graphFile),
                          error=function(e)
                      {
-                         warning("Impossible d'inclure les fontes dans le PDF !")
+                         warning(mltext("WP2boxplot.W.pdfFonts"))
                      })
             }
 
@@ -1349,8 +1335,8 @@ symbColCarto.esp.f <- function(graphType,
         ## Passage au graphique suivant si le nombre d'observations  < au minimum défini dans les options.
         if (nrow(tmpDataMod) < getOption("P.MinNbObs"))
         {
-            warning("Nombre d'observations pour ", modGraphSel, " < ", getOption("P.MinNbObs"),
-                    " : Graphique non créé !\n")
+            warning(mltext("WP2boxplot.W.n.1"), modGraphSel, " < ", getOption("P.MinNbObs"),
+                    mltext("WP2boxplot.W.n.2"))
 
             plotted <- FALSE
             next()
@@ -1439,7 +1425,7 @@ symbColCarto.esp.f <- function(graphType,
                     },
                         error=function(e)
                     {
-                        warning("Un graphique n'a pu être créé correctement :\n", e, immediate.=TRUE)
+                        warning(mltext("symbolCarto.W.1"), e, immediate.=TRUE)
                     })
            },
                "couleurs"=
@@ -1453,7 +1439,7 @@ symbColCarto.esp.f <- function(graphType,
                     },
                         error=function(e)
                     {
-                        warning("Un graphique n'a pu être créé correctement :\n", e, immediate.=TRUE)
+                        warning(mltext("symbolCarto.W.1"), e, immediate.=TRUE)
                     })
            })
 
@@ -1647,8 +1633,8 @@ symbColCarto.unitobs.f <- function(graphType,
     ## Création du graphique si le nombre d'observations  < au minimum défini dans les options :
     if (nrow(tmpData2) < getOption("P.MinNbObs"))
     {
-        warning("Nombre d'observations pour (", paste(iFactGraphSel, collapse=", "), ") < ", getOption("P.MinNbObs"),
-                " : Graphique non créé !\n")
+        warning(mltext("WP2boxplot.W.n.1"), "(", paste(iFactGraphSel, collapse=", "), ") < ", getOption("P.MinNbObs"),
+                mltext("WP2boxplot.W.n.2"))
     }else{
         ## browser()
         ## Ouverture et configuration du périphérique graphique :
@@ -1717,7 +1703,7 @@ symbColCarto.unitobs.f <- function(graphType,
                     },
                         error=function(e)
                     {
-                        warning("Un graphique n'a pu être créé correctement :\n", e, immediate.=TRUE)
+                        warning(mltext("symbolCarto.W.1"), e, immediate.=TRUE)
                     })
            },
                "couleurs"=
@@ -1730,7 +1716,7 @@ symbColCarto.unitobs.f <- function(graphType,
                     },
                         error=function(e)
                     {
-                        warning("Un graphique n'a pu être créé correctement :\n", e, immediate.=TRUE)
+                        warning(mltext("symbolCarto.W.1"), e, immediate.=TRUE)
                     })
            })
 
@@ -1768,7 +1754,7 @@ symbColCarto.unitobs.f <- function(graphType,
                 tryCatch(embedFonts(file=graphFile),
                          error=function(e)
                      {
-                         warning("Impossible d'inclure les fontes dans le PDF !")
+                         warning(mltext("WP2boxplot.W.pdfFonts"))
                      })
             }
 

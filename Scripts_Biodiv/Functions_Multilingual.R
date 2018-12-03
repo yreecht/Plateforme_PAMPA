@@ -1,7 +1,7 @@
 #-*- coding: latin-9 -*-
 
 ### File: Functions_Multilingual.R
-### Time-stamp: <2018-11-27 11:45:57 yreecht>
+### Time-stamp: <2018-11-28 16:59:17 yreecht>
 ###
 ### Created: 09/07/2018	15:37:32
 ### Author: Yves Reecht
@@ -40,7 +40,7 @@ mltext <- function(msgid)
                                                         transl[i, lang])),
                                         no = ifelse(nchar(transl[i, "en"]),
                                                     transl[i, "en"],
-                                                    " !! No Text !! "))
+                                                    ""))
                              }
                       return(res)
                   })

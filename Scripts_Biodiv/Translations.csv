@@ -5,6 +5,10 @@ KW.up,monter,up
 KW.down,descendre,down
 KW.cancel,annuler,cancel
 KW.confirm,valider,confirm
+KW.North,Nord,North
+KW.South,Sud,South
+KW.East,Est,East
+KW.West,Ouest,West
 stat.mean,moyenne,mean
 stat.median,médiane,median
 OK.button,   OK   ,   OK   
@@ -592,6 +596,7 @@ titreSelVar.f.tLspCT.UnitobsSpCT,.../ unité d'observation / espèce / classes de 
 titreSelVar.f.tLspCT.UnitobsCT,.../ unité d'observation / classes de taille,.../ station / size class
 titreSelVar.f.factSpatial,Facteur de regroupement spatial,Spatial grouping factor
 selectionVariables.WT,Sélection des variables pour les ,Selection of variables for the 
+selectionVariables.RB.unit,...de biodiversité ( / unité d'observation),...of biodiversity ( / station)
 selectionVariables.RB.fGraphRefesp,du référentiel espèces,from the species reference table
 selectionVariables.RB.fGraphUnitobs,d'unité d'observation,from the station characteristics
 selectionVariables.B.fSel, Sélection... , Subset... 
@@ -664,3 +669,23 @@ selectionZone.B.sub, Sélection... , Subset...
 selectionVariables.carto.WT,Variables pour les cartes ,Variables for the maps 
 selectionVariables.carto.TAB.var,Sélection de métrique,Metrics subset
 selectionVariables.carto.TAB.zone,Emprise spatiale,Spatial extent
+selectionVariables.carto.F.zone.lim,Limites de la zone à représenter,Limits of the zone to display
+selectionVariables.carto.Ndec.TT,° décimaux Nord (négatif pour l'hémisphère Sud).,Decimal ° North (negative in the Southern hemisphere).
+selectionVariables.carto.Edec.TT,° décimaux Est (négatif à l'Ouest du méridien de Greenwich).,Decimal ° East (negative to the West of Greenwich).
+selectionVariables.carto.lim.TT.W,"\nAttention : séparateur décimal : ""."" ", 
+selectionVariables.carto.selZone.B,Sélection de zones...,Zone subset...
+selectionVariables.carto.selZone.Info.1,Choix des limites d'après une sélection de zones,Select the display limits based on a zone subset
+selectionVariables.carto.selZone.Info.2, sur le référentiel spatial brut (facteur spatial au choix)., (user defined variable from the spatial reference table).
+selectionVariables.carto.dataSub.B,Sélection de données,Data subset
+selectionVariables.carto.spaFact.Info.1,Définir les limites d'après les polygones comprenant la sélection de données,Display limits after the polygons encompassing the subset of data
+selectionVariables.carto.spaFact.Info.2," (onglet précédent + ""Sélections & recalculs"")."," (previous tab + ""Subsetting"" menu)"
+selectionVariables.carto.reset.Info.1,Réinitialiser les limites à l'étendu,Reset the display limits
+selectionVariables.carto.reset.Info.2, du référentiel spatial., to the spatial reference shapefile extent.
+selectionVariables.carto.Lzone.Info.1,"Veuillez définir les limites de la zone à représenter (par défaut,",Please define the display zone  limits
+selectionVariables.carto.Lzone.Info.2, l'ensemble de la zone couverte par le référentiel spatial).\n, (default to the extent of the spatial reference shapefile)
+selectionVariables.carto.graphType,Type de graphique :   ,Graphics type:       
+selectionVariables.carto.graphType.TT.1,boxplot : graphiques en boîtes à moustache.,boxplot.
+selectionVariables.carto.graphType.TT.2,\nbarplot : graphiques en barres.,\nbarplot.
+selectionVariables.carto.Info.1,Attention : les agrégations spatiales sont des moyennes par zone !,Warning: spatial aggregations are mean per zone!
+selectionVariables.carto.Info.2,\n\nAssurez-vous que votre protocole est adapté pour chaque,\n\nMake sure that the protocol is consistent with all
+selectionVariables.carto.Info.3, niveau d'agrégation spatiale utilisé., aggregation levels selected.

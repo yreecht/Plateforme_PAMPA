@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-12-03 13:25:45 yreecht>
+# Time-stamp: <2018-12-08 10:34:26 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
@@ -470,7 +470,7 @@ selectionVariables.carto.f <- function(nextStep, dataEnv, baseEnv)
     RB.unitSp <- tkradiobutton(FrameMetrique, variable=TableMetrique, background=.BGcolor,
                                value="unitSp", text=titreSelVar.f(type="tabListesp", nextStep))
     RB.unit <- tkradiobutton(FrameMetrique, variable=TableMetrique, background=.BGcolor,
-                             value="unit", text="...de biodiversité ( / unité d'observation)") # [mlo]
+                             value="unit", text=mltext("selectionVariables.RB.unit"))
 
     ## Choix du facteur de séparation des graphs + modalités :
     FrameFactGraph <- tkwidget(Fvariables, "labelframe",
@@ -484,12 +484,14 @@ selectionVariables.carto.f <- function(nextStep, dataEnv, baseEnv)
     FrameRB <- tkframe(FrameFactGraph, background=.BGcolor)
     FrameGB <- tkframe(FrameFactGraph, background=.BGcolor)
 
-    RB.factGraphRefesp <- tkradiobutton(FrameRB, variable=FactGraphTbl, value="refesp", text="du référentiel espèces",
+    RB.factGraphRefesp <- tkradiobutton(FrameRB, variable=FactGraphTbl, value="refesp",
+                                        text=mltext("selectionVariables.RB.fGraphRefesp"),
                                         background=.BGcolor)
-    RB.factGraphUnitobs <- tkradiobutton(FrameRB, variable=FactGraphTbl, value="unitobs", text="d'unité d'observation",
+    RB.factGraphUnitobs <- tkradiobutton(FrameRB, variable=FactGraphTbl, value="unitobs",
+                                         text=mltext("selectionVariables.RB.fGraphUnitobs"),
                                         background=.BGcolor)
     CB.factGraph <- ttkcombobox(FrameGB, value="", textvariable=FacteurGraph, state="readonly")
-    B.factGraphSel <- tkbutton(FrameGB, text=" Sélection... ", command=function()
+    B.factGraphSel <- tkbutton(FrameGB, text=mltext("selectionVariables.B.fSel"), command=function()
                            {
                                selectModalites.f(factor=tclvalue(FacteurGraph), tableMetrique=tclvalue(TableMetrique),
                                                  env=env, level=0, nextStep=nextStep, dataEnv=dataEnv)
@@ -510,7 +512,7 @@ selectionVariables.carto.f <- function(nextStep, dataEnv, baseEnv)
                                                        nextStep=nextStep),
                             textvariable=listFacteurs[[1]], state="readonly")
 
-    B.factSel1 <- tkbutton(FrameFact, text=" Sélection... ", command=function()
+    B.factSel1 <- tkbutton(FrameFact, text=mltext("selectionVariables.B.fSel"), command=function()
                        {
                            selectModalites.f(tclvalue(listFacteurs[[1]]), tableMetrique=tclvalue(TableMetrique),
                                              env=env, level=1, nextStep=nextStep, dataEnv=dataEnv)
@@ -518,9 +520,9 @@ selectionVariables.carto.f <- function(nextStep, dataEnv, baseEnv)
                        })
 
     FrameBT <- tkframe(WinSelection, background="white") ##, background=.BGcolor)
-    B.OK <- tkbutton(FrameBT, text="  Lancer  ", command=function(){tclvalue(Done) <- 1})
-    B.Cancel <- tkbutton(FrameBT, text=" Quitter ", command=function(){tclvalue(Done) <- 2})
-    B.optGraph <- tkbutton(FrameBT, text=" Options graphiques... ",
+    B.OK <- tkbutton(FrameBT, text=mltext("Run.button"), command=function(){tclvalue(Done) <- 1})
+    B.Cancel <- tkbutton(FrameBT, text=mltext("Quit.button"), command=function(){tclvalue(Done) <- 2})
+    B.optGraph <- tkbutton(FrameBT, text=mltext("GraphOpt.button"),
                            command=function(x)
                        {
                            tuneGraphOptions.f(graphType=switch(nextStep,
@@ -553,7 +555,7 @@ selectionVariables.carto.f <- function(nextStep, dataEnv, baseEnv)
 
     FrameCoords2 <- tkframe(Fzone, background=.BGcolor)
     FrameCoords <- tkwidget(FrameCoords2, "labelframe",
-                            text="Limites de la zone à représenter",
+                            text=mltext("selectionVariables.carto.F.zone.lim"),
                             padx=4, pady=4,
                             ## height=30,
                             borderwidth=2, relief="groove",
@@ -563,26 +565,26 @@ selectionVariables.carto.f <- function(nextStep, dataEnv, baseEnv)
 
     FrameN <- tkframe(FrameCoords, background=.BGcolor)
     E.N <- tkentry(FrameN, width="9", textvariable=LimiteN, justify="right")
-    tooltipWidget.f(text=paste("° décimaux Nord (négatif pour l'hémisphère Sud).",
-                    "\nAttention : séparateur décimal : \".\" ", sep=""),
+    tooltipWidget.f(text=paste(mltext("selectionVariables.carto.Ndec.TT"),
+                    mltext("selectionVariables.carto.lim.TT.W"), sep=""),
                     targetWidget=E.N, yskip=0)
 
     FrameS <- tkframe(FrameCoords, background=.BGcolor)
     E.S <- tkentry(FrameS, width="9", textvariable=LimiteS, justify="right")
-    tooltipWidget.f(text=paste("° décimaux Nord (négatif pour l'hémisphère Sud).",
-                    "\nAttention : séparateur décimal : \".\" ", sep=""),
+    tooltipWidget.f(text=paste(mltext("selectionVariables.carto.Ndec.TT"),
+                    mltext("selectionVariables.carto.lim.TT.W"), sep=""),
                     targetWidget=E.S, yskip=0)
 
     FrameE <- tkframe(FrameCoords, background=.BGcolor)
     E.E <- tkentry(FrameE, width="9", textvariable=LimiteE, justify="right")
-    tooltipWidget.f(text=paste("° décimaux Est (négatif à l'Ouest du méridien de Greenwich).",
-                    "\nAttention : séparateur décimal : \".\" ", sep=""),
+    tooltipWidget.f(text=paste(mltext("selectionVariables.carto.Edec.TT"),
+                    mltext("selectionVariables.carto.lim.TT.W"), sep=""),
                     targetWidget=E.E, yskip=0)
 
     FrameW <- tkframe(FrameCoords, background=.BGcolor)
     E.W <- tkentry(FrameW, width="9", textvariable=LimiteW, justify="right")
-    tooltipWidget.f(text=paste("° décimaux Est (négatif à l'Ouest du méridien de Greenwich).",
-                    "\nAttention : séparateur décimal : \".\" ", sep=""),
+    tooltipWidget.f(text=paste(mltext("selectionVariables.carto.Edec.TT"),
+                    mltext("selectionVariables.carto.lim.TT.W"), sep=""),
                     targetWidget=E.W, yskip=0)
 
     ## Boutons de modifications des limites :
@@ -590,7 +592,9 @@ selectionVariables.carto.f <- function(nextStep, dataEnv, baseEnv)
     FrameInfoSelect <- tkframe(Fzone, borderwidth=2, relief="groove",
                             background=.BGcolor)
 
-    B.spatialSelect <- tkbutton(FrameCoords2, text="Sélection de zones...", width=22,
+    B.spatialSelect <- tkbutton(FrameCoords2,
+                                text=mltext("selectionVariables.carto.selZone.B"),
+                                width=22,
                                 command=function()
                             {
                                 tkgrid.remove(L.spatialSelect)
@@ -600,14 +604,16 @@ selectionVariables.carto.f <- function(nextStep, dataEnv, baseEnv)
                                 tkwm.geometry(WinSelection,"")
                             })
     L.spatialSelect <- tklabel(FrameInfoSelect,
-                               text=paste("Choix des limites d'après une sélection de zones",
-                                          " sur le référentiel spatial brut (facteur spatial au choix).", sep=""),
+                               text=paste(mltext("selectionVariables.carto.selZone.Info.1"),
+                                          mltext("selectionVariables.carto.selZone.Info.2"), sep=""),
                                font=tkfont.create(weight="normal", size=10),
                                justify="left",
                                foreground="darkred",
                                background=.BGcolor)
 
-    B.spatialFact <- tkbutton(FrameCoords2, text="Sélection de données", width=22,
+    B.spatialFact <- tkbutton(FrameCoords2,
+                              text=mltext("selectionVariables.carto.dataSub.B"),
+                              width=22,
                               command=function()
                           {
                               bbox.subset.f(refspa=subsetRefspaToData.f(refspa=get("refspa", envir=dataEnv),
@@ -631,14 +637,14 @@ selectionVariables.carto.f <- function(nextStep, dataEnv, baseEnv)
                               tcl("update")
                           })
     L.spatialFact <- tklabel(FrameInfoSelect,
-                             text=paste("Définir les limites d'après les polygones comprenant la sélection de données",
-                                        " (onglet précédent + \"Sélections & recalculs\").", sep=""),
+                             text=paste(mltext("selectionVariables.carto.spaFact.Info.1"),
+                                        mltext("selectionVariables.carto.spaFact.Info.2"), sep=""),
                              font=tkfont.create(weight="normal", size=10),
                              justify="left",
                              foreground="darkred",
                              background=.BGcolor)
 
-    B.spatialReinit <- tkbutton(FrameCoords2, text="Réinitialiser", width=22,
+    B.spatialReinit <- tkbutton(FrameCoords2, text=mltext("Reset.button"), width=22,
                                 command=function()
                             {
                                 bbox.subset.f(refspa=get("refspa", envir=dataEnv),
@@ -648,8 +654,8 @@ selectionVariables.carto.f <- function(nextStep, dataEnv, baseEnv)
                                 tcl("update")
                             })
     L.spatialReinit <- tklabel(FrameInfoSelect,
-                               text=paste("Réinitialiser les limites à l'étendu",
-                                          " du référentiel spatial.", sep=""),
+                               text=paste(mltext("selectionVariables.carto.reset.Info.1"),
+                                          mltext("selectionVariables.carto.reset.Info.2"), sep=""),
                                font=tkfont.create(weight="normal", size=10),
                                justify="left",
                                foreground="darkred",
@@ -722,7 +728,7 @@ selectionVariables.carto.f <- function(nextStep, dataEnv, baseEnv)
     ## Positionnement des éléments :
 
     ## Facteur de regroupement spatial :
-    tkgrid(tklabel(FrameSpatial, text="    Modalités (toutes par défaut)  ",
+    tkgrid(tklabel(FrameSpatial, text=mltext("selectionVariables.Levels"),
                    background=.BGcolor),
            column=1, pady=2)
 
@@ -761,7 +767,7 @@ selectionVariables.carto.f <- function(nextStep, dataEnv, baseEnv)
     tkgrid(FrameFactGraph, column=1, columnspan=3, sticky="ew",
            padx=5, pady=5)
 
-    tkgrid(tklabel(FrameGB, text="    Modalités (toutes par défaut)  ",
+    tkgrid(tklabel(FrameGB, text=mltext("selectionVariables.Levels"),
                                         background=.BGcolor),
            column=1, pady=2)
     tkgrid(CB.factGraph, B.factGraphSel, sticky="s")
@@ -789,10 +795,12 @@ selectionVariables.carto.f <- function(nextStep, dataEnv, baseEnv)
                padx=5, pady=5)
 
         tkgrid(tklabel(FrameFact,
-                       text="    Modalités (toutes par défaut)  ",
+                       text=mltext("selectionVariables.Levels"),
                        background=.BGcolor), column=2,
                sticky="w", pady=2)
-        tkgrid(tklabel(FrameFact, text="Facteur 1 ", background=.BGcolor),
+        tkgrid(tklabel(FrameFact,
+                       text=paste0(mltext("selectionVariables.Factor"), " 1 "),
+                       background=.BGcolor),
                CB.fact1, B.factSel1, sticky="", pady=1)
     }else{
         tkgrid(tklabel(Fvariables, background=.BGcolor))
@@ -818,8 +826,8 @@ selectionVariables.carto.f <- function(nextStep, dataEnv, baseEnv)
                 height=tkwinfo("height", Fvariables))
 
     tkgrid(tklabel(Fzone,
-                   text=paste("Veuillez définir les limites de la zone à représenter (par défaut,",
-                              " l'ensemble de la zone couverte par le référentiel spatial).\n",
+                   text=paste(mltext("selectionVariables.carto.Lzone.Info.1"),
+                              mltext("selectionVariables.carto.Lzone.Info.2"),
                               "",
                               sep=""),
                    font=tkfont.create(weight="normal", size=10),
@@ -829,16 +837,16 @@ selectionVariables.carto.f <- function(nextStep, dataEnv, baseEnv)
                    wraplength=0.9 * as.integer(tkwinfo("width", Fvariables))),
            padx=5, pady=7, columnspan=2, sticky="w")
 
-    tkgrid(tklabel(FrameN, text="Nord", background=.BGcolor))
+    tkgrid(tklabel(FrameN, text=mltext("KW.North"), background=.BGcolor))
     tkgrid(E.N)
 
-    tkgrid(tklabel(FrameE, text="Est", background=.BGcolor))
+    tkgrid(tklabel(FrameE, text=mltext("KW.East"), background=.BGcolor))
     tkgrid(E.E)
 
-    tkgrid(tklabel(FrameS, text="Sud", background=.BGcolor))
+    tkgrid(tklabel(FrameS, text=mltext("KW.South"), background=.BGcolor))
     tkgrid(E.S)
 
-    tkgrid(tklabel(FrameW, text="Ouest", background=.BGcolor))
+    tkgrid(tklabel(FrameW, text=mltext("KW.West"), background=.BGcolor))
     tkgrid(E.W)
 
     ## tkpack(FrameN, side="top", expand=FALSE)
@@ -879,10 +887,12 @@ selectionVariables.carto.f <- function(nextStep, dataEnv, baseEnv)
     tkgrid(FrameBT, columnspan=3, pady=10,
            padx=5)## , sticky="ew")
 
-    tkgrid(L.TG <- tklabel(FrameTG, text="Type de graphique :   ", background="white"), sticky="w")
+    tkgrid(L.TG <- tklabel(FrameTG,
+                           text=mltext("selectionVariables.carto.graphType"),
+                           background="white"), sticky="w")
     tkgrid(CB.TG, sticky="w")
-    tooltipWidget.f(text=paste("boxplot : graphiques en boîtes à moustache.",
-                               "\nbarplot : graphiques en barres."),
+    tooltipWidget.f(text=paste(mltext("selectionVariables.carto.graphType.TT.1"),
+                               mltext("selectionVariables.carto.graphType.TT.2")),
                     targetWidget=L.TG)
 
     tkgrid(FrameTG,  tklabel(FrameBT, text="  ", background="white"),
@@ -899,9 +909,9 @@ selectionVariables.carto.f <- function(nextStep, dataEnv, baseEnv)
     winSmartPlace.f(WinSelection)
 
     ## Avertissement sur les agrégations :
-    infoLoading.f(msg=paste("Attention : les agrégations spatiales sont des moyennes par zone !",
-                            "\n\nAssurez-vous que votre protocole est adapté pour chaque",
-                            " niveau d'agrégation spatiale utilisé.", sep=""),
+    infoLoading.f(msg=paste(mltext("selectionVariables.carto.Info.1"),
+                            mltext("selectionVariables.carto.Info.2"),
+                            mltext("selectionVariables.carto.Info.3"), sep=""),
                   icon="warning",
                   titleType="warning")
 
@@ -983,7 +993,7 @@ selectionVariables.carto.f <- function(nextStep, dataEnv, baseEnv)
                                           bbox=bbox,
                                           dataEnv=dataEnv, baseEnv=baseEnv)
                    },
-                   tkmessageBox(message=paste("Aucune action (option '", nextStep, "' pas implémentée).", sep=""),
+                   tkmessageBox(message=paste("No action (option '", nextStep, "' not implemented).", sep=""),
                                 icon="warning"))
 
             ## Fenêtre de sélection ramenée au premier plan une fois l'étape finie :

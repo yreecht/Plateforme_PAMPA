@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-11-27 13:03:49 yreecht>
+# Time-stamp: <2018-12-08 09:50:54 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
@@ -957,7 +957,7 @@ selectionVariables.f <- function(nextStep, dataEnv, baseEnv)
         RB.unitSp <- tkradiobutton(FrameMetrique, variable=TableMetrique,
                                         value="unitSp", text=titreSelVar.f(type="tabListesp", nextStep))
         RB.unit <- tkradiobutton(FrameMetrique, variable=TableMetrique,
-                                        value="unit", text="...de biodiversité ( / unité d'observation)")
+                                        value="unit", text=mltext("selectionVariables.RB.unit"))
     }
 
     ## Choix du facteur de séparation des graphs + modalités :

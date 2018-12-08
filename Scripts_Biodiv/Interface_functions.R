@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-07-18 15:27:28 yreecht>
+# Time-stamp: <2018-12-08 14:44:48 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2018 Ifremer - Tous droits réservés.
@@ -1183,7 +1183,7 @@ updateInterface.load.f <- function(baseEnv, tabObs)
                              mltext("sum.nb.in.obs"),
                              ifelse(getOption("P.selection"),
                                     mltext("sum.nb.diff"),
-                                    paste0(mltext("semicolon"), " ")),
+                                    paste0(mltext("colon"), " ")),
                              length(unique(tabObs[ , "code_espece"])), sep=""),
                 state="normal")
 
@@ -1194,7 +1194,7 @@ updateInterface.load.f <- function(baseEnv, tabObs)
                              mltext("sum.nb.in.obs"),
                              ifelse(getOption("P.selection"),
                                     mltext("sum.nb.diff"),
-                                    paste0(mltext("semicolon"), " ")),
+                                    paste0(mltext("colon"), " ")),
                              length(unique(tabObs[ , "unite_observation"])), sep=""),
                 state="normal")
 
@@ -1273,7 +1273,7 @@ updateInterface.select.f <- function(criterion, tabObs, baseEnv)
                              mltext("sum.nb.in.obs"),
                              ifelse(getOption("P.selection"),
                                     mltext("sum.nb.diff"),
-                                    paste0(mltext("semicolon"), " ")),
+                                    paste0(mltext("colon"), " ")),
                              length(unique(tabObs[ , "code_espece"])), sep=""),
                 state="normal")
 
@@ -1284,7 +1284,7 @@ updateInterface.select.f <- function(criterion, tabObs, baseEnv)
                              mltext("sum.nb.in.obs"),
                              ifelse(getOption("P.selection"),
                                     mltext("sum.nb.diff"),
-                                    paste0(mltext("semicolon"), " ")),
+                                    paste0(mltext("colon"), " ")),
                              length(unique(tabObs[ , "unite_observation"])), sep=""),
                 state="normal")
 
@@ -1344,7 +1344,7 @@ updateInterface.restore.f <- function(criterion="Tout", tabObs, baseEnv)
     tkconfigure(ResumerSituationEspecesSelectionnees,
                 text = paste(mltext("sum.nb.sp.obs.2"),
                              mltext("sum.nb.in.obs"),
-                             mltext("semicolon"), " ",
+                             mltext("colon"), " ",
                              length(unique(tabObs[ , "code_espece"])), sep=""),
                 state="normal")
 
@@ -1352,7 +1352,7 @@ updateInterface.restore.f <- function(criterion="Tout", tabObs, baseEnv)
     tkconfigure(ResumerSituationUnitobsSelectionnees,
                 text = paste(mltext("sum.nb.unitobs.obs.1"),
                              mltext("sum.nb.in.obs"),
-                             mltext("semicolon"), " ",
+                             mltext("colon"), " ",
                              length(unique(tabObs[ , "unite_observation"])), sep=""),
                 state="normal")
 

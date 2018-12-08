@@ -9,6 +9,7 @@ KW.North,Nord,North
 KW.South,Sud,South
 KW.East,Est,East
 KW.West,Ouest,West
+KW.temporal,temporel,temporal
 stat.mean,moyenne,mean
 stat.median,médiane,median
 OK.button,   OK   ,   OK   
@@ -102,7 +103,7 @@ WinApropos.version,"Plateforme PAMPA ""Ressources & Biodiversité"" : version ","
 WinApropos.license,GNU GPL version >= 2,GNU GPL version >= 2
 WinApropos.TX.dev.1, Logiciel distribué sous licence , Software license: 
 WinApropos.TX.dev.2,\n développé au sein de l'Ifremer.,\n developed at Ifremer.
-WinApropos.TX.dev.3,\n\n Developpeurs :,\n\n Developers:
+WinApropos.TX.dev.3,\n\n Développeurs :,\n\n Developers:
 WinApropos.TX.dev.4,\n\n Contacts : ,\n\n Contact information: 
 WinApropos.TX.fund.1, Financements :, Fundings: 
 WinApropos.TX.fund.2,\n\n Autres partenaires : ,\n\n Other partners: 
@@ -120,14 +121,15 @@ sum.nb.sp.obs.1,-> Nombre de codes espèce,-> Number of species code
 sum.nb.left, restants, left
 sum.nb.in.obs, dans le fichier d'observation, in the observation file
 sum.nb.diff, (peut différer du nombre retenu !) : , (might vary from selected!): 
-semicolon, :,:
+colon, :,:
+semicolon, ;,;
 sum.nb.unitobs.obs.1,-> Nombre d'unités d'observations,-> Number of observation units
 tclarray.0.4,Sélection,Selection
 sum.nb.sp.obs.2,-> Nombre d'espèces,-> Number of species
 error.recouvrementsansLIT.1,"Le champ obs$type n'est pas 'LIT', vous ne pouvez pas calculer","The observation type is not 'LIT', % overlap with"
 error.recouvrementsansLIT.2, un % de recouvrement avec des espèces non benthiques\n, non-benthic species cannot be evaluated\n
 error.noWorkspace,Aucun espace de travail n'est choisi ou opérationnel\n,No valid working directory selected\n
-error.nbChampUnitobs.1,Votre fichier 'Unites d'observation' ne comporte pas le bon nombre de champs!,The 'Observation unit' file has the wrong number of fields!
+error.nbChampUnitobs.1,Votre fichier 'Unités d'observation' ne comporte pas le bon nombre de champs!,The 'Observation unit' file has the wrong number of fields!
 error.nbChampUnitobs.2, Il devrait en contenir 35. Corrigez le et recommencez l'importation.\n, It should have 35. Please correct it and restart the importation.\n
 error.nbChampEsp.1,Votre fichier 'référentiel espèces' ne comporte pas le bon nombre de champs!,The 'Species reference' file has the wrong number of fields!
 error.nbChampEsp.2, Il devrait en contenir 124. Corrigez le et recommencez l'importation.\n, It should have 124. Please correct it and restart the importation.\n
@@ -139,7 +141,7 @@ error.CaractereInterditDsObs,"Votre fichier observations contient des ""&"". Cor
 error.CaractereInterditDsUnitObs,"Votre fichier unités d'observations contient des ""."" Corrigez les et recommencez l'importation.\n","The 'Observation unit' file contains some ""."". Please correct and restart the importation.\n"
 error.ZeroEnregistrement,Graphique impossible - pas d'enregistrements dans votre sélection.\n,Graphics not produced – no record in the subset.\n
 error.UneSeuleValeurRegroupement,Graphique sans intérêt - votre critère de regroupement n'a qu'une seule valeur.\n,Trivial graphics – grouping factor has only one level.\n
-error.CritereMalRenseigne50.1,Graphique sans intérêt - le critère de regroupement sélectionné,Unrelevant graphics – the grouping factor is filled
+error.CritereMalRenseigne50.1,Graphique sans intérêt - le critère de regroupement sélectionné,Irrelevant graphics – the grouping factor is filled
 error.CritereMalRenseigne50.2, est renseigné pour moins de 50% des observations.\n, for less than 50% of observations.\n
 error.CaractereInterdit.1,Votre table ,Your table 
 error.CaractereInterdit.2," contient des caractères déconseillés par le référentiel des données ('espaces',',',';' "," contains characters no recommended in the data specifications ('<spaces>',',',';' "
@@ -188,7 +190,7 @@ WinInstall.B.Install,   Installer   ,    Install
 WinInstall.B.Cancel,   Annuler   ,   Cancel    
 WinInstall.list.1,Le(s) package(s) suivant(s) est (sont) manquant(s) :\n\    * ',The following packages are missing:\n\    * '
 WinInstall.list.2,'\n\n Vous pouvez lancer leur installation \n,'\n\n You can install them now \n
-WinInstall.list.3,(connection internet active et droits d'administration requis).,(live connection required).
+WinInstall.list.3,(connexion internet active et droits d'administration requis).,(live connection required).
 WinInstall.list.4,Vous devez installer manuellement le(s) package(s) :\n\n    * ',Manual installation required for the following package(s):\n\n    * '
 errorLog.f.msg1,\n\tIl y a eu une erreur.,\n\tThere was an error.
 errorLog.f.msg2,\n\tVoir le fichier log : ,\n\tPlease see the log file: 
@@ -282,7 +284,7 @@ infoUnitobs.info.title,Informations par unité d'observation :,Information per st
 infoUnitobs.info.subset,\n\n! tiennent compte des sélections en cours.,\n\n! account for current subset criteria.
 warn.field.not.reordered.1,la colonne ,the field 
 warn.field.not.reordered.2, n'a put être réordonnée :\n\t\t, could not be reordered:\n\t\t
-infoExport.1,Des tables supplémentaires (pour calculs aditionnels) on été créées :,Additional tables (for complementary calculations) have been created:
+infoExport.1,Des tables supplémentaires (pour calculs additionnels) on été créées :,Additional tables (for complementary calculations) have been created:
 infoExport.2,\n\t* TableUnitSpSz : métriques par classe de taille/espèce/unité d'observation.,\n\t* TableUnitSpSz : metrics per size class/species/observation unit.
 infoExport.3,\n\t* TableUnitSp : métriques par espèce/unité d'observation.,\n\t* TableUnitSp : metrics per species/observation unit.
 infoExport.4,\n\t* TableUnit : métriques (dont biodiversité) par unité d'observation.,\n\t* TableUnit : metrics (incl. biodiversity) per observation unit.
@@ -304,13 +306,13 @@ testConfig.error.3s,La variable suivante n'est pas définie ,The following variab
 testConfig.error.4,"dans votre fichier ""","in the file """
 testConfig.error.5,\n\nVoulez-vous éditer ce fichier ?,\n\nDo you want to edit this file?
 testConfig.error.6,"\n\t(ouvre automatiquement de la sauvegarde également, si elle existe).","\n\t(also open the backup, if found)."
-testConfig.error.7,Configuration imcomplète,Incomplete configuration
+testConfig.error.7,Configuration incomplète,Incomplete configuration
 loadRefEspece.old.info.1,Vous utilisez un référentiel espèces à l'ancien format...,You are using a old format of the species reference table...
 loadRefEspece.old.info.2,\n Il est possible qu'il ne soit plus maintenu.,\n It might not be maintained any more.
 loadRefEspeces.new.error,Référentiel espèces local incorrect !,Species reference table in the wrong format!
 loadRefEspeces.new.no.local,"Pas de référentiel espèces local défini, ou fichier illisible.","No local species reference table defined, or file cannot be read."
 loadRefEspeces.info,Chargement du référentiel espèces :,Loading the species reference table:
-chooseInList.title,Selection des valeurs de ,Selection of levels from 
+chooseInList.title,Sélection des valeurs de ,Selection of levels from 
 chooseInList.1,Liste des valeurs de ,List of values from 
 chooseInList.2,Une seule sélection possible.,Single selection only.
 chooseInList.3,Plusieurs sélections possibles.,Multiple selection allowed.
@@ -354,7 +356,7 @@ logmsg.manual.refspa,Choix manuel du fichiers du référentiel spatial :,Manual se
 logmsg.manual.load.interface,Interface de choix manuel des fichiers de données.,Interface for the manual selection of data files.
 chooseFiles.title,Choix des fichiers de données à importer,Manual selection of files to import
 chooseFiles.info.1,"L'espace de travail est le répertoire qui contient le dossier ""Data"".","The working space contains the ""Data"" directory."
-chooseFiles.info.2,\nNe pas selectionner ce dernier !,\nPlease do not select this one!
+chooseFiles.info.2,\nNe pas sélectionner ce dernier !,\nPlease do not select this one!
 chooseFiles.BT.1,Table de données d'unités d'observation,Observation unit table
 chooseFiles.BT.2,Table de données d'observations,Observations table
 chooseFiles.BT.3,Référentiel espèces,Species reference table
@@ -376,7 +378,7 @@ summarize.calcWeight.info.3, et se répartissent comme suit :, and distributed as
 summarize.calcWeight.info.4, poids observés., observed weights.
 summarize.calcWeight.info.5, calculs d'après la taille observée., calculated based on observed size
 summarize.calcWeight.info.6, calculs d'après des tailles estimées, calculated based on estimated size
-summarize.calcWeight.info.7, sur la base des classes de tailles., based on size classe.
+summarize.calcWeight.info.7, sur la base des classes de tailles., based on size class.
 summarize.calcWeight.info.8," poids moyens par classe de taille (P, M, G) par espèce."," mean weight per size class (S, M, G) per species."
 summarize.calcWeight.info.9,\n\nLes estimations de biomasses dépendent de ces poids.,\n\nThe biomass estimates are based on these weights.
 logmsg.weightMPA.calc,Calcul des poids :,Calculation of weights:
@@ -395,11 +397,11 @@ selectLink.interface.H1.4,Pas de correspondance trouvée !\n,No matching values f
 selectLink.interface.H1.5,Veuillez corriger la sélection.,Please correct the selections.
 mergeSpaUnitobs.info.1,"Référentiel spatial incorrect,","Improper spatial reference,"
 mergeSpaUnitobs.info.2,\nvous ne pourrez pas traiter vos données aux différentes échelles spatiales !,\nthe data cannot be analysed at these spatial scales!
-mergeSpaUnitobs.info.3,"Le chargement du référentiel spatial géoréférencé a été effectué,","The geo-referenced spatial data have been loaded,"
+mergeSpaUnitobs.info.3,"Le chargement du référentiel spatial géo-référencé a été effectué,","The geo-referenced spatial data have been loaded,"
 mergeSpaUnitobs.info.4,\nvous pourrez avoir accès à l'ensemble des fonctionnalités cartographiques.,\nyou have now access to all mapping functionalities.
-mergeSpaUnitobs.info.5,Le référentiel spatial qui a été chargé n'est pas géoréférencé.,The spatial data loaded are not geo-referenced.
+mergeSpaUnitobs.info.5,Le référentiel spatial qui a été chargé n'est pas géo-référencé,The spatial data loaded are not geo-referenced.
 mergeSpaUnitobs.info.6,\nL'ensemble des fonctionnalités cartographiques ne seront pas disponibles.,\nyou will not have access to mapping functionalities.
-agregations.generic.war.1,Un des facteurs annexes est surement un sous-ensemble,One of the suppl. factors is probably a subset
+agregations.generic.war.1,Un des facteurs annexes est sûrement un sous-ensemble,One of the suppl. factors is probably a subset
 agregations.generic.war.2, du(des) facteur(s) de regroupement des observations., of the observations grouping factor(s).
 calc.biomass.info.1,Calcul de biomasse impossible : ,Cannot estimate the biomass: 
 calc.biomass.info.2,\nles poids ne sont pas renseignés ou ne peuvent être calculés.,\nweights are not filled or cannot be calculated.
@@ -442,8 +444,8 @@ logmsg.selectionOnRefesp,Sélection des enregistrement selon un critère du référe
 selectionOnRefesp.info.1,Sélection et recalcul selon un critère du référentiel espèces :,Subset and metrics calculation based on a field of the species reference table:
 selectionOnRef.info.2,Les métriques ont été recalculées,Metrics have been recalculated
 selectionOnRefesp.info.3, pour la sélection d'espèces., for the species-based subset.
-selectionOnRef.info.4,Abandon !,Canceled!
-chooseUnitobsField.title,Selection du facteur de groupement des unites d'observation,Selection of a factor in the station characteristics:
+selectionOnRef.info.4,Abandon !,Cancelled!
+chooseUnitobsField.title,Sélection du facteur de groupement des unités d'observation,Selection of a factor in the station characteristics:
 chooseUnitobsField.LB.1,Liste des facteurs de groupement,List of grouping factors
 logmsg.selectionUnitobs,Sélection sur un critère du référentiel des unités d'observation :,Subset on a field of the station characteristics:
 logmsg.selectionOnUnitobs,Sélection des enregistrement selon un critère du référentiel des unités d'observation :,Subset of records based upon a field of the station characteristics:
@@ -480,7 +482,7 @@ addBoxplotOptFrame.grpSepCol, Couleur des séparateurs : , Colour of separators:
 addBoxplotOptFrame.colLeg, Afficher la légende des couleurs (facteur de second niveau) ?, Display a colour legend (second level factor)?
 addBoxplotOptFrame.MeanP, Afficher les moyennes (points) sur les boxplot ?, Display the means (points) on the boxes?
 addBoxplotOptFrame.MeanPcol, Couleur des points : , Colour of points: 
-addBoxplotOptFrame.MeanPcex, Facteur multiplicatif des tailles de points : , Point size multiplicator: 
+addBoxplotOptFrame.MeanPcex, Facteur multiplicatif des tailles de points : , Point size multiplier: 
 addBoxplotOptFrame.MeanPpch, Type de point : , Point type: 
 addBoxplotOptFrame.MeanV, Afficher les valeurs des moyennes sur les boxplot ?, Display the mean values on the boxplots?
 addBoxplotOptFrame.MeanVcol, Couleur de caractères des valeurs : , Colour for mean values: 
@@ -490,7 +492,7 @@ tuneGraphOptions.commOpt.title,Options graphiques générales,Common graphical opt
 tuneGraphOptions.TT.dec,"Attention ! \nséparateur décimal : ""."" ","!!! \ndecimal separator: ""."" "
 tuneGraphOptions.TT.titleLang.1,"Attention, l'anglais (""en"") ne s'applique pas aux titres de graphiques. ","Caution, English (""en"") only applies for labels, not titles. "
 tuneGraphOptions.TT.titleLang.2,\nVeuillez désactiver les titres s'il est sélectionné.,\nDe-activate titles if selected.
-tuneGraphOptions.TT.embChar.1,Évite les erreurs d'affichage de caractères \nsur d'autres ordinateurs...,Avoid mis-displayed characters\n on other machines...
+tuneGraphOptions.TT.embChar.1,Évite les erreurs d'affichage de caractères \nsur d'autres ordinateurs...,Avoid mis-displayed characters\n on other machines…
 tuneGraphOptions.TT.embChar.2,\nNécessite que Ghostscript soit installé pour fonctionner.,\nRequires Ghostscript installed to work properly.
 tuneGraphOptions.colPal,Palette de couleurs : ,Colour palette: 
 tuneGraphOptions.langAxes,Langue des noms d'axes et variables : ,Language for axis labels: 
@@ -507,18 +509,18 @@ tuneGraphOptions.embFonts, Inclure les fontes dans les fichiers PDF ?, Embed fon
 tuneGraphOptions.pngOut, Fichiers PNG ?, PNG files?
 tuneGraphOptions.wmfOut.1, Fichiers WMF ?\n, WMF files?\n
 tuneGraphOptions.wmfOut.2,    (en plus de l'affichage à l'écran ; Windows uniquement),    (+displayed on screen; Windows only)
-tuneGraphOptions.multiGraph.1, Plusieurs graphiques par page (, Multiple graphics perpage (
+tuneGraphOptions.multiGraph.1, Plusieurs graphiques par page (, Multiple graphics per page (
 tuneGraphOptions.multiGraph.2, lignes x , rows x 
 tuneGraphOptions.multiGraph.3, colonnes), columns)
 tuneGraphOptions.LB.F.1,Aspect des graphiques :,Graphics look:
 tuneGraphOptions.LB.F.2,Sorties dans des fichiers :,Output options:
 generalOptions.title,Choix des options d'export (analyses/graphiques),Export options (analyses/graphics)
-generalOptions.OutputTitle,Sauvgardes pour chaque analyse ou graphique :,Save for each analyse or graphics:
+generalOptions.OutputTitle,Sauvegardes pour chaque analyse ou graphique :,Save for each analyse or graphics:
 generalOptions.saveData,...données du graphique ou de l'analyse\n(fichier *.csv) ? ,...data subset used (*.csv file)? 
 generalOptions.saveStats,...informations sur les données et statistiques\n(fichier *.stat) ? ,...information on data et statistics\n(*.stat file)? 
 generalOptions.err.Opt.1,Erreur : Option PAMPA ',Error : PAMPA option '
 generalOptions.err.Opt.2,' non définie.,' not defined.
-agregationTableParCritere.f.W.1,Un des facteurs annexes est surement un sous-ensemble,One of the secondary factors is probably a subset 
+agregationTableParCritere.f.W.1,Un des facteurs annexes est sûrement un sous-ensemble,One of the secondary factors is probably a subset 
 agregationTableParCritere.f.W.2, du(des) facteur(s) de regroupement des observations., of the observation grouping factor(s).
 calcBiodiv.f.info.1,Calculs de biodiversité impossibles !,Biodiversity metrics not calculable!
 calcBiodiv.f.info.2.s,non identifié,not identified
@@ -536,7 +538,7 @@ calcBiodivTaxo.f.Warn.2,Nombre de genres < 2 : les indices de diversité taxonomi
 agregation.info.f.title,Information,Information
 agregation.info.f.info.1,\tAgrégation des données en cours...\n,\tAggregating data...\n
 agregation.info.f.info.2,(cette fenêtre se fermera automatiquement)\n,(this window will close automatically)\n
-selectModWindow.f.title,Selection des valeurs de ,Selection of levels within 
+selectModWindow.f.title,Sélection des valeurs de ,Selection of levels within 
 selectModWindow.f.CB.1,Liste des valeurs de ',Values of the field '
 selectModWindow.f.CB.2,' présentes.\n ,'.\n 
 selectModWindow.f.info.1,!!Nouveau!! mode de sélection étendu : \n,Extended selection mode: \n
@@ -689,3 +691,104 @@ selectionVariables.carto.graphType.TT.2,\nbarplot : graphiques en barres.,\nbarp
 selectionVariables.carto.Info.1,Attention : les agrégations spatiales sont des moyennes par zone !,Warning: spatial aggregations are mean per zone!
 selectionVariables.carto.Info.2,\n\nAssurez-vous que votre protocole est adapté pour chaque,\n\nMake sure that the protocol is consistent with all
 selectionVariables.carto.Info.3, niveau d'agrégation spatiale utilisé., aggregation levels selected.
+choixDistri.WT,Choix de distribution théorique de la métrique,Theoretical distribution selection for the metrics
+choixDistri.dist.NO,loi Normale,Normal distribution
+choixDistri.dist.LogNO,loi log-Normale,Log-Normal distribution
+choixDistri.dist.G,loi Gamma,Gamma distribution
+choixDistri.dist.NB,loi Binomiale négative,Negative Binomial distribution
+choixDistri.dist.Help.1,INFO :\n,INFO :\n
+choixDistri.dist.Help.2,Cette fenêtre vous permet de choisir la distribution,This window is for selecting a suitable distribution 
+choixDistri.dist.Help.3, la plus adaptée pour faire vos analyses.\n, for the analysis (out of a pre-defined selection).\n
+choixDistri.dist.Help.4,La distribution (courbe rouge) s'ajustant le mieux à vos données (histogramme) d'après \n,"The distribution (red curve) fitting your data (histogram) the best,\n"
+choixDistri.dist.Help.5,le critère d'information de Akaike ,based on the Akaike information criterion
+choixDistri.dist.Help.6,(AIC ; doit être le plus petit possible) est pré-sélectionnée.," (AIC, the lower the better) is preselected."
+choixDistri.model.dist.NO, Modèle : ANOVA, Model: ANOVA
+choixDistri.model.dist.LogNO," Modèle : ANOVA, données log-transformées"," Model: ANOVA, log-transformed data."
+choixDistri.model.dist.G," Modèle : GLM, famille 'Gamma'"," Model: GLM, 'Gamma' family"
+choixDistri.model.dist.NB," Modèle : GLM, famille 'Binomiale négative'"," Model: GLM, 'Negative Binomial' family"
+supprimeObs.WT,Suppression des valeurs aberrantes ?,Suppress outliers?
+supprimeObs.L.1,Souhaitez vous supprimer des observations présentant de forts résidus ?,Do you wish to suppress outliers?
+supprimeObs.L.2,(Vous devrez choisir les observations à supprimer).,(you will need to select those observations to remove.)
+supprimeObs.selectModWindow.WT,Sélection des observations à supprimer,Select observations to remove
+supprimeObs.selectModWindow.L.1,\n'Observations (résidu)' triés par ordre décroissant,\n'Observations sorted by decreasing order
+supprimeObs.selectModWindow.L.2,\nde la valeur absolue des résidus.,\nof their residuals.
+print.anova.ml.KW.resid,Résidus,Residuals
+print.anova.ml.KW.devTab,Table d'analyse de la déviance :,Deviance analysis table
+print.anova.ml.KW.varTab,Table d'analyse de la variance :,Variance analysis table
+print.anova.ml.KW.family,Famille :,Family:
+print.anova.ml.KW.NB,Binomiale négative,Negative Binomial
+print.anova.ml.KW.B,Binomiale,Binomial
+print.anova.ml.KW.termSeq,Termes ajoutés séquentiellement (premier au dernier),Terms added sequentially (first to last)
+print.anova.ml.KW.response,Réponse :,Response:
+print.anova.ml.KW.link,lien :,link:
+plot.lm.ml.title.ResVsVal,Résidus vs valeurs prédites,Residuals vs Fitted
+plot.lm.ml.title.NQQ,'Normal Q-Q plot': quantiles des résidus standardisés vs quantiles théoriques,'Normal Q-Q plot': standardized vs theoretical quantiles
+plot.lm.ml.title.SL,Scale-Location,Scale-Location
+plot.lm.ml.title.Cooks,Distance de Cook,Cook's distance
+plot.lm.ml.title.ResVsLev,Résidus vs Leverage,Residuals vs Leverage
+plot.lm.ml.title.CooksVsLev,Distance de Cook vs Leverage,Cook's distance vs Leverage
+plot.lm.ml.lab.devRes,Std. deviance resid.,Std. deviance resid.
+plot.lm.ml.lab.stdRes,Résidus standardisés,Standardized residuals
+plot.lm.ml.lab.pred,Valeurs prédites,Predicted values
+plot.lm.ml.lab.adj,Valeurs ajustées,Fitted values
+plot.lm.ml.lab.res,Résidus,Residuals
+plot.lm.ml.lab.theoQ,Quantiles théoriques,Theoretical quantiles
+plot.lm.ml.lab.obsN,Nombre d'obs.,Obs. number
+plot.lm.ml.lab.CooksD,Distance de Cook,Cook's distance
+plot.lm.ml.lab.stdResP,Résidus std. de Pearson.,Pearson's std. residuals
+plot.lm.ml.lab.cstLev,Leverage Constant :\n Résidus vs niveaux de facteur,Constant leverage:\n Residuals vs factor levels
+plot.lm.ml.lab.levComb,Combinaisons de niveaux de facteurs,Factor levels combinations
+plot.lm.ml.lab.Lev,Leverage,Leverage
+print.summary.glht.red.KW.multComp,Comparaisons multiples de moyennes :,Multiple comparisons of the means:
+print.summary.glht.red.KW.contrast,Contrastes,Contrasts
+print.summary.glht.red.KW.linH,Hypothèses linéaires :,Linear hypotheses:
+print.summary.glht.red.KW.pValU,(P-valeurs uni-variées),(Univariate P-values)
+print.summary.glht.red.KW.pValST,(P-valeurs ajustées -- méthode 'single-step'),(Adjusted P-values -- 'single step' method)
+print.summary.glht.red.KW.pValS,(P-valeurs ajustées -- méthode de Shaffer),(Adjusted P-values -- Shaffer method)
+print.summary.glht.red.KW.pValW,(P-valeurs ajustées -- méthode de Westfall),(Adjusted P-values -- Westfall method)
+print.summary.glht.red.KW.pValDef,(P-valeurs ajustées --,(Adjusted P-values --
+plotDist.title.NO,Normale,Normal distribution
+plotDist.title.LogNO,log-Normale,Log-Normal distribution
+plotDist.title.NB,Binomiale négative,Negative Binomial distribution
+plotDist.title.G,Gamma,Gamma distribution
+plotDist.title.main,Comparaison avec la loi ,Comparison with the 
+plotDist.ylab,Densité de la métrique,Metrics density
+plotDist.failure,Échec de fitdistr() !\n(ceci n'affecte que le visuel),Fitdistr() failed!\n(only affects the plot)
+valPreditesLM.header,Valeurs prédites par le modèle :,Values predicted by the model:
+multCompWarn.logLM,Attention : les estimations de différences sont sur les logarithmes :,Warning: differences are estimated on the logarithms:
+multCompWarn.link,Attention : les différences sont estimées dans la fonction de lien,Warning: differences estimated in the link space
+multCompWarn.logL, (log) :, (log):
+multCompWarn.logitL, (logit) :, (logit):
+multCompWarn.invL, (inverse) :, (inverse):
+multCompWarn.invSign,inversion du signe des différences,inverse the sign of differences
+compMultiplesLM.header,Comparaisons multiples :,Multiple comparisons:
+compMultiplesLM.W.1,Attention : les matrices de différences ont été réduites en raison de ,Warning: difference matrices reduced to account for
+compMultiplesLM.W.2,\n\tcoefficients non calculables (absence de données pour certains ,\n\tnot calculable coefficients (missing data for some levels
+compMultiplesLM.W.3,\n\tniveaux de facteurs/interactions).,\n\tof factors/interactions).
+compMultiplesLM.Info.1,Comparaisons pour les différences de,Comparisons for differences in
+compSimplesLM.header,Comparaisons des modalités :,Comparisons of levels:
+compSimplesLM.KW.factor,Facteur,Factor
+infoStatLM.Info.model,Modèle ajusté :,Fitted model:
+infoStatLM.Info.Fheader,Statistique de Fisher Globale et R^2 :,Global Fisher’s statistics and R^2:
+infoStatLM.Info.R2mult,R^2 multiple :,Multiple R^2:
+infoStatLM.Info.R2adj,R^2 ajusté :,Adjusted R^2
+infoStatLM.Info.Fstat,F-statistique : ,F-statistics:
+infoStatLM.Info.over, sur , over 
+infoStatLM.Info.and, et , and 
+infoStatLM.Info.DF," DL,"," DF,"
+infoStatLM.Info.Pval,P-valeur :,P-value:
+signifParamLM.Info.1,Significativités des paramètres,Parameter significances
+signifParamLM.Info.2,(seuls ceux correspondant à des facteurs/interactions significatifs sont représentés) :,(only the significant factors/interactions are shown):
+sortiesLM.Wminfo.Title,Information,Information
+sortiesLM.Wminfo.Info.1,Comparaisons multiples en cours...,Ongoing multiple-comparisons...
+sortiesLM.Wminfo.Info.2,"Veuillez patienter, ceci peut prendre","Please be patient, this can take a while"
+sortiesLM.Wminfo.Info.3, un peu de temps (cette fenêtre se fermera automatiquement), (this window will close automatically)
+sortiesLM.Graph.Title,Graphique d’interactions,Interaction graphics
+sortiesLM.Graph.ylab.pfx,,Mean 
+sortiesLM.Graph.ylab.sfx, moyen,
+sortiesLM.Graph.hist.xlab,valeur des résidus ,Residual values 
+sortiesLM.Graph.hist.ylab,Fréquence ,Frequency 
+sortiesLM.Graph.hist.title,Distribution des résidus,Distribution of residuals
+sortiesLM.Graph.diag.title,Graphiques diagnostiques,Diagnostics
+modeleLineaireWP2.esp.dist,Loi de distribution choisie,Selected distribution
+sortiesLM.Graph.cancelled,Annulé !,Cancelled!

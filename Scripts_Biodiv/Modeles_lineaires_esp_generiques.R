@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2013-04-24 17:36:03 yves>
+# Time-stamp: <2018-12-08 15:37:03 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
@@ -105,7 +105,7 @@ tkrplot <- function(parent, fun, hscale = 1, vscale = 1,...)
 }
 
 ########################################################################################################################
-print.anova.fr <- function(x, digits = max(getOption("digits") - 2, 3), signif.stars = getOption("show.signif.stars"),
+print.anova.ml <- function(x, digits = max(getOption("digits") - 2, 3), signif.stars = getOption("show.signif.stars"),
                            ...)
 {
     ## Purpose: Hack de la méthode print.anova pour franciser les sorties et
@@ -115,7 +115,7 @@ print.anova.fr <- function(x, digits = max(getOption("digits") - 2, 3), signif.s
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 26 août 2010, 11:36
 
-    attr(x, "row.names")[attr(x, "row.names") == "Residuals"] <- "Résidus"
+    attr(x, "row.names")[attr(x, "row.names") == "Residuals"] <- mltext("print.anova.ml.KW.resid")
 
     ## Françisation des en-têtes (gsub itératif) :
     attr(x, "heading") <- iter.gsub(pattern=c("Analysis of Deviance Table",
@@ -126,14 +126,16 @@ print.anova.fr <- function(x, digits = max(getOption("digits") - 2, 3), signif.s
                                               "Terms added sequentially \\(first to last\\)",
                                               "Response:",
                                               "link:"),
-                                    replacement=c("\n---------------------------------------------------------------------------\nTable d'analyse de la déviance :",
-                                                  "\n---------------------------------------------------------------------------\nTable d'analyse de la variance :",
-                                                  "Famille :",
-                                                  "Binomiale négative",
-                                                  "Binomiale",
-                                                  "Termes ajoutés séquentiellement (premier au dernier)",
-                                                  "Réponse :",
-                                                  "lien :"),
+                                    replacement=c(paste0("\n--------------------------------------",
+                                                         "-------------------------------------\n",
+                                                         c(mltext("print.anova.ml.KW.devTab"),
+                                                           mltext("print.anova.ml.KW.varTab"))),
+                                                  mltext("print.anova.ml.KW.family"),
+                                                  mltext("print.anova.ml.KW.NB"),
+                                                  mltext("print.anova.ml.KW.B"),
+                                                  mltext("print.anova.ml.KW.termSeq"),
+                                                  mltext("print.anova.ml.KW.response"),
+                                                  mltext("print.anova.ml.KW.link")),
                                     x=attr(x, "heading"), fixed=TRUE)
 
     ## Définitions issues de la fonction originale :
@@ -175,11 +177,15 @@ print.anova.fr <- function(x, digits = max(getOption("digits") - 2, 3), signif.s
 }
 
 ########################################################################################################################
-plot.lm.fr <- function (x, which = c(1L:3L, 5L),
-                        caption = list("Résidus vs valeurs prédites",
-                        "'Normal Q-Q plot': quantiles des résidus standardisés vs quantiles théoriques",
-                        "Scale-Location", "Distance de Cook", "Résidus vs Leverage",
-                        expression("Distance de Cook vs Leverage  " * h[ii]/(1 - h[ii]))),
+plot.lm.ml <- function (x, which = c(1L:3L, 5L),
+                        caption = list(mltext("plot.lm.ml.title.ResVsVal"),
+                                       mltext("plot.lm.ml.title.NQQ"),
+                                       mltext("plot.lm.ml.title.SL"),
+                                       mltext("plot.lm.ml.title.Cooks"),
+                                       mltext("plot.lm.ml.title.ResVsLev"),
+                                       substitute(expression(title1 * h[ii]/(1 - h[ii])),
+                                                  list(title1 = paste0(mltext("plot.lm.ml.title.CooksVsLev"),
+                                                                       "  ")))),
                         panel = if (add.smooth) panel.smooth else points, sub.caption = NULL,
                         main = "", ask = prod(par("mfcol")) < length(which) && dev.interactive(),
                         ..., id.n = 3, labels.id = names(residuals(x)), cex.id = 0.75,
@@ -235,8 +241,8 @@ plot.lm.fr <- function (x, which = c(1L:3L, 5L),
     }
     if (any(show[2L:3L])) {
         ylab23 <- if (isGlm)
-            "Std. deviance resid."      # [!!!]
-        else "Résidus standardisés"
+            mltext("plot.lm.ml.lab.devRes")      # [!!!]
+        else mltext("plot.lm.ml.lab.stdRes")
         r.w <- if (is.null(w))
             r
         else sqrt(w) * r
@@ -249,8 +255,8 @@ plot.lm.fr <- function (x, which = c(1L:3L, 5L),
     }
     if (any(show[c(1L, 3L)]))
         l.fit <- if (isGlm)
-            "Valeurs prédites"
-        else "Valeurs ajustées"
+            mltext("plot.lm.ml.lab.pred")
+        else mltext("plot.lm.ml.lab.adj")
     if (is.null(id.n))
         id.n <- 0
     else {
@@ -299,7 +305,7 @@ plot.lm.fr <- function (x, which = c(1L:3L, 5L),
         ylim <- range(r, na.rm = TRUE)
         if (id.n > 0)
             ylim <- extendrange(r = ylim, f = 0.08)
-        plot(yh, r, xlab = l.fit, ylab = "Résidus", main = main,
+        plot(yh, r, xlab = l.fit, ylab = mltext("plot.lm.ml.lab.res"), main = main,
              ylim = ylim, type = "n", ...)
         panel(yh, r, ...)
         if (one.fig)
@@ -316,7 +322,7 @@ plot.lm.fr <- function (x, which = c(1L:3L, 5L),
         ylim <- range(rs, na.rm = TRUE)
         ylim[2L] <- ylim[2L] + diff(ylim) * 0.075
         qq <- qqnorm(rs, main = main, ylab = ylab23, ylim = ylim,
-                     xlab="Quantiles théoriques",
+                     xlab=mltext("plot.lm.ml.lab.theoQ"),
                      ...)
         if (qqline)
             qqline(rs, lty = 3, col = "gray50")
@@ -349,7 +355,7 @@ plot.lm.fr <- function (x, which = c(1L:3L, 5L),
         }
         else ymx <- max(cook, na.rm = TRUE)
         plot(cook, type = "h", ylim = c(0, ymx), main = main,
-             xlab = "Nombre d'obs.", ylab = "Distance de Cook", ...)
+             xlab = mltext("plot.lm.ml.lab.obsN"), ylab = mltext("plot.lm.ml.lab.CooksD"), ...)
         if (one.fig)
             title(sub = sub.caption, ...)
         mtext(getCaption(4), 3, 0.25, cex = cex.caption)
@@ -358,8 +364,8 @@ plot.lm.fr <- function (x, which = c(1L:3L, 5L),
     }
     if (show[5L]) {
         ylab5 <- if (isGlm)
-            "Résidus std. de Pearson."
-        else "Résidus standardisés"
+            mltext("plot.lm.ml.lab.stdResP")
+        else mltext("plot.lm.ml.lab.stdRes")
         r.w <- residuals(x, "pearson")
         if (!is.null(w))
             r.w <- r.w[wind]
@@ -372,7 +378,7 @@ plot.lm.fr <- function (x, which = c(1L:3L, 5L),
         do.plot <- TRUE
         if (isConst.hat) {
             if (missing(caption))
-                caption[[5L]] <- "Leverage Constant :\n Résidus vs niveaux de facteur"
+                caption[[5L]] <- mltext("plot.lm.ml.lab.cstLev")
             aterms <- attributes(terms(x))
             dcl <- aterms$dataClasses[-aterms$response]
             facvars <- names(dcl)[dcl %in% c("factor", "ordered")]
@@ -393,7 +399,7 @@ plot.lm.fr <- function (x, which = c(1L:3L, 5L),
                 xx <- facval
                 plot(facval, rsp, xlim = c(-1/2, sum((nlev -
                                   1) * ff) + 1/2), ylim = ylim, xaxt = "n", main = main,
-                     xlab = "Combinaisons de niveaux de facteurs", ylab = ylab5,
+                     xlab = mltext("plot.lm.ml.lab.levComb"), ylab = ylab5,
                      type = "n", ...)
                 axis(1, at = ff[1L] * (1L:nlev[1L] - 1/2) - 1/2,
                      labels = x$xlevels[[1L]][order(sapply(split(yh,
@@ -416,7 +422,7 @@ plot.lm.fr <- function (x, which = c(1L:3L, 5L),
             xx <- hii
             xx[xx >= 1] <- NA
             plot(xx, rsp, xlim = c(0, max(xx, na.rm = TRUE)),
-                 ylim = ylim, main = main, xlab = "Leverage",
+                 ylim = ylim, main = main, xlab = mltext("plot.lm.ml.lab.Lev"),
                  ylab = ylab5, type = "n", ...)
             panel(xx, rsp, ...)
             abline(h = 0, v = 0, lty = 3, col = "gray")
@@ -432,7 +438,7 @@ plot.lm.fr <- function (x, which = c(1L:3L, 5L),
                     lines(hh, cl.h, lty = 2, col = 2)
                     lines(hh, -cl.h, lty = 2, col = 2)
                 }
-                legend("bottomleft", legend = "Distance de Cook",
+                legend("bottomleft", legend = mltext("plot.lm.ml.lab.CooksD"),
                        lty = 2, col = 2, bty = "n")
                 xmax <- min(0.99, usr[2L])
                 ymult <- sqrt(p * (1 - xmax)/xmax)
@@ -456,8 +462,13 @@ plot.lm.fr <- function (x, which = c(1L:3L, 5L),
         g <- dropInf(hii/(1 - hii), hii)
         ymx <- max(cook, na.rm = TRUE) * 1.025
         plot(g, cook, xlim = c(0, max(g, na.rm = TRUE)), ylim = c(0,
-                                                         ymx), main = main, ylab = "Distance de Cook", xlab = expression("Leverage  " *
-                                                             h[ii]), xaxt = "n", type = "n", ...)
+                                                                  ymx), main = main,
+             ylab = mltext("plot.lm.ml.lab.CooksD"),
+             xlab = substitute(expression(title1 *
+                                          h[ii]),
+                               list(title1 = paste0(mltext("plot.lm.ml.lab.Lev"),
+                                                    "  "))),
+             xaxt = "n", type = "n", ...)
         panel(g, cook, ...)
         athat <- pretty(hii)
         axis(1, at = athat/(1 - athat), labels = paste(athat))
@@ -709,7 +720,8 @@ print.summary.glht.red <- function (x, digits = max(3, getOption("digits") - 3),
 {
     ## cat("\n\t", "Simultaneous Tests for General Linear Hypotheses\n\n")
     if (!is.null(x$type))
-        cat("Comparaisons multiples de moyennes :", x$type, "Contrastes\n\n\n")
+        cat(mltext("print.summary.glht.red.KW.multComp"), x$type,
+            mltext("print.summary.glht.red.KW.contrast"), "\n\n\n")
     call <- if (isS4(x$model))
         x$model@call
     else x$model$call
@@ -736,17 +748,17 @@ print.summary.glht.red <- function (x, digits = max(3, getOption("digits") - 3),
     else {
         sig <- .Machine$double.eps
     }
-    cat("Hypothèses linéaires :\n")
+    cat(mltext("print.summary.glht.red.KW.linH"), "\n")
     alt <- switch(x$alternative, two.sided = "==", less = ">=",
         greater = "<=")
     rownames(mtests) <- paste(rownames(mtests), alt, x$rhs)
     printCoefmat(mtests, digits = digits, has.Pvalue = TRUE,
         P.values = TRUE, eps.Pvalue = sig)
-    switch(type, univariate = cat("(P-valeurs univariées)"),
-        `single-step` = cat("(P-valeurs ajustées -- méthode 'single-step')"),
-        Shaffer = cat("(P-valeurs ajustées -- méthode de Shaffer)"),
-        Westfall = cat("(P-valeurs ajustées -- méthode de Westfall)"),
-        cat("(P-valeurs ajustées --", type, "method)"))
+    switch(type, univariate = cat(mltext("print.summary.glht.red.KW.pValU")),
+        `single-step` = cat(mltext("print.summary.glht.red.KW.pValST")),
+        Shaffer = cat(mltext("print.summary.glht.red.KW.pValS")),
+        Westfall = cat(mltext("print.summary.glht.red.KW.pValW")),
+        cat(mltext("print.summary.glht.red.KW.pValDef"), type, "method)"))
     cat("\n\n")
     invisible(x)
 }
@@ -772,15 +784,15 @@ plotDist.f <- function(y, family, metrique, env=NULL,...)
 
     ## Noms et fonction de densité de la loi pour ajouter les titres ainsi qu'ajuster et représenter la distribution :
     loi <- switch(family,
-                  NO=list(name="Normale", densfunName="normal",
+                  NO=list(name=mltext("plotDist.title.NO"), densfunName="normal",
                           densfun="dnorm", start=NULL),
-                  LOGNO=list(name="log-Normale", densfunName="log-normal",
+                  LOGNO=list(name=mltext("plotDist.title.LogNO"), densfunName="log-normal",
                              densfun="dlnorm", start=NULL),
                   PO=list(name="de Poisson", densfunName="poisson",
                           densfun="dpois", start=NULL),
-                  NBI=list(name="Binomiale négative", densfunName="negative binomial",
+                  NBI=list(name=mltext("plotDist.title.NB"), densfunName="negative binomial",
                            densfun="dnbinom", start=NULL),
-                  GA=list(name="Gamma", densfunName="gamma",
+                  GA=list(name=mltext("plotDist.title.G"), densfunName="gamma",
                           densfun="dgamma", start=list(shape=1, scale=2)))
 
     ## Traitement des zéros pour la loi Log-Normale :
@@ -834,10 +846,10 @@ plotDist.f <- function(y, family, metrique, env=NULL,...)
                           3 * max(histTmp$density, na.rm=TRUE),
                           1.05 * max(c(histTmp$density, yi), na.rm=TRUE))),
          xlim=c(min(y, na.rm=TRUE), max(y, na.rm=TRUE)),
-         main=paste("Comparaison avec la loi ", loi$name, sep=""),
+         main=paste("", loi$name, sep=""),
          ## cex.main=0.9,
          xlab=Capitalize.f(varNames[metrique, "nom"]),
-         ylab="Densité de la métrique",
+         ylab=mltext("plotDist.ylab"),
          col="lightgray")
 
     if (! is.null(coefLoi))
@@ -848,7 +860,7 @@ plotDist.f <- function(y, family, metrique, env=NULL,...)
              y=mean(c(0, ifelse(max(yi, na.rm=TRUE) > 3 * max(histTmp$density, na.rm=TRUE),
                     3 * max(histTmp$density, na.rm=TRUE),
                     1.05 * max(c(histTmp$density, yi), na.rm=TRUE)))),
-             labels="Échec de fitdistr() !\n(ceci n'affecte que le visuel)", col="red")
+             labels=mltext("plotDist.failure"), col="red")
     }
 
     ## Calcul d'AIC (entre autres) :
@@ -1181,39 +1193,40 @@ resFileLM.f <- function(objLM, metrique, factAna, modSel, listFact, dataEnv,
                       ## Métrique analysée :
                       metrique, "_",
                       ## si facteur de séparation des analyses :
-                      "Agr-",
+                      mltext("resFileGraph.aggreg.abv"),
                       switch(type,
-                             "espece"="espece+unitobs_",
-                             "CL_espece"="CL+espece+unitobs_",
-                             "unitobs"="unitobs_",
-                             "CL_unitobs"="CL+unitobs_",
+                             "espece"=mltext("resFileGraph.pfx.spSt"),
+                             "CL_espece"=mltext("resFileGraph.pfx.ScspSt"),
+                             "unitobs"=mltext("resFileGraph.pfx.St"),
+                             "CL_unitobs"=mltext("resFileGraph.pfx.SCSt"),
                              ""),
                       switch(type,
                              "espece"={
                                  ifelse(factAna == "",
                                         "",
-                                        paste(factAna, "(", ifelse(modSel[1] != "", modSel, "toutes"), ")_", sep=""))
+                                        paste(factAna, "(", ifelse(modSel[1] != "", modSel,
+                                                                   mltext("resFileGraph.all.spSt")), ")_", sep=""))
                              },
                              "CL_espece"={
                                  ifelse(factAna == "",
                                         "",
                                         paste(factAna, "(", ifelse(modSel[1] != "",
-                                                                     paste(modSel, collapse="+"),
-                                                                     "toutes"), ")_", sep=""))
+                                                                   paste(modSel, collapse="+"),
+                                                                   mltext("resFileGraph.all.ScspSt")), ")_", sep=""))
                              },
                              "unitobs"={
                                  ifelse(factAna == "",
-                                        "(toutes espèces)_",
+                                        mltext("resFileGraph.allSp.St"),
                                         paste(factAna, "(", ifelse(modSel[1] != "",
                                                                    paste(modSel, collapse="+"),
-                                                                   "toutes"), ")_", sep=""))
+                                                                   mltext("resFileGraph.all.St")), ")_", sep=""))
                              },
                              "CL_unitobs"={
                                  ifelse(factAna == "",
-                                        "(toutes espèces)_",
+                                        mltext("resFileGraph.allSp.SCSt"),
                                         paste(factAna, "(", ifelse(modSel[1] != "",
-                                                                     paste(modSel, collapse="+"),
-                                                                     "toutes"), ")_", sep=""))
+                                                                   paste(modSel, collapse="+"),
+                                                                   mltext("resFileGraph.all.SCSt")), ")_", sep=""))
                              },
                              ""),
                       ## liste des facteurs de l'analyse
@@ -1277,7 +1290,7 @@ valPreditesLM.f <- function(objLM, Data, listFact, resFile)
 
     ## Écriture de l'en-tête :
     cat("\n\n\n---------------------------------------------------------------------------",
-        "\nValeurs prédites par le modèle :\n\n",
+        "\n", mltext("valPreditesLM.header"), "\n\n",
         file=resFile)
 
     ## Écriture du résultat :
@@ -1334,24 +1347,24 @@ compMultiplesAvertissement.f <- function(objLM, Log, resFile)
                    ""
                },
                "LM-log"={
-                   paste("\tAttention : les estimations de différences sont sur les logarithmes :",
+                   paste("\t", mltext("multCompWarn.logLM"),
                          "\n\t(log(A) - log(B))", sep="")
                },
                "GLM-NB"={
-                   paste("\tAttention : les différences sont estimées dans la fonction de lien (log) :",
+                   paste("\t", mltext("multCompWarn.link"), mltext("multCompWarn.logL"),
                          "\n\tlog(A) - log(B)", sep="")
                },
                "GLM-P"={
-                   paste("\tAttention : les différences sont estimées dans la fonction de lien (log) :",
+                   paste("\t", mltext("multCompWarn.link"), mltext("multCompWarn.logL"),
                          "\n\tlog(A) - log(B)", sep="")
                },
                "GLM-B"={
-                   paste("\tAttention : les différences sont estimées dans la fonction de lien (logit) :",
+                   paste("\t", mltext("multCompWarn.link"), mltext("multCompWarn.logitL"),
                          "", sep="")
                },
                "GLM-Ga"={
-                   paste("\tAttention : les différences sont estimées dans la fonction de lien (inverse) :",
-                         "\n\t(1/A) - (1/B)\t=>\t*inversion du signe des différences*", sep="")
+                   paste("\t", mltext("multCompWarn.link"), mltext("multCompWarn.invL"),
+                         "\n\t(1/A) - (1/B)\t=>\t*", mltext("multCompWarn.invSign"),"*", sep="")
                },
                ""),
         file=resFile)
@@ -1378,7 +1391,7 @@ compMultiplesLM.f <- function(objLM, Data, fact1, fact2, resFile, exclude, Log=F
 
     ## écriture des en-têtes :
     cat("\n\n\n---------------------------------------------------------------------------",
-        "\nComparaisons multiples :",
+        "\n", mltext("compMultiplesLM.header"),
         file=resFile)
 
     ## Avertissement concernant les estimations de différences :
@@ -1416,9 +1429,10 @@ compMultiplesLM.f <- function(objLM, Data, fact1, fact2, resFile, exclude, Log=F
     if (any(is.na(coef(objLM))))
     {
         ## Avertissement :
-        cat("\n\n\tAttention : les matrices de différences ont été réduites en raison de ",
-            "\n\tcoefficients non calculables (absence de données pour certains ",
-            "\n\tniveaux de facteurs/interactions).\n",
+        cat("\n\n\t",
+            mltext("compMultiplesLM.W.1"),
+            mltext("compMultiplesLM.W.2"),
+            mltext("compMultiplesLM.W.3"), "\n",
             file=resFile)
 
         ## Réduction des matrices de différences :
@@ -1431,10 +1445,18 @@ compMultiplesLM.f <- function(objLM, Data, fact1, fact2, resFile, exclude, Log=F
     for (i in seq(along=facts))
     {
         ## Résultats des comparaisons spatiales/de statut :
-        cat(paste("\n\nComparaisons pour les différences de '", varNames[facts[i], "nom"], "' ",
-                  ifelse(tempFact[i], "(temporel) ", ""),
+        cat(paste("\n\n", mltext("compMultiplesLM.Info.1"), " '", varNames[facts[i], "nom"], "' ",
+                  ifelse(tempFact[i],
+                         paste0("(",
+                                mltext("KW.temporal"),
+                                ") "),
+                         ""),
                   "par '", varNames[facts[-i], "nom"], "' ",
-                  ifelse(tempFact[-i], "(temporel) ", ""),
+                  ifelse(tempFact[-i],
+                         paste0("(",
+                                mltext("KW.temporal"),
+                                ") "),
+                         ""),
                   ":\n", sep=""),
             file=resFile)
 
@@ -1459,7 +1481,7 @@ compSimplesLM.f <- function(objLM, Data, fact, resFile, Log=FALSE)
 
     ## écriture des en-têtes :
     cat("\n\n\n---------------------------------------------------------------------------",
-        "\nComparaisons des modalités :",
+        "\n", mltext("compSimplesLM.header"),
         file=resFile)
 
     ## Avertissement concernant les estimations de différences :
@@ -1468,7 +1490,10 @@ compSimplesLM.f <- function(objLM, Data, fact, resFile, Log=FALSE)
     if (is.temporal.f(fact, unitobs))
     {
         ## Suite en-tête :
-        cat(paste("\n\n\tFacteur '", varNames[fact, "nom"], "' (temporel) :\n", sep=""),
+        cat(paste("\n\n\t", mltext("compSimplesLM.KW.factor"),
+                  " '", varNames[fact, "nom"], "' (",
+                  mltext("KW.temporal"),
+                  ") :\n", sep=""),
             file=resFile)
 
         ## Comparaisons temporelles :
@@ -1482,7 +1507,8 @@ compSimplesLM.f <- function(objLM, Data, fact, resFile, Log=FALSE)
 
     }else{
         ## Suite en-tête :
-        cat(paste("\n\nFacteur '", varNames[fact, "nom"], "' :\n", sep=""),
+        cat(paste("\n\n", mltext("compSimplesLM.KW.factor"),
+                  " '", varNames[fact, "nom"], "' :\n", sep=""),
             file=resFile)
 
         ## Comparaisons de toutes les paires ("Tukey") :
@@ -1516,21 +1542,23 @@ infoStatLM.f <- function(objLM, resFile)
                     summary(objLM))
 
     ## Informations sur le modèle :
-    cat("Modèle ajusté :", file=resFile, fill=1)
+    cat(mltext("infoStatLM.Info.model"), file=resFile, fill=1)
     cat("\t", deparse(objLM$call), "\n\n\n", file=resFile, sep="")
 
     ## Stats globales :
     if (length(grep("^glm", objLM$call)) == 0)
     {
-        cat("Statistique de Fisher Globale et R^2 :\n\n", file=resFile)
-        cat("\tR^2 multiple : ", format(sumLM$r.squared, digits=3),
-            " ;\tR^2 ajusté : ", format(sumLM$adj.r.squared, digits=3), "\n", file=resFile, sep="")
+        cat(mltext("infoStatLM.Info.Fheader"), "\n\n", file=resFile)
+        cat("\t", mltext("infoStatLM.Info.R2mult"), " ", format(sumLM$r.squared, digits=3),
+            mltext("semicolon"),
+            "\t", mltext("infoStatLM.Info.R2adj"), " ", format(sumLM$adj.r.squared, digits=3), "\n", file=resFile, sep="")
 
-        cat("\tF-statistique : ",
+        cat("\t", mltext("infoStatLM.Info.Fstat"),
             paste(sapply(sumLM$fstatistic, format, digits=4, nsmall=0),
-                  c(" sur ", " et ", " DL,"), sep=""),
-            "\tP-valeur : ",
-            format.pval(pf(sumLM$fstatistic[1L], sumLM$fstatistic[2L], sumLM$fstatistic[3L], lower.tail = FALSE), digits=4),
+                  mltext(c("infoStatLM.Info.over", "infoStatLM.Info.and", "infoStatLM.Info.DF")), sep=""),
+            "\t", mltext("infoStatLM.Info.Pval"), " ",
+            format.pval(pf(sumLM$fstatistic[1L], sumLM$fstatistic[2L], sumLM$fstatistic[3L], lower.tail = FALSE),
+                        digits=4),
             "\n\n\n", file=resFile, sep="")
     }else{
     }
@@ -1558,11 +1586,12 @@ signifParamLM.f <- function(objLM, resFile)
     sumLM <- summary(objLM)
 
     ## Anova globale du modèle :
-    capture.output(print.anova.fr(anovaLM), file=resFile)
+    capture.output(print.anova.ml(anovaLM), file=resFile)
 
     ## Significativités des paramètres :
-    cat("\n\nSignificativités des paramètres ",
-        "\n(seuls ceux correspondant à des facteurs/intéractions significatifs sont représentés) :\n\n",
+    cat("\n\n", mltext("signifParamLM.Info.1"), " \n",
+        mltext("signifParamLM.Info.2"),
+        "\n\n",
         file=resFile)
 
     capture.output(printCoefmat.red(sumLM$coef, anovaLM=anovaLM, objLM=objLM), file=resFile)
@@ -1641,17 +1670,18 @@ sortiesLM.f <- function(objLM, formule, metrique, factAna, modSel, listFact, lis
     {
         WinInfo <- tktoplevel()
         on.exit(tkdestroy(WinInfo))
-        tkwm.title(WinInfo, "Information")
+        tkwm.title(WinInfo, mltext("sortiesLM.W.Title"))
 
         tkgrid(tklabel(WinInfo, text="\t "),
-               tklabel(WinInfo, text="\nComparaisons multiples en cours...\n"),
+               tklabel(WinInfo, text=paste0("\n", mltext("sortiesLM.Wminfo.Info.1"), "\n")),
                tklabel(WinInfo, text="\t "),
                sticky="w")
 
         tkgrid(tklabel(WinInfo, text="\t "),
                tklabel(WinInfo,
-                       text=paste("Veuillez patienter, ceci peut prendre",
-                       " un peu de temps (cette fenêtre se fermera automatiquement)\n", sep="")),
+                       text=paste(mltext("sortiesLM.Wminfo.Info.2"),
+                                  mltext("sortiesLM.Wminfo.Info.3"),
+                                  "\n", sep="")),
                sticky="w")
 
         tkfocus(WinInfo)
@@ -1664,7 +1694,7 @@ sortiesLM.f <- function(objLM, formule, metrique, factAna, modSel, listFact, lis
         ## Représentation des interactions :
         mainTitle <- graphTitle.f(metrique=metrique,
                                   modGraphSel=modSel, factGraph=factAna,
-                                  listFact=listFact, model="Graphique d'intéractions",
+                                  listFact=listFact, model=mltext("sortiesLM.Graph.Title"),
                                   type=type)
 
         eval(call(winFUN, pointsize=ifelse(isTRUE(getOption("P.graphPaper")), 14, 12)))
@@ -1677,7 +1707,9 @@ sortiesLM.f <- function(objLM, formule, metrique, factAna, modSel, listFact, lis
          {
              eval(parse(text=paste("interaction.plot(", listFact[1], ", ", listFact[2],
                         ", log(", metrique, "), ylab=\"",
-                        paste("log(", Capitalize.f(varNames[metrique, "nom"]), ") moyen", sep=""),
+                        paste(mltext("sortiesLM.Graph.ylab.pfx"),
+                              "log(", Capitalize.f(varNames[metrique, "nom"]), ")",
+                              mltext("sortiesLM.Graph.ylab.sfx"), sep=""),
                         "\", xlab=\"", Capitalize.f(varNames[listFact[1], "nom"]),
                         "\", main=\"",
                         ifelse((! isTRUE(getOption("P.graphPaper"))) && isTRUE(getOption("P.title")), mainTitle, ""),
@@ -1687,12 +1719,13 @@ sortiesLM.f <- function(objLM, formule, metrique, factAna, modSel, listFact, lis
          }else{
              eval(parse(text=paste("interaction.plot(", listFact[1], ", ", listFact[2],
                         ", ", metrique, ", ylab=\"",
-                        paste("", Capitalize.f(varNames[metrique, "nom"]),
-                              " moyen",
+                        paste(mltext("sortiesLM.Graph.ylab.pfx"),
+                              Capitalize.f(varNames[metrique, "nom"]),
+                              mltext("sortiesLM.Graph.ylab.sfx"),
                               switch(varNames[metrique, "genre"],
-                                     "f"="ne",
-                                     "fp"="nes",
-                                     "mp"="s",
+                                     "f"=mltext("graphTitle.f"),
+                                     "fp"=mltext("graphTitle.fp"),
+                                     "mp"=mltext("graphTitle.mp"),
                                      ""), # "moyen", moyens,
                                         # "moyenne" ou "moyennes" selon le genre.
                               sep=""),
@@ -1719,16 +1752,18 @@ sortiesLM.f <- function(objLM, formule, metrique, factAna, modSel, listFact, lis
 
     eval(call(winFUN, width=45, height=35))
     par(mfrow=c(2, 2), oma=c(0, 0, 4.7, 0))
-    hist(objLM$residuals, xlab="valeur des résidus ", ylab= "Fréquence ", main=NULL)
-    mtext("Distribution des résidus", side=3, cex=0.8)
+    hist(objLM$residuals,
+         xlab=mltext("sortiesLM.Graph.hist.xlab"),
+         ylab= mltext("sortiesLM.Graph.hist.ylab"), main=NULL)
+    mtext(mltext("sortiesLM.Graph.hist.title"), side=3, cex=0.8)
 
     ## Titre général :
-    mtext("Graphiques diagnostiques", side=3, outer=TRUE, line=3.4, cex=1.2)
+    mtext(mltext("sortiesLM.Graph.diag.title"), side=3, outer=TRUE, line=3.4, cex=1.2)
     mtext(subTitle, side=3, outer=TRUE, line=-2.4, cex=1.1)
 
     ## Essayer glm.diag.plots('glm')...
-    plot.lm.fr(objLM, which=2, cex.caption=0.8)
-    plot.lm.fr(objLM, which=c(1, 4), cex.caption=0.8)
+    plot.lm.ml(objLM, which=2, cex.caption=0.8)
+    plot.lm.ml(objLM, which=c(1, 4), cex.caption=0.8)
 
     ## ##################################################
     ## Sauvegarde des données :
@@ -1891,7 +1926,7 @@ modeleLineaireWP2.esp.f <- function(metrique, factAna, factAnaSel, listFact, lis
 
         if (!is.null(loiChoisie))
         {
-            message("Loi de distribution choisie = ", loiChoisie)
+            message(mltext("modeleLineaireWP2.esp.dist"), " = ", loiChoisie)
 
             if (is.element(loiChoisie, c("LOGNO")))
             {
@@ -1949,7 +1984,7 @@ modeleLineaireWP2.esp.f <- function(metrique, factAna, factAnaSel, listFact, lis
 
 
         }else{
-            message("Annulé !")
+            message(mltext("sortiesLM.Graph.cancelled"))
         }
 
     }

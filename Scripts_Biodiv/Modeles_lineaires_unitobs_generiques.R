@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2013-01-29 17:49:38 yves>
+# Time-stamp: <2018-12-08 15:44:55 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
@@ -152,7 +152,7 @@ modeleLineaireWP2.unitobs.f <- function(metrique, factAna, factAnaSel, listFact,
 
     if (!is.null(loiChoisie))
     {
-        message("Loi de distribution choisie = ", loiChoisie)
+        message(mltext("modeleLineaireWP2.esp.dist"), " = ", loiChoisie)
 
         if (is.element(loiChoisie, c("LOGNO")))
         {

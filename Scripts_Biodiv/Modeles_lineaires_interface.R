@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2013-02-12 11:28:49 Yves>
+# Time-stamp: <2018-12-08 11:45:43 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
@@ -130,7 +130,7 @@ choixDistri.f <- function(metrique, Data)
     ## ##################################################
     ## Éléments graphiques :
     WinDistri <- tktoplevel()           # Fenêtre principale.
-    tkwm.title(WinDistri, paste("Choix de distribution théorique de la métrique '", metrique, "'", sep=""))
+    tkwm.title(WinDistri, paste(mltext("choixDistri.WT")," '", metrique, "'", sep=""))
 
     ## tkfocus(WinDistri)
 
@@ -150,7 +150,8 @@ choixDistri.f <- function(metrique, Data)
                      vscale=vscale, hscale=hscale, pointsize=pointsize)
 
     RB.N <- tkradiobutton(FrameN, variable=LoiChoisie, value="NO", # bouton de sélection.
-                          text=paste("loi Normale (AIC=", round(distList[["NO"]]$aic, 0), "). ", sep=""))
+                          text=paste(mltext("choixDistri.dist.NO"),
+                                     " (AIC=", round(distList[["NO"]]$aic, 0), "). ", sep=""))
 
 
     ## Frame pour la loi log-Normale :
@@ -162,7 +163,8 @@ choixDistri.f <- function(metrique, Data)
                         vscale=vscale, hscale=hscale, pointsize=pointsize)
 
     RB.LogN <- tkradiobutton(FrameLogN, variable=LoiChoisie, value="LOGNO", # bouton de sélection.
-                             text=paste("loi log-Normale (AIC=", round(distList[["LOGNO"]]$aic, 0), "). ", sep=""))
+                             text=paste(mltext("choixDistri.dist.LogNO"),
+                                        " (AIC=", round(distList[["LOGNO"]]$aic, 0), "). ", sep=""))
 
     ## Frame pour la loi Gamma :
     FrameGa <- tkframe(WinDistri, borderwidth=2, relief="groove")
@@ -173,7 +175,8 @@ choixDistri.f <- function(metrique, Data)
                         vscale=vscale, hscale=hscale, pointsize=pointsize)
 
     RB.Ga <- tkradiobutton(FrameGa, variable=LoiChoisie, value="GA", # bouton de sélection.
-                             text=paste("loi Gamma (AIC=", round(distList[["GA"]]$aic, 0), "). ", sep=""))
+                           text=paste(mltext("choixDistri.dist.G"),
+                                      " (AIC=", round(distList[["GA"]]$aic, 0), "). ", sep=""))
 
     if (is.integer(Data[ , metrique]))
     {
@@ -200,35 +203,41 @@ choixDistri.f <- function(metrique, Data)
                               vscale=vscale, hscale=hscale, pointsize=pointsize)
 
         RB.NBinom <- tkradiobutton(FrameNBinom, variable=LoiChoisie, value="NBI", # bouton de sélection.
-                                   text=paste("loi Binomiale négative (AIC=",
+                                   text=paste(mltext("choixDistri.dist.NB"),
+                                              " (AIC=",
                                               round(distList[["NBI"]]$aic, 0), "). ", sep=""))
     }else{}
 
     ## Boutons :
     FrameB <- tkframe(WinDistri)
-    B.OK <- tkbutton(FrameB, text="     OK     ", command=function(){tclvalue(Done) <- "1"})
-    B.Cancel <- tkbutton(FrameB, text="   Annuler   ", command=function(){tclvalue(Done) <- "2"})
+    B.OK <- tkbutton(FrameB, text=mltext("OK.button"),
+                     command=function(){tclvalue(Done) <- "1"})
+    B.Cancel <- tkbutton(FrameB, text=mltext("Cancel.button"),
+                         command=function(){tclvalue(Done) <- "2"})
 
     ## ##################################################
     ## Placement des éléments sur la grille :
 
     tkgrid(tklabel(WinDistri, text=" "))
-    tkinsert(T.help, "end", paste("INFO :\n", # texte de l'aide.
-                                  "Cette fenêtre vous permet de choisir la distribution",
-                                  " la plus adaptée pour faire vos analyses.\n",
-                                  "La distribution (courbe rouge) s'ajustant le mieux à vos données (histogramme) d'après \n",
-                                  "le critère d'information de Akaike (AIC ; doit être le plus petit possible) est pré-sélectionnée.", sep=""))
+    tkinsert(T.help, "end", paste(mltext("choixDistri.dist.Help.1"), # texte de l'aide.
+                                  mltext("choixDistri.dist.Help.2"),
+                                  mltext("choixDistri.dist.Help.3"),
+                                  mltext("choixDistri.dist.Help.4"),
+                                  mltext("choixDistri.dist.Help.5"),
+                                  mltext("choixDistri.dist.Help.6"), sep=""))
     tkgrid(T.help)
     tkgrid(FrameHelp, column=1, columnspan=3)
 
     tkgrid(tklabel(WinDistri, text=" "))
     tkgrid(Img.N, columnspan=2)
     tkgrid(RB.N, row=1, sticky="e")
-    tkgrid(tklabel(FrameN, text=" Modèle : ANOVA", fg="red"), row=1, column=1, sticky="w")
+    tkgrid(tklabel(FrameN, text=mltext("choixDistri.model.dist.NO"), fg="red"),
+           row=1, column=1, sticky="w")
 
     tkgrid(Img.LogN, columnspan=2)
     tkgrid(RB.LogN, sticky="e")
-    tkgrid(tklabel(FrameLogN, text=" Modèle : ANOVA, données log-transformées", fg="red"), row=1, column=1, sticky="w")
+    tkgrid(tklabel(FrameLogN, text=mltext("choixDistri.model.dist.LogNO"), fg="red"),
+           row=1, column=1, sticky="w")
     tkgrid(tklabel(WinDistri, text=" "), FrameN, tklabel(WinDistri, text=" "), FrameLogN, tklabel(WinDistri, text="
     "),
     sticky="ew")
@@ -240,7 +249,8 @@ choixDistri.f <- function(metrique, Data)
 
     tkgrid(Img.Ga, columnspan=2)
     tkgrid(RB.Ga, sticky="e")
-    tkgrid(tklabel(FrameGa, text=" Modèle : GLM, famille 'Gamma'", fg="red"), row=1, column=1, sticky="w")
+    tkgrid(tklabel(FrameGa, text=mltext("choixDistri.model.dist.G"), fg="red"),
+           row=1, column=1, sticky="w")
 
 
     ## Évènements : sélections en cliquant sur les graphiques :
@@ -256,7 +266,8 @@ choixDistri.f <- function(metrique, Data)
         ## tkgrid(tklabel(FramePois, text=" Modèle : GLM, famille 'Poisson'", fg="red"), row=1, column=1, sticky="w")
         tkgrid(Img.NBinom, columnspan=2)
         tkgrid(RB.NBinom, sticky="e")
-        tkgrid(tklabel(FrameNBinom, text=" Modèle : GLM, famille 'Binomiale négative'", fg="red"), row=1, column=1, sticky="w")
+        tkgrid(tklabel(FrameNBinom, text=mltext("choixDistri.model.dist.NB"), fg="red"),
+               row=1, column=1, sticky="w")
         tkgrid(tklabel(WinDistri, text=" "), FrameGa, ## FramePois,
                tklabel(WinDistri, text=" "), FrameNBinom,
                tklabel(WinDistri, text=" "), sticky="ew")
@@ -314,15 +325,21 @@ supprimeObs.f <- function(residus)
     res <- NULL
 
     WinSuppr <- tktoplevel()
-    tkwm.title(WinSuppr, "Suppression d'outliers ?")
+    tkwm.title(WinSuppr, mltext("supprimeObs.WT"))
 
     FrameB <- tkframe(WinSuppr)
-    B.Oui <- tkbutton(FrameB, text="    Oui    ", command=function(){tclvalue(Done) <- "1"})
-    B.Non <- tkbutton(FrameB, text="    Non    ", command=function(){tclvalue(Done) <- "2"})
+    B.Oui <- tkbutton(FrameB, text=paste0("    ", mltext("KW.yes"), "    "),
+                      command=function(){tclvalue(Done) <- "1"})
+    B.Non <- tkbutton(FrameB, text=paste0("    ", mltext("KW.no"), "    "),
+                      command=function(){tclvalue(Done) <- "2"})
 
     tkgrid(tklabel(WinSuppr, text="\t"),
-           tklabel(WinSuppr, text=paste("\nSouhaitez vous supprimer des observations présentant de forts résidus ?",
-                             "\n(Vous devrez choisir les observations à supprimer).\n", sep="")),
+           tklabel(WinSuppr,
+                   text=paste("\n",
+                              mltext("supprimeObs.L.1"),
+                              "\n",
+                              mltext("supprimeObs.L.2"),
+                              "\n", sep="")),
            tklabel(WinSuppr, text="\t"),
            sticky="w")
 
@@ -365,9 +382,9 @@ supprimeObs.f <- function(residus)
                                                    sep=""))
                                     },
                               sort=FALSE, selectmode="extended",
-                              title="Sélection des observations à supprimer",
-                              label=paste("\n'Observations (résidu)' triés par ordre décroissant",
-                              "\nde la valeur absolue des résidus.", sep=""))
+                              title=mltext("supprimeObs.selectModWindow.WT"),
+                              label=paste(mltext("supprimeObs.selectModWindow.L.1"),
+                                          mltext("supprimeObs.selectModWindow.L.2"), sep=""))
 
         if (length(select))
         {

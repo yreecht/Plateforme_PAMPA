@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-08-07 10:48:22 yreecht>
+# Time-stamp: <2018-12-08 14:44:48 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2018 Ifremer - Tous droits réservés.
@@ -128,14 +128,14 @@ testfileref.f <- function (dataEnv, baseEnv)
 
     ## tkgrid.configure(frameOverwintest, columnspan=1, column=1)
     tkgrid(tklabel(W.test, text=paste(mltext("filetest.W.test.1"), fileNames["refesp"],
-                                      mltext("semicolon"),
+                                      mltext("colon"),
                                       dim(especes.select)[2])),
            Enregistrer.but)
 
     tkgrid(tklabel(W.test,
                    text=paste(mltext("filetest.W.test.2"),
                               paste(sites, collapse=", "),
-                              mltext("semicolon"),
+                              mltext("colon"),
                    nrow(subset(refesp,
                                apply(refesp[, espSite, drop=FALSE], 1,
                                      function(x) any(x == "oui")))))))

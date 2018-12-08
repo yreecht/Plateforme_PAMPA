@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-11-28 15:01:58 yreecht>
+# Time-stamp: <2018-12-08 19:11:36 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2018 Ifremer - Tous droits réservés.
@@ -1254,7 +1254,7 @@ loadData.f <- function(filePathes, dataEnv, baseEnv=.GlobalEnv)
     pampaProfilingStart.f()
 
     runLog.f(msg=c("--------------------------------------------------------------------------------",
-                   mltext("loadData.info.1")))
+                   mltext("loadData.info.0")))
 
 
     add.logFrame.f(msgID="dataLoadingNew", env = baseEnv,
@@ -1266,7 +1266,7 @@ loadData.f <- function(filePathes, dataEnv, baseEnv=.GlobalEnv)
     ## Informations de chargement (initialisation) :
     ## [!!!] travaille dans l'environnement global pour l'instant. À terme, modifier + fonctions associées pour
     ## travailler dans .baseEnv [!!!]  [yr: 5/12/2011]
-    infoGeneral.f(msg="      Chargement des données      ",
+    infoGeneral.f(msg=mltext("loadData.info.1"),
                   waitCursor=TRUE,
                   font=tkfont.create(weight="bold", size=9), foreground="darkred")
 

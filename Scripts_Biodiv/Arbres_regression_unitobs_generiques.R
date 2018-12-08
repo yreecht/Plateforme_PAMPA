@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2013-01-29 17:51:27 yves>
+# Time-stamp: <2018-12-08 19:22:58 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
@@ -162,12 +162,13 @@ WP2MRT.unitobs.f <- function(metrique, factGraph, factGraphSel, listFact, listFa
                                           ifelse(tableMetrique == "unitSpSz",
                                                  "unitobs(CL)",
                                                  "unitobs")),
-                              model="Arbre de régression multivariée")
+                              model=mltext("WP2MRT.esp.graphTitle.pfx"))
 
-    tmpMRT <- rpart(exprMRT, data=tmpData)
+    tmpMRT <- rpart:::rpart(exprMRT, data=tmpData)
 
-    plot(tmpMRT, main=mainTitle)
-    text.rpart.new(tmpMRT, use.n=TRUE, pretty=0, all=TRUE, xpd=NA)
+    rpart:::plot.rpart(tmpMRT, main=mainTitle, margin = 0.00)
+    par(xpd = NA)
+    rpart:::text.rpart(tmpMRT, use.n=TRUE, pretty=1, all=TRUE, xpd=NA, fancy=TRUE, adj = c(0.5, 0.75))
 
     ## Écriture des résultats formatés dans un fichier :
     tryCatch(sortiesMRT.f(objMRT=tmpMRT, formule=exprMRT,
@@ -193,7 +194,7 @@ WP2MRT.unitobs.f <- function(metrique, factGraph, factGraphSel, listFact, listFa
             tryCatch(embedFonts(file=graphFile),
                      error=function(e)
                  {
-                     warning("Impossible d'inclure les fontes dans le PDF !")
+                     warning(mltext("WP2boxplot.W.pdfFonts"))
                  })
         }else{}
     }else{

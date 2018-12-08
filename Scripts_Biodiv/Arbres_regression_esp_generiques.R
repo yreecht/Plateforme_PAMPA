@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2013-04-24 17:30:43 yves>
+# Time-stamp: <2018-12-08 18:04:02 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
@@ -30,7 +30,7 @@
 ####################################################################################################
 
 ########################################################################################################################
-print.rpart.fr <- function (x, minlength = 0, spaces = 2, cp, digits = getOption("digits"),
+print.rpart.ml <- function (x, minlength = 0, spaces = 2, cp, digits = getOption("digits"),
                             ...)
 {
     ## Purpose:Francisation de la fonction print.rpart() du package
@@ -49,7 +49,7 @@ print.rpart.fr <- function (x, minlength = 0, spaces = 2, cp, digits = getOption
     frame <- x$frame
     ylevel <- attr(x, "ylevels")
     node <- as.numeric(row.names(frame))
-    depth <- mvpart:::tree.depth(node)
+    depth <- rpart:::tree.depth(node)
     indent <- paste(rep(" ", spaces * 32), collapse = "")
     if (length(node) > 1)
     {
@@ -79,15 +79,15 @@ print.rpart.fr <- function (x, minlength = 0, spaces = 2, cp, digits = getOption
         cat("n=", n[1], " (", naprint(omit), ")\n\n", sep = "")
     else cat("n=", n[1], "\n\n")
     if (x$method == "class")
-        cat(" noeud), partition, n, perte, yval, (yprob)\n")
-    else cat(" noeud), partition, n, déviance, yval\n")
-    cat("\t\t\t\t* indique un noeud terminal\n\n")
+        cat(mltext("print.rpart.ml.node.header.prob"), "\n")
+    else cat(mltext("print.rpart.ml.node.header"), "\n")
+    cat("\t\t\t\t* ", mltext("print.rpart.ml.term.node"), "\n\n")
     cat(z, sep = "\n")
     return(invisible(x))
 }
 
 ########################################################################################################################
-summary.rpart.fr <- function (object, cp = 0, digits = getOption("digits"), file,
+summary.rpart.ml <- function (object, cp = 0, digits = getOption("digits"), file,
                               ...)
 {
     ## Purpose: Francisation de la fonction summary.rpart() du package
@@ -165,8 +165,11 @@ summary.rpart.fr <- function (object, cp = 0, digits = getOption("digits"), file
                     cuts[i] <- paste("<", format(signif(x$splits[i, 4],
                                                         digits = digits)))
                 }else{
-                    cuts[i] <- paste("partitionné en ",
-                                     paste(c("G", "-", "D")[x$csplit[x$splits[i, 4], 1:temp[i]]],
+                    cuts[i] <- paste(mltext("summary.rpart.ml.split"),
+                                     paste(mltext(c("summary.rpart.ml.L",
+                                                    "summary.rpart.ml.dash",
+                                                    "summary.rpart.ml.R"))[x$csplit[x$splits[i, 4],
+                                                                                    1:temp[i]]],
                                            collapse = "", sep = ""),
                                      collapse = "")
                 }
@@ -180,9 +183,9 @@ summary.rpart.fr <- function (object, cp = 0, digits = getOption("digits"), file
 
         cuts <- paste(cuts, ifelse(temp >= 2,
                                    ",",
-                                   ifelse(temp == 1,
-                                          " vers la droite,",
-                                          " vers la gauche, ")),
+                                   ifelse(temp == 1L,
+                                          mltext("summary.rpart.ml.2R"),
+                                          mltext("summary.rpart.ml.2L"))),
                       sep = "")
     }
 
@@ -200,14 +203,16 @@ summary.rpart.fr <- function (object, cp = 0, digits = getOption("digits"), file
         i <- rows[ii]
         nn <- ff$n[i]
         twt <- ff$wt[i]
-        cat("\nNoeud #", id[i], ": ", nn, " observations",
+        cat("\n", mltext("summary.rpart.ml.nodeNum"), id[i], ": ",
+            nn, " ", mltext("summary.rpart.ml.obsNum"),
             sep = "")
         if (ff$complexity[i] < cp || is.leaf[i])
         {
             cat("\n")
         }else{
-            cat(",    param de complexité=", format(signif(ff$complexity[i],
-                                                           digits)), "\n", sep = "")
+            cat(",    ", mltext("summary.rpart.ml.complPar"), "=",
+                format(signif(ff$complexity[i],
+                              digits)), "\n", sep = "")
         }
 
         cat(tprint[ii], "\n")
@@ -215,22 +220,24 @@ summary.rpart.fr <- function (object, cp = 0, digits = getOption("digits"), file
         {
             sons <- 2 * id[i] + c(0, 1)
             sons.n <- ff$n[match(sons, id)]
-            cat("  fils Gauche=", sons[1], " (", sons.n[1], " obs)",
-                " fils Droit=", sons[2], " (", sons.n[2], " obs)",
+            cat("  ", mltext("summary.rpart.ml.leftSon"), "=",
+                sons[1], " (", sons.n[1], " ", mltext("summary.rpart.ml.obsAbrev"), ")",
+                " ", mltext("summary.rpart.ml.rightSon"), "=",
+                sons[2], " (", sons.n[2], " ", mltext("summary.rpart.ml.obsAbrev"), ")",
                 sep = "")
             j <- nn - (sons.n[1] + sons.n[2])
             if (j > 1)
             {
-                cat(", ", j, " observations restantes\n", sep = "")
+                cat(", ", j, " ", mltext("summary.rpart.ml.remObs"), "\n", sep = "")
             }else{
                 if (j == 1)
                 {
-                    cat(", 1 observation restante\n")
+                    cat(", ", mltext("summary.rpart.ml.1remObs"), "\n")
                 }else{
                     cat("\n")
                 }
             }
-            cat("  Partition initiale :\n")
+            cat("  ", mltext("summary.rpart.ml.primSplit"), "\n")
             j <- seq(index[i], length = 1 + ff$ncompete[i])
             if (all(nchar(cuts[j]) < 25))
             {
@@ -240,13 +247,14 @@ summary.rpart.fr <- function (object, cp = 0, digits = getOption("digits"), file
             }
 
             cat(paste("      ", format(sname[j], justify = "left"),
-                " ", temp, " improve=", format(signif(x$splits[j,
-                  3], digits)), ", (", nn - x$splits[j, 1], " manquant)",
+                      " ", temp, " ", mltext("summary.rpart.ml.improve"), "=",
+                      format(signif(x$splits[j, 3], digits)), ", (", nn - x$splits[j, 1], " ",
+                      mltext("summary.rpart.ml.missing"),")",
                 sep = ""), sep = "\n")
 
             if (ff$nsurrogate[i] > 0)
             {
-                cat("  Partition alternative :\n")
+                cat("  ", mltext("summary.rpart.ml.surrogateSplit"), "\n")
                 j <- seq(1 + index[i] + ff$ncompete[i], length = ff$nsurrogate[i])
                 agree <- x$splits[j, 3]
                 if (all(nchar(cuts[j]) < 25))
@@ -277,133 +285,6 @@ summary.rpart.fr <- function (object, cp = 0, digits = getOption("digits"), file
     invisible(x)
 }
 
-########################################################################################################################
-text.rpart.new <- function (x, splits = TRUE, which = 4, label = "yval", FUN = text,
-                            all.leaves = FALSE, pretty = NULL, digits = getOption("digits") -
-                            2, tadj = 0.65, stats = TRUE, use.n = FALSE, bars = TRUE,
-                            legend = FALSE, xadj = 1, yadj = 1, bord = FALSE, big.pts = FALSE,
-                            ...)
-{
-    ## Purpose: Remplace la fonction text.rpart() du package "mvpart"
-    ##          (correction de l'alignement vertical)
-    ## ----------------------------------------------------------------------
-    ## Arguments: ceux de mvpart::text.rpart
-    ## ----------------------------------------------------------------------
-    ## Author: Yves Reecht, Date: 12 mai 2011, 11:17
-
-    if (!inherits(x, "rpart"))
-    {
-        stop("Not legitimate rpart")
-    }else{}
-
-    if (!is.null(x$frame$splits))
-    {
-        x <- rpconvert(x)
-    }else{}
-
-    frame <- x$frame
-    col <- names(frame)
-    method <- x$method
-    ylevels <- attr(x, "ylevels")
-
-    if (!is.null(ylevels <- attr(x, "ylevels")))
-    {
-        col <- c(col, ylevels)
-    }else{}
-
-    if (is.na(match(label, col)))
-    {
-        stop("Label must be a column label of the frame component of the tree")
-    }else{}
-
-    cxy <- par("cxy")
-    if (!is.null(srt <- list(...)$srt) && srt == 90)
-    {
-        cxy <- rev(cxy)
-    }else{}
-
-    xy <- mvpart:::rpartco(x)
-    node <- as.numeric(row.names(x$frame))
-    is.left <- (node%%2 == 0)
-    node.left <- node[is.left]
-    parent <- match(node.left/2, node)
-    bars <- bars & is.matrix(frame$yval2)
-    text.adj <- ifelse(bars, yadj * diff(range(xy$y))/12, 0)
-
-    if (splits)
-    {
-        left.child <- match(2 * node, node)
-        right.child <- match(node * 2 + 1, node)
-        rows <- labels(x, pretty = pretty)
-        if (which == 1)
-        {
-            FUN(xy$x, xy$y + tadj * cxy[2], rows[left.child],
-                ...)
-        }else{
-            if (which == 2 | which == 4)
-                FUN(xy$x, xy$y + tadj * cxy[2], rows[left.child],
-                    pos = 2, ...)
-            if (which == 3 | which == 4)
-                FUN(xy$x, xy$y + tadj * cxy[2], rows[right.child],
-                    pos = 4, ...)
-        }
-    }else{}
-
-    leaves <- if (all.leaves)
-    {
-        rep(TRUE, nrow(frame))
-    }else{
-        frame$var == "<leaf>"
-    }
-    if (stats)
-    {
-        if (is.null(frame$yval2))
-        {
-            stat <- x$functions$text(yval = frame$yval[leaves],
-                dev = frame$dev[leaves], wt = frame$wt[leaves],
-                ylevel = ylevels, digits = digits, n = frame$n[leaves],
-                use.n = use.n)
-        }else{
-            stat <- x$functions$text(yval = frame$yval2[leaves,
-                                     ], dev = frame$dev[leaves], wt = frame$wt[leaves],
-                                     ylevel = ylevels, digits = digits, n = frame$n[leaves],
-                                     use.n = use.n)
-        }
-
-        ## Ajout d'une constante lorsque les effectifs sont également ajoutés (labels sur deux lignes) :
-        FUN(xy$x[leaves], xy$y[leaves] - ifelse(use.n, tadj + 0.3, tadj) * cxy[2] - text.adj,
-            stat, adj = 0.5, ...)
-    }
-
-    if (bars)
-    {
-        bar.vals <- x$functions$bar(yval2 = frame$yval2)
-        sub.barplot(xy$x, xy$y, bar.vals, leaves, xadj = xadj,
-                    yadj = yadj, bord = bord, line = TRUE, col = c("lightblue",
-                                                           "blue", "darkblue"))
-        rx <- range(xy$x)
-        ry <- range(xy$y)
-        if (!is.null(ylevels))
-        {
-            bar.labs <- ylevels
-        }else{
-            bar.labs <- dimnames(x$y)[[2]]
-        }
-        if (legend & !is.null(bar.labs))
-        {
-            legend(min(xy$x) - 0.1 * rx, max(xy$y) + 0.05 * ry,
-                   bar.labs, col = c("lightblue", "blue", "darkblue"),
-                   pch = 15, bty = "n", ...)
-        }else{}
-    }
-    if (big.pts)
-    {
-        points(xy$x[leaves], xy$y[leaves], pch = 16, cex = 3 *
-               par()$cex, col = 2:(sum(leaves) + 1))
-    }else{}
-
-    invisible()
-}
 
 ########################################################################################################################
 resFileMRT.f <- function(metrique, factAna, modSel, listFact, dataEnv,
@@ -437,41 +318,40 @@ resFileMRT.f <- function(metrique, factAna, modSel, listFact, dataEnv,
                       ## Métrique analysée :
                       metrique, "_",
                       ## si facteur de séparation des analyses :
-                      "Agr-",
+                      mltext("resFileGraph.aggreg.abv"),
                       switch(type,
-                             "espece"="espece+unitobs_",
-                             "CL_espece"="CL+espece+unitobs_",
-                             "unitobs"="unitobs_",
-                             "CL_unitobs"="CL+unitobs_",
+                             "espece"=mltext("resFileGraph.pfx.spSt"),
+                             "CL_espece"=mltext("resFileGraph.pfx.ScspSt"),
+                             "unitobs"=mltext("resFileGraph.pfx.St"),
+                             "CL_unitobs"=mltext("resFileGraph.pfx.SCSt"),
                              ""),
                       switch(type,
                              "espece"={
                                  ifelse(factAna == "",
                                         "",
-                                        paste(factAna, "(",
-                                              ifelse(modSel[1] != "", modSel, "toutes"),
-                                              ")_", sep=""))
+                                        paste(factAna, "(", ifelse(modSel[1] != "", modSel,
+                                                                   mltext("resFileGraph.all.spSt")), ")_", sep=""))
                              },
                              "CL_espece"={
                                  ifelse(factAna == "",
                                         "",
                                         paste(factAna, "(", ifelse(modSel[1] != "",
                                                                    paste(modSel, collapse="+"),
-                                                                   "toutes"), ")_", sep=""))
+                                                                   mltext("resFileGraph.all.ScspSt")), ")_", sep=""))
                              },
                              "unitobs"={
                                  ifelse(factAna == "",
-                                        "(toutes espèces)_",
+                                        mltext("resFileGraph.allSp.St"),
                                         paste(factAna, "(", ifelse(modSel[1] != "",
                                                                    paste(modSel, collapse="+"),
-                                                                   "toutes"), ")_", sep=""))
+                                                                   mltext("resFileGraph.all.St")), ")_", sep=""))
                              },
                              "CL_unitobs"={
                                  ifelse(factAna == "",
-                                        "(toutes espèces)_",
+                                        mltext("resFileGraph.allSp.SCSt"),
                                         paste(factAna, "(", ifelse(modSel[1] != "",
                                                                    paste(modSel, collapse="+"),
-                                                                   "toutes"), ")_", sep=""))
+                                                                   mltext("resFileGraph.all.SCSt")), ")_", sep=""))
                              },
                              ""),
                       ## liste des facteurs de l'analyse
@@ -535,22 +415,22 @@ sortiesMRT.f <- function(objMRT, formule, metrique, factAna, modSel, listFact, l
 
     ## Écriture des résultats :
 
-    cat("Appel :\n", file=resFile, append=FALSE)
+    cat(mltext("sortiesMRT.call"), "\n", file=resFile, append=FALSE)
     dput(objMRT$call, file=resFile)
 
     cat("\n\n----------------------------------------------------------------------------------------------------",
         file=resFile, append=TRUE)
 
-    cat("\nRésultat général :\n\n", file=resFile, append=TRUE)
+    cat("\n", mltext("sortiesMRT.printRes"), "\n\n", file=resFile, append=TRUE)
 
-    capture.output(print.rpart.fr(objMRT), file=resFile, append=TRUE)
+    capture.output(print.rpart.ml(objMRT), file=resFile, append=TRUE)
 
     cat("\n\n----------------------------------------------------------------------------------------------------",
         file=resFile, append=TRUE)
 
-    cat("\nDétails :\n\n", file=resFile, append=TRUE)
+    cat("\n", mltext("sortiesMRT.details"), "\n\n", file=resFile, append=TRUE)
 
-    capture.output(summary.rpart.fr(objMRT), file=resFile, append=TRUE)
+    capture.output(summary.rpart.ml(objMRT), file=resFile, append=TRUE)
 
     ## ##################################################
     ## Sauvegarde des données :
@@ -647,8 +527,8 @@ WP2MRT.esp.f <- function(metrique, factGraph, factGraphSel, listFact, listFactSe
         ## Passage au graphique suivant si le nombre d'observations  < au minimum défini dans les options.
         if (dim(tmpDataMod)[1] < getOption("P.MinNbObs"))
         {
-            warning("Nombre d'observations pour ", modGraphSel, " < ", getOption("P.MinNbObs"),
-                    " : Graphique non créé !\n")
+            warning(mltext("WP2boxplot.W.n.1"), modGraphSel, " < ", getOption("P.MinNbObs"),
+                    mltext("WP2boxplot.W.n.2"))
             next()
         }else{}
 
@@ -692,16 +572,18 @@ WP2MRT.esp.f <- function(metrique, factGraph, factGraphSel, listFact, listFactSe
                                               "unitSpSz"={"CL_espece"},
                                               "unit"={"biodiv"},
                                               "espece"),
-                                  model="Arbre de régression multivariée")
+                                  model=mltext("WP2MRT.esp.graphTitle.pfx"))
 
-        ## Boxplot !
-        tmpMRT <- rpart(exprMRT, data=tmpDataMod)
+        ## MRT!
+        tmpMRT <- rpart:::rpart(exprMRT, data=tmpDataMod)
 
-        ## plot(tmpMRT, main=mainTitle)
-        ## text(tmpMRT, use.n=TRUE, pretty=1, all=TRUE, xpd=NA, bars=TRUE)
+        ## rpart:::plot.rpart(tmpMRT, main=mainTitle)
+        ## rpart:::text.rpart(tmpMRT, use.n=TRUE, pretty=1, all=TRUE, xpd=NA, fancy=TRUE)
 
-        plot(tmpMRT, main=mainTitle)
-        text.rpart.new(tmpMRT, use.n=TRUE, pretty=0, all=TRUE, xpd=NA)
+        rpart:::plot.rpart(tmpMRT, main=mainTitle, margin = 0.00)
+        par(xpd = NA)
+        rpart:::text.rpart(tmpMRT, use.n=TRUE, pretty=1, all=TRUE, xpd=NA, fancy=TRUE, adj = c(0.5, 0.75))
+        ## text.rpart.new(tmpMRT, use.n=TRUE, pretty=0, all=TRUE, xpd=NA)
 
         ## Écriture des résultats formatés dans un fichier :
         tryCatch(sortiesMRT.f(objMRT=tmpMRT, formule=exprMRT,
@@ -751,7 +633,7 @@ WP2MRT.esp.f <- function(metrique, factGraph, factGraphSel, listFact, listFactSe
                     tryCatch(embedFonts(file=tmpFile),
                              error=function(e)
                          {
-                             warning("Impossible d'inclure les fontes dans le PDF !")
+                             warning(mltext("WP2boxplot.W.pdfFonts"))
                          })
 
                     i <- i + 1

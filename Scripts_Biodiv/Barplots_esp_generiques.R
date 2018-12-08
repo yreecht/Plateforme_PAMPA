@@ -40,7 +40,7 @@ pointsSmallSample.f <- function(objBaP, nbmin=20)
 
     if (any(objBaP$n < nbmin & objBaP$n > 0, na.rm=TRUE))
     {
-        msg <- paste("petit effectif (< ", nbmin, ")", sep="")
+        msg <- paste(mltext("plotPetitsEffectifs.small.n"), " (< ", nbmin, ")", sep="")
 
         ## "Légende" :
         legend("top",
@@ -446,8 +446,8 @@ WP2barplot.esp.f <- function(metrique,
         ## Passage au graphique suivant si le nombre d'observations  < au minimum défini dans les options.
         if (nrow(tmpDataMod) < getOption("P.MinNbObs"))
         {
-            warning("Nombre d'observations pour ", modGraphSel, " < ", getOption("P.MinNbObs"),
-                    " : Graphique non créé !\n")
+            warning(mltext("WP2boxplot.W.n.1"), modGraphSel, " < ", getOption("P.MinNbObs"),
+                    mltext("WP2boxplot.W.n.2"))
 
             plotted <- FALSE
             next()
@@ -531,7 +531,7 @@ WP2barplot.esp.f <- function(metrique,
                  lty = 2, lwd = 0.5,
                  mgp=c(2, 0.5, 0))
 
-            legend("topleft", "Nombre d'enregistrements par barre",
+            legend("topleft", mltext("WP2barplot.esp.leg"),
                    cex =0.9, col=getOption("P.NbObsCol"), text.col=getOption("P.NbObsCol"), merge=FALSE)
         }else{}
 
@@ -631,7 +631,7 @@ WP2barplot.esp.f <- function(metrique,
                 tryCatch(embedFonts(file=tmpFile),
                          error=function(e)
                      {
-                         warning("Impossible d'inclure les fontes dans le PDF !")
+                         warning(mltext("WP2boxplot.W.pdfFonts"))
                      })
 
                 i <- i + 1

@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-12-08 14:44:48 yreecht>
+# Time-stamp: <2018-12-08 19:14:54 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2018 Ifremer - Tous droits réservés.
@@ -718,7 +718,7 @@ apropos.f <- function()
 }
 
 ########################################################################################################################
-initInnerTkProgressBar.f <- function(title="Progression :", min = 0, max = 100,
+initInnerTkProgressBar.f <- function(title=mltext("initInnerTkProgressBar.title"), min = 0, max = 100,
                                      initial = 0, width = 300)
 {
     ## Purpose: Initialisation d'une barre de progression tk sous forme de
@@ -1167,7 +1167,7 @@ updateInterface.load.f <- function(baseEnv, tabObs)
         tkdelete(get("table1", envir=baseEnv), "cols", "end", 1)
     }
 
-    tkconfigure(get("MonCritere", envir=baseEnv), text="Tout")
+    tkconfigure(get("MonCritere", envir=baseEnv), text=mltext("criterion.all"))
 
     ## Titre du cadre de sélection en non-gras :
     tkconfigure(get("L.criteres", envir=baseEnv), font=tkfont.create(size=8))
@@ -1298,7 +1298,7 @@ updateInterface.select.f <- function(criterion, tabObs, baseEnv)
 }
 
 ########################################################################################################################
-updateInterface.restore.f <- function(criterion="Tout", tabObs, baseEnv)
+updateInterface.restore.f <- function(criterion=mltext("criterion.all"), tabObs, baseEnv)
 {
     ## Purpose: Mise à jour de l'interface principale après restauration des
     ##          données originales (avant sélection). Réinitialise les

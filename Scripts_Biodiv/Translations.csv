@@ -331,7 +331,8 @@ loadRefspa.info.4,Référentiel shapefile non défini !,Shapefile not provided!
 loadObservations.info.1,Le fichier d'observations n'a pas le bon nombre de colonnes !,Wrong number of columns in the observation file!
 loadObservations.info.2,"\n(Attention, les interpolations sont maintenant externalisées)",\n(Not that interpolations are now carried out by an external script)
 loadObservations.info.3,Le fichier d'observations ne contient pas le bon nombre de colonnes,Wrong number of columns in the observation file
-loadData.info.1,Nouveau chargement des données :,Loading new data:
+loadData.info.0,Nouveau chargement des données :,Loading new data:
+loadData.info.1,      Chargement des données      ,         Data loading         
 loadData.info.2,Chargement du référentiel d'unités d'observation,Loading the observation units reference table
 loadData.info.3p,Cas d'étude : ,Sites: 
 loadData.info.3s,Cas d'étude : ,Site: 
@@ -792,3 +793,33 @@ sortiesLM.Graph.hist.title,Distribution des résidus,Distribution of residuals
 sortiesLM.Graph.diag.title,Graphiques diagnostiques,Diagnostics
 modeleLineaireWP2.esp.dist,Loi de distribution choisie,Selected distribution
 sortiesLM.Graph.cancelled,Annulé !,Cancelled!
+print.rpart.ml.node.header.prob," noeud), partition, n, perte, yval, (yprob)","node), split, n, loss, yval, (yprob)"
+print.rpart.ml.node.header," noeud), partition, n, déviance, yval","node), split, n, deviance, yval"
+print.rpart.ml.term.node,indique un noeud terminal,denotes terminal node
+summary.rpart.ml.split,partitionné en ,splits as 
+summary.rpart.ml.L,G,L
+summary.rpart.ml.dash,-,-
+summary.rpart.ml.R,D,R
+summary.rpart.ml.2R," vers la droite,"," to the right,"
+summary.rpart.ml.2L," vers la gauche, "," to the left, "
+summary.rpart.ml.nodeNum,Noeud #,Node number 
+summary.rpart.ml.obsNum,observations,observations
+summary.rpart.ml.complPar,param de complexité,complexity param
+summary.rpart.ml.leftSon,fils Gauche,left son
+summary.rpart.ml.rightSon,fils Droit,right son
+summary.rpart.ml.obsAbrev,obs,obs
+summary.rpart.ml.remObs,observations restantes,observations remain
+summary.rpart.ml.1remObs,1 observation restante,1 observation remains
+summary.rpart.ml.primSplit,Partition initiale :,Primary splits:
+summary.rpart.ml.improve,improve,improve
+summary.rpart.ml.missing,manquant,missing
+summary.rpart.ml.surrogateSplit,Partition alternative :,Surrogate splits:
+sortiesMRT.call,Appel :,Call:
+sortiesMRT.printRes,Résultat général :,Main results:
+sortiesMRT.details,Détails :,Detailed output:
+WP2MRT.esp.graphTitle.pfx,Arbre de régression multivariée,Multivariate regression tree
+barplotOccurrence.leg.1,Nombre d'observations (,Number of observation (
+barplotOccurrence.leg.2,nb unités d'observation x nb espèces),nb station x nb species)
+barplotOccurrence.unitobs.leg,Nombre d'unités d'observation,Number of stations
+WP2barplot.esp.leg,Nombre d'enregistrements par barre,Number of records per bar
+initInnerTkProgressBar.title,Progression :,Progress:

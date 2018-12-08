@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2013-04-24 17:34:46 yves>
+# Time-stamp: <2018-12-08 18:55:00 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
@@ -94,8 +94,8 @@ barplotOccurrence.unitobs.f <- function(factGraph, factGraphSel, listFact, listF
     ## Création du graphique si le nombre d'observations  < au minimum défini dans les options :
     if (dim(tmpData)[1] < getOption("P.MinNbObs"))
     {
-        warning("Nombre d'observations pour (", paste(iFactGraphSel, collapse=", "), ") < ", getOption("P.MinNbObs"),
-                " : Graphique non créé !\n")
+        warning(mltext("WP2boxplot.W.n.1"), "(", paste(iFactGraphSel, collapse=", "), ") < ", getOption("P.MinNbObs"),
+                mltext("WP2boxplot.W.n.2"))
     }else{
         ## Option graphique :
         cex <- getOption("P.cex")
@@ -212,7 +212,7 @@ barplotOccurrence.unitobs.f <- function(factGraph, factGraphSel, listFact, listF
                   adj=-0.2)
 
             legend(x="topleft",
-                   legend=expression("Nombre d'unités d'observation"),
+                   legend=expression(mltext("barplotOccurrence.unitobs.leg")),
                    cex =0.9, col=getOption("P.NbObsCol"), text.col=getOption("P.NbObsCol"), merge=FALSE)
 
         }else{}
@@ -247,7 +247,7 @@ barplotOccurrence.unitobs.f <- function(factGraph, factGraphSel, listFact, listF
             tryCatch(embedFonts(file=graphFile),
                      error=function(e)
                  {
-                     warning("Impossible d'inclure les fontes dans le PDF !")
+                     warning(mltext("WP2boxplot.W.pdfFonts"))
                  })
         }else{}
     }else{

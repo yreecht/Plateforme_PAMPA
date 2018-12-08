@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-12-08 15:46:44 yreecht>
+# Time-stamp: <2018-12-08 19:04:11 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2018 Ifremer - Tous droits réservés.
@@ -124,16 +124,16 @@ source("./Scripts_Biodiv/Variables_carto.R", encoding="latin1")                 
 source("./Scripts_Biodiv/Modeles_lineaires_interface.R", encoding="latin1")            # OK [mld]
 source("./Scripts_Biodiv/Modeles_lineaires_esp_generiques.R", encoding="latin1")       # OK [mld]
 source("./Scripts_Biodiv/Modeles_lineaires_unitobs_generiques.R", encoding="latin1")   # OK [mld]
-source("./Scripts_Biodiv/Arbres_regression_unitobs_generiques.R", encoding="latin1")   # OK
-source("./Scripts_Biodiv/Arbres_regression_esp_generiques.R", encoding="latin1")       # OK [mlo]
+source("./Scripts_Biodiv/Arbres_regression_unitobs_generiques.R", encoding="latin1")   # OK [mld]
+source("./Scripts_Biodiv/Arbres_regression_esp_generiques.R", encoding="latin1")       # OK [mld]
 
 ## ...les barplots sur les fréquences d'occurrence :
-source("./Scripts_Biodiv/Barplots_occurrence.R", encoding="latin1")                    # OK
-source("./Scripts_Biodiv/Barplots_occurrence_unitobs.R", encoding="latin1")            # OK
+source("./Scripts_Biodiv/Barplots_occurrence.R", encoding="latin1")                    # OK [mld]
+source("./Scripts_Biodiv/Barplots_occurrence_unitobs.R", encoding="latin1")            # OK [mld]
 
 ## ...barplots génériques :
-source("./Scripts_Biodiv/Barplots_esp_generiques.R", encoding="latin1")                # OK
-source("./Scripts_Biodiv/Barplots_unitobs_generiques.R", encoding="latin1")            # OK
+source("./Scripts_Biodiv/Barplots_esp_generiques.R", encoding="latin1")                # OK [mld]
+source("./Scripts_Biodiv/Barplots_unitobs_generiques.R", encoding="latin1")            # OK [mld]
 
 ########################################################################################################################
 ## Configuration :

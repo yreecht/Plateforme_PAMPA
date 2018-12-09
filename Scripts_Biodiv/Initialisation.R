@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-12-09 16:23:55 yreecht>
+# Time-stamp: <2018-12-09 18:55:36 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
@@ -63,6 +63,8 @@ assign(".fileimageLink", .fileimageLink, envir=.GlobalEnv)
 ## Load translation table:
 .translations <- read.csv("./Scripts_Biodiv/Translations.csv", stringsAsFactor = FALSE, row.names = 1)
 colnames(.translations) <- tolower(colnames(.translations))
+## Changing the "mandatory" field to logical:
+.translations[ , "mandatory"] <- as.logical(nchar(.translations[ , "mandatory"]))
 assign(".translations", .translations, envir=.GlobalEnv)
 
 

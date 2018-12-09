@@ -1,7 +1,7 @@
 #-*- coding: latin-9 -*-
 
 ### File: Functions_Multilingual.R
-### Time-stamp: <2018-12-09 17:13:56 yreecht>
+### Time-stamp: <2018-12-09 18:54:08 yreecht>
 ###
 ### Created: 09/07/2018	15:37:32
 ### Author: Yves Reecht
@@ -38,9 +38,18 @@ mltext <- function(msgid, language = tolower(getOption("P.GUIlang")))
                                         yes = gsub("\\\\n", "\n",
                                                    gsub("\\\\t", "\t",
                                                         transl[i, lang])),
-                                        no = ifelse(FALSE, ## nchar(transl[i, "en"]),
-                                                    transl[i, "en"],
-                                                    ""))
+                                        ## If not defined in the desired language, tests if mandatory:
+                                        no = ifelse(test = (nchar(transl[i, "en"]) &&
+                                                            transl[i, "mandatory"]),
+                                                    ## English used if missing and mandatory, and defined in English:
+                                                    yes = gsub("\\\\n", "\n",
+                                                               gsub("\\\\t", "\t",
+                                                                    transl[i, "en"])),
+                                                    no = ifelse(transl[i, "mandatory"],
+                                                                ## ...generic text if mandatory
+                                                                ##    AND not defined in English:
+                                                                " !! No Text !! ",
+                                                                ""))) # Kept empty if not mandatory!
                              }
                       return(res)
                   })

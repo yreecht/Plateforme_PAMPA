@@ -336,7 +336,7 @@ backupEnv.f <- function(envSource, envSink)
                      {
                          i <- eval(i, sys.frame(-1))
                      }
-                     
+
                      assign(Nx[i], x, envir=env)
                  },
                      Nx=names(as.list(envSource)),
@@ -420,9 +420,9 @@ writeData.f <- function(filename, Data, cols=NULL)
 
 
     ## Écriture du fichier
-    tryCatch(write.csv2(Data[ , cols],
-                        file=filename,
-                        row.names = FALSE),
+    tryCatch(write.csv(Data[ , cols],
+                       file=filename,
+                       row.names = FALSE),
              error=function(e)
          {
              message(mltext("writeData.f.msg"), filename)

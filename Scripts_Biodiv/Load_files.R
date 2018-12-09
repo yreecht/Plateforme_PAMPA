@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-12-08 19:11:36 yreecht>
+# Time-stamp: <2018-12-09 11:10:15 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2018 Ifremer - Tous droits réservés.
@@ -154,11 +154,11 @@ PlanEchantillonnageBasic.f <- function(tabUnitobs, tabObs, filePathes)
 
     attr(PlanEchantillonnage, "class") <- "array" # Pour un affichage en "tableau".
 
-    write.csv2(PlanEchantillonnage,
-               file=paste(filePathes["results"],
-                          "PlanEchantillonnage_basique", # [ml?]
-                          ifelse(getOption("P.selection"), "_selection", ""),
-                          ".csv", sep=""), row.names=TRUE)
+    write.csv(PlanEchantillonnage,
+              file=paste(filePathes["results"],
+                         "PlanEchantillonnage_basique", # [ml?]
+                         ifelse(getOption("P.selection"), "_selection", ""),
+                         ".csv", sep=""), row.names=TRUE)
 }
 
 ########################################################################################################################
@@ -272,13 +272,30 @@ exportMetrics.f <- function(unitSpSz, unitSp, unit, obs, unitobs, refesp, filePa
         prod(dim(unitSpSz)))            # i.e. nrow et ncol > 0.
         ## Table unitSpSz si elle existe :
     {
-        tryCatch(write.csv2(unitSpSz,
-                            file=(fileNm <- paste(filePathes["results"],
-                                                  "UnitobsEspeceClassetailleMetriques",
-                                                  ifelse(getOption("P.selection"), "_selection", ""),
-                                                  ".csv", sep="")),
-                            row.names = FALSE),
+        tryCatch(write.csv(unitSpSz,
+                           file=(fileNm <- paste(filePathes["results"],
+                                                 "UnitobsEspeceClassetailleMetriques",
+                                                 ifelse(getOption("P.selection"), "_selection", ""),
+                                                 ".csv", sep="")),
+                           row.names = FALSE),
                  error=function(e)
+                 {
+                     infoLoading.f(msg=paste("Impossible d'écrire le fichier ", fileNm,
+                                             ".\nIl est possible qu'il soit ouvert par une autre application", sep=""),
+                                   icon="warning")
+
+                     errorLog.f(error=e, niv=-4)
+                 })
+    }else{}                             # Sinon rien !
+
+    ## Table unitSp :
+    tryCatch(write.csv(unitSp,
+                       file=(fileNm <- paste(filePathes["results"],
+                                             "UnitobsEspeceMetriques",
+                                             ifelse(getOption("P.selection"), "_selection", ""),
+                                             ".csv", sep="")),
+                       row.names = FALSE),
+             error=function(e)
              {
                  infoLoading.f(msg=paste("Impossible d'écrire le fichier ", fileNm,
                                          ".\nIl est possible qu'il soit ouvert par une autre application", sep=""),
@@ -286,39 +303,22 @@ exportMetrics.f <- function(unitSpSz, unitSp, unit, obs, unitobs, refesp, filePa
 
                  errorLog.f(error=e, niv=-4)
              })
-    }else{}                             # Sinon rien !
-
-    ## Table unitSp :
-    tryCatch(write.csv2(unitSp,
-                        file=(fileNm <- paste(filePathes["results"],
-                                              "UnitobsEspeceMetriques",
-                                              ifelse(getOption("P.selection"), "_selection", ""),
-                                              ".csv", sep="")),
-                        row.names = FALSE),
-             error=function(e)
-         {
-             infoLoading.f(msg=paste("Impossible d'écrire le fichier ", fileNm,
-                                     ".\nIl est possible qu'il soit ouvert par une autre application", sep=""),
-                           icon="warning")
-
-             errorLog.f(error=e, niv=-4)
-         })
 
     ## Table unit :
-    tryCatch(write.csv2(unit,
-                        file=(fileNm <- paste(filePathes["results"],
-                                              "UnitobsMetriques",
-                                              ifelse(getOption("P.selection"), "_selection", ""),
-                                              ".csv", sep="")),
-                        row.names = FALSE),
+    tryCatch(write.csv(unit,
+                       file=(fileNm <- paste(filePathes["results"],
+                                             "UnitobsMetriques",
+                                             ifelse(getOption("P.selection"), "_selection", ""),
+                                             ".csv", sep="")),
+                       row.names = FALSE),
              error=function(e)
-         {
-             infoLoading.f(msg=paste(mltext("infoExport.6"), fileNm,
-                                     mltext("infoExport.7"), sep=""),
-                           icon="warning")
+             {
+                 infoLoading.f(msg=paste(mltext("infoExport.6"), fileNm,
+                                         mltext("infoExport.7"), sep=""),
+                               icon="warning")
 
-             errorLog.f(error=e, niv=-4)
-         })
+                 errorLog.f(error=e, niv=-4)
+             })
 }
 
 

@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-08-07 16:05:10 yreecht>
+# Time-stamp: <2018-12-09 11:07:14 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2018 Ifremer - Tous droits réservés.
@@ -45,7 +45,7 @@ Voirentableau <- function(Montclarray, title="", height=-1, width=-1, nrow=-1, n
     {
         FichierCSV <- paste(resultDir, mltext("table.file.prefix"), title, ".csv", sep="")
         message(FichierCSV)
-        write.csv2(dataframetb, file=FichierCSV, row.names = FALSE)
+        write.csv(dataframetb, file=FichierCSV, row.names = FALSE)
 
         add.logFrame.f(msgID="InfoRefSpeEnregistre", env = .GlobalEnv, file=FichierCSV)
     }
@@ -123,13 +123,13 @@ VoirPlanEchantillonnage.f <- function(dataEnv)
 
     resultsDir <- get("filePathes", envir=dataEnv)["results"]
 
-    myRarrayPE <- read.csv2(paste(resultsDir,
-                                  "PlanEchantillonnage_basique", ## mltext("sampling.file.prefix"),
-                                  ifelse(getOption("P.selection"),
-                                         "_selection", ## mltext("sampling.file.sufix"),
-                                         ""),
-                                  ".csv", sep=""),
-                            row.names=1)
+    myRarrayPE <- read.csv(paste(resultsDir,
+                                 "PlanEchantillonnage_basique", ## mltext("sampling.file.prefix"),
+                                 ifelse(getOption("P.selection"),
+                                        "_selection", ## mltext("sampling.file.sufix"),
+                                        ""),
+                                 ".csv", sep=""),
+                           row.names=1)
 
     tclarrayPE <- tclArray()
     ## tclarrayPE[[0, ]] <- c("Année", "Type", "Fréquence")

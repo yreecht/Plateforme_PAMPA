@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-12-08 14:44:48 yreecht>
+# Time-stamp: <2018-12-09 11:10:43 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2018 Ifremer - Tous droits réservés.
@@ -46,7 +46,7 @@ testfileref.f <- function (dataEnv, baseEnv)
     EnregistrerWinTest <- function ()
     {
         FichierCSV <- paste(filePathes["results"], "Info_", fileNames["refesp"], ".csv", sep="")
-        write.csv2(dataframeRefEsp, file=FichierCSV, row.names = FALSE)
+        write.csv(dataframeRefEsp, file=FichierCSV, row.names = FALSE)
 
         add.logFrame.f(msgID="InfoRefSpeEnregistre", env = baseEnv, file=FichierCSV)
     }

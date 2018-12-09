@@ -1,7 +1,7 @@
 #-*- coding: latin-9 -*-
 
 ### File: Functions_Multilingual.R
-### Time-stamp: <2018-11-28 16:59:17 yreecht>
+### Time-stamp: <2018-12-09 17:13:56 yreecht>
 ###
 ### Created: 09/07/2018	15:37:32
 ### Author: Yves Reecht
@@ -12,7 +12,7 @@
 ### Functions for internationalization of the GUI
 ####################################################################################################
 
-mltext <- function(msgid)
+mltext <- function(msgid, language = tolower(getOption("P.GUIlang")))
 {
     ## Purpose: Fetching translation of GUI text in the current language
     ##          (option). Uses English if language/msg not defined
@@ -23,8 +23,8 @@ mltext <- function(msgid)
 
     transl <- get(".translations", envir = .GlobalEnv)
 
-    lang <- ifelse(getOption("P.GUIlang") %in% colnames(transl),
-                   getOption("P.GUIlang"),
+    lang <- ifelse(language %in% colnames(transl),
+                   language,
                    "en")
 
     msg <- sapply(msgid,
@@ -38,7 +38,7 @@ mltext <- function(msgid)
                                         yes = gsub("\\\\n", "\n",
                                                    gsub("\\\\t", "\t",
                                                         transl[i, lang])),
-                                        no = ifelse(nchar(transl[i, "en"]),
+                                        no = ifelse(FALSE, ## nchar(transl[i, "en"]),
                                                     transl[i, "en"],
                                                     ""))
                              }

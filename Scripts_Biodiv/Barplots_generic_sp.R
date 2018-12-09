@@ -40,7 +40,9 @@ pointsSmallSample.f <- function(objBaP, nbmin=20)
 
     if (any(objBaP$n < nbmin & objBaP$n > 0, na.rm=TRUE))
     {
-        msg <- paste(mltext("plotPetitsEffectifs.small.n"), " (< ", nbmin, ")", sep="")
+        msg <- paste(mltext("plotPetitsEffectifs.small.n",
+                            language = getOption("P.lang")),
+                     " (< ", nbmin, ")", sep="")
 
         ## "Légende" :
         legend("top",
@@ -531,7 +533,7 @@ WP2barplot.esp.f <- function(metrique,
                  lty = 2, lwd = 0.5,
                  mgp=c(2, 0.5, 0))
 
-            legend("topleft", mltext("WP2barplot.esp.leg"),
+            legend("topleft", mltext("WP2barplot.esp.leg", language = getOption("P.lang")),
                    cex =0.9, col=getOption("P.NbObsCol"), text.col=getOption("P.NbObsCol"), merge=FALSE)
         }else{}
 

@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-12-09 09:57:30 yreecht>
+# Time-stamp: <2018-12-09 16:57:02 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
@@ -162,7 +162,8 @@ WP2MRT.unitobs.f <- function(metrique, factGraph, factGraphSel, listFact, listFa
                                           ifelse(tableMetrique == "unitSpSz",
                                                  "unitobs(CL)",
                                                  "unitobs")),
-                              model=mltext("WP2MRT.esp.graphTitle.pfx"))
+                              model=mltext("WP2MRT.esp.graphTitle.pfx",
+                                           language = getOption("P.lang")))
 
     tmpMRT <- rpart:::rpart(exprMRT, data=tmpData)
 

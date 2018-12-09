@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-12-09 12:16:11 yreecht>
+# Time-stamp: <2018-12-09 16:38:26 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
@@ -138,7 +138,7 @@ WP2boxplot.unitobs.f <- function(metrique, factGraph, factGraphSel, listFact, li
     ## Création du graphique si le nombre d'observations  < au minimum défini dans les options :
     if (nrow(tmpData) < getOption("P.MinNbObs"))
     {
-        warning(mltext("WP2boxplot.W.n.1"),
+        warning(mltext("WP2boxplot.W.n.1"), " (",
                 paste(iFactGraphSel, collapse=", "), ") < ", getOption("P.MinNbObs"),
                 mltext("WP2boxplot.W.n.2"))
     }else{
@@ -241,7 +241,7 @@ WP2boxplot.unitobs.f <- function(metrique, factGraph, factGraphSel, listFact, li
                  lty = 2, lwd = 0.5,
                  mgp=c(2, 0.5, 0))
 
-            legend("topleft", mltext("WP2boxplot.n.rec"),
+            legend("topleft", mltext("WP2boxplot.n.rec", language = getOption("P.lang")),
                    cex =0.9, col=getOption("P.NbObsCol"), text.col=getOption("P.NbObsCol"), merge=FALSE)
         }else{}
 

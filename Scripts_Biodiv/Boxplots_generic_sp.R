@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-12-09 12:12:39 yreecht>
+# Time-stamp: <2018-12-09 17:04:03 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
@@ -124,7 +124,8 @@ legendBoxplot.f <- function(terms, data, pch = 15, pt.cex=1.2, cex=0.9)
 }
 
 ########################################################################################################################
-graphTitle.f <- function(metrique, modGraphSel, factGraph, listFact, model=NULL, type="espece")
+graphTitle.f <- function(metrique, modGraphSel, factGraph, listFact, model=NULL, type="espece",
+                         lang = getOption("P.lang"))
 {
     ## Purpose:
     ## ----------------------------------------------------------------------
@@ -132,72 +133,97 @@ graphTitle.f <- function(metrique, modGraphSel, factGraph, listFact, model=NULL,
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 14 oct. 2010, 15:44
     return(paste(ifelse(is.null(model),
-                        mltext("graphTitle.vals"),
-                        paste(model, mltext("graphTitle.for"), varNames[metrique, "article"], sep="")),
+                        mltext("graphTitle.vals",
+                               language = lang),
+                        paste(model,
+                              mltext("graphTitle.for",
+                                     language = lang),
+                              varNames[metrique, "article"], sep="")),
                  varNames[metrique, "nom"],
                  ifelse(is.element(type, c("espece", "unitobs", "CL_espece", "unitobs(CL)")),
-                        paste(mltext("graphTitle.agg"),
+                        paste(mltext("graphTitle.agg",
+                                     language = lang),
                               switch(varNames[metrique, "genre"], # for languages with genre concordence.
-                                     f=mltext("graphTitle.f"),
-                                     fp=mltext("graphTitle.fp"),
-                                     mp=mltext("graphTitle.mp"), ""), sep=""),
+                                     f=mltext("graphTitle.f",
+                                              language = lang),
+                                     fp=mltext("graphTitle.fp",
+                                               language = lang),
+                                     mp=mltext("graphTitle.mp",
+                                               language = lang), ""), sep=""),
                         ""),
                  switch(type,
-                        "espece"=mltext("graphTitle.bySpSt"),
-                        "CL_espece"=mltext("graphTitle.bySCSpSt"),
-                        "unitobs"=mltext("graphTitle.bySt"),
-                        "unitobs(CL)"=mltext("graphTitle.byStSC"),
-                        "CL_unitobs"=mltext("graphTitle.bySCSt"),
-                        "biodiv"=mltext("graphTitle.biodiv"),
+                        "espece"=mltext("graphTitle.bySpSt",
+                                        language = lang),
+                        "CL_espece"=mltext("graphTitle.bySCSpSt",
+                                           language = lang),
+                        "unitobs"=mltext("graphTitle.bySt",
+                                         language = lang),
+                        "unitobs(CL)"=mltext("graphTitle.byStSC",
+                                             language = lang),
+                        "CL_unitobs"=mltext("graphTitle.bySCSt",
+                                            language = lang),
+                        "biodiv"=mltext("graphTitle.biodiv",
+                                        language = lang),
                         ""),
                  switch(type,
                         "espece"={
                             ifelse(modGraphSel == "", # Facteur de séparation uniquement si défini.
                                    "",
-                                   paste(mltext("graphTitle.sep.SpSt"),
+                                   paste(mltext("graphTitle.sep.SpSt",
+                                                language = lang),
                                          " '", factGraph, "' = ", modGraphSel, sep=""))
                         },
                         "CL_espece"={
                             ifelse(modGraphSel == "", # Facteur de séparation uniquement si défini.
                                    "",
-                                   paste(mltext("graphTitle.sep.SCSpSt"),
+                                   paste(mltext("graphTitle.sep.SCSpSt",
+                                                language = lang),
                                          " '", factGraph, "' = ", modGraphSel, sep=""))
                         },
                         "unitobs"={
                             ifelse(modGraphSel[1] == "", # Facteur de séparation uniquement si défini.
-                                   mltext("graphTitle.sep.St.all"),
-                                   paste(mltext("graphTitle.sep.St"),
+                                   mltext("graphTitle.sep.St.all",
+                                          language = lang),
+                                   paste(mltext("graphTitle.sep.St",
+                                                language = lang),
                                          " '", factGraph, "' = (",
                                          paste(modGraphSel, collapse=", "), ")", sep=""))
                         },
                         "unitobs(CL)"={
                             ifelse(modGraphSel[1] == "", # Facteur de séparation uniquement si défini.
-                                   mltext("graphTitle.sep.StSC.all"),
-                                   paste(mltext("graphTitle.sep.StSC"),
+                                   mltext("graphTitle.sep.StSC.all",
+                                          language = lang),
+                                   paste(mltext("graphTitle.sep.StSC",
+                                                language = lang),
                                          " '", factGraph, "' = (",
                                          paste(modGraphSel, collapse=", "), ")", sep=""))
                         },
                         "CL_unitobs"={
                             ifelse(modGraphSel[1] == "", # Facteur de séparation uniquement si défini.
-                                   mltext("graphTitle.sep.SCSt.all"),
-                                   paste(mltext("graphTitle.sep.SCSt"),
+                                   mltext("graphTitle.sep.SCSt.all",
+                                          language = lang),
+                                   paste(mltext("graphTitle.sep.SCSt",
+                                                language = lang),
                                          " '", factGraph, "' = (",
                                          paste(modGraphSel, collapse=", "), ")", sep=""))
                         },
                         "biodiv"={
                             ifelse(modGraphSel[1] == "", # Facteur de séparation uniquement si défini.
                                    "",
-                                   paste(mltext("graphTitle.sep.biodiv"),
+                                   paste(mltext("graphTitle.sep.biodiv",
+                                                language = lang),
                                          " '", factGraph, "' = (",
                                          paste(modGraphSel, collapse=", "), ")", sep=""))
                         },
                         ""),
-                 mltext("graphTitle.by"),
+                 mltext("graphTitle.by",
+                        language = lang),
                  paste(sapply(listFact[length(listFact):1],
                               function(x)paste(c(## varNames.f(x, "article"),
                                                  "",
                                                  varNames.f(x, "nom")), collapse="")),
-                       collapse=mltext("graphTitle.and")),
+                       collapse=mltext("graphTitle.and",
+                                       language = lang)),
                  "\n", sep=""))
 }
 
@@ -283,12 +309,13 @@ plotPetitsEffectifs.f <- function(objBP, nbmin=20)
                  ## Affichage d'avertissement pour  > X% du max retiré :
                  if (getOption("P.maxExclu") &&  getOption("P.GraphPartMax") < 1)
                  {
-                     paste(mltext("plotPetitsEffectifs.rec"),
+                     paste(mltext("plotPetitsEffectifs.rec", language = getOption("P.lang")),
                            " > ", 100 * getOption("P.GraphPartMax"),
                            "% ",
-                           mltext("plotPetitsEffectifs.not.disp"), sep="")
+                           mltext("plotPetitsEffectifs.not.disp",
+                                  language = getOption("P.lang")), sep="")
                  }else{},
-                 paste(mltext("plotPetitsEffectifs.small.n"),
+                 paste(mltext("plotPetitsEffectifs.small.n", language = getOption("P.lang")),
                        " (< ", nbmin, ")", sep=""))
 
         ## "Légende" :
@@ -355,10 +382,11 @@ plotPetitsEffectifs.f <- function(objBP, nbmin=20)
         if (getOption("P.maxExclu"))
         {
             legend("top",
-                   paste(mltext("plotPetitsEffectifs.rec"),
+                   paste(mltext("plotPetitsEffectifs.rec", language = getOption("P.lang")),
                          " > ", 100 * getOption("P.GraphPartMax"),
                          "% ",
-                         mltext("plotPetitsEffectifs.not.disp"), sep=""),
+                         mltext("plotPetitsEffectifs.not.disp",
+                                language = getOption("P.lang")), sep=""),
                    cex =0.9, col="red", text.col="red", merge=FALSE)
         }else{}
     }
@@ -557,7 +585,7 @@ WP2boxplot.f <- function(metrique, factGraph, factGraphSel, listFact, listFactSe
                  lty = 2, lwd = 0.5,
                  mgp=c(2, 0.5, 0))
 
-            legend("topleft", mltext("WP2boxplot.n.rec"),
+            legend("topleft", mltext("WP2boxplot.n.rec", language = getOption("P.lang")),
                    cex =0.9, col=getOption("P.NbObsCol"), text.col=getOption("P.NbObsCol"), merge=FALSE)
         }else{}
 

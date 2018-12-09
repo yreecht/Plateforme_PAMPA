@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-12-09 12:15:18 yreecht>
+# Time-stamp: <2018-12-09 16:58:22 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
@@ -152,7 +152,8 @@ agregationSpatiale.f <- function(Data, metrique, facteur, dataEnv)
 
 
 ########################################################################################################################
-graphTitle.carto.f <- function(metrique, modGraphSel, factGraph, listFact, factSpatial, model=NULL, type="espece")
+graphTitle.carto.f <- function(metrique, modGraphSel, factGraph, listFact, factSpatial, model=NULL, type="espece",
+                               lang = getOption("P.lang"))
 {
     ## Purpose: produire un titre de graphique adapté.
     ## ----------------------------------------------------------------------
@@ -168,71 +169,73 @@ graphTitle.carto.f <- function(metrique, modGraphSel, factGraph, listFact, factS
     ## Author: Yves Reecht, Date: 21 févr. 2013, 17:44
 
     return(paste(ifelse(is.null(model),
-                        mltext("graphTitle.vals"),
-                        paste(model, mltext("graphTitle.for"), varNames.f(metrique, "article"), sep="")),
+                        mltext("graphTitle.vals", language = lang),
+                        paste(model, mltext("graphTitle.for", language = lang),
+                              varNames.f(metrique, "article"), sep="")),
                  varNames.f(metrique, "nom"),
                  ifelse(is.element(type, c("espece", "unitobs", "CL_espece", "unitobs(CL)")),
-                        paste(mltext("graphTitle.agg"),
+                        paste(mltext("graphTitle.agg", language = lang),
                               switch(varNames.f(metrique, "genre"), # Accord de "agrégé".
-                                     f=mltext("graphTitle.f"),
-                                     fp=mltext("graphTitle.fp"),
-                                     mp=mltext("graphTitle.mp"), ""), sep=""),
+                                     f=mltext("graphTitle.f", language = lang),
+                                     fp=mltext("graphTitle.fp", language = lang),
+                                     mp=mltext("graphTitle.mp", language = lang), ""),
+                              sep=""),
                         ""),
                  switch(type,
-                        "espece"=mltext("graphTitle.bySpSt"),
-                        "CL_espece"=mltext("graphTitle.bySCSpSt"),
-                        "unitobs"=mltext("graphTitle.bySt"),
-                        "unitobs(CL)"=mltext("graphTitle.byStSC"),
-                        "CL_unitobs"=mltext("graphTitle.bySCSt"),
-                        "biodiv"=mltext("graphTitle.biodiv"),
-                        "spEspece"=paste(mltext("graphTitle.maps.SpZone"),
+                        "espece"=mltext("graphTitle.bySpSt", language = lang),
+                        "CL_espece"=mltext("graphTitle.bySCSpSt", language = lang),
+                        "unitobs"=mltext("graphTitle.bySt", language = lang),
+                        "unitobs(CL)"=mltext("graphTitle.byStSC", language = lang),
+                        "CL_unitobs"=mltext("graphTitle.bySCSt", language = lang),
+                        "biodiv"=mltext("graphTitle.biodiv", language = lang),
+                        "spEspece"=paste(mltext("graphTitle.maps.SpZone", language = lang),
                                          " '", varNames.f(factSpatial, "name", quote=FALSE), "'", sep=""),
-                        "spCL_espece"=paste(mltext("graphTitle.maps.SCSpZone"),
+                        "spCL_espece"=paste(mltext("graphTitle.maps.SCSpZone", language = lang),
                                             " '",
                                             varNames.f(factSpatial, "name", quote=FALSE), "'", sep=""),
                         "spUnitobs"=,"spUnitobs(CL)"=paste(" par zone '",
                                                            varNames.f(factSpatial, "name", quote=FALSE), "'", sep=""),
-                        "spCL_unitobs"=paste(mltext("graphTitle.maps.SCZone"),
+                        "spCL_unitobs"=paste(mltext("graphTitle.maps.SCZone", language = lang),
                                              " '",
                                              varNames.f(factSpatial, "name", quote=FALSE), "'", sep=""),
                         ""),
                  switch(type,
                         "spEspece"=,"spCL_espece"=,"spUnitobs"=,"spUnitobs(CL)"=,
-                        "spCL_unitobs"=mltext("graphTitle.maps.agg.Zone"),
-                        paste(mltext("graphTitle.maps.per.Zone"),
+                        "spCL_unitobs"=mltext("graphTitle.maps.agg.Zone", language = lang),
+                        paste(mltext("graphTitle.maps.per.Zone", language = lang),
                               " '", varNames.f(factSpatial, "nom", quote=FALSE), "'", sep="")),
                  switch(type,
                         "espece"=,"CL_espece"=,"spEspece"=,"spCL_espece"={
                             ifelse(modGraphSel == "", # Facteur de séparation uniquement si défini.
                                    "",
-                                   paste(mltext("graphTitle.maps.mod.field"),
+                                   paste(mltext("graphTitle.maps.mod.field", language = lang),
                                          " '", factGraph, "' = ", modGraphSel, sep=""))
                         },
                         "unitobs"=,"CL_unitobs"=,"spUnitobs"=,"spCL_unitobs"={
                             ifelse(modGraphSel[1] == "", # Facteur de séparation uniquement si défini.
-                                   mltext("graphTitle.maps.mod.allSp"),
-                                   paste(mltext("graphTitle.maps.mod.selSp"),
+                                   mltext("graphTitle.maps.mod.allSp", language = lang),
+                                   paste(mltext("graphTitle.maps.mod.selSp", language = lang),
                                          " '", factGraph, "' = (",
                                          paste(modGraphSel, collapse=", "), ")", sep=""))
                         },
                         "unitobs(CL)"=,"spUnitobs(CL)"={
                             ifelse(modGraphSel[1] == "", # Facteur de séparation uniquement si défini.
-                                   mltext("graphTitle.maps.mod.allSC"),
-                                   paste(mltext("graphTitle.maps.mod.selSC"),
+                                   mltext("graphTitle.maps.mod.allSC", language = lang),
+                                   paste(mltext("graphTitle.maps.mod.selSC", language = lang),
                                          " '", factGraph, "' = (",
                                          paste(modGraphSel, collapse=", "), ")", sep=""))
                         },
                         "biodiv"={
                             ifelse(modGraphSel[1] == "", # Facteur de séparation uniquement si défini.
                                    "",
-                                   paste(mltext("graphTitle.maps.mod.selSt"),
+                                   paste(mltext("graphTitle.maps.mod.selSt", language = lang),
                                          " '", factGraph, "' = (",
                                          paste(modGraphSel, collapse=", "), ")", sep=""))
                         },
                         ""),
                  ifelse(listFact[1] == "",
                         "",
-                        paste(mltext("graphTitle.by"),
+                        paste(mltext("graphTitle.by", language = lang),
                               paste(sapply(listFact[length(listFact):1],
                                            function(x)paste(c(## varNames.f(x, "article")
                                                               "",

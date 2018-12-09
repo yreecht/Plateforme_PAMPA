@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-12-09 12:15:19 yreecht>
+# Time-stamp: <2018-12-09 16:37:50 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
@@ -212,7 +212,8 @@ barplotOccurrence.unitobs.f <- function(factGraph, factGraphSel, listFact, listF
                   adj=-0.2)
 
             legend(x="topleft",
-                   legend=expression(mltext("barplotOccurrence.unitobs.leg")),
+                   legend=expression(mltext("barplotOccurrence.unitobs.leg",
+                                            language = getOption("P.lang"))),
                    cex =0.9, col=getOption("P.NbObsCol"), text.col=getOption("P.NbObsCol"), merge=FALSE)
 
         }else{}

@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-12-09 09:34:07 yreecht>
+# Time-stamp: <2018-12-09 17:26:17 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
@@ -178,13 +178,19 @@ print.anova.ml <- function(x, digits = max(getOption("digits") - 2, 3), signif.s
 
 ########################################################################################################################
 plot.lm.ml <- function (x, which = c(1L:3L, 5L),
-                        caption = list(mltext("plot.lm.ml.title.ResVsVal"),
-                                       mltext("plot.lm.ml.title.NQQ"),
-                                       mltext("plot.lm.ml.title.SL"),
-                                       mltext("plot.lm.ml.title.Cooks"),
-                                       mltext("plot.lm.ml.title.ResVsLev"),
+                        caption = list(mltext("plot.lm.ml.title.ResVsVal",
+                                              language = getOption("P.lang")),
+                                       mltext("plot.lm.ml.title.NQQ",
+                                              language = getOption("P.lang")),
+                                       mltext("plot.lm.ml.title.SL",
+                                              language = getOption("P.lang")),
+                                       mltext("plot.lm.ml.title.Cooks",
+                                              language = getOption("P.lang")),
+                                       mltext("plot.lm.ml.title.ResVsLev",
+                                              language = getOption("P.lang")),
                                        substitute(expression(title1 * h[ii]/(1 - h[ii])),
-                                                  list(title1 = paste0(mltext("plot.lm.ml.title.CooksVsLev"),
+                                                  list(title1 = paste0(mltext("plot.lm.ml.title.CooksVsLev",
+                                                                              language = getOption("P.lang")),
                                                                        "  ")))),
                         panel = if (add.smooth) panel.smooth else points, sub.caption = NULL,
                         main = "", ask = prod(par("mfcol")) < length(which) && dev.interactive(),
@@ -241,8 +247,10 @@ plot.lm.ml <- function (x, which = c(1L:3L, 5L),
     }
     if (any(show[2L:3L])) {
         ylab23 <- if (isGlm)
-            mltext("plot.lm.ml.lab.devRes")      # [!!!]
-        else mltext("plot.lm.ml.lab.stdRes")
+            mltext("plot.lm.ml.lab.devRes",
+                   language = getOption("P.lang"))      # [!!!]
+        else mltext("plot.lm.ml.lab.stdRes",
+                    language = getOption("P.lang"))
         r.w <- if (is.null(w))
             r
         else sqrt(w) * r
@@ -255,8 +263,10 @@ plot.lm.ml <- function (x, which = c(1L:3L, 5L),
     }
     if (any(show[c(1L, 3L)]))
         l.fit <- if (isGlm)
-            mltext("plot.lm.ml.lab.pred")
-        else mltext("plot.lm.ml.lab.adj")
+            mltext("plot.lm.ml.lab.pred",
+                   language = getOption("P.lang"))
+        else mltext("plot.lm.ml.lab.adj",
+                    language = getOption("P.lang"))
     if (is.null(id.n))
         id.n <- 0
     else {
@@ -305,7 +315,9 @@ plot.lm.ml <- function (x, which = c(1L:3L, 5L),
         ylim <- range(r, na.rm = TRUE)
         if (id.n > 0)
             ylim <- extendrange(r = ylim, f = 0.08)
-        plot(yh, r, xlab = l.fit, ylab = mltext("plot.lm.ml.lab.res"), main = main,
+        plot(yh, r, xlab = l.fit, ylab = mltext("plot.lm.ml.lab.res",
+                                                language = getOption("P.lang")),
+             main = main,
              ylim = ylim, type = "n", ...)
         panel(yh, r, ...)
         if (one.fig)
@@ -322,7 +334,8 @@ plot.lm.ml <- function (x, which = c(1L:3L, 5L),
         ylim <- range(rs, na.rm = TRUE)
         ylim[2L] <- ylim[2L] + diff(ylim) * 0.075
         qq <- qqnorm(rs, main = main, ylab = ylab23, ylim = ylim,
-                     xlab=mltext("plot.lm.ml.lab.theoQ"),
+                     xlab=mltext("plot.lm.ml.lab.theoQ",
+                                 language = getOption("P.lang")),
                      ...)
         if (qqline)
             qqline(rs, lty = 3, col = "gray50")
@@ -355,7 +368,11 @@ plot.lm.ml <- function (x, which = c(1L:3L, 5L),
         }
         else ymx <- max(cook, na.rm = TRUE)
         plot(cook, type = "h", ylim = c(0, ymx), main = main,
-             xlab = mltext("plot.lm.ml.lab.obsN"), ylab = mltext("plot.lm.ml.lab.CooksD"), ...)
+             xlab = mltext("plot.lm.ml.lab.obsN",
+                           language = getOption("P.lang")),
+             ylab = mltext("plot.lm.ml.lab.CooksD",
+                           language = getOption("P.lang")),
+             ...)
         if (one.fig)
             title(sub = sub.caption, ...)
         mtext(getCaption(4), 3, 0.25, cex = cex.caption)
@@ -364,8 +381,10 @@ plot.lm.ml <- function (x, which = c(1L:3L, 5L),
     }
     if (show[5L]) {
         ylab5 <- if (isGlm)
-            mltext("plot.lm.ml.lab.stdResP")
-        else mltext("plot.lm.ml.lab.stdRes")
+            mltext("plot.lm.ml.lab.stdResP",
+                   language = getOption("P.lang"))
+        else mltext("plot.lm.ml.lab.stdRes",
+                    language = getOption("P.lang"))
         r.w <- residuals(x, "pearson")
         if (!is.null(w))
             r.w <- r.w[wind]
@@ -378,7 +397,8 @@ plot.lm.ml <- function (x, which = c(1L:3L, 5L),
         do.plot <- TRUE
         if (isConst.hat) {
             if (missing(caption))
-                caption[[5L]] <- mltext("plot.lm.ml.lab.cstLev")
+                caption[[5L]] <- mltext("plot.lm.ml.lab.cstLev",
+                                        language = getOption("P.lang"))
             aterms <- attributes(terms(x))
             dcl <- aterms$dataClasses[-aterms$response]
             facvars <- names(dcl)[dcl %in% c("factor", "ordered")]
@@ -399,7 +419,9 @@ plot.lm.ml <- function (x, which = c(1L:3L, 5L),
                 xx <- facval
                 plot(facval, rsp, xlim = c(-1/2, sum((nlev -
                                   1) * ff) + 1/2), ylim = ylim, xaxt = "n", main = main,
-                     xlab = mltext("plot.lm.ml.lab.levComb"), ylab = ylab5,
+                     xlab = mltext("plot.lm.ml.lab.levComb",
+                                   language = getOption("P.lang")),
+                     ylab = ylab5,
                      type = "n", ...)
                 axis(1, at = ff[1L] * (1L:nlev[1L] - 1/2) - 1/2,
                      labels = x$xlevels[[1L]][order(sapply(split(yh,
@@ -422,7 +444,9 @@ plot.lm.ml <- function (x, which = c(1L:3L, 5L),
             xx <- hii
             xx[xx >= 1] <- NA
             plot(xx, rsp, xlim = c(0, max(xx, na.rm = TRUE)),
-                 ylim = ylim, main = main, xlab = mltext("plot.lm.ml.lab.Lev"),
+                 ylim = ylim, main = main,
+                 xlab = mltext("plot.lm.ml.lab.Lev",
+                               language = getOption("P.lang")),
                  ylab = ylab5, type = "n", ...)
             panel(xx, rsp, ...)
             abline(h = 0, v = 0, lty = 3, col = "gray")
@@ -438,7 +462,9 @@ plot.lm.ml <- function (x, which = c(1L:3L, 5L),
                     lines(hh, cl.h, lty = 2, col = 2)
                     lines(hh, -cl.h, lty = 2, col = 2)
                 }
-                legend("bottomleft", legend = mltext("plot.lm.ml.lab.CooksD"),
+                legend("bottomleft",
+                       legend = mltext("plot.lm.ml.lab.CooksD",
+                                       language = getOption("P.lang")),
                        lty = 2, col = 2, bty = "n")
                 xmax <- min(0.99, usr[2L])
                 ymult <- sqrt(p * (1 - xmax)/xmax)
@@ -463,10 +489,12 @@ plot.lm.ml <- function (x, which = c(1L:3L, 5L),
         ymx <- max(cook, na.rm = TRUE) * 1.025
         plot(g, cook, xlim = c(0, max(g, na.rm = TRUE)), ylim = c(0,
                                                                   ymx), main = main,
-             ylab = mltext("plot.lm.ml.lab.CooksD"),
+             ylab = mltext("plot.lm.ml.lab.CooksD",
+                           language = getOption("P.lang")),
              xlab = substitute(expression(title1 *
                                           h[ii]),
-                               list(title1 = paste0(mltext("plot.lm.ml.lab.Lev"),
+                               list(title1 = paste0(mltext("plot.lm.ml.lab.Lev",
+                                                           language = getOption("P.lang")),
                                                     "  "))),
              xaxt = "n", type = "n", ...)
         panel(g, cook, ...)
@@ -1694,7 +1722,9 @@ sortiesLM.f <- function(objLM, formule, metrique, factAna, modSel, listFact, lis
         ## Représentation des interactions :
         mainTitle <- graphTitle.f(metrique=metrique,
                                   modGraphSel=modSel, factGraph=factAna,
-                                  listFact=listFact, model=mltext("sortiesLM.Graph.Title"),
+                                  listFact=listFact,
+                                  model=mltext("sortiesLM.Graph.Title",
+                                               language = getOption("P.lang")),
                                   type=type)
 
         eval(call(winFUN, pointsize=ifelse(isTRUE(getOption("P.graphPaper")), 14, 12)))
@@ -1707,9 +1737,11 @@ sortiesLM.f <- function(objLM, formule, metrique, factAna, modSel, listFact, lis
          {
              eval(parse(text=paste("interaction.plot(", listFact[1], ", ", listFact[2],
                         ", log(", metrique, "), ylab=\"",
-                        paste(mltext("sortiesLM.Graph.ylab.pfx"),
+                        paste(mltext("sortiesLM.Graph.ylab.pfx",
+                                     language = getOption("P.lang")),
                               "log(", Capitalize.f(varNames[metrique, "nom"]), ")",
-                              mltext("sortiesLM.Graph.ylab.sfx"), sep=""),
+                              mltext("sortiesLM.Graph.ylab.sfx",
+                                     language = getOption("P.lang")), sep=""),
                         "\", xlab=\"", Capitalize.f(varNames[listFact[1], "nom"]),
                         "\", main=\"",
                         ifelse((! isTRUE(getOption("P.graphPaper"))) && isTRUE(getOption("P.title")), mainTitle, ""),
@@ -1719,13 +1751,23 @@ sortiesLM.f <- function(objLM, formule, metrique, factAna, modSel, listFact, lis
          }else{
              eval(parse(text=paste("interaction.plot(", listFact[1], ", ", listFact[2],
                         ", ", metrique, ", ylab=\"",
-                        paste(mltext("sortiesLM.Graph.ylab.pfx"),
+                        paste(mltext("sortiesLM.Graph.ylab.pfx",
+                                     language = getOption("P.lang")),
                               Capitalize.f(varNames[metrique, "nom"]),
-                              mltext("sortiesLM.Graph.ylab.sfx"),
+                              mltext("sortiesLM.Graph.ylab.sfx",
+                                     language = getOption("P.lang")),
                               switch(varNames[metrique, "genre"],
-                                     "f"=mltext("graphTitle.f"),
-                                     "fp"=mltext("graphTitle.fp"),
-                                     "mp"=mltext("graphTitle.mp"),
+                                     "f"=, # Double the consonnant in French!
+                                     "fp"=mltext("sortiesLM.Graph.ylab.sfxDblCons",
+                                                       language = getOption("P.lang")),
+                                     ""),
+                              switch(varNames[metrique, "genre"],
+                                     "f"=mltext("graphTitle.f",
+                                                language = getOption("P.lang")),
+                                     "fp"=mltext("graphTitle.fp",
+                                                 language = getOption("P.lang")),
+                                     "mp"=mltext("graphTitle.mp",
+                                                 language = getOption("P.lang")),
                                      ""), # "moyen", moyens,
                                         # "moyenne" ou "moyennes" selon le genre.
                               sep=""),
@@ -1753,12 +1795,18 @@ sortiesLM.f <- function(objLM, formule, metrique, factAna, modSel, listFact, lis
     eval(call(winFUN, width=45, height=35))
     par(mfrow=c(2, 2), oma=c(0, 0, 4.7, 0))
     hist(objLM$residuals,
-         xlab=mltext("sortiesLM.Graph.hist.xlab"),
-         ylab= mltext("sortiesLM.Graph.hist.ylab"), main=NULL)
-    mtext(mltext("sortiesLM.Graph.hist.title"), side=3, cex=0.8)
+         xlab=mltext("sortiesLM.Graph.hist.xlab",
+                     language = getOption("P.lang")),
+         ylab= mltext("sortiesLM.Graph.hist.ylab",
+                      language = getOption("P.lang")),
+         main=NULL)
+    mtext(mltext("sortiesLM.Graph.hist.title",
+                 language = getOption("P.lang")), side=3, cex=0.8)
 
     ## Titre général :
-    mtext(mltext("sortiesLM.Graph.diag.title"), side=3, outer=TRUE, line=3.4, cex=1.2)
+    mtext(mltext("sortiesLM.Graph.diag.title",
+                 language = getOption("P.lang")),
+          side=3, outer=TRUE, line=3.4, cex=1.2)
     mtext(subTitle, side=3, outer=TRUE, line=-2.4, cex=1.1)
 
     ## Essayer glm.diag.plots('glm')...

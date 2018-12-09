@@ -21,7 +21,7 @@ GraphOpt.button, Options graphiques... ,  Graphics options...
 W.main.title,Indicateurs relatifs à la biodiversité et aux ressources,Biodiversity and fished resource indicators
 MB.import,Données,Data
 MB.selection,Sélection et recalcul,Subsetting
-MB.traitement,Outils,Graphics
+MB.traitement,Graphiques,Graphics
 MB.analyse,Statistiques,Analysis
 MB.outils,Outils,Tools
 MB.pampainfos,Aide,Help
@@ -787,6 +787,7 @@ sortiesLM.Wminfo.Info.3, un peu de temps (cette fenêtre se fermera automatiqueme
 sortiesLM.Graph.Title,Graphique d’interactions,Interaction graphics
 sortiesLM.Graph.ylab.pfx,,Mean 
 sortiesLM.Graph.ylab.sfx, moyen,
+sortiesLM.Graph.ylab.sfxDblCons,n,
 sortiesLM.Graph.hist.xlab,valeur des résidus ,Residual values 
 sortiesLM.Graph.hist.ylab,Fréquence ,Frequency 
 sortiesLM.Graph.hist.title,Distribution des résidus,Distribution of residuals

@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-12-09 09:57:30 yreecht>
+# Time-stamp: <2018-12-09 12:15:20 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
@@ -170,7 +170,7 @@ WP2barplot.unitobs.f <- function(metrique, factGraph, factGraphSel, listFact, li
 
         ## Label axe y :
         ylab <- ifelse(getOption("P.axesLabels"),
-                       parse(text=paste("'", Capitalize.f(varNames[metrique, "nom"]), "'",
+                       parse(text=paste("\"", Capitalize.f(varNames[metrique, "nom"]), "\"",
                              ifelse(varNames[metrique, "unite"] != "",
                                     paste("~~(", varNames[metrique, "unite"], ")", sep=""),
                                     ""),

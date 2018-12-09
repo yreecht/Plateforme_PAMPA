@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-12-09 09:28:12 yreecht>
+# Time-stamp: <2018-12-09 12:15:18 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
@@ -997,7 +997,7 @@ subplotCarto.unitobs.f <- function(graphType,
 
         ## ## Label axe y :
         ## ylab <- ifelse(getOption("P.axesLabels"),
-        ##                parse(text=paste("'", Capitalize.f(varNames[metrique, "nom"]), "'",
+        ##                parse(text=paste("\"", Capitalize.f(varNames[metrique, "nom"]), "\"",
         ##                      ifelse(varNames[metrique, "unite"] != "",
         ##                             paste("~~(", varNames[metrique, "unite"], ")", sep=""),
         ##                             ""),
@@ -1240,7 +1240,7 @@ colorsCarto.generic.f <- function(Data, DataNoSp, metrique, polyZones, refspa, u
     axis(side=2)
 
     ## Titre de légende :
-    legendTitle <- parse(text=paste("'", Capitalize.f(varNames[metrique, "nom"]), "'",
+    legendTitle <- parse(text=paste("\"", Capitalize.f(varNames[metrique, "nom"]), "\"",
                                     sep=""))
 
     ## Unité de la légende :

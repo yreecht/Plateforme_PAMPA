@@ -499,7 +499,7 @@ WP2barplot.esp.f <- function(metrique,
 
         ## Label axe y :
         ylab <- ifelse(getOption("P.axesLabels"),
-                       parse(text=paste("'", Capitalize.f(varNames[metrique, "nom"]), "'",
+                       parse(text=paste("\"", Capitalize.f(varNames[metrique, "nom"]), "\"",
                              ifelse(varNames[metrique, "unite"] != "",
                                     paste("~~(", varNames[metrique, "unite"], ")", sep=""),
                                     ""),

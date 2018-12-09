@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-10-14 14:38:04 yreecht>
+# Time-stamp: <2018-12-09 11:56:08 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2018 Ifremer - Tous droits réservés.
@@ -61,7 +61,9 @@ initialiseOptions.f <- function()
             P.PDFunFichierPage = FALSE,         # Créer un fichier par page pour les sorties PDF ?
             P.NbDecimal = 2,                    # Nombre de décimales à afficher sur les graphiques
             P.legendeCouleurs = TRUE,           # Afficher la légende pour le facteur identifié par une des couleurs ?
-            P.colPalette = "défaut",            # Type de palette de couleur.
+            P.colPalette = ifelse(( ! is.null(getOption("P.GUIlang")) &&
+                                    tolower(getOption("P.GUIlang")) == "fr"),
+                                  "défaut", "default"),            # Type de palette de couleur.
             P.statusOrder = c("RI", "RE", "IN", # Ordre des nivaux de protection pour les graphiques et analyses.
                               "Z1", "I1",
                               "PP", "RP",
@@ -97,8 +99,16 @@ initialiseOptions.f <- function()
             P.cex = 1,                          # Taille générale des caractères.
             P.graphWMF = FALSE,                 # Sauvegarde des graphiques affichés à l'écran en WMF (Windows) ?
             P.pdfEmbedFonts = TRUE,             # Inclusion des polices dans les pdfs ?
-            P.lang = "fr",                      # Langue des graphiques ("fr" ou "en")... n'affecte que les axes.
-            P.GUIlang = "fr",                   # Language for the GUI.
+            P.lang = ifelse(test = ! is.null(getOption("P.lang")),
+                            yes = tolower(getOption("P.lang")),
+                            no = ifelse(test = ( ! is.null(getOption("P.GUIlang")) &&
+                                                 tolower(getOption("P.GUIlang")) == "fr"),
+                                        yes = "fr", no = "en")),
+                                                # Langage for the variable labels ("fr" or "en").
+            P.GUIlang =  ifelse(( ! is.null(getOption("defaultLang")) &&
+                                  is.null(getOption("P.GUIlang"))),
+                                tolower(getOption("defaultLang")),
+                                "en"),          # Language for the GUI.
             P.barplotStat="moyenne",            # Statistique des barplots ("mean", "moyenne", "médiane" ou "median").
             P.barplotErrorBar=TRUE,             # Doit-on afficher les barres d'erreur (sd/quantiles) sur les barplots ?
             P.saveData=TRUE,                    # Sauvegarde des données de graphiques et analyses ?

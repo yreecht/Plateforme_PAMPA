@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-12-08 18:48:05 yreecht>
+# Time-stamp: <2018-12-09 12:15:19 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
@@ -184,7 +184,7 @@ barplotOccurrence.f <- function(factGraph, factGraphSel, listFact, listFactSel, 
 
         ## Label axe y :
         ylab <- ifelse(getOption("P.axesLabels"),
-                       parse(text=paste("'", Capitalize.f(varNames[metrique, "nom"]), "'",
+                       parse(text=paste("\"", Capitalize.f(varNames[metrique, "nom"]), "\"",
                              ifelse(varNames[metrique, "unite"] != "",
                                     paste("~~(", varNames[metrique, "unite"], ")", sep=""),
                                     ""),

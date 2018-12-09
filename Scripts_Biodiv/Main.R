@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-12-09 10:36:46 yreecht>
+# Time-stamp: <2018-12-09 11:37:07 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2018 Ifremer - Tous droits réservés.
@@ -142,10 +142,14 @@ source("./Scripts_Biodiv/Initialisation.R", encoding="latin1")
 ## Initialisation des options graphiques (nouveau système) :
 if (is.null(getOption("GraphPAMPA")))   # uniquement si pas déjà initialisées (cas de lancement multiple)
 {
+    if (is.null(getOption("P.GUIlang")))
+    {
+        options("P.GUIlang" = getOption("defaultLang"))
+    }
     initialiseOptions.f()
 }
 
-options("P.GUIlang" = "en")
+
 ## options("P.GUIlang" = "fr")
 ## options(error = recover)
 ## On lance l'interface :

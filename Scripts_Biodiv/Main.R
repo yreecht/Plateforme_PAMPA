@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-12-09 11:37:07 yreecht>
+# Time-stamp: <2018-12-09 15:54:47 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2018 Ifremer - Tous droits réservés.
@@ -63,8 +63,17 @@ if(basename(fileCall) == "Main.R")
 ## Récupéré dans une variable globale (beurk !) :
 basePath <- getwd()
 
-## Répertoire de travail par défaut (si pas configuré par ailleurs) :
-nameWorkspace <- basePath
+## Load configuration:
+.Config <- parse(file.path(basePath, "Scripts_Biodiv/Config.R"), encoding = "latin1")
+
+## Répertoire de travail:
+if (length(idxWD <- grep("^[[:blank:]]*nameWorkspace[[:blank:]]*(<-|=)", .Config)))
+{
+    eval(.Config[[idxWD]])
+}else{
+    ## ...par défaut (si pas configuré par ailleurs) :
+    nameWorkspace <- basePath
+}
 
 ## #############################################################################################################
 ## Chargement des fonctions de la plateforme pour :
@@ -139,14 +148,25 @@ source("./Scripts_Biodiv/Barplots_generic_unitobs.R", encoding="latin1")        
 ## Configuration :
 source("./Scripts_Biodiv/Initialisation.R", encoding="latin1")
 
-## Initialisation des options graphiques (nouveau système) :
-if (is.null(getOption("GraphPAMPA")))   # uniquement si pas déjà initialisées (cas de lancement multiple)
+## Initialization of options (new ~ persistent system):
+if (is.null(getOption("PAMPAdummy")))   # uniquement si pas déjà initialisées (cas de lancement multiple)
 {
+    ## Index of
+    idxOpt <- grep("^[[:blank:]]*options[[:blank:]]*\\(", .Config)
+
+    ## Evaluate the options a first time
+    ## (some - like the language options -
+    ##  are persistent during the initialization):
+    eval(.Config[idxOpt])
+
     if (is.null(getOption("P.GUIlang")))
     {
         options("P.GUIlang" = getOption("defaultLang"))
     }
     initialiseOptions.f()
+
+    ## Override the non-persistent options after initialization:
+    eval(.Config[idxOpt])
 }
 
 

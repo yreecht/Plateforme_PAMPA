@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-12-09 11:56:08 yreecht>
+# Time-stamp: <2018-12-09 15:51:14 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2018 Ifremer - Tous droits réservés.
@@ -39,7 +39,7 @@ initialiseOptions.f <- function()
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date:  6 août 2010, 10:10
 
-    options(GraphPAMPA=TRUE,                    # Sert à savoir si les options ont déjà été définies.
+    options(PAMPAdummy=TRUE,                    # Sert à savoir si les options ont déjà été définies.
             P.maxExclu = FALSE,                 # Suppressions des données suppérieures à une certaine proportion du
                                         # maximum ?
             P.GraphPartMax = 0.95,              # Proportion du maximum à conserver si P.maxExclu == TRUE
@@ -671,9 +671,26 @@ tuneGraphOptions.f <- function(graphType="none")
     ## .BGcolor <- "#FFFBCF"
     .BGcolor <- "#F7F5CE"
 
-    if (is.null(getOption("GraphPAMPA")))
+    if (is.null(getOption("PAMPAdummy")))
     {
+        .Config <- get(".Config", envir = .GlobalEnv)
+        ## Index of
+        idxOpt <- grep("^[[:blank:]]*options[[:blank:]]*\\(", .Config)
+
+        ## Evaluate the options a first time
+        ## (some - like the language options -
+        ##  are persistent during the initialization):
+        eval(.Config[idxOpt])
+
+        if (is.null(getOption("P.GUIlang")))
+        {
+            options("P.GUIlang" = getOption("defaultLang"))
+        }
+
         initialiseOptions.f()      # Initialisation des options Graphiques
+
+        ## Override the non-persistent options after initialization:
+        eval(.Config[idxOpt])
     }
 
     env <- environment()
@@ -793,24 +810,42 @@ tuneGraphOptions.f <- function(graphType="none")
                          command=function(){tclvalue(Done) <- 2})
     B.Reinit <- tkbutton(FrameBT, text=mltext("Reset.button"), # bg=.BGcolor,
                          command=function()
-                     {
-                         initialiseOptions.f()
-                         for (i in names(P.options))
                          {
-                             eval(tclvalue(P.options[[i]]) <- options()[[i]], envir=env)
-                         }
+                             .Config <- get(".Config", envir = .GlobalEnv)
+                             ## Index of
+                             idxOpt <- grep("^[[:blank:]]*options[[:blank:]]*\\(", .Config)
 
-                         invisible(sapply(c("C.NbObsCol", "C.sepGroupesCol",
-                                            "C.pointMoyenneCol", "C.valMoyenneCol"),
-                                          function(x, env)
-                                      {
-                                          tryCatch(tkconfigure(get(x, envir=env),
-                                                               bg=getOption(sub("C\\.", "P.", x))),
-                                                   error=function(e){})
-                                      }, env=env2))
+                             ## Evaluate the options a first time
+                             ## (some - like the language options -
+                             ##  are persistent during the initialization):
+                             eval(.Config[idxOpt])
 
-                         tcl("update")
-                     })
+                             if (is.null(getOption("P.GUIlang")))
+                             {
+                                 options("P.GUIlang" = getOption("defaultLang"))
+                             }
+
+                             initialiseOptions.f()      # Initialisation des options Graphiques
+
+                             ## Override the non-persistent options after initialization:
+                             eval(.Config[idxOpt])
+
+                             for (i in names(P.options))
+                             {
+                                 eval(tclvalue(P.options[[i]]) <- options()[[i]], envir=env)
+                             }
+
+                             invisible(sapply(c("C.NbObsCol", "C.sepGroupesCol",
+                                                "C.pointMoyenneCol", "C.valMoyenneCol"),
+                                              function(x, env)
+                                              {
+                                                  tryCatch(tkconfigure(get(x, envir=env),
+                                                                       bg=getOption(sub("C\\.", "P.", x))),
+                                                           error=function(e){})
+                                              }, env=env2))
+
+                             tcl("update")
+                         })
 
     ## #### Placement des éléments sur la grille :
     ## ... aspect des graphiques :

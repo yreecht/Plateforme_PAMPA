@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-12-08 15:44:55 yreecht>
+# Time-stamp: <2018-12-09 09:42:29 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
@@ -18,7 +18,7 @@
 ##   ce programme ; si ce n'est pas le cas, consultez :
 ##   <http://www.gnu.org/licenses/>.
 
-### File: modeles_lineaires_unitobs_generiques.R
+### File: Linear_models_generic_unitobs.R
 ### Created: <2012-01-11 19:27:55 yreecht>
 ###
 ### Author: Yves Reecht

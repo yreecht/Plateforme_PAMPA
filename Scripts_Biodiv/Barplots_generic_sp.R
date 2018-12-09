@@ -17,7 +17,7 @@
 ##   ce programme ; si ce n'est pas le cas, consultez :
 ##   <http://www.gnu.org/licenses/>.
 
-### File: Barplots_esp_generiques.R
+### File: Barplots_generic_sp.R
 ### Time-stamp: <2012-08-22 16:25:03 yves>
 ###
 ### Author: Yves Reecht (auto-entrepreneur)

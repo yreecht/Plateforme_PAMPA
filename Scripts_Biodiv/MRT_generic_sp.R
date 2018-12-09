@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-12-08 18:04:02 yreecht>
+# Time-stamp: <2018-12-09 09:55:11 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
@@ -18,7 +18,7 @@
 ##   ce programme ; si ce n'est pas le cas, consultez :
 ##   <http://www.gnu.org/licenses/>.
 
-### File: arbres_regression_esp_generiques.R
+### File: MRT_generic_sp.R
 ### Created: <2012-01-10 18:11:47 yreecht>
 ###
 ### Author: Yves Reecht

@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-12-08 11:45:43 yreecht>
+# Time-stamp: <2018-12-09 09:37:42 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
@@ -18,7 +18,7 @@
 ##   ce programme ; si ce n'est pas le cas, consultez :
 ##   <http://www.gnu.org/licenses/>.
 
-### File: Modeles_lineaires_interface.R
+### File: Linear_models_interface.R
 ### Created: <2010-12-16 11:32:33 yreecht>
 ###
 ### Author: Yves Reecht

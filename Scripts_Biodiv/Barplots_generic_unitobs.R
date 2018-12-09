@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-12-08 19:03:56 yreecht>
+# Time-stamp: <2018-12-09 09:57:30 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
@@ -18,7 +18,7 @@
 ##   ce programme ; si ce n'est pas le cas, consultez :
 ##   <http://www.gnu.org/licenses/>.
 
-### File: Baplots_unitobs_generiques.R
+### File: Barplots_generic_unitobs.R
 ### Created: <2012-09-05 16:07:46 yves>
 ###
 ### Author: Yves Reecht

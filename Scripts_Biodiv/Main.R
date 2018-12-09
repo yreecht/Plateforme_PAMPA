@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-12-08 19:04:11 yreecht>
+# Time-stamp: <2018-12-09 10:36:46 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2018 Ifremer - Tous droits réservés.
@@ -32,8 +32,8 @@
 ####################################################################################################
 
 ## ** Version **
-options(versionPAMPA = "3.0-Intl-alpha1",
-        defaultLang = "fr")
+options(versionPAMPA = "3.0-Intl-alpha2",
+        defaultLang = "en")
 
 ## Platform-specific treatment:
 ## Identification du dossier parent (d'installation) :
@@ -113,27 +113,27 @@ source("./Scripts_Biodiv/Variables_selection_functions.R", encoding="latin1")   
 source("./Scripts_Biodiv/Variables_selection_interface.R", encoding="latin1")          # OK [mld]
 
 ## ...la création de boxplots (...) :
-source("./Scripts_Biodiv/Fonctions_graphiques.R", encoding="latin1")                   # OK [mld]
-source("./Scripts_Biodiv/Boxplots_esp_generiques.R", encoding="latin1")                # OK [mld]
-source("./Scripts_Biodiv/Boxplots_unitobs_generiques.R", encoding="latin1")            # OK [mld]
+source("./Scripts_Biodiv/Functions_graphics.R", encoding="latin1")                     # OK [mld]
+source("./Scripts_Biodiv/Boxplots_generic_sp.R", encoding="latin1")                    # OK [mld]
+source("./Scripts_Biodiv/Boxplots_generic_unitobs.R", encoding="latin1")               # OK [mld]
 ## ...dont cartes :
-source("./Scripts_Biodiv/Graphiques_carto.R", encoding="latin1")                       # [mld]
-source("./Scripts_Biodiv/Variables_carto.R", encoding="latin1")                        # [mld]
+source("./Scripts_Biodiv/Maps_graphics.R", encoding="latin1")                          # [mld]
+source("./Scripts_Biodiv/Maps_variables.R", encoding="latin1")                         # [mld]
 
 ## ...les analyses statistiques :
-source("./Scripts_Biodiv/Modeles_lineaires_interface.R", encoding="latin1")            # OK [mld]
-source("./Scripts_Biodiv/Modeles_lineaires_esp_generiques.R", encoding="latin1")       # OK [mld]
-source("./Scripts_Biodiv/Modeles_lineaires_unitobs_generiques.R", encoding="latin1")   # OK [mld]
-source("./Scripts_Biodiv/Arbres_regression_unitobs_generiques.R", encoding="latin1")   # OK [mld]
-source("./Scripts_Biodiv/Arbres_regression_esp_generiques.R", encoding="latin1")       # OK [mld]
+source("./Scripts_Biodiv/Linear_models_interface.R", encoding="latin1")                # OK [mld]
+source("./Scripts_Biodiv/Linear_models_generic_sp.R", encoding="latin1")               # OK [mld]
+source("./Scripts_Biodiv/Linear_models_generic_unitobs.R", encoding="latin1")          # OK [mld]
+source("./Scripts_Biodiv/MRT_generic_unitobs.R", encoding="latin1")                    # OK [mld]
+source("./Scripts_Biodiv/MRT_generic_sp.R", encoding="latin1")                         # OK [mld]
 
 ## ...les barplots sur les fréquences d'occurrence :
 source("./Scripts_Biodiv/Barplots_occurrence.R", encoding="latin1")                    # OK [mld]
 source("./Scripts_Biodiv/Barplots_occurrence_unitobs.R", encoding="latin1")            # OK [mld]
 
 ## ...barplots génériques :
-source("./Scripts_Biodiv/Barplots_esp_generiques.R", encoding="latin1")                # OK [mld]
-source("./Scripts_Biodiv/Barplots_unitobs_generiques.R", encoding="latin1")            # OK [mld]
+source("./Scripts_Biodiv/Barplots_generic_sp.R", encoding="latin1")                    # OK [mld]
+source("./Scripts_Biodiv/Barplots_generic_unitobs.R", encoding="latin1")               # OK [mld]
 
 ########################################################################################################################
 ## Configuration :
@@ -147,7 +147,7 @@ if (is.null(getOption("GraphPAMPA")))   # uniquement si pas déjà initialisées (c
 
 options("P.GUIlang" = "en")
 ## options("P.GUIlang" = "fr")
-options(error = recover)
+## options(error = recover)
 ## On lance l'interface :
 mainInterface.create.f()
 
@@ -162,7 +162,6 @@ mainInterface.create.f()
 ## [dep] : déplacé (menu).
 
 ## Translation tags:
-## [mln]: not started
 ## [mli]: irrelevant
 ## [mlo]: ongoing
 ## [mld]: Done

@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-12-08 10:34:26 yreecht>
+# Time-stamp: <2018-12-09 10:01:03 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
@@ -18,7 +18,7 @@
 ##   ce programme ; si ce n'est pas le cas, consultez :
 ##   <http://www.gnu.org/licenses/>.
 
-### File: Variables_carto.R
+### File: Maps_variables.R
 ### Created: <2012-12-06 16:52:40 yves>
 ###
 ### Author: Yves Reecht

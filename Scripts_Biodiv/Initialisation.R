@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-11-28 16:39:28 yreecht>
+# Time-stamp: <2018-12-09 10:06:37 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
@@ -81,7 +81,7 @@ init.GraphLang.f <- function()
     ## Author: Yves Reecht, Date: 17 nov. 2011, 10:22
 
     assign("varNames",
-           read.csv(paste(basePath, "/Scripts_Biodiv/NomsVariables_",
+           read.csv(paste(basePath, "/Scripts_Biodiv/VariableNames_",
                            tolower(getOption("P.lang")), ".csv",
                            sep=""),
                      header=TRUE, row.names=1, stringsAsFactors=FALSE,
@@ -89,7 +89,7 @@ init.GraphLang.f <- function()
            envir=.GlobalEnv)
 }
 
-## Remplacer "/Scripts_Biodiv/NomsVariables_fr.csv" par "/Scripts_Biodiv/NomsVariables_en.csv" pour des axes et noms de variables en
+## Remplacer "/Scripts_Biodiv/VariableNames_fr.csv" par "/Scripts_Biodiv/VariableNames_en.csv" pour des axes et noms de variables en
 ## anglais.
 ## Affecte uniquement les sorties !
 

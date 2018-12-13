@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-12-09 11:10:15 yreecht>
+# Time-stamp: <2018-12-12 22:13:02 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2018 Ifremer - Tous droits réservés.
@@ -148,9 +148,9 @@ PlanEchantillonnageBasic.f <- function(tabUnitobs, tabObs, filePathes)
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 21 sept. 2011, 13:53
 
-    PlanEchantillonnage <- with(dropLevels.f(tabUnitobs[is.element(tabUnitobs$unite_observation,
-                                                                   levels(tabObs$unite_observation)), ]),
-                                table(an, statut_protection, exclude = NA))
+    PlanEchantillonnage <- with(dropLevels.f(tabUnitobs[is.element(tabUnitobs$observation.unit,
+                                                                   levels(tabObs$observation.unit)), ]),
+                                table(year, protection.status, exclude = NA))
 
     attr(PlanEchantillonnage, "class") <- "array" # Pour un affichage en "tableau".
 
@@ -163,9 +163,9 @@ PlanEchantillonnageBasic.f <- function(tabUnitobs, tabObs, filePathes)
 
 ########################################################################################################################
 scaleMetrics.f <- function(Data, unitobs, refesp,
-                           supl=c("an", "site", "statut_protection", "biotope", "latitude", "longitude",
+                           supl=c("year", "site", "protection.status", "biotope", "latitude", "longitude",
                                   "annee.campagne", "habitat1", "habitat2", "habitat3",
-                                  "Identifiant", "Famille", "Genre", "espece"),
+                                  "scient.name", "family", "genus", "species"),
                            scale=TRUE)
 {
     ## Purpose:
@@ -187,23 +187,23 @@ scaleMetrics.f <- function(Data, unitobs, refesp,
         if (length(suplUnitobs))
         {
             Data <- merge(Data,
-                          unitobs[ , unique(c("unite_observation", suplUnitobs)), drop=FALSE],
-                          by=c("unite_observation"))
+                          unitobs[ , unique(c("observation.unit", suplUnitobs)), drop=FALSE],
+                          by=c("observation.unit"))
         }else{}
 
         ## Ajout des champs supplémentaires du référentiel espèces :
-        if (length(suplRefesp) && is.element("code_espece", colnames(Data)))
+        if (length(suplRefesp) && is.element("species.code", colnames(Data)))
         {
             Data <- merge(Data,
-                          refesp[ , unique(c("code_espece", suplRefesp)), drop=FALSE],
-                          by=c("code_espece"))
+                          refesp[ , unique(c("species.code", suplRefesp)), drop=FALSE],
+                          by=c("species.code"))
         }else{}
 
         ## Scalling : certaines métriques (densités) doivent être ramenées à /100m² :
         if (scale &&
             any(is.element(colnames(Data),
-                           colTmp <- c("densite", "densiteMax", "densiteSD",
-                                       "biomasse", "biomasseMax", "biomasseSD"))))
+                           colTmp <- c("density", "density.max", "density.sd",
+                                       "biomass", "biomass.max", "biomass.sd"))))
         {
             Data[ , is.element(colnames(Data),
                                colTmp)] <- sweep(Data[ , is.element(colnames(Data),
@@ -325,7 +325,7 @@ exportMetrics.f <- function(unitSpSz, unitSp, unit, obs, unitobs, refesp, filePa
 ########################################################################################################################
 selectionObs.SVR.f <- function()
 {
-    ## Purpose: Définir le seuil de Dmin (en m) au-dessus duquel les
+    ## Purpose: Définir le seuil de Min.Distance (en m) au-dessus duquel les
     ##          observations ne sont pas prises en compte.
     ## ----------------------------------------------------------------------
     ## Arguments: aucun
@@ -609,12 +609,12 @@ loadRefEspece.old.f <- function(refesp)
     options(P.refesp.Coefs="old")
 
     ## Renommage des colonnes :
-    names(refesp) <- c("code_espece", "GrSIH", "CodeSIH", "IssCaap", "TaxoCode", "CodeFAO", "CodeFB", "Phylum",
-                       "Cat_benthique", "Classe", "Ordre", "Famille", "Genre", "espece", "Identifiant", "ObsNC",
-                       "ObsRUN", "ObsMAY", "ObsSTM", "ObsCB", "ObsBA", "ObsBO", "ObsCR", "taillemax", "L50",
-                       "cryptique", "mobilite", "territorial", "nocturne", "comportement.grp", "agreg.saison",
-                       "position.col.eau", "strategie.demo", "Type.ponte", "Habitat.Prefere", "Changement.sexe",
-                       "regim.alim", "interet.chasseNC", "interet.chasseRUN", "interet.chasseMAY", "interet.chasseSTM",
+    names(refesp) <- c("species.code", "GrSIH", "CodeSIH", "IssCaap", "taxo.code", "FAO.code", "FishBase.code", "phylum",
+                       "benthic.categ", "class", "order", "family", "genus", "species", "scient.name", "ObsNC",
+                       "ObsRUN", "ObsMAY", "ObsSTM", "ObsCB", "ObsBA", "ObsBO", "ObsCR", "Lmax", "L50",
+                       "cryptic", "mobility", "territorial", "day.night.act", "aggreg.behaviour", "seasonal.aggreg",
+                       "water.column.position", "demogr.strategy", "spawning.type", "preferred.habitat", "sex.change",
+                       "adult.diet", "interet.chasseNC", "interet.chasseRUN", "interet.chasseMAY", "interet.chasseSTM",
                        "interet.chasseCB", "interet.chasseBA", "interet.chasseBO", "interet.chasseCR",
                        "interet.ligneNC", "interet.ligneRUN", "interet.ligneMAY", "interet.ligneSTM",
                        "interet.ligneCB", "interet.ligneBA", "interet.ligneBO", "interet.ligneCR", "interet.filetNC",
@@ -624,10 +624,10 @@ loadRefEspece.old.f <- function(refesp)
                        "interet.casierBA", "interet.casierBO", "interet.casierCR", "interet.piedNC", "interet.piedRUN",
                        "interet.piedMAY", "interet.piedSTM", "interet.piedCB", "interet.piedBA", "interet.piedBO",
                        "interet.piedCR", "interetComMAY", "Coeff.a.Med", "Coeff.b.Med", "Coeff.a.NC", "Coeff.a.MAY",
-                       "Coeff.b.NC", "Coeff.b.MAY", "poids.moyen.petits", "poids.moyen.moyens", "poids.moyen.gros",
-                       "tailleMax.petit", "tailleMax.moyen", "niveau.a.et.b.MED", "niveau.a.et.b.NC",
+                       "Coeff.b.NC", "Coeff.b.MAY", "mean.weight.small", "mean.weight.medium", "mean.weight.large",
+                       "max.length.small", "max.length.medium", "niveau.a.et.b.MED", "niveau.a.et.b.NC",
                        "niveau.a.et.b.MAY", "emblematiqueNC", "emblematiqueRUN", "emblematiqueMAY", "emblematiqueSTM",
-                       "emblematiqueCB", "emblematiqueBA", "emblematiqueBO", "emblematiqueCR", "stat.IUCN",
+                       "emblematiqueCB", "emblematiqueBA", "emblematiqueBO", "emblematiqueCR", "IUCN.status",
                        "autre.statutNC", "autre.statutRUN", "autre.statutMAY", "autre.statutSTM", "autre.statutCB",
                        "autre.statutBA", "autre.statutBO", "autre.statutCR", "etat.pop.localNC", "etat.pop.localRUN",
                        "etat.pop.localMAY", "etat.pop.localSTM", "etat.pop.localCB", "etat.pop.localBA",
@@ -701,11 +701,11 @@ loadRefEspeces.new.f <- function(refesp, pathRefesp.local)
     options(P.refesp.Coefs="new")
 
     ## Renommage des colonnes :
-    names(refesp) <- c("code_espece", "GrSIH", "CodeSIH", "IssCaap", "TaxoCode", "CodeFAO", "CodeFB", "Phylum",
-                       "Cat_benthique", "Classe", "Ordre", "Famille", "Genre", "espece", "Identifiant", "taillemax",
-                       "L50", "cryptique", "mobilite", "territorial", "nocturne", "comportement.grp", "agreg.saison",
-                       "position.col.eau", "strategie.demo", "Type.ponte", "Habitat.Prefere", "Changement.sexe",
-                       "regim.alim", "stat.IUCN", "Coeff.a", "Coeff.b", "niveau.a.et.b")
+    names(refesp) <- c("species.code", "GrSIH", "CodeSIH", "IssCaap", "taxo.code", "FAO.code", "FishBase.code", "phylum",
+                       "benthic.categ", "class", "order", "family", "genus", "species", "scient.name", "Lmax",
+                       "L50", "cryptic", "mobility", "territorial", "day.night.act", "aggreg.behaviour", "seasonal.aggreg",
+                       "water.column.position", "demogr.strategy", "spawning.type", "preferred.habitat", "sex.change",
+                       "adult.diet", "IUCN.status", "a.coeff", "b.coeff", "taxo.level.a.and.b")
 
     ## Remplacement des -999 par NA :
     if (nrow(refesp)!=0)
@@ -724,10 +724,10 @@ loadRefEspeces.new.f <- function(refesp, pathRefesp.local)
         }else{
             ## S'il est correct...
             ## Renommage des 13, premières colonnes pour éviter les fautes de frappes :
-            colnames(refesp.local)[1:14] <- c("code_espece", "Identifiant", "Coeff.a", "Coeff.b",
-                                              "niveau.a.et.b", "taillemax", "L50",
-                                              "poids.moyen.petits", "poids.moyen.moyens", "poids.moyen.gros",
-                                              "tailleMax.petit", "tailleMax.moyen", "Observee", "statutIUCN")
+            colnames(refesp.local)[1:14] <- c("species.code", "scient.name", "a.coeff", "b.coeff",
+                                              "taxo.level.a.and.b", "Lmax", "L50",
+                                              "mean.weight.small", "mean.weight.medium", "mean.weight.large",
+                                              "max.length.small", "max.length.medium", "observed", "IUCN.loc.status")
 
             ## Remplacement des -999 par NA :
             if (nrow(refesp.local)!=0)
@@ -735,7 +735,7 @@ loadRefEspeces.new.f <- function(refesp, pathRefesp.local)
                 refesp.local[refesp.local == "-999"] <- NA
             }
 
-            refesp <- priority.merge.f(first=refesp.local, second=refesp, by="code_espece", exclude="Identifiant")
+            refesp <- priority.merge.f(first=refesp.local, second=refesp, by="species.code", exclude="scient.name")
         }
     }else{
         infoLoading.f(msg=paste(mltext("loadRefEspeces.new.no.local")), icon="warning")
@@ -774,17 +774,17 @@ loadRefEspeces.f <- function (pathRefesp, pathRefesp.local=NA, baseEnv=.GlobalEn
                                           "/Scripts_Biodiv/corresp-cat-benth.csv", sep=""),
                                     row.names=1)
 
-    especes <- cbind(especes, correspCatBenthique[as.character(especes$Cat_benthique), , drop=FALSE])
+    especes <- cbind(especes, correspCatBenthique[as.character(especes$benthic.categ), , drop=FALSE])
 
     ## Pour vérif :
-    ## na.omit(especes[as.integer(runif(50,min=1, max=3553)), c("Cat_benthique", "CategB_general", "CategB_groupe")])
+    ## na.omit(especes[as.integer(runif(50,min=1, max=3553)), c("benthic.categ", "CategB_general", "CategB_groupe")])
 
     ## Suppression de la ligne en NA
-    especes <- subset(especes, !is.na(especes$code_espece))
+    especes <- subset(especes, !is.na(especes$species.code))
 
     ## Réorganisation des modalités de certains facteurs :
     especes <- reorderFactors.f(Data=especes,
-                                which=c("position.col.eau", "mobilite",
+                                which=c("water.column.position", "mobility",
                                         tmpcol <- colnames(especes)[grepl("^interet\\..*$", colnames(especes))]),
                                 type=c("position", "mobility", rep("interest", length(tmpcol))),
                                 warnings=FALSE)
@@ -867,14 +867,14 @@ checkType.unitobs.f <- function(unitobs)
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 13 déc. 2011, 11:16
 
-    if (length(unique(unitobs$type)) > 1)
+    if (length(unique(unitobs$observation.type)) > 1)
     {
         tkmessageBox(message=paste(mltext("checkType.unitobs.msg.1"),
                                    mltext("checkType.unitobs.msg.2"), sep=""),
                      icon="warning", type="ok")
 
-        while (is.null(selectType <- chooseInList.f(modList=unitobs[ ,"type"],
-                                                    fieldName="type",
+        while (is.null(selectType <- chooseInList.f(modList=unitobs[ ,"observation.type"],
+                                                    fieldName="observation.type",
                                                     selectMode="single",
                                                     ordered=TRUE)))
         {}
@@ -882,7 +882,7 @@ checkType.unitobs.f <- function(unitobs)
         message(paste(mltext("checkType.unitobs.msg.3"), selectType))
 
         ## Suppression des niveaux de facteur inutilisés :
-        unitobs <- dropLevels.f(subset(unitobs, unitobs$type == selectType))
+        unitobs <- dropLevels.f(subset(unitobs, unitobs$observation.type == selectType))
 
         ## assign("obs", obs, envir=.GlobalEnv)
         ## assign("unitobs", unitobs, envir=.GlobalEnv)
@@ -890,11 +890,11 @@ checkType.unitobs.f <- function(unitobs)
         ## ## Reconfiguration des infos sur l'AMP sélectionnée et le type d'observations analysées :
         ## tkconfigure(ResumerAMPetType,
         ##             text=paste("Aire Marine Protégée : ", unique(unitobs$AMP), " ; type d'observation : ",
-        ##             unique(unitobs$type), sep=""))
+        ##             unique(unitobs$observation.type), sep=""))
 
     }
 
-    options(P.obsType=unique(as.character(unitobs$type)))
+    options(P.obsType=unique(as.character(unitobs$observation.type)))
 
     return(unitobs)
 }
@@ -910,9 +910,9 @@ checkUnitobs.in.obs.f <- function(obs, unitobs)
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 13 déc. 2011, 11:34
 
-    ## obs$type <- unitobs$type[match(obs$unite_observation, unitobs$unite_observation), drop=TRUE]
+    ## obs$observation.type <- unitobs$observation.type[match(obs$observation.unit, unitobs$observation.unit), drop=TRUE]
 
-    if ( ! all(idxTmp <- is.element(obs$unite_observation, unitobs$unite_observation)))
+    if ( ! all(idxTmp <- is.element(obs$observation.unit, unitobs$observation.unit)))
     {
         ## Ajout du message pour le chargement :
         infoLoading.f(msg=paste(mltext("checkUnitobs.in.obs.info.1"),
@@ -946,34 +946,34 @@ loadUnitobs.f <- function(pathUnitobs)
     unitobs <- read.table(pathUnitobs, sep="\t", dec=".", header=TRUE, encoding="latin1")
 
     ## Changement des noms de colonnes :
-    colnames(unitobs) <- c(getOption("P.MPAfield"), "unite_observation", "type", "site", "station", "caracteristique_1", "caracteristique_2",
-         "fraction_echantillonnee", "jour", "mois", "an", "heure", "nebulosite", "direction_vent", "force_vent",
-         "etat_mer", "courant", "maree", "phase_lunaire", "latitude", "longitude", "statut_protection", "avant_apres",
+    colnames(unitobs) <- c(getOption("P.MPAfield"), "observation.unit", "observation.type", "site", "station", "geogr.descriptor1", "geogr.descriptor2",
+         "sampling.rate", "day", "month", "year", "heure", "nebulosite", "direction_vent", "force_vent",
+         "etat_mer", "courant", "maree", "phase_lunaire", "latitude", "longitude", "protection.status", "avant_apres",
          "biotope", "biotope_2", "habitat1", "habitat2", "habitat3", "visibilite", "prof_min", "prof_max", "DimObs1",
          "DimObs2", "nb_plong", "plongeur")
 
 
 
-    ## Traitement des NAs pour "caracteristique_1" : (est-ce bien la peine [yr: 5/12/2011] ?)
-    levels(unitobs$caracteristique_1) <- c(levels(unitobs$caracteristique_1), "NA") # bon ça corrige l'erreur ci-dessous
+    ## Traitement des NAs pour "geogr.descriptor1" : (est-ce bien la peine [yr: 5/12/2011] ?)
+    levels(unitobs$geogr.descriptor1) <- c(levels(unitobs$geogr.descriptor1), "NA") # bon ça corrige l'erreur ci-dessous
                                         # mais est-ce bien nécessaire ? [yr: 23/08/2010]
 
-    unitobs$caracteristique_1[is.na(unitobs$caracteristique_1)] <- "NA"
+    unitobs$geogr.descriptor1[is.na(unitobs$geogr.descriptor1)] <- "NA"
 
     ## Vérification du type d'observations :
     unitobs <- checkType.unitobs.f(unitobs)
 
     ## Si les unités d'observation sont ne sont pas des facteurs, on les force en facteur :
     ## (typiquement si numérique)
-    if (!is.factor(unitobs$unite_observation))
+    if (!is.factor(unitobs$observation.unit))
     {
-        unitobs$unite_observation <- factor(as.character(unitobs$unite_observation))
+        unitobs$observation.unit <- factor(as.character(unitobs$observation.unit))
     }
 
-    ## Si caracteristique_2 est au format année de campagne, renommer la colonne :
-    if (is.temporal.f("caracteristique_2", unitobs))
+    ## Si geogr.descriptor2 est au format année de campagne, renommer la colonne :
+    if (is.temporal.f("geogr.descriptor2", unitobs))
     {
-        colnames(unitobs)[colnames(unitobs) == "caracteristique_2"] <- "annee.campagne"
+        colnames(unitobs)[colnames(unitobs) == "geogr.descriptor2"] <- "annee.campagne"
     }
 
     if (getOption("P.obsType")=="PecRec")
@@ -988,12 +988,12 @@ loadUnitobs.f <- function(pathUnitobs)
 
     ## Reorganisation des niveaux de protection et autres facteurs :
     unitobs <- reorderFactors.f(Data=unitobs,
-                                which=c("statut_protection", "caracteristique_1", "maree", "phase_lunaire"),
+                                which=c("protection.status", "geogr.descriptor1", "maree", "phase_lunaire"),
                                 type=c("protection", "protection", "tide", "moon"),
                                 warnings=FALSE)
 
     ## Années : integer -> factor (nécessaire pour les analyses stats):
-    unitobs$an <- factor(unitobs$an)
+    unitobs$year <- factor(unitobs$year)
 
     return(unitobs)
 }
@@ -1033,7 +1033,7 @@ loadRefspa.f <- function(pathRefspa, baseEnv=.GlobalEnv)
                                           layer=sub(".shp$", "", basename(pathRefspa), ignore.case=TRUE, perl=TRUE))
 
             refSpatial@data <- reorderFactors.f(Data=refSpatial@data,
-                                                which=c("STATUT.PRO", "STATUT.PAM", "STATUT.PAMPA", "STATUT.PROTECTION",
+                                                which=c("STATUT.PRO", "STATUT.PAM", "PAMPA.STATUS", "PROTECTION.STATUS",
                                                         "STATUT.PR2", "PROFONDEUR"),
                                                 type=c(rep("protection", 4),
                                                        "protection2", "depth"),
@@ -1056,16 +1056,17 @@ loadRefspa.f <- function(pathRefspa, baseEnv=.GlobalEnv)
             ## Renommage des champs pour l'ancien format : [???]
             if (ncol(refSpatial) == 15)     # [!!!] à vérifier  [yr: 7/12/2011]
             {
-                colnames(refSpatial) <- c("code.zone", "zone", "AMP", "site", "station", "groupe", "longitude.zone",
-                                          "latitude.zone", "surface", "lineaire.cotier", "statut.protection",
-                                          "zonage.peche", "code.SIH", "statut.PAMPA", "nbCM")
+                colnames(refSpatial) <- c("ZONE.CODE", "ZONE", "MPA", "SITE", "STATION", "GROUP.OF.SITES",
+                                          "ZONE.LONGITUDE", "ZONE.LATITUDE", "SURFACE", "SHORELINE",
+                                          "PROTECTION.STATUS", "FISHING.ZONATION", "SIH.CODE",
+                                          "PAMPA.STATUS", "NB.PERMANENT.MOORINGS")
 
             }else{}
 
             colnames(refSpatial) <- toupper(colnames(refSpatial))
 
             refSpatial <- reorderFactors.f(Data=refSpatial,
-                                           which=c("STATUT.PRO", "STATUT.PAM", "STATUT.PAMPA", "STATUT.PROTECTION",
+                                           which=c("STATUT.PRO", "STATUT.PAM", "PAMPA.STATUS", "PROTECTION.STATUS",
                                                    "STATUT.PR2", "PROFONDEUR"),
                                            type=c(rep("protection", 4),
                                                   "protection2", "depth"),
@@ -1089,8 +1090,8 @@ loadObservations.f <- function(pathObs)
 
     if (getOption("P.obsType") != "SVR") # [!!!] à modifier (et porter dans une autre fonction ?)  [yr: 12/12/2011]
     {
-        colnames(obs) <- c("unite_observation", "secteur", "code_espece", "sexe", "taille", "classe_taille", "poids",
-                           "nombre", "dmin", "dmax")
+        colnames(obs) <- c("observation.unit", "sector", "species.code", "sex", "length", "size.class", "weight",
+                           "number", "min.distance", "max.distance")
 
         ## Traitements particuliers pour les protocoles "traces de tortues" :
         if (getOption("P.obsType") == "TRATO")
@@ -1101,8 +1102,8 @@ loadObservations.f <- function(pathObs)
         ## On renomme les colonnes + identification du type d'interpolation :
         switch(as.character(ncol(obs)),
                "10"={
-                   colnames(obs) <- c("unite_observation", "rotation", "code_espece", "sexe", "taille", "classe_taille",
-                                      "poids", "nombre", "dmin", "dmax")
+                   colnames(obs) <- c("observation.unit", "rotation", "species.code", "sex", "length", "size.class",
+                                      "weight", "number", "min.distance", "max.distance")
                },
                {
                    infoLoading.f(msg=paste(mltext("loadObservations.info.1"),
@@ -1122,13 +1123,13 @@ loadObservations.f <- function(pathObs)
 
         ## On ne tient pas compte des observations à une distance > dminMax
         ## (pas de subset car tendance à faire disparaître des unitobs des analyses) :
-        idxSupr <- obs$dmin > dminMax
+        idxSupr <- obs$min.distance > dminMax
 
-        obs$nombre[idxSupr] <- 0
-        obs$poids[idxSupr] <- NA
-        obs$taille[idxSupr] <- NA
+        obs$number[idxSupr] <- 0
+        obs$weight[idxSupr] <- NA
+        obs$length[idxSupr] <- NA
 
-        ## obs <- subset(obs, dmin <= dminMax)
+        ## obs <- subset(obs, min.distance <= dminMax)
     }
 
     ## remplacement des -999 en NA
@@ -1139,15 +1140,15 @@ loadObservations.f <- function(pathObs)
 
     ## nombre : numeric -> factor (nécessaire pour une bonne prise en compte dans les analyses stat)...
     ## uniquement si == entier :
-    if (isTRUE(all.equal(obs$nombre, as.integer(obs$nombre))))
+    if (isTRUE(all.equal(obs$number, as.integer(obs$number))))
     {
-        obs$nombre <- as.integer(obs$nombre)
+        obs$number <- as.integer(obs$number)
     }else{}
 
     ## Si les unités d'observation sont ne sont pas des facteurs :
-    if (!is.factor(obs$unite_observation))
+    if (!is.factor(obs$observation.unit))
     {
-        obs$unite_observation <- factor(as.character(obs$unite_observation))
+        obs$observation.unit <- factor(as.character(obs$observation.unit))
     }
 
     return(obs)
@@ -1336,8 +1337,8 @@ loadData.f <- function(filePathes, dataEnv, baseEnv=.GlobalEnv)
     {
         unitobsCorresp <- dataEnv$.unitobsCorresp
 
-        tabObs[ , "unite_observation"] <- dataEnv$.unitobsCorresp[match(tabObs[ , "unite_observation"],
-                                                                        unitobsCorresp[ , "unite_observation"]),
+        tabObs[ , "observation.unit"] <- dataEnv$.unitobsCorresp[match(tabObs[ , "observation.unit"],
+                                                                        unitobsCorresp[ , "observation.unit"]),
                                                                   "unitobsNew"]
     }else{}
 

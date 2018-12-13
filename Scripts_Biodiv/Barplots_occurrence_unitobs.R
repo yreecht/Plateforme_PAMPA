@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-12-09 16:37:50 yreecht>
+# Time-stamp: <2018-12-12 16:55:42 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
@@ -61,7 +61,7 @@ barplotOccurrence.unitobs.f <- function(factGraph, factGraphSel, listFact, listF
     selections <- c(list(factGraphSel), listFactSel) # Concaténation des leurs listes de modalités sélectionnées
 
     ## Données pour la série de boxplots :
-    tmpData <- subsetToutesTables.f(metrique="pres_abs", facteurs=facteurs, selections=selections,
+    tmpData <- subsetToutesTables.f(metrique="pres.abs", facteurs=facteurs, selections=selections,
                                     dataEnv=dataEnv, tableMetrique="TablePresAbs", exclude = NULL)
 
 
@@ -81,8 +81,8 @@ barplotOccurrence.unitobs.f <- function(factGraph, factGraphSel, listFact, listF
 
     ## Agrégation des observations / unité d'observation :
     tmpData <- na.omit(agregationTableParCritere.f(Data=tmpData,
-                                                   metrique="pres_abs",
-                                                   facteurs=c("unite_observation"),
+                                                   metrique="pres.abs",
+                                                   facteurs=c("observation.unit"),
                                                    dataEnv=dataEnv,
                                                    listFact=listFact))
 
@@ -127,7 +127,7 @@ barplotOccurrence.unitobs.f <- function(factGraph, factGraphSel, listFact, listF
 
         ## Calcul des fréquences :
         heights <- with(tmpData,
-                        tapply(pres_abs, lapply(listFact, function(y)eval(parse(text=y))),
+                        tapply(pres.abs, lapply(listFact, function(y)eval(parse(text=y))),
                                function(x)
                            {
                                100 * sum(x, na.rm=TRUE) / length(na.omit(x))
@@ -200,7 +200,7 @@ barplotOccurrence.unitobs.f <- function(factGraph, factGraphSel, listFact, listF
         {
             ## Nombre d'"observations" :
             nbObs <- with(tmpData,
-                          tapply(pres_abs,
+                          tapply(pres.abs,
                                  lapply(listFact, function(y)eval(parse(text=y))),
                                  function(x)
                              {
@@ -230,7 +230,7 @@ barplotOccurrence.unitobs.f <- function(factGraph, factGraphSel, listFact, listF
         if (getOption("P.saveStats"))
         {
             infoStats.f(filename=graphFile, Data=tmpData, agregLevel="unitobs", type="graph",
-                        metrique="pres_abs", factGraph=factGraph, factGraphSel=factGraphSel,
+                        metrique="pres.abs", factGraph=factGraph, factGraphSel=factGraphSel,
                         listFact=rev(listFact), listFactSel=rev(listFactSel), # On les remets dans un ordre intuitif.
                         dataEnv=dataEnv, baseEnv=baseEnv)
         }else{}

@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-12-09 11:07:14 yreecht>
+# Time-stamp: <2018-12-12 20:15:12 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2018 Ifremer - Tous droits réservés.
@@ -132,7 +132,7 @@ VoirPlanEchantillonnage.f <- function(dataEnv)
                            row.names=1)
 
     tclarrayPE <- tclArray()
-    ## tclarrayPE[[0, ]] <- c("Année", "Type", "Fréquence")
+    ## tclarrayPE[[0, ]] <- c("Année", "observation.type", "Fréquence")
 
     tclarrayPE[[0, 0]] <- paste(mltext("sampling.arr.0.0.1"),
                                 mltext("sampling.arr.0.0.2"), sep="")
@@ -179,7 +179,7 @@ VoirInformationsDonneesEspeces.f <- function(dataEnv, image)
     unitobs <- get("unitobs", envir=dataEnv)
     nombres <- ifelse(is.benthos.f(), mltext("unit.colony"), getOption("P.nbName"))
 
-    Nbesp <- length(unique(unitSp[ , "code_espece"]))
+    Nbesp <- length(unique(unitSp[ , "species.code"]))
 
     tclarrayID <- tclArray()
     tclarrayID[[0, 0]] <- mltext("infoSpecies.arr.0.0")
@@ -195,39 +195,39 @@ VoirInformationsDonneesEspeces.f <- function(dataEnv, image)
                                 mltext("infoSpecies.arr.0.2"), sep="")
     tclarrayID[[0, 3]] <- mltext("infoSpecies.arr.0.3")
 
-    mini <- tapply(unitSp[ , nombres], unitSp[ , "code_espece"], min, na.rm=TRUE)
-    maxi <- tapply(unitSp[ , nombres], unitSp[ , "code_espece"], max, na.rm=TRUE)
+    mini <- tapply(unitSp[ , nombres], unitSp[ , "species.code"], min, na.rm=TRUE)
+    maxi <- tapply(unitSp[ , nombres], unitSp[ , "species.code"], max, na.rm=TRUE)
 
     nbunitobs <- nrow(unique(unitobs))
-    pacha <- unitSp[, c("unite_observation", "code_espece", nombres, "pres_abs"), drop=FALSE]
+    pacha <- unitSp[, c("observation.unit", "species.code", nombres, "pres.abs"), drop=FALSE]
 
     for (i in (1:Nbesp))
     {
-        tclarrayID[[i, 0]] <- unique(as.character(unitSp[ , "code_espece"]))[i]
+        tclarrayID[[i, 0]] <- unique(as.character(unitSp[ , "species.code"]))[i]
         tclarrayID[[i, 1]] <- mini[i]
         tclarrayID[[i, 2]] <- maxi[i]
         tclarrayID[[i, 3]] <-
-            paste(round(length(pacha[(pacha[ , "pres_abs"] == 1 &
-                                      pacha[ , "code_espece"] == unique(unitSp[ , "code_espece"])[i]),
-                                     "unite_observation"]) /
-                        length(pacha[pacha[ , "code_espece"] == unique(unitSp[ , "code_espece"])[i],
-                                     "unite_observation"]) * 100,
+            paste(round(length(pacha[(pacha[ , "pres.abs"] == 1 &
+                                      pacha[ , "species.code"] == unique(unitSp[ , "species.code"])[i]),
+                                     "observation.unit"]) /
+                        length(pacha[pacha[ , "species.code"] == unique(unitSp[ , "species.code"])[i],
+                                     "observation.unit"]) * 100,
                         digits=2), "%")
     }
 
     ## Pour informations sur le nombre d'espèces :
-    tmp <- unique(cbind(pacha[ , "code_espece"],
-                        refesp[match(pacha[ , "code_espece"], refesp[ , "code_espece"]),
-                               c("Phylum", "espece")]))
+    tmp <- unique(cbind(pacha[ , "species.code"],
+                        refesp[match(pacha[ , "species.code"], refesp[ , "species.code"]),
+                               c("phylum", "species")]))
 
     tableInfodonnees <- Voirentableau(tclarrayID,
                                       title=mltext("infoSpecies.title"),
                                       infos=paste(mltext("infoSpecies.info.title"),
                                                   mltext("infoSpecies.info.cat"), nrow(tmp),
                                                   mltext("infoSpecies.info.tax"),
-                                                  sum(!is.na(tmp[ , "Phylum"])),
+                                                  sum(!is.na(tmp[ , "phylum"])),
                                                   mltext("infoSpecies.info.sp"),
-                                                  sum(!is.na(tmp[ , "espece"]) & tmp[ , "espece"] != "sp."),
+                                                  sum(!is.na(tmp[ , "species"]) & tmp[ , "species"] != "sp."),
                                                   mltext("infoSpecies.info.subset"), sep=""),
                                       height=Nbesp, width=4, nrow=Nbesp + 1, ncol=4,
                                       image=image)
@@ -241,7 +241,7 @@ VoirInformationsDonneesUnitobs.f <- function(dataEnv, image)
     unitSp <- get("unitSp", envir=dataEnv)
     nombres <- ifelse(is.benthos.f(), mltext("unit.colony"), getOption("P.nbName"))
 
-    Nbunitobs <- nlevels(obs[ , "unite_observation"]) ## length(unique(unitobs[ , "unite_observation"]))
+    Nbunitobs <- nlevels(obs[ , "observation.unit"]) ## length(unique(unitobs[ , "observation.unit"]))
 
     tclarrayID <- tclArray()
 
@@ -255,27 +255,27 @@ VoirInformationsDonneesUnitobs.f <- function(dataEnv, image)
                                        mltext("info.arr.ind")),
                                 mltext("infoUnitobs.arr.0.4"), sep="")    #
 
-    pacha <- unitSp[ , c("unite_observation", "code_espece", nombres, "pres_abs"), drop=FALSE]
+    pacha <- unitSp[ , c("observation.unit", "species.code", nombres, "pres.abs"), drop=FALSE]
 
-    ## mini <- tapply(unitSp[ , nombres], unitSp[ , "unite_observation"], min, na.rm=TRUE) # [!!!]
+    ## mini <- tapply(unitSp[ , nombres], unitSp[ , "observation.unit"], min, na.rm=TRUE) # [!!!]
 
-    maxi <- tapply(unitSp[ , nombres], unitSp[ , "unite_observation"], max, na.rm=TRUE) # [!!!]
+    maxi <- tapply(unitSp[ , nombres], unitSp[ , "observation.unit"], max, na.rm=TRUE) # [!!!]
 
     for (i in (1:Nbunitobs))
     {
-        tclarrayID[[i, 0]] <- levels(obs[ , "unite_observation"])[i]
+        tclarrayID[[i, 0]] <- levels(obs[ , "observation.unit"])[i]
 
-        tclarrayID[[i, 1]] <- as.character(unitobs[(unitobs[ , "unite_observation"] ==
-                                                    levels(obs[ , "unite_observation"])[i]),
+        tclarrayID[[i, 1]] <- as.character(unitobs[(unitobs[ , "observation.unit"] ==
+                                                    levels(obs[ , "observation.unit"])[i]),
                                                    "site"])
 
-        tclarrayID[[i, 2]] <- as.character(unitobs[(unitobs[ , "unite_observation"] ==
-                                                    levels(obs[ , "unite_observation"])[i]),
+        tclarrayID[[i, 2]] <- as.character(unitobs[(unitobs[ , "observation.unit"] ==
+                                                    levels(obs[ , "observation.unit"])[i]),
                                                    "biotope"])
         tclarrayID[[i, 3]] <-                                                                        #
-            length(pacha[(pacha[ , "pres_abs"]==1 &
-                          pacha[ , "unite_observation"] == levels(obs[ , "unite_observation"])[i]),
-                         "code_espece"])
+            length(pacha[(pacha[ , "pres.abs"]==1 &
+                          pacha[ , "observation.unit"] == levels(obs[ , "observation.unit"])[i]),
+                         "species.code"])
 
         tclarrayID[[i, 4]] <- maxi[i]
     }

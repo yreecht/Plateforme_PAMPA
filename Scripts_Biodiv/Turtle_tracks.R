@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-09-04 10:00:44 yreecht>
+# Time-stamp: <2018-12-12 16:53:51 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2018 Ifremer - Tous droits réservés.
@@ -39,8 +39,8 @@ obsFormatting.TRATO.f <- function(obs)
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 17 janv. 2013, 17:40
 
-    ## Renommage des colonnes "nombre" et "dmin" en "nombre.traces" et "ponte" :
-    colnames(obs)[match(c("nombre", "dmin"), colnames(obs))] <- c("nombre.traces", "ponte")
+    ## Renommage des colonnes "number" et "min.distance" en "tracks.number" et "ponte" :
+    colnames(obs)[match(c("number", "min.distance"), colnames(obs))] <- c("tracks.number", "ponte")
 
     ponte <- gsub("[[:blank:]]*", "", tolower(obs[ , "ponte"]))
 
@@ -52,7 +52,7 @@ obsFormatting.TRATO.f <- function(obs)
                                                 c(paste0(rep(c(tolower(mltext("KW.yes")),
                                                                tolower(mltext("KW.no"))), each = 2),
                                                          c("", "?")),
-                                                  "NL"))))) # [ml?]                                               
+                                                  "NL"))))) # [ml?]
     {
         ## Changées en NAs :
         ponte[tmp] <- NA
@@ -84,8 +84,8 @@ obsFormatting.TRATO.f <- function(obs)
 ########################################################################################################################
 calc.nestingSuccess.f <- function(obs,
                                   Data,
-                                  factors=c("unite_observation", "code_espece", "classe_taille"),
-                                  nbName="nombre")
+                                  factors=c("observation.unit", "species.code", "size.class"),
+                                  nbName="number")
 {
     ## Purpose: Calcul du pourcentage de réussite de ponte.
     ## ----------------------------------------------------------------------
@@ -100,7 +100,7 @@ calc.nestingSuccess.f <- function(obs,
 
     ## Nombre de pontes (sûres + supposées) :
     pontes <- as.vector(tapply(subset(obs, grepl(paste0("^", mltext("KW.yes"), "\\??$"),
-                                                 obs$ponte))[ , "nombre"],
+                                                 obs$ponte))[ , "number"],
                                as.list(subset(obs, grepl(paste0("^", mltext("KW.yes"), "\\??$"),
                                                          obs$ponte))[ , factors]),
                                FUN = function(x)
@@ -120,7 +120,7 @@ calc.nestingSuccess.f <- function(obs,
     traces.lisibles <- as.vector(tapply(subset(obs,
                                                grepl(paste0("^(", mltext("KW.yes"), "|",
                                                             mltext("KW.no"), ")\\??$"), # "^(yes|no)\\??$"
-                                                     obs$ponte))[ , "nombre"],
+                                                     obs$ponte))[ , "number"],
                                         as.list(subset(obs,
                                                        grepl(paste0("^(", mltext("KW.yes"), "|",
                                                                     mltext("KW.no"), ")\\??$"),
@@ -137,8 +137,8 @@ calc.nestingSuccess.f <- function(obs,
     ## Correction de NAs à la place de 0 dans traces lisibles lorsque aucune traces observées mais nombre valide (0) :
     traces.lisibles[is.na(traces.lisibles) & ! is.na(Data[ , nbName])] <- 0
 
-    return(data.frame("pontes"=pontes, "traces.lisibles"=traces.lisibles,
-                      "reussite.ponte"=100 * pontes / traces.lisibles))
+    return(data.frame("spawnings"=pontes, "readable.tracks"=traces.lisibles,
+                      "spawning.success"=100 * pontes / traces.lisibles))
 }
 
 
@@ -155,25 +155,25 @@ calc.tables.TurtleTracks.f <- function(obs, unitobs, dataEnv, factors)
     ## Author: Yves Reecht, Date: 17 janv. 2013, 19:29
 
     ## Calcul des nombres par cl / espèces / unitobs :
-    nbr <- calcNumber.default.f(obs, factors=factors, nbName="nombre.traces")
+    nbr <- calcNumber.default.f(obs, factors=factors, nbName="tracks.number")
 
     ## Création de la data.frame de résultats (avec nombres, unitobs, ):
-    res <- calc.numbers.f(nbr, nbName="nombre.traces")
+    res <- calc.numbers.f(nbr, nbName="tracks.number")
 
     ## Calcul du succès de ponte (%) :
-    res <- cbind(res, calc.nestingSuccess.f(obs=obs, Data=res, factors=factors, nbName="nombre.traces"))
+    res <- cbind(res, calc.nestingSuccess.f(obs=obs, Data=res, factors=factors, nbName="tracks.number"))
 
     ## Tailles moyennes :
-    res[ , "taille_moyenne"] <- calc.meanSize.f(obs, factors=factors, nbName="nombre.traces")
+    res[ , "mean.length"] <- calc.meanSize.f(obs, factors=factors, nbName="tracks.number")
 
     ## Poids :
-    res[ , "poids"] <- calc.weight.f(obs=obs, Data=res, factors=factors, nbName="nombre.traces")
+    res[ , "weight"] <- calc.weight.f(obs=obs, Data=res, factors=factors, nbName="tracks.number")
 
     ## Poids moyen par individu :
-    res[ , "poids_moyen"] <- calc.meanWeight.f(Data=res, nbName="nombre.traces")
+    res[ , "mean.weight"] <- calc.meanWeight.f(Data=res, nbName="tracks.number")
 
     ## Présence/absence :
-    res[ , "pres_abs"] <- calc.presAbs.f(Data=res, nbName="nombre.traces")
+    res[ , "pres.abs"] <- calc.presAbs.f(Data=res, nbName="tracks.number")
 
     return(res)
 }

@@ -126,7 +126,7 @@ semicolon,X, ;,;
 sum.nb.unitobs.obs.1,X,-> Nombre d'unités d'observations,-> Number of observation units
 tclarray.0.4,X,Sélection,Selection
 sum.nb.sp.obs.2,X,-> Nombre d'espèces,-> Number of species
-error.recouvrementsansLIT.1,X,"Le champ obs$type n'est pas 'LIT', vous ne pouvez pas calculer","The observation type is not 'LIT', % overlap with"
+error.recouvrementsansLIT.1,X,"Le champ obs$observation.type n'est pas 'LIT', vous ne pouvez pas calculer","The observation type is not 'LIT', % overlap with"
 error.recouvrementsansLIT.2,, un % de recouvrement avec des espèces non benthiques\n, non-benthic species cannot be evaluated\n
 error.noWorkspace,X,Aucun espace de travail n'est choisi ou opérationnel\n,No valid working directory selected\n
 error.nbChampUnitobs.1,X,Votre fichier 'Unités d'observation' ne comporte pas le bon nombre de champs!,The 'Observation unit' file has the wrong number of fields!
@@ -292,7 +292,7 @@ infoExport.5,X,"\n\t* DataObs, DataUnitobs, DataRefesp : tables de données.","\n
 infoExport.6,X,Impossible d'écrire le fichier ,Cannot write the file 
 infoExport.7,X,.\nIl est possible qu'il soit ouvert par une autre application,.\nIt might be open in another program.
 selectionObs.SVR.title,X,Sélection des observations,Selection of observations
-selectionObs.SVR.Dmin,X,  Ne conserver que les observations pour lesquelles Dmin =< ,  Only keep observations with Dmin =< 
+selectionObs.SVR.Dmin,X,  Ne conserver que les observations pour lesquelles Min.Distance =< ,  Only keep observations with Min.Distance =< 
 selectionObs.SVR.Dmin.war,X,Vous devez choisir un seuil numérique (séparateur '.'),The threshold must be numerical (decimal separator '.')
 testFiles.1p,X,Les fichiers suivants n'existent pas ou ne sont pas accessibles :,The following files do not exist or cannot be accessed:
 testFiles.1s,X,Le fichier suivant n'existe pas ou n'est pas accessible :,The following file does not exist or cannot be accessed:
@@ -551,10 +551,10 @@ verifVariables.f.info.3,X,Pas de facteur de regroupement sélectionné !,No groupi
 verifVariables.f.info.4,X,Champ ',Field '
 verifVariables.f.info.5,X,' vide,' empty
 verifVariables.f.info.6,X,Attention : représentation d'une métrique par classes de taille\n,Metrics aggregated by size class\n
-verifVariables.f.info.7,,mais 'classe_taille' n'est pas utilisée comme facteur,but 'classe_taille' not used as a factor.
+verifVariables.f.info.7,,mais 'size.class' n'est pas utilisée comme facteur,but 'size.class' not used as a factor.
 verifVariables.f.info.8,X,Utilisez 2 facteurs de regroupement au plus,Use not more than 2 grouping factors.
 verifVariables.f.info.9,X,Attention : représentation d'une métrique par espèce\n,Metrics aggregated by species\n
-verifVariables.f.info.10,,mais 'espece' ou 'code_espece' n'est pas utilisé comme facteur,but 'espece' ou 'code_espece' not used as factor.
+verifVariables.f.info.10,,mais 'espece' ou 'species.code' n'est pas utilisé comme facteur,but 'espece' ou 'species.code' not used as factor.
 verifVariables.f.info.11,X,Un des facteurs de regroupement est une sous-catégorie,A grouping factor is a sub-category of
 verifVariables.f.info.12,,\nd'un des facteurs d'agrégation (e.g. espèce -> Famille).,\nan aggregation factor (e.g. species -> Family).
 verifVariables.f.info.13,,\n\nLes données ne peuvent être agrégées !,\n\nThe data cannot be aggregated!
@@ -584,11 +584,11 @@ titreSelVar.f.M.repesented,X,Métrique à représenter : ,Represented metrics:
 titreSelVar.f.M.explained,X,Métrique expliquée : ,Explained metrics: 
 titreSelVar.f.M.freq_occurrence,X,"Métrique calculée : ""fréquence d'occurrence"" (/espèce ; sur unités d'observations)","Calculated metrics: “occurrence frequency” (/species, over stations)"
 titreSelVar.f.M.freq_occurrence.unitobs,X,"Métrique calculée : ""fréquence d'occurrence"" (/groupe d'espèce ; sur unités d'observations)","Calculated metrics: “occurrence frequency” (/species group, over stations)"
-titreSelVar.f.FS.graphFact,X,"Créer un graphique par facteur...  (optionnel, 'code_espece' ou 'identifiant' conseillé)","Generate a plot per factor level (optional, 'code_espece' or 'identifiant' recommended)"
-titreSelVar.f.FS.modele_lineaire,X,"Séparer les analyses par facteur...  (optionnel, 'code_espece' ou 'identifiant' conseillé)","Split the analyses per factor level (optional, 'code_espece' or 'identifiant' recommended)"
-titreSelVar.f.FS.freq_occurrence,X,"Séparer les graphiques par facteur...  (optionnel, 'code_espece' ou 'identifiant' conseillé)","Split the plots per factor level (optional, 'code_espece' or 'identifiant' recommended)"
+titreSelVar.f.FS.graphFact,X,"Créer un graphique par facteur...  (optionnel, 'species.code' ou 'identifiant' conseillé)","Generate a plot per factor level (optional, 'species.code' or 'identifiant' recommended)"
+titreSelVar.f.FS.modele_lineaire,X,"Séparer les analyses par facteur...  (optionnel, 'species.code' ou 'identifiant' conseillé)","Split the analyses per factor level (optional, 'species.code' or 'identifiant' recommended)"
+titreSelVar.f.FS.freq_occurrence,X,"Séparer les graphiques par facteur...  (optionnel, 'species.code' ou 'identifiant' conseillé)","Split the plots per factor level (optional, 'species.code' or 'identifiant' recommended)"
 titreSelVar.f.FS.selectSp,X,"Sélection d'espèce(s) selon un critère...  (optionnel, toutes par défaut)","Subset species... (optional, all by default)"
-titreSelVar.f.FS.MRT.esp,X,"Séparer les graphiques/analyses par facteur...  (optionnel, 'code_espece' ou 'identifiant' conseillé)","Split the analyses/plots per factor level (optional, 'code_espece' or 'identifiant' recommended)"
+titreSelVar.f.FS.MRT.esp,X,"Séparer les graphiques/analyses par facteur...  (optionnel, 'species.code' ou 'identifiant' conseillé)","Split the analyses/plots per factor level (optional, 'species.code' or 'identifiant' recommended)"
 titreSelVar.f.F.graph,X,Choix du (des) facteur(s) de regroupement (sur un même graphique),Selection of the grouping factor(s) (same plot)
 titreSelVar.f.F.modele_lineaire,X,Choix du(des) facteur(s) explicatif(s),Selection of the explaining factor(s)
 titreSelVar.f.F.freq_occurrence,X,Choix du(des) facteur(s) explicatif(s)/de regroupement,Selection of the grouping/explaining factor(s)

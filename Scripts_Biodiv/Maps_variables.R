@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-12-09 10:01:03 yreecht>
+# Time-stamp: <2018-12-12 18:58:34 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
@@ -78,7 +78,7 @@ bbox.subset.f <- function(refspa, facteur, selection,
 }
 
 ########################################################################################################################
-champsRefspa.f <- function(dataEnv, first=c("ZONE.SURVE", "GROUPE", "AMP"))
+champsRefspa.f <- function(dataEnv, first=c("ZONE.SURVE", "GROUP.OF.SITES", "MPA"))
 {
     ## Purpose: récupérer la liste des champs du référentiel spatial
     ##          (qui sont également disponible dans les unitobs).

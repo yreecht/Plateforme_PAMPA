@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-12-09 09:42:29 yreecht>
+# Time-stamp: <2018-12-12 16:53:52 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
@@ -67,12 +67,12 @@ modeleLineaireWP2.unitobs.f <- function(metrique, factAna, factAnaSel, listFact,
         ## Pour les indices de biodiversité, il faut travailler sur les nombres... :
         tmpData <- subsetToutesTables.f(metrique=getOption("P.nbName"), facteurs=facteurs,
                                         selections=selections, dataEnv=dataEnv, tableMetrique="unitSp",
-                                        exclude = NULL, add=c("unite_observation", "code_espece"))
+                                        exclude = NULL, add=c("observation.unit", "species.code"))
     }else{
         ## ...sinon sur la métrique choisie :
         tmpData <- subsetToutesTables.f(metrique=metrique, facteurs=facteurs, selections=selections,
                                         dataEnv=dataEnv, tableMetrique=tableMetrique, exclude = NULL,
-                                        add=c("unite_observation", "code_espece"))
+                                        add=c("observation.unit", "species.code"))
     }
 
     ## Identification des différents lots d'analyses à faire:
@@ -93,11 +93,11 @@ modeleLineaireWP2.unitobs.f <- function(metrique, factAna, factAnaSel, listFact,
     logExprML <- eval(parse(text=paste("log(", metrique, ") ~", paste(listFact, collapse=" * "))))
 
     ## Agrégation des observations / unité d'observation :
-    if (tableMetrique == "unitSpSz" && factAna != "classe_taille")
+    if (tableMetrique == "unitSpSz" && factAna != "size.class")
     {
         tmpData <- na.omit(agregationTableParCritere.f(Data=tmpData,
                                                        metrique=metrique,
-                                                       facteurs=c("unite_observation", "classe_taille"),
+                                                       facteurs=c("observation.unit", "size.class"),
                                                        dataEnv=dataEnv,
                                                        listFact=listFact))
     }else{
@@ -111,7 +111,7 @@ modeleLineaireWP2.unitobs.f <- function(metrique, factAna, factAnaSel, listFact,
                                   calcBiodiv.f(Data=tmpData,
                                                refesp=get("refesp", envir=dataEnv),
                                                MPA=MPA,
-                                               unitobs = "unite_observation", code.especes = "code_espece",
+                                               unitobs = "observation.unit", code.especes = "species.code",
                                                nombres = getOption("P.nbName"),
                                                indices=metrique,
                                                dataEnv=dataEnv)
@@ -119,16 +119,16 @@ modeleLineaireWP2.unitobs.f <- function(metrique, factAna, factAnaSel, listFact,
 
             ## On rajoute les anciennes colonnes :
             tmpData <- cbind(tmp[ , colnames(tmp) != getOption("P.nbName")], # Colonne "nombre" désormais inutile.
-                             tmpData[match(tmp$unite_observation, tmpData$unite_observation),
+                             tmpData[match(tmp$observation.unit, tmpData$observation.unit),
                                      !is.element(colnames(tmpData),
-                                                 c(colnames(tmp), getOption("P.nbName"), "code_espece")), drop=FALSE])
+                                                 c(colnames(tmp), getOption("P.nbName"), "species.code")), drop=FALSE])
 
             ## On garde le strict minimum :
             tmpData <- tmpData[ , is.element(colnames(tmpData), c(metrique, facteurs))]
         }else{
             tmpData <- na.omit(agregationTableParCritere.f(Data=tmpData,
                                                            metrique=metrique,
-                                                           facteurs=c("unite_observation"),
+                                                           facteurs=c("observation.unit"),
                                                            dataEnv=dataEnv,
                                                            listFact=listFact))
         }
@@ -143,7 +143,7 @@ modeleLineaireWP2.unitobs.f <- function(metrique, factAna, factAnaSel, listFact,
     tmpData <- dropLevels.f(tmpData)
 
     ## Aide au choix du type d'analyse :
-    if (metrique == "pres_abs")
+    if (metrique == "pres.abs")
     {
         loiChoisie <- "BI"
     }else{
@@ -170,7 +170,7 @@ modeleLineaireWP2.unitobs.f <- function(metrique, factAna, factAnaSel, listFact,
                              factAna=factAna, modSel=iFactGraphSel,
                              listFact=listFact, listFactSel=listFactSel,
                              Data=tmpData, dataEnv=dataEnv, Log=Log,
-                             type=ifelse(tableMetrique == "unitSpSz" && factAna != "classe_taille",
+                             type=ifelse(tableMetrique == "unitSpSz" && factAna != "size.class",
                                          "CL_unitobs",
                                          "unitobs"),
                              baseEnv=baseEnv),
@@ -198,7 +198,7 @@ modeleLineaireWP2.unitobs.f <- function(metrique, factAna, factAnaSel, listFact,
                                      factAna=factAna, modSel=iFactGraphSel,
                                      listFact=listFact, listFactSel=listFactSel,
                                      Data=tmpData, Log=Log, sufixe="(red)",
-                                     type=ifelse(tableMetrique == "unitSpSz" && factAna != "classe_taille",
+                                     type=ifelse(tableMetrique == "unitSpSz" && factAna != "size.class",
                                                  "CL_unitobs",
                                                  "unitobs"),
                                      dataEnv=dataEnv, baseEnv=baseEnv),

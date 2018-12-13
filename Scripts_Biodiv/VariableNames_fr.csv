@@ -1,7 +1,7 @@
 ID,article,nom,genre,unite
-agreg.saison,,agreg.saison,,
-AMP,l',AMP,f,
-an,l',année,f,
+seasonal.aggreg,,agreg.saison,,
+MPA,l',AMP,f,
+year,l',année,f,
 annee.campagne,l',année de campagne,f,
 autre.statutBA,,autre.statutBA,,
 autre.statutBO,,autre.statutBO,,
@@ -12,46 +12,46 @@ autre.statutNC,,autre.statutNC,,
 autre.statutRUN,,autre.statutRUN,,
 autre.statutSTM,,autre.statutSTM,,
 avant_apres,,avant_apres,,
-biomasse,la ,biomasse,f,g.100~m^{-2}
-Biomasse,la ,biomasse,f,kg.km^{-2}
-biomasseMax,la ,biomasse maximale,f,g.100~m^{-2}
-biomasseSD,l',écart type de la biomasse,m,
+biomass,la ,biomasse,f,g.100~m^{-2}
+Biomass,la ,biomasse,f,kg.km^{-2}
+biomass.max,la ,biomasse maximale,f,g.100~m^{-2}
+biomass.sd,l',écart type de la biomasse,m,
 biotope,le ,biotope,m,
 biotope_2,le ,biotope 2,m,
-caracteristique_1,la ,caracteristique 1,f,
-caracteristique_2,la ,caracteristique 2,f,
-cas.etude,le ,cas d'étude,m,
-Cat_benthique,la ,catégorie benthique,f,
+geogr.descriptor1,la ,caracteristique 1,f,
+geogr.descriptor2,la ,caracteristique 2,f,
+study.area,le ,cas d'étude,m,
+benthic.categ,la ,catégorie benthique,f,
 CategB_general,la ,CategB_general,f,
 CategB_groupe,la ,CategB_groupe,f,
-Changement.sexe,,Changement.sexe,,
-Classe,la ,Classe,f,
-classe_taille,la ,classe de taille,f,
-code_espece,le ,code espèce,m,
-CodeFAO,le ,code FAO,m,
-CodeFB,le ,code FB,m,
+sex.change,,sex.change,,
+class,la ,Classe,f,
+size.class,la ,classe de taille,f,
+species.code,le ,code espèce,m,
+FAO.code,le ,code FAO,m,
+FishBase.code,le ,code FB,m,
 CodeSIH,le ,code SIH,m,
-Coeff.a,,Coeff.a,,
+a.coeff,,Coeff.a,,
 Coeff.a.MAY,,Coeff.a.MAY,,
 Coeff.a.Med,,Coeff.a.Med,,
 Coeff.a.NC,,Coeff.a.NC,,
-Coeff.b,,Coeff.b,,
+b.coeff,,Coeff.b,,
 Coeff.b.MAY,,Coeff.b.MAY,,
 Coeff.b.Med,,Coeff.b.Med,,
 Coeff.b.NC,,Coeff.b.NC,,
-colonie,le,nombre de colonies,m,
-comportement.grp,le ,comportement de groupe,m,
+colonies,le,nombre de colonies,m,
+aggreg.behaviour,le ,comportement de groupe,m,
 courant,le ,courant,m,
 CPUE,les ,CPUE,fp,indiv.UE^{-1}
-CPUEbiomasse,les ,CPUE (biomasse),fp,g.UE^{-1}
-cryptique,,cryptique,,
+CPUE.biomass,les ,CPUE (biomasse),fp,g.UE^{-1}
+cryptic,,cryptique,,
 Delta,le ,Delta,m,
-DeltaEtoile,le ,Delta*,m,
+DeltaStar,le ,Delta*,m,
 DeltaPlus,le ,Delta+,m,
-densite,la ,densité,f,indiv.100~m^{-2}
-Densite,la ,densité,f,indiv.km^{-2}
-densiteMax,la ,densité maximale,f,indiv.100~m^{-2}
-densiteSD,l',écart type de la densité,m,
+density,la ,densité,f,indiv.100~m^{-2}
+Density,la ,densité,f,indiv.km^{-2}
+density.max,la ,densité maximale,f,indiv.100~m^{-2}
+density.sd,l',écart type de la densité,m,
 DimObs1,,DimObs1,,
 DimObs2,,DimObs2,,
 direction_vent,la ,direction du vent,f,
@@ -73,7 +73,7 @@ endemiqueMAY,,endemiqueMAY,,
 endemiqueNC,,endemiqueNC,,
 endemiqueRUN,,endemiqueRUN,,
 endemiqueSTM,,endemiqueSTM,,
-espece,l',espèce,f,
+species,l',espèce,f,
 etat_mer,l',état de la mer,m,
 etat.pop.local,l',état de la population,,
 etat.pop.localBA,,etat.pop.localBA,,
@@ -84,19 +84,19 @@ etat.pop.localMAY,,etat.pop.localMAY,,
 etat.pop.localNC,,etat.pop.localNC,,
 etat.pop.localRUN,,etat.pop.localRUN,,
 etat.pop.localSTM,,etat.pop.localSTM,,
-Famille,la ,Famille,f,
+family,la ,Famille,f,
 force_vent,la ,force du vent,f,
-fraction_echantillonnee,la ,fraction échantillonnée,f,
+sampling.rate,la ,fraction échantillonnée,f,
 freq.occurrence,la ,fréquence d'occurrence,f,'%'
-Genre,le ,Genre,m,
+genus,le ,Genre,m,
 GrSIH,le ,Groupe SIH,m,
-Habitat.Prefere,l',habitat préféré,m,
+preferred.habitat,l',habitat préféré,m,
 habitat1,l',habitat1,m,
 habitat2,l',habitat2,m,
 habitat3,l',habitat3,m,
 heure,l',heure,f,
 hill,l',indice de Hill,m,
-Identifiant,l',identifiant,m,
+scient.name,le,nom scientific,m,
 interet.casier,l',intérêt pour la pêche au casier,m,
 interet.casierBA,,interet.casierBA,,
 interet.casierBO,,interet.casierBO,,
@@ -145,80 +145,81 @@ interet.piedSTM,,interet.piedSTM,,
 interetComMAY,,interetComMAY,,
 interetCommercial,l',intérêt commercial,m,
 IssCaap,,IssCaap,,
-jour,le ,jour,m,
-l.simpson,le ,l de Simpson,m,
+day,le ,jour,m,
+simpson.l,le ,l de Simpson,m,
 L50,la ,L50,f,
 LambdaPlus,le ,Lambda+,m,
 latitude,la ,latitude,f,
 longitude,la ,longitude,f,
 maree,la ,marée,f,
-mobilite,la ,mobilité,f,
-mois,le ,mois,m,
+mobility,la ,mobilité,f,
+month,le ,mois,m,
 nb_plong,le ,nombre de plongeurs,m,
 nebulosite,la ,nébulosité,f,
-niveau.a.et.b,,niveau.a.et.b,,
+taxo.level.a.and.b,,niveau.a.et.b,,
 niveau.a.et.b.MAY,,niveau.a.et.b.MAY,,
 niveau.a.et.b.MED,,niveau.a.et.b.MED,,
 niveau.a.et.b.NC,,niveau.a.et.b.NC,,
-nocturne,,nocturne,,
-nombre,le ,nombre,m,indiv
-nombre.traces,le,nombre de traces,m,
-nombreMax,le ,nombre maximum,m,indiv
-nombreSD,l',écart type du nombre,m,
+day.night.act,,nocturne,,
+number,le ,nombre,m,indiv
+tracks.number,le,nombre de traces,m,
+number.max,le ,nombre maximum,m,indiv
+number.sd,l',écart type du nombre,m,
 OBJECTID,,OBJECTID,,
 ObsBA,,ObsBA,,
 ObsBO,,ObsBO,,
 ObsCB,,ObsCB,,
 ObsCR,,ObsCR,,
-Observee,,Observee,,
+observed,,Observée,,
 ObsMAY,,ObsMAY,,
 ObsNC,,ObsNC,,
 ObsRUN,,ObsRUN,,
 ObsSTM,,ObsSTM,,
-Ordre,,Ordre,,
+order,,Ordre,,
 phase_lunaire,la ,phase lunaire,f,
-Phylum,le ,Phylum,m,
+phylum,le ,Phylum,m,
 pielou,l',indice de Pielou,m,
 plongeur,le ,plongeur,m,
-poids,le ,poids,m,g
-poids_moyen,le ,poids moyen,m,g
-poids.moyen.gros,le ,poids moyen des gros,m,
-poids.moyen.moyens,le ,poids moyen des moyens,m,
-poids.moyen.petits,le ,poids moyen des petits,m,
-pontes,le,nombre de pontes,m,
-position.col.eau,la ,position dans la colone d'eau,f,
-pres_abs,les ,présences/absence,fp,
+weight,le ,poids,m,g
+mean.weight,le ,poids moyen,m,g
+mean.weight.large,le ,poids moyen des gros,m,
+mean.weight.medium,le ,poids moyen des moyens,m,
+mean.weight.small,le ,poids moyen des petits,m,
+spawnings,le,nombre de pontes,m,
+water.column.position,la ,position dans la colone d'eau,f,
+pres.abs,les ,présences/absence,fp,
 prof_max,la ,profondeur maximale,f,
 prof_min,la ,profondeur minimale,f,
-prop.abondance.CL,les ,proportions d'abondances par classe de taille,fp,'%'
-prop.biomasse.CL,les ,proportions de biomasse par classe de taille,fp,'%'
-recouvrement,le ,recouvrement,m,'%'
-regim.alim,le ,régime alimentaire,m,
-reussite.ponte,la,réussite de ponte,f,'%'
-richesse_specifique,la ,richesse specifique,f,
+abundance.prop.SC,les ,proportions d'abondances par classe de taille,fp,'%'
+biomass.prop.SC,les ,proportions de biomasse par classe de taille,fp,'%'
+coverage,le ,recouvrement,m,'%'
+adult.diet,le ,régime alimentaire,m,
+spawning.success,la,réussite de ponte,f,'%'
+species.richness,la ,richesse specifique,f,
 RS_relative,la ,richesse spécifique relative,f,
-RS.relative.donnees,la ,richesse spécifique relative (/ esp. des données),f,'%'
-RS.relative.region,la ,richesse spécifique relative (/ esp. de la région),f,'%'
-RS.relative.region.phylum,la ,richesse spécifique relative (/ esp. de la région et du phylum),f,'%'
-RS.relative.site,la ,richesse spécifique relative (/ espèces du site),f,'%'
-RS.relative.site.phylum,la ,richesse spécifique relative (/ esp. du site et phylum),f,'%'
+relative.SR.data,la ,richesse spécifique relative (/ esp. des données),f,'%'
+relative.SR.region,la ,richesse spécifique relative (/ esp. de la région),f,'%'
+relative.SR.region.phylum,la ,richesse spécifique relative (/ esp. de la région et du phylum),f,'%'
+relative.SR.site,la ,richesse spécifique relative (/ espèces du site),f,'%'
+relative.SR.site.phylum,la ,richesse spécifique relative (/ esp. du site et phylum),f,'%'
 SDeltaPlus,le ,SDelta+,m,
 simpson,l',indice de Simpson,m,
 site,le ,site,m,
-stat.IUCN,le ,statut IUCN,m,
+IUCN.status,le ,statut UICN,m,
+IUCN.loc.status,the ,stat UICN local,,
 station,la ,station,f,
-statut_protection,le ,statut de protection,m,
-strategie.demo,la ,strategie demographique,f,
+protection.status,le ,statut de protection,m,
+demogr.strategy,la ,strategie demographique,f,
 taille_max_moyens,la ,taille max des moyens,f,cm
 taille_max_petits,la ,taille max des petits,f,cm
 taille_moy,la ,taille moyenne,f,cm
-taille_moyenne,la ,taille moyenne,f,cm
-taille.moy.colonies,la ,taille moyenne des colonies,f,cm
-taillemax,la ,taille maximale,f,cm
-TaxoCode,,TaxoCode,,
+mean.length,la ,taille moyenne,f,cm
+mean.size.colonies,la ,taille moyenne des colonies,f,cm
+Lmax,la ,taille maximale,f,cm
+taxo.code,,taxo.code,,
 territorial,,territorial,,
-traces.lisibles,le,nombre de traces lisibles,m,
+readable.tracks,le,nombre de traces lisibles,m,
 type,,type,,
-Type.ponte,le ,type de ponte,m,
-unite_observation,l',unité d'observation,f,
+spawning.type,le ,type de ponte,m,
+observation.unit,l',unité d'observation,f,
 visibilite,la ,visibilité,f,

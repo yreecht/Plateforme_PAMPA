@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-12-09 11:10:43 yreecht>
+# Time-stamp: <2018-12-12 13:59:40 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2018 Ifremer - Tous droits réservés.
@@ -60,7 +60,7 @@ testfileref.f <- function (dataEnv, baseEnv)
     espSite <- paste("Obs", sites, sep="")
 
     especes.select <- dropLevels.f(subset(refesp,
-                                          is.element(code_espece, levels(obs$code_espece))))
+                                          is.element(species.code, levels(obs$species.code))))
 
     ## Externaliser la définition des sites par la suite...
     listeSite <- c("RUN" , "MAY" , "BA" , "BO" , "CB" , "CR" , "STM" , "NC")
@@ -142,10 +142,10 @@ testfileref.f <- function (dataEnv, baseEnv)
 
     tkgrid(tklabel(W.test,
                    text=paste(mltext("filetest.W.test.3"), fileNames["obs"], " : ",
-                   length(unique(obs$code_espece)))), Fermer.but)
+                   length(unique(obs$species.code)))), Fermer.but)
 
     tkgrid(tklabel(W.test,
-                   text=paste(## "\nInformations sur les ", length(unique(obs$code_espece)),
+                   text=paste(## "\nInformations sur les ", length(unique(obs$species.code)),
                               ## "espèces \nDU JEU DE DONNEES ",
                               mltext("filetest.W.test.4"), sep="")))
 

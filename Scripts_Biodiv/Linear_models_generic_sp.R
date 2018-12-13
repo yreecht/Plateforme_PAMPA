@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-12-09 17:26:17 yreecht>
+# Time-stamp: <2018-12-12 22:13:03 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
@@ -747,8 +747,8 @@ printCoefmat.red <- function(x, digits = max(3, getOption("digits") - 2),
 print.summary.glht.red <- function (x, digits = max(3, getOption("digits") - 3), ...)
 {
     ## cat("\n\t", "Simultaneous Tests for General Linear Hypotheses\n\n")
-    if (!is.null(x$type))
-        cat(mltext("print.summary.glht.red.KW.multComp"), x$type,
+    if (!is.null(x$observation.type))
+        cat(mltext("print.summary.glht.red.KW.multComp"), x$observation.type,
             mltext("print.summary.glht.red.KW.contrast"), "\n\n\n")
     call <- if (isS4(x$model))
         x$model@call
@@ -768,7 +768,7 @@ print.summary.glht.red <- function (x, digits = max(3, getOption("digits") - 3),
         ifelse(x$df == 0, "z", "t"), "|)", sep = ""))
     colnames(mtests) <- c("Estimate", "Std. Error", ifelse(x$df ==
         0, "z value", "t value"), pname)
-    type <- pq$type
+    type <- pq$observation.type
     if (!is.null(error) && error > .Machine$double.eps) {
         sig <- which.min(abs(1/error - (10^(1:10))))
         sig <- 1/(10^sig)
@@ -1346,9 +1346,9 @@ is.temporal.f <- function(facteur, table)
                          annee.campagne={           # Vérifié en amont.
                              TRUE
                          },
-                         caracteristique_2={ # Dépend du format.
+                         geogr.descriptor2={ # Dépend du format.
                              ifelse(all(grepl("^[cC]?[[:digit:]]{4}$",
-                                              as.character(table[ , "caracteristique_2"])), na.rm=TRUE),
+                                              as.character(table[ , "geogr.descriptor2"])), na.rm=TRUE),
                                     TRUE,
                                     FALSE)
                          },
@@ -1693,7 +1693,7 @@ sortiesLM.f <- function(objLM, formule, metrique, factAna, modSel, listFact, lis
     ## ##################################################
     ## Comparaisons multiples :
 
-    ## if (all(is.element(c("an", "statut_protection"), listFact)))
+    ## if (all(is.element(c("year", "protection.status"), listFact)))
     if (length(listFact) == 2)
     {
         WinInfo <- tktoplevel()
@@ -1715,7 +1715,7 @@ sortiesLM.f <- function(objLM, formule, metrique, factAna, modSel, listFact, lis
         tkfocus(WinInfo)
         winSmartPlace.f(WinInfo)
 
-        ## compMultiplesLM.f(objLM=objLM, Data=Data, factSpatial="statut_protection", factTemp="an", resFile=resFile)
+        ## compMultiplesLM.f(objLM=objLM, Data=Data, factSpatial="protection.status", factTemp="year", resFile=resFile)
         compMultiplesLM.f(objLM=objLM, Data=Data, fact1=listFact[1], fact2=listFact[2],
                           resFile=resFile, exclude=factAna, Log=Log)
 
@@ -1965,7 +1965,7 @@ modeleLineaireWP2.esp.f <- function(metrique, factAna, factAnaSel, listFact, lis
         DataBackup[[modSel]] <<- tmpDataMod
 
         ## Aide au choix du type d'analyse :
-        if (metrique == "pres_abs")
+        if (metrique == "pres.abs")
         {
             loiChoisie <- "BI"
         }else{

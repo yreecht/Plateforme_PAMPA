@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-09-04 09:59:00 yreecht>
+# Time-stamp: <2018-12-12 17:57:57 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2018 Ifremer - Tous droits réservés.
@@ -45,11 +45,11 @@ statRotations.f <- function(facteurs, obs, dataEnv=.GlobalEnv)
     ## Author: Yves Reecht, Date: 29 oct. 2012, 16:01
 
     ## Identification des rotations valides :
-    if (is.element("unite_observation", facteurs))
+    if (is.element("observation.unit", facteurs))
     {
         ## Rotations valides (les vides doivent tout de même être renseignés) :
         rotations <- tapply(obs$rotation,
-                            as.list(obs[ , c("unite_observation", "rotation"), drop=FALSE]),
+                            as.list(obs[ , c("observation.unit", "rotation"), drop=FALSE]),
                             function(x)length(x) > 0)
 
         ## Les rotations non renseignés apparaissent en NA et on veut FALSE :
@@ -60,7 +60,7 @@ statRotations.f <- function(facteurs, obs, dataEnv=.GlobalEnv)
 
     ## ###########################################################
     ## Nombres par rotation avec le niveau d'agrégation souhaité :
-    nombresR <- tapply(obs$nombre,
+    nombresR <- tapply(obs$number,
                        as.list(obs[ , c(facteurs, "rotation"), drop=FALSE]),
                        function(x,...){ifelse(all(is.na(x)), NA, sum(x,...))},
                        na.rm = TRUE)
@@ -93,23 +93,23 @@ statRotations.f <- function(facteurs, obs, dataEnv=.GlobalEnv)
     ## Nombre de rotations valides :
     nombresRotations <- apply(rotations, 1, sum, na.rm=TRUE)
 
-    if (is.element("classe_taille", facteurs))
+    if (is.element("size.class", facteurs))
     {
     ## ## Pour les calculs agrégés par unitobs :
     ## tmpNombresSVR <- apply(nombresR,
-    ##                        which(names(dimnames(nombresR)) != "code_espece"),
+    ##                        which(names(dimnames(nombresR)) != "species.code"),
     ##                        sum, na.rm=TRUE)
 
     ## tmpNombresSVR[!rotations] <- NA
 
         ## #### Densités brutes (pour agrégations) :
         ## on réduit les facteurs (calcul de rayon par espèce) :
-        factors2 <- facteurs[ ! is.element(facteurs, "classe_taille")]
+        factors2 <- facteurs[ ! is.element(facteurs, "size.class")]
 
 
         ## rayons par espèce / unitobs :
-        rayons <- as.table(tapply(obs[obs[ , "nombre"] > 0 , "dmin"],
-                                  as.list(obs[obs[ , "nombre"] > 0,
+        rayons <- as.table(tapply(obs[obs[ , "number"] > 0 , "min.distance"],
+                                  as.list(obs[obs[ , "number"] > 0,
                                               factors2, drop=FALSE]),
                                   max, na.rm=TRUE))
 
@@ -141,8 +141,8 @@ statRotations.f <- function(facteurs, obs, dataEnv=.GlobalEnv)
 
 
 ########################################################################################################################
-calc.density.SVR.f <- function(Data, obs, metric="densite",
-                               factors=c("unite_observation", "code_espece"))
+calc.density.SVR.f <- function(Data, obs, metric="density",
+                               factors=c("observation.unit", "species.code"))
 {
     ## Purpose:
     ## ----------------------------------------------------------------------
@@ -151,9 +151,9 @@ calc.density.SVR.f <- function(Data, obs, metric="densite",
     ## Author: Yves Reecht, Date: 22 déc. 2011, 11:12
 
     ## Nom de la colonne de nombre en fonction de la métrique de densité :
-    nbMetric <- c(densite="nombre",
-                  densiteMax="nombreMax",
-                  densiteSD="nombreSD")
+    nbMetric <- c(density="number",
+                  density.max="number.max",
+                  density.sd="number.sd")
 
     if ( ! all(is.na(nbMetric[metric])))     # la colonne de nombre doit être définie.
     {
@@ -162,8 +162,8 @@ calc.density.SVR.f <- function(Data, obs, metric="densite",
         ## Calcul du rayon d'observation :
         Data <- merge(Data,
                       ## Calcul du max du diamètre minimum sur les observation conservées(nombre > 0) :
-                      as.data.frame(as.table(tapply(obs[obs[ , "nombre"] > 0 , "dmin"],
-                                                    as.list(obs[obs[ , "nombre"] > 0, factors, drop=FALSE]),
+                      as.data.frame(as.table(tapply(obs[obs[ , "number"] > 0 , "min.distance"],
+                                                    as.list(obs[obs[ , "number"] > 0, factors, drop=FALSE]),
                                                     max, na.rm=TRUE)),
                                     responseName="r"))
 
@@ -192,7 +192,7 @@ calc.density.SVR.f <- function(Data, obs, metric="densite",
         ## density <- Data[ , nbMetric[metric]] /
         ##     ## Surface : vecteur recyclé autant de fois qu'il y a de classes de taille
         ##     ##           si Data  en contient.
-        ##     (pi * (as.vector(t(tapply(obs[ , "dmin"],
+        ##     (pi * (as.vector(t(tapply(obs[ , "min.distance"],
         ##                               as.list(obs[ , factors, drop=FALSE]),
         ##                               max, na.rm=TRUE))))^2)
 
@@ -205,7 +205,7 @@ calc.density.SVR.f <- function(Data, obs, metric="densite",
 }
 
 ########################################################################################################################
-calc.biomass.SVR.f <- function(Data, obs, factors=c("unite_observation", "code_espece"))
+calc.biomass.SVR.f <- function(Data, obs, factors=c("observation.unit", "species.code"))
 {
     ## Purpose:
     ## ----------------------------------------------------------------------
@@ -216,12 +216,12 @@ calc.biomass.SVR.f <- function(Data, obs, factors=c("unite_observation", "code_e
     ## Calcul du rayon d'observation :
     Data <- merge(Data,
                   ## Calcul du max du diamètre minimum sur les observation conservées(nombre > 0) :
-                  as.data.frame(as.table(tapply(obs[obs[ , "nombre"] > 0 , "dmin"],
-                                                as.list(obs[obs[ , "nombre"] > 0, factors, drop=FALSE]),
+                  as.data.frame(as.table(tapply(obs[obs[ , "number"] > 0 , "min.distance"],
+                                                as.list(obs[obs[ , "number"] > 0, factors, drop=FALSE]),
                                                 max, na.rm=TRUE)),
                                 responseName="r"))
 
-    biomass <- Data[ , "poids"] /
+    biomass <- Data[ , "weight"] /
         (pi * (Data[ , "r"] ^ 2))
     ## Les poids ont été corrigés au préalable et tiennent compte des espèces pour lesquelles
     ## ils ne peuvent être calculés.
@@ -232,7 +232,7 @@ calc.biomass.SVR.f <- function(Data, obs, factors=c("unite_observation", "code_e
 
 ########################################################################################################################
 stat.biomass.SVR.f <- function(Data, obs, metric,
-                               factors=c("unite_observation", "code_espece"))
+                               factors=c("observation.unit", "species.code"))
 {
     ## Purpose:
     ## ----------------------------------------------------------------------
@@ -241,8 +241,8 @@ stat.biomass.SVR.f <- function(Data, obs, metric,
     ## Author: Yves Reecht, Date: 22 déc. 2011, 12:10
 
     ## Nom de la colonne de nombre en fonction de la métrique de densité :
-    nbMetric <- c(biomasseMax="nombreMax",
-                  biomasseSD="nombreSD")
+    nbMetric <- c(biomass.max="number.max",
+                  biomass.sd="number.sd")
 
     if ( ! all(is.na(nbMetric[metric])))     # la colonne de nombre doit être définie.
     {
@@ -251,8 +251,8 @@ stat.biomass.SVR.f <- function(Data, obs, metric,
         ## Calcul du rayon d'observation :
         Data <- merge(Data,
                       ## Calcul du max du diamètre minimum sur les observation conservées(nombre > 0) :
-                      as.data.frame(as.table(tapply(obs[obs[ , "nombre"] > 0 , "dmin"],
-                                                    as.list(obs[obs[ , "nombre"] > 0, factors, drop=FALSE]),
+                      as.data.frame(as.table(tapply(obs[obs[ , "number"] > 0 , "min.distance"],
+                                                    as.list(obs[obs[ , "number"] > 0, factors, drop=FALSE]),
                                                     max, na.rm=TRUE)),
                                     responseName="r"))
 
@@ -261,7 +261,7 @@ stat.biomass.SVR.f <- function(Data, obs, metric,
                       function(x, Data, nbMetrics)
                   {
                       return(Data[ , nbMetric[x]] * # métrique de nombre
-                             Data[ , "poids_moyen"] /    # * poids moyens d'un individu.
+                             Data[ , "mean.weight"] /    # * poids moyens d'un individu.
                              (pi * (Data[ , "r"] ^ 2)))
                   },
                       Data=Data, nbMetrics=nbMetrics)
@@ -284,7 +284,7 @@ stat.biomass.SVR.f <- function(Data, obs, metric,
 ########################################################################################################################
 calc.tables.SVR.f <- function(obs,
                               dataEnv,
-                              factors=c("unite_observation", "code_espece", "classe_taille"))
+                              factors=c("observation.unit", "species.code", "size.class"))
 {
     ## Purpose: Calcul générique d'une table de métriques pour les vidéos
     ##          rotatives.
@@ -305,7 +305,7 @@ calc.tables.SVR.f <- function(obs,
     ## Moyenne pour les vidéos rotatives (habituellement 3 rotation) :
     nbr <- statRotations[["nombresMean"]]
 
-    switch(is.element("classe_taille", factors),
+    switch(is.element("size.class", factors),
            "TRUE"=stepInnerProgressBar.f(n=7, msg=paste(mltext("calc.tables.SVR.info.2"),
                                                         mltext("calc.tables.SVR.info.3"), sep="")),
            "FALSE"=stepInnerProgressBar.f(n=7, msg=paste(mltext("calc.tables.SVR.info.2"),
@@ -315,40 +315,40 @@ calc.tables.SVR.f <- function(obs,
     res <- calc.numbers.f(nbr)
 
     ## Statistiques sur les nombres :
-    res$nombreMax <- as.vector(statRotations[["nombresMax"]])
-    res$nombreSD <- as.vector(statRotations[["nombresSD"]])
+    res$number.max <- as.vector(statRotations[["nombresMax"]])
+    res$number.sd <- as.vector(statRotations[["nombresSD"]])
 
     ## Tailles moyennes :
-    res[ , "taille_moyenne"] <- calc.meanSize.f(obs=obs, factors=factors)
+    res[ , "mean.length"] <- calc.meanSize.f(obs=obs, factors=factors)
 
     ## Poids :
-    res[ , "poids"] <- calc.weight.f(obs=obs, Data=res, factors=factors)
+    res[ , "weight"] <- calc.weight.f(obs=obs, Data=res, factors=factors)
 
     ## Poids moyen par individu :
-    res[ , "poids_moyen"] <- calc.meanWeight.f(Data=res)
+    res[ , "mean.weight"] <- calc.meanWeight.f(Data=res)
 
     ## Densité (+Max +SD) :
     res <- calc.density.SVR.f(Data=res, obs=obs,
-                               metric=c("densite", "densiteMax", "densiteSD"))
+                               metric=c("density", "density.max", "density.sd"))
 
-    ## Biomasse :
-    res[ , "biomasse"] <- calc.biomass.SVR.f(Data=res, obs=obs)
+    ## Biomass :
+    res[ , "biomass"] <- calc.biomass.SVR.f(Data=res, obs=obs)
 
-    ## Biomasse max+SD :
+    ## Biomass max+SD :
     res <- stat.biomass.SVR.f(Data=res, obs=obs,
-                              metric=c("biomasseMax", "biomasseSD"))
+                              metric=c("biomass.max", "biomass.sd"))
 
     ## Présence/absence :
-    res[ , "pres_abs"] <- calc.presAbs.f(Data=res)
+    res[ , "pres.abs"] <- calc.presAbs.f(Data=res)
 
-    if (is.element("classe_taille", factors))
+    if (is.element("size.class", factors))
     {
         ## Proportions d'abondance par classe de taille :
-        res[ , "prop.abondance.CL"] <- unitSpSz.propAb.f(unitSpSz=res,
+        res[ , "abundance.prop.SC"] <- unitSpSz.propAb.f(unitSpSz=res,
                                                          factors=factors)
 
         ## Proportions de biomasse par classe de taille :
-        res[ , "prop.biomasse.CL"] <- unitSpSz.propBiom.f(unitSpSz=res,
+        res[ , "biomass.prop.SC"] <- unitSpSz.propBiom.f(unitSpSz=res,
                                                           factors=factors)
     }else{}
 
@@ -371,7 +371,7 @@ calc.unitSp.SVR.f <- function(unitSpSz, obs, dataEnv)
     nbInterp <- get(".NombresSVR", envir=dataEnv)
 
     nbTmp <- apply(nbInterp,
-                   which( ! is.element(names(dimnames(nbInterp)), "classe_taille")),
+                   which( ! is.element(names(dimnames(nbInterp)), "size.class")),
                    function(x,...)
                {
                    ifelse(all(is.na(x)), NA, sum(x,...))
@@ -385,10 +385,10 @@ calc.unitSp.SVR.f <- function(unitSpSz, obs, dataEnv)
                                 ifelse(all(is.na(x)), NA, mean(x,...))
                             }, na.rm=TRUE)))
 
-    if ( ! isTRUE(all.equal(unitSp$nombre, nbTest))) stop(mltext("calc.unitSp.SVR.err.1"))
+    if ( ! isTRUE(all.equal(unitSp$number, nbTest))) stop(mltext("calc.unitSp.SVR.err.1"))
 
     ## nombre max :
-    unitSp[ , "nombreMax"] <- as.vector(t(apply(nbTmp,
+    unitSp[ , "number.max"] <- as.vector(t(apply(nbTmp,
                                                 which( ! is.element(names(dimnames(nbTmp)), "rotation")),
                                                 function(x,...)
                                             {
@@ -396,7 +396,7 @@ calc.unitSp.SVR.f <- function(unitSpSz, obs, dataEnv)
                                             }, na.rm=TRUE)))
 
     ## nombre SD :
-    unitSp[ , "nombreSD"] <- as.vector(t(apply(nbTmp,
+    unitSp[ , "number.sd"] <- as.vector(t(apply(nbTmp,
                                                which( ! is.element(names(dimnames(nbTmp)), "rotation")),
                                                function(x,...)
                                            {
@@ -405,18 +405,18 @@ calc.unitSp.SVR.f <- function(unitSpSz, obs, dataEnv)
 
     ## densité max :
     unitSp <- calc.density.SVR.f(Data=unitSp, obs=obs,
-                                 metric=c("densiteMax", "densiteSD"))
+                                 metric=c("density.max", "density.sd"))
 
-    ## Biomasse max :
+    ## Biomass max :
     unitSp <- stat.biomass.SVR.f(Data=unitSp, obs=obs,
-                                 metric=c("biomasseMax", "biomasseSD"))
+                                 metric=c("biomass.max", "biomass.sd"))
 
     return(unitSp)
 }
 
 ########################################################################################################################
 calc.unit.SVR.f <- function(unitSp, obs, refesp, unitobs, dataEnv,
-                            colNombres="nombre")
+                            colNombres="number")
 {
     ## Purpose:
     ## ----------------------------------------------------------------------
@@ -425,26 +425,26 @@ calc.unit.SVR.f <- function(unitSp, obs, refesp, unitobs, dataEnv,
     ## Author: Yves Reecht, Date: 23 déc. 2011, 10:36
 
     ## Agrégation des métriques par défaut :
-    unit <- calc.unit.default.f(unitSp=unitSp, refesp=refesp, unitobs=unitobs, colNombres="nombre", dataEnv=dataEnv)
+    unit <- calc.unit.default.f(unitSp=unitSp, refesp=refesp, unitobs=unitobs, colNombres="number", dataEnv=dataEnv)
 
     ## Ajout des statistiques sur les rotations
     ## (calcul à partir des données extrapolées brutes pour les statistiques) :
     nbInterp <- get(".NombresSVR", envir=dataEnv)
 
     ## Réduction de la liste d'espèces si besoin (si sélection sur les espèces) :
-    if (dim(nbInterp)[names(dimnames(nbInterp)) == "code_espece"] > nlevels(unitSp[ , "code_espece"]))
+    if (dim(nbInterp)[names(dimnames(nbInterp)) == "species.code"] > nlevels(unitSp[ , "species.code"]))
     {
-        species <- dimnames(nbInterp)[["code_espece"]]
+        species <- dimnames(nbInterp)[["species.code"]]
 
         nbInterp <- extract(nbInterp,
                             indices=list(species[is.element(species,
-                                                            levels(unitSp[ , "code_espece"]))]),
-                            dims=which(is.element(names(dimnames(nbInterp)), "code_espece")))
+                                                            levels(unitSp[ , "species.code"]))]),
+                            dims=which(is.element(names(dimnames(nbInterp)), "species.code")))
 
     }else{}
 
     nbTmp <- apply(nbInterp,
-                   which( ! is.element(names(dimnames(nbInterp)), c("classe_taille", "code_espece"))),
+                   which( ! is.element(names(dimnames(nbInterp)), c("size.class", "species.code"))),
                    function(x,...)
                {
                    ifelse(all(is.na(x)), NA, sum(x,...))
@@ -458,10 +458,10 @@ calc.unit.SVR.f <- function(unitSp, obs, refesp, unitobs, dataEnv,
                                 ifelse(all(is.na(x)), NA, mean(x,...))
                             }, na.rm=TRUE)))
 
-    if ( ! isTRUE(all.equal(unit$nombre, nbTest))) stop(mltext("calc.unitSp.SVR.err.1"))
+    if ( ! isTRUE(all.equal(unit$number, nbTest))) stop(mltext("calc.unitSp.SVR.err.1"))
 
     ## nombre max :
-    unit[ , "nombreMax"] <- as.vector(t(apply(nbTmp,
+    unit[ , "number.max"] <- as.vector(t(apply(nbTmp,
                                               which( ! is.element(names(dimnames(nbTmp)), "rotation")),
                                               function(x,...)
                                           {
@@ -469,22 +469,22 @@ calc.unit.SVR.f <- function(unitSp, obs, refesp, unitobs, dataEnv,
                                           }, na.rm=TRUE)))
 
     ## nombre SD :
-    unit[ , "nombreSD"] <- as.vector(t(apply(nbTmp,
+    unit[ , "number.sd"] <- as.vector(t(apply(nbTmp,
                                              which( ! is.element(names(dimnames(nbTmp)), "rotation")),
                                              function(x,...)
                                          {
                                              ifelse(all(is.na(x)), NA, sd(x,...))
                                          }, na.rm=TRUE)))
 
-    ## Densite max :
+    ## Density max :
     unit <- calc.density.SVR.f(Data=unit, obs=obs,
-                               metric=c("densiteMax", "densiteSD"),
-                               factors="unite_observation")
+                               metric=c("density.max", "density.sd"),
+                               factors="observation.unit")
 
-    ## Biomasse max :
+    ## Biomass max :
     unit <- stat.biomass.SVR.f(Data=unit, obs=obs,
-                               metric=c("biomasseMax", "biomasseSD"),
-                               factors="unite_observation")
+                               metric=c("biomass.max", "biomass.sd"),
+                               factors="observation.unit")
 
     return(unit)
 }
@@ -494,13 +494,13 @@ calc.unit.SVR.f <- function(unitSp, obs, refesp, unitobs, dataEnv,
 
 ## ## tmp :
 ## names(dimnames(.dataEnv$.NombresSVR))
-## [1] "unite_observation" "code_espece"       "classe_taille"
+## [1] "observation.unit" "species.code"       "size.class"
 ## [4] "rotation"
 
 ## nombre <- apply(.dataEnv$.NombresSVR, c(1, 2, 4), function(x,...){ifelse(all(is.na(x)), NA, sum(x,...))}, na.rm=TRUE)
 
 ## names(dimnames(nombre))
-## [1] "unite_observation" "code_espece"       "rotation"
+## [1] "observation.unit" "species.code"       "rotation"
 
 ## nombre2 <- apply(nombre, c(1, 2), function(x,...){ifelse(all(is.na(x)), NA, mean(x,...))}, na.rm=TRUE)
 
@@ -518,7 +518,7 @@ calc.unit.SVR.f <- function(unitSp, obs, refesp, unitobs, dataEnv,
 
 ## test3$nbcalc <- as.vector(nombre3)
 
-## head(subset(test3[ , c(1:2, ncol(test3))], nbcalc > 0 & nombre > 0))
+## head(subset(test3[ , c(1:2, ncol(test3))], nbcalc > 0 & number > 0))
 
 
 ### Local Variables:

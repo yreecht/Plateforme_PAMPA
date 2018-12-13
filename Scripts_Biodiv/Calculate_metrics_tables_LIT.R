@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-09-04 09:55:58 yreecht>
+# Time-stamp: <2018-12-12 17:55:55 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2018 Ifremer - Tous droits réservés.
@@ -43,45 +43,45 @@ calc.unitSp.LIT.f <- function(obs, unitobs, dataEnv)
 
     ## Calcul des nombres par cl / espèces / unitobs :
     nbr <- calcNumber.default.f(obs,
-                                factors=c("unite_observation", "code_espece"))
+                                factors=c("observation.unit", "species.code"))
 
     ## Création de la data.frame de résultats (avec nombres, unitobs, ):
     res <- calc.numbers.f(nbr)
 
 
     ## Taille de transect :
-    transectSz <- tapply(res[ , "nombre"], res[ , "unite_observation"], sum, na.rm=TRUE)
+    transectSz <- tapply(res[ , "number"], res[ , "observation.unit"], sum, na.rm=TRUE)
 
     ## Pourcentage de recouvrement de chaque espèce/categorie pour les couvertures biotiques et abiotiques :
-    res[ , "recouvrement"] <- as.vector(100 * res[ , "nombre"] /
-                                        transectSz[match(res[ , "unite_observation"],
+    res[ , "coverage"] <- as.vector(100 * res[ , "number"] /
+                                        transectSz[match(res[ , "observation.unit"],
                                                          rownames(transectSz))])
     rm(transectSz)
 
     ## Nombre de colonies (longueurs de transition > 0) :
-    obs$count <- ifelse(obs[ , "nombre"] > 0, 1, 0) # [???] isTRUE ?  [yr: 3/1/2012]
+    obs$count <- ifelse(obs[ , "number"] > 0, 1, 0) # [???] isTRUE ?  [yr: 3/1/2012]
 
-    res[ , "colonie"] <- as.vector(tapply(obs$count,
-                                          as.list(obs[ , c("unite_observation", "code_espece")]),
+    res[ , "colonies"] <- as.vector(tapply(obs$count,
+                                          as.list(obs[ , c("observation.unit", "species.code")]),
                                           sum, na.rm=TRUE))
 
-    res[ , "colonie"][is.na(res[ , "colonie"])] <- 0 # [???]
+    res[ , "colonies"][is.na(res[ , "colonies"])] <- 0 # [???]
 
     ## Si les nombres sont des entiers, leur redonner la bonne classe :
-    if (isTRUE(all.equal(res[ , "colonie"], as.integer(res[ , "colonie"]))))
+    if (isTRUE(all.equal(res[ , "colonies"], as.integer(res[ , "colonies"]))))
     {
-        res[ , "colonie"] <- as.integer(res[ , "colonie"])
+        res[ , "colonies"] <- as.integer(res[ , "colonies"])
     }else{}
 
 
-    res[ , "taille.moy.colonies"] <- apply(res[ , c("nombre", "colonie")], 1,
+    res[ , "mean.size.colonies"] <- apply(res[ , c("number", "colonies")], 1,
                                            function(x)
                                        {
                                            ifelse(x[2] == 0, NA, x[1] / x[2])
                                        })
 
     ## Présence/absence :
-    res[ , "pres_abs"] <- calc.presAbs.f(Data=res)
+    res[ , "pres.abs"] <- calc.presAbs.f(Data=res)
 
     return(res)
 }

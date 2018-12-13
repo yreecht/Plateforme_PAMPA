@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-12-08 19:14:54 yreecht>
+# Time-stamp: <2018-12-12 14:01:47 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2018 Ifremer - Tous droits réservés.
@@ -1184,7 +1184,7 @@ updateInterface.load.f <- function(baseEnv, tabObs)
                              ifelse(getOption("P.selection"),
                                     mltext("sum.nb.diff"),
                                     paste0(mltext("colon"), " ")),
-                             length(unique(tabObs[ , "code_espece"])), sep=""),
+                             length(unique(tabObs[ , "species.code"])), sep=""),
                 state="normal")
 
     ## Nombre d'espèces réellement restantes dans les observations :
@@ -1195,7 +1195,7 @@ updateInterface.load.f <- function(baseEnv, tabObs)
                              ifelse(getOption("P.selection"),
                                     mltext("sum.nb.diff"),
                                     paste0(mltext("colon"), " ")),
-                             length(unique(tabObs[ , "unite_observation"])), sep=""),
+                             length(unique(tabObs[ , "observation.unit"])), sep=""),
                 state="normal")
 
     winRaise.f(get("W.main", envir=baseEnv))
@@ -1238,10 +1238,10 @@ updateInterface.select.f <- function(criterion, tabObs, baseEnv)
         tclarray[[0, 4]] <- mltext("tclarray.0.4")
     }
 
-    tclarray[[1, 4]] <- nlevels(tabObs[ , "unite_observation"]) # Nombre d'unitobs conservées
+    tclarray[[1, 4]] <- nlevels(tabObs[ , "observation.unit"]) # Nombre d'unitobs conservées
                                         # (! peut différer du nombre dans le fichier d'observation).
     tclarray[[2, 4]] <- nrow(tabObs)    # Nombre d'observations
-    tclarray[[3, 4]] <- nlevels(tabObs[ , "code_espece"]) # Nombre d'espèces conservées
+    tclarray[[3, 4]] <- nlevels(tabObs[ , "species.code"]) # Nombre d'espèces conservées
                                         # (! peut différer du nombre dans le fichier d'observation).
     tclarray[[4, 4]] <- "-"
     tclarray[[5, 4]] <- "-"
@@ -1274,7 +1274,7 @@ updateInterface.select.f <- function(criterion, tabObs, baseEnv)
                              ifelse(getOption("P.selection"),
                                     mltext("sum.nb.diff"),
                                     paste0(mltext("colon"), " ")),
-                             length(unique(tabObs[ , "code_espece"])), sep=""),
+                             length(unique(tabObs[ , "species.code"])), sep=""),
                 state="normal")
 
     ## Nombre d'espèces réellement restantes dans les observations :
@@ -1285,7 +1285,7 @@ updateInterface.select.f <- function(criterion, tabObs, baseEnv)
                              ifelse(getOption("P.selection"),
                                     mltext("sum.nb.diff"),
                                     paste0(mltext("colon"), " ")),
-                             length(unique(tabObs[ , "unite_observation"])), sep=""),
+                             length(unique(tabObs[ , "observation.unit"])), sep=""),
                 state="normal")
 
     if (getOption("P.selection")) # Ré-activation du bouton et du menu de restauration des données originales.
@@ -1345,7 +1345,7 @@ updateInterface.restore.f <- function(criterion=mltext("criterion.all"), tabObs,
                 text = paste(mltext("sum.nb.sp.obs.2"),
                              mltext("sum.nb.in.obs"),
                              mltext("colon"), " ",
-                             length(unique(tabObs[ , "code_espece"])), sep=""),
+                             length(unique(tabObs[ , "species.code"])), sep=""),
                 state="normal")
 
     ## Nombre d'espèces réellement restantes dans les observations :
@@ -1353,7 +1353,7 @@ updateInterface.restore.f <- function(criterion=mltext("criterion.all"), tabObs,
                 text = paste(mltext("sum.nb.unitobs.obs.1"),
                              mltext("sum.nb.in.obs"),
                              mltext("colon"), " ",
-                             length(unique(tabObs[ , "unite_observation"])), sep=""),
+                             length(unique(tabObs[ , "observation.unit"])), sep=""),
                 state="normal")
 
     ## Désactivation du bouton et du menu de restauration des données originales :

@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-12-09 16:37:16 yreecht>
+# Time-stamp: <2018-12-12 16:55:42 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
@@ -61,7 +61,7 @@ barplotOccurrence.f <- function(factGraph, factGraphSel, listFact, listFactSel, 
     selections <- c(list(factGraphSel), listFactSel) # Concaténation des leurs listes de modalités sélectionnées
 
     ## Données pour la série de boxplots :
-    tmpData <- subsetToutesTables.f(metrique="pres_abs", facteurs=facteurs, selections=selections,
+    tmpData <- subsetToutesTables.f(metrique="pres.abs", facteurs=facteurs, selections=selections,
                                     dataEnv=dataEnv, tableMetrique="TablePresAbs", exclude = NULL)
 
     ## Identification des différents graphiques à générer:
@@ -143,7 +143,7 @@ barplotOccurrence.f <- function(factGraph, factGraphSel, listFact, listFactSel, 
 
         ## Calcul des fréquences :
         heights <- with(tmpDataMod,
-                        tapply(pres_abs, lapply(listFact, function(y)eval(parse(text=y))),
+                        tapply(pres.abs, lapply(listFact, function(y)eval(parse(text=y))),
                                function(x)
                            {
                                100 * sum(x, na.rm=TRUE) / length(na.omit(x))
@@ -215,7 +215,7 @@ barplotOccurrence.f <- function(factGraph, factGraphSel, listFact, listFactSel, 
         {
             ## Nombre d'"observations" :
             nbObs <- with(tmpDataMod,
-                          tapply(pres_abs,
+                          tapply(pres.abs,
                                  lapply(listFact, function(y)eval(parse(text=y))),
                                  function(x)
                              {
@@ -257,7 +257,7 @@ barplotOccurrence.f <- function(factGraph, factGraphSel, listFact, listFactSel, 
                 if (getOption("P.saveStats"))
                 {
                     infoStats.f(filename=graphFile, Data=tmpData, agregLevel="species", type="graph",
-                                metrique="pres_abs", factGraph=factGraph, factGraphSel=modGraphSel,
+                                metrique="pres.abs", factGraph=factGraph, factGraphSel=modGraphSel,
                                 listFact=rev(listFact), listFactSel=rev(listFactSel), # On les remets dans un ordre
                                         # intuitif.
                                 dataEnv=dataEnv, baseEnv=baseEnv)
@@ -284,7 +284,7 @@ barplotOccurrence.f <- function(factGraph, factGraphSel, listFact, listFactSel, 
                 if (getOption("P.saveStats"))
                 {
                     infoStats.f(filename=graphFile, Data=tmpData, agregLevel="species", type="graph",
-                                metrique="pres_abs", factGraph=factGraph, factGraphSel=modGraphSel,
+                                metrique="pres.abs", factGraph=factGraph, factGraphSel=modGraphSel,
                                 listFact=rev(listFact), listFactSel=rev(listFactSel), # On les remets dans un ordre
                                         # intuitif.
                                 dataEnv=dataEnv, baseEnv=baseEnv)
@@ -312,7 +312,7 @@ barplotOccurrence.f <- function(factGraph, factGraphSel, listFact, listFactSel, 
         {
             infoStats.f(filename=sub("\\%03d", "00X", graphFile), Data=DataBackup,
                         agregLevel="species", type="graph",
-                        metrique="pres_abs", factGraph=factGraph, factGraphSel=factGraphSel,
+                        metrique="pres.abs", factGraph=factGraph, factGraphSel=factGraphSel,
                         listFact=rev(listFact), listFactSel=rev(listFactSel), # On les remets dans un ordre intuitif.
                         dataEnv=dataEnv, baseEnv=baseEnv)
         }else{}
@@ -360,7 +360,7 @@ barplotOccurrence.f <- function(factGraph, factGraphSel, listFact, listFactSel, 
         {
             infoStats.f(filename=sub("\\%03d", "00X", graphFile), Data=DataBackup,
                         agregLevel="species", type="graph",
-                        metrique="pres_abs", factGraph=factGraph, factGraphSel=factGraphSel,
+                        metrique="pres.abs", factGraph=factGraph, factGraphSel=factGraphSel,
                         listFact=rev(listFact), listFactSel=rev(listFactSel), # On les remets dans un ordre intuitif.
                         dataEnv=dataEnv, baseEnv=baseEnv)
         }else{}

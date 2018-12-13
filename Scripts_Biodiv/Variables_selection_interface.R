@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-12-08 09:50:54 yreecht>
+# Time-stamp: <2018-12-13 00:11:07 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
@@ -332,8 +332,8 @@ verifVariables.f <- function(metrique, factGraph, factGraphSel, listFact, listFa
         return.val <- 0
     }else{}
 
-    ## Métrique par classe de taille mais facteur "classe_taille" pas retenu :
-    if (tableMetrique == "unitSpSz" & !is.element("classe_taille", facts))
+    ## Métrique par classe de taille mais facteur "size.class" pas retenu :
+    if (tableMetrique == "unitSpSz" & !is.element("size.class", facts))
     {
         infoLoading.f(msg=paste(mltext("verifVariables.f.info.6"),
                                 mltext("verifVariables.f.info.7")),
@@ -342,12 +342,12 @@ verifVariables.f <- function(metrique, factGraph, factGraphSel, listFact, listFa
         return.val <- ifelse(return.val, 1, 0)
     }else{}
 
-    ## Métrique par espèce mais facteur 'espece', 'Identifiant' ou 'code_espece' non retenu :
+    ## Métrique par espèce mais facteur 'espece', 'Identifiant' ou 'species.code' non retenu :
     if (is.element(nextStep,
                    c("boxplot.esp", "modele_lineaire",
                      "freq_occurrence", "MRT.esp",
                      "barplot.esp", "spSymbols.esp", "spBarBoxplot.esp")) &
-        !any(is.element(c("espece", "code_espece", "Identifiant"), facts)))
+        !any(is.element(c("species", "species.code", "scient.name"), facts)))
     {
         infoLoading.f(msg=paste(mltext("verifVariables.f.info.9"),
                                 mltext("verifVariables.f.info.10")),
@@ -379,14 +379,14 @@ verifVariables.f <- function(metrique, factGraph, factGraphSel, listFact, listFa
                                                                     selections=selections,
                                                                     dataEnv=dataEnv,
                                                                     tableMetrique=tableMetrique,
-                                                                    add=c("unite_observation", "code_espece")),
+                                                                    add=c("observation.unit", "species.code")),
                                           metrics=metrique,
                                           factors=if(tableMetrique == "unitSpSz" &&
-                                          factGraph != "classe_taille")
+                                          factGraph != "size.class")
                                       {
-                                          c("unite_observation", "classe_taille")
+                                          c("observation.unit", "size.class")
                                       }else{
-                                          c("unite_observation")
+                                          c("observation.unit")
                                       },
                                           listFact=listFact[unlist(listFact) != ""],
                                           unitSpSz=get("unitSpSz", envir=dataEnv),

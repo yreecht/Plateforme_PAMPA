@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-08-23 17:21:30 yreecht>
+# Time-stamp: <2018-12-12 22:13:01 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2018 Ifremer - Tous droits réservés.
@@ -47,34 +47,34 @@ unitobsNew.OBSIND.create.f <- function(unitobs, refspa, dataEnv)
 
     ## Construction d'un nouvel indice d'unités d'observations (intersection zone - jour
     ## d'observation ; dites "regroupées") :
-    unitobsTmp$unitobsNew <- paste("Z", unitobsTmp$OBJECTID, "-J", unitobsTmp$jour, "-",
-                                   unitobsTmp$mois, "-", unitobsTmp$an, sep="")
+    unitobsTmp$unitobsNew <- paste("Z", unitobsTmp$OBJECTID, "-J", unitobsTmp$day, "-",
+                                   unitobsTmp$month, "-", unitobsTmp$year, sep="")
 
     ## Sauvegarde d'une table de correspondance entre unités d'observations "individuelles" et
     ## "regroupées" dans l'environnement des données :
     assign(x=".unitobsCorresp",
-           value=unitobsTmp[ , c("unite_observation", "unitobsNew")],
+           value=unitobsTmp[ , c("observation.unit", "unitobsNew")],
            envir=dataEnv)
 
     ## Suppression des unités d'observation hors polygones :
     unitobsTmp <- unitobsTmp[ ! is.na(unitobsTmp$OBJECTID), ]
 
     ## Réorganisation des colonnes :
-    unitobsTmp <- unitobsTmp[ , c("cas.etude", "unitobsNew",
-                                 "type", "site", "station", "caracteristique_1",
-                                  "caracteristique_2", "fraction_echantillonnee", "jour", "mois",
-                                  "an", "heure", "nebulosite", "direction_vent", "force_vent",
+    unitobsTmp <- unitobsTmp[ , c("study.area", "unitobsNew",
+                                 "observation.type", "site", "station", "geogr.descriptor1",
+                                  "geogr.descriptor2", "sampling.rate", "day", "month",
+                                  "year", "heure", "nebulosite", "direction_vent", "force_vent",
                                   "etat_mer", "courant", "maree", "phase_lunaire", "latitude",
-                                  "longitude", "statut_protection", "avant_apres", "biotope",
+                                  "longitude", "protection.status", "avant_apres", "biotope",
                                   "biotope_2", "habitat1", "habitat2", "habitat3", "visibilite",
                                   "prof_min", "prof_max", "DimObs1", "DimObs2", "nb_plong",
                                   "plongeur", "OBJECTID")]
 
-    colnames(unitobsTmp)[2] <- "unite_observation"
+    colnames(unitobsTmp)[2] <- "observation.unit"
 
     ## Agrégations (une ligne par unité d'observation) :
     unitobsNew <- do.call(rbind,
-                          lapply(split(unitobsTmp, unitobsTmp[ , "unite_observation"]),
+                          lapply(split(unitobsTmp, unitobsTmp[ , "observation.unit"]),
                                  aggreg.unitobsNew.f,
                                  refspa=refspa))
 

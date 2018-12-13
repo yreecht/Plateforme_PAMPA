@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-08-30 13:47:49 yreecht>
+# Time-stamp: <2018-12-12 20:54:49 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2018 Ifremer - Tous droits réservés.
@@ -30,7 +30,7 @@
 ####################################################################################################
 
 sizeClasses.f <- function(Data, refesp,
-                          vars=c(sp="code_espece", sz="taille", szcl="classe_taille", szmax="taillemax"))
+                          vars=c(sp="species.code", sz="length", szcl="size.class", szmax="Lmax"))
 {
     ## Purpose:
     ## ----------------------------------------------------------------------
@@ -96,7 +96,7 @@ sizeClasses.f <- function(Data, refesp,
 
 ########################################################################################################################
 addMeanSize.f <- function(Data,
-                          vars=c(sz="taille", szcl="classe_taille"))
+                          vars=c(sz="length", szcl="size.class"))
 {
     ## Purpose: Calcul des tailles comme les moyennes de classes de taille,
     ##          si seules ces dernières sont renseignées.
@@ -147,7 +147,7 @@ addMeanSize.f <- function(Data,
 
 ########################################################################################################################
 meanWeight.SzCl.f <- function(Data, refesp,
-                             vars=c(sp="code_espece", szcl="classe_taille"))
+                             vars=c(sp="species.code", szcl="size.class"))
 {
     ## Purpose: poids moyens d'après les classes de taille PMG du référentiel
     ##          espèces.
@@ -160,7 +160,7 @@ meanWeight.SzCl.f <- function(Data, refesp,
 
     runLog.f(msg=c(mltext("logmsg.meanweight.szcl")))
 
-    refespTmp <- as.matrix(refesp[ , c("poids.moyen.petits", "poids.moyen.moyens", "poids.moyen.gros")])
+    refespTmp <- as.matrix(refesp[ , c("mean.weight.small", "mean.weight.medium", "mean.weight.large")])
     row.names(refespTmp) <- as.character(refesp[ , vars["sp"]] )
 
     classID <- c("P"=1, "M"=2, "G"=3)
@@ -201,7 +201,7 @@ summarize.calcWeight.f <- function(x, MPA)
                          paste(         # Info complémentaires si des poids estimés...
                                mltext("summarize.calcWeight.info.3"),
                                "\n\t*  ", x["obs"], mltext("summarize.calcWeight.info.4"),
-                               "\n\t*  ", x["taille"], mltext("summarize.calcWeight.info.5"),
+                               "\n\t*  ", x["length"], mltext("summarize.calcWeight.info.5"),
                                ifelse(any(x[-(1:3)] > 0),
                                       paste("\n\t*  ", x["taille.moy"],
                                             mltext("summarize.calcWeight.info.6"),
@@ -222,9 +222,9 @@ summarize.calcWeight.f <- function(x, MPA)
 
 ########################################################################################################################
 calcWeightMPA.f <- function(Data, refesp, MPA,
-                            vars=c(sp="code_espece",
-                                   sz="taille", wg="poids", szcl="classe_taille",
-                                   szmax="taillemax", nb="nombre"))
+                            vars=c(sp="species.code",
+                                   sz="length", wg="weight", szcl="size.class",
+                                   szmax="Lmax", nb="number"))
 {
     ## Purpose: Calculs des poids (manquants) pour un fichier de type
     ##          "observation" pour **une seule AMP**, avec par ordre
@@ -246,7 +246,7 @@ calcWeightMPA.f <- function(Data, refesp, MPA,
     ##                  partie d'un jeu de données multi-sites.
     ##            vars : nom des colonnes de différents types dans Data.
     ##
-    ## Output: Data avec les poids calculés dans la colonne "poids".
+    ## Output: Data avec les poids calculés dans la colonne "weight".
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date:  6 déc. 2010, 11:57
 
@@ -260,10 +260,10 @@ calcWeightMPA.f <- function(Data, refesp, MPA,
     MPA <- as.character(MPA[1])
 
     ## Poids observés :
-    res <- Data[ , "poids"]
+    res <- Data[ , "weight"]
 
     ## Nombre d'obs totales, nombre de poids obs et nombre de tailles obs (sans poids obs) :
-    nbObsType <- c("total"=length(res), "obs"=sum(!is.na(res))) # , "taille"=sum(!is.na(Data[is.na(res) , "taille"])))
+    nbObsType <- c("total"=length(res), "obs"=sum(!is.na(res))) # , "length"=sum(!is.na(Data[is.na(res) , "length"])))
 
     ## indices des tailles renseignées, pour lesquelles il n'y a pas de poids renseigné :
     idxTaille <- !is.na(Data[ , vars["sz"]]) & is.na(res)
@@ -279,9 +279,9 @@ calcWeightMPA.f <- function(Data, refesp, MPA,
 
     if (getOption("P.refesp.Coefs") == "new")
     {
-        res[idxP] <- (Data[ , vars["nb"]] * refesp$Coeff.a[match(Data[ , vars["sp"]],
+        res[idxP] <- (Data[ , vars["nb"]] * refesp$a.coeff[match(Data[ , vars["sp"]],
                                                                  refesp[ , vars["sp"]])] *
-                      Data[ , vars["sz"]] ^ refesp$Coeff.b[match(Data[ , vars["sp"]],
+                      Data[ , vars["sz"]] ^ refesp$b.coeff[match(Data[ , vars["sp"]],
                                                                  refesp[ , vars["sp"]])])[idxP]
     }else{
         switch(casSite[MPA],
@@ -309,14 +309,14 @@ calcWeightMPA.f <- function(Data, refesp, MPA,
 
     ## [!!!] Comptabiliser les tailles incalculables !
     ## Nombre de poids ajoutées grâce à la méthode :
-    nbObsType[c("taille", "taille.moy")] <- c(sum(!is.na(res[idxTaille])), sum(!is.na(res[idxTailleMoy])))
+    nbObsType[c("length", "taille.moy")] <- c(sum(!is.na(res[idxTaille])), sum(!is.na(res[idxTailleMoy])))
 
     ## Ajout des classes de taille (P, M, G) si nécessaire lorsque la taille est connue
     ## (permet le calcul / poids moyen de classe si les coefs a et b sont inconnus) :
     Data <- sizeClasses.f(Data=Data, refesp=refesp, vars = vars)
 
     if ((getOption("P.refesp.Coefs") == "new" && # Nouveau référentiel avec fichier local chargé.
-         all(is.element(c("poids.moyen.petits", "poids.moyen.moyens", "poids.moyen.gros"), colnames(refesp)))) ||
+         all(is.element(c("mean.weight.small", "mean.weight.medium", "mean.weight.large"), colnames(refesp)))) ||
         isTRUE(MPA == "BO"))
     {
         ## Poids d'après les classes de taille lorsque la taille n'est pas renseignée :
@@ -332,7 +332,7 @@ calcWeightMPA.f <- function(Data, refesp, MPA,
     summarize.calcWeight.f(x=nbObsType, MPA=MPA)
 
     ## Stockage et retour des données :
-    Data[ , "poids"] <- res
+    Data[ , "weight"] <- res
     return(Data)
 }
 
@@ -360,9 +360,9 @@ calcWeight.f <- function(Data)
                                                       msg=paste(mltext("calcWeight.info.2"), i))
 
                                ## Sélection des observations du cas d'étude i :
-                               obs <- obs[is.element(obs$unite_observation,
+                               obs <- obs[is.element(obs$observation.unit,
                                                      unitobs[unitobs[ , getOption("P.MPAfield")] == i,
-                                                             "unite_observation"]), ]
+                                                             "observation.unit"]), ]
 
                                ## Estimation des poids :
                                return(calcWeightMPA.f(Data=obs, refesp=refesp, MPA=i))

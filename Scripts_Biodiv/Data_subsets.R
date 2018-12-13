@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-09-04 10:43:55 yreecht>
+# Time-stamp: <2018-12-12 14:01:17 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2018 Ifremer - Tous droits réservés.
@@ -346,8 +346,8 @@ chooseRefespField.f <- function(refesp, obs)
     tkgrid.configure(LI.fields, rowspan=4, sticky="ensw")
 
     ## Réduction aux facteurs contenant de l'information : [yr: 30/09/2010]
-    esptmp <- refesp[is.element(refesp[ , "code_espece"],
-                                obs[ , "code_espece"]), ] # sélection des lignes correspondant aux
+    esptmp <- refesp[is.element(refesp[ , "species.code"],
+                                obs[ , "species.code"]), ] # sélection des lignes correspondant aux
                                         # obs.
     esptmp <- esptmp[ , sapply(esptmp, function(x){!all(is.na(x))})] # sélection des champs qui contiennent autre
                                         # chose qu'uniquement des NAs.
@@ -430,11 +430,11 @@ selectionEsp.f <- function(refesp, obs)
     {
         selectfactSp <- NULL
     }else{
-        obs[, factSp] <- refesp[match(obs[ , "code_espece"],
-                                      refesp[ , "code_espece"]),
+        obs[, factSp] <- refesp[match(obs[ , "species.code"],
+                                      refesp[ , "species.code"]),
                                 factSp]
 
-        levelsTmp <- levels(obs[ , "code_espece"])
+        levelsTmp <- levels(obs[ , "species.code"])
 
         selectfactSp <- selectModWindow.f(factSp, obs, selectmode="extended")
         ## assign("selectfactSp", selectfactSp, envir=.GlobalEnv)
@@ -443,15 +443,15 @@ selectionEsp.f <- function(refesp, obs)
     if (!is.null(selectfactSp))
     {
         obs <- dropLevels.f(subset(obs, is.element(obs[, factSp], selectfactSp)),
-                            which="code_espece")
+                            which="species.code")
 
         ## Réintégration des niveaux sélectionnés mais plus présents dans les données :
         levelsTmp <- levelsTmp[is.element(levelsTmp,
                                           refesp[is.element(refesp[ , factSp],
                                                             selectfactSp) ,
-                                                 "code_espece"])]
+                                                 "species.code"])]
 
-        obs[ , "code_espece"] <- factor(obs[ , "code_espece"], levels=levelsTmp)
+        obs[ , "species.code"] <- factor(obs[ , "species.code"], levels=levelsTmp)
 
 
 
@@ -518,35 +518,35 @@ selectionOnRefesp.f <- function(dataEnv, baseEnv)
 
         keptEspeces <- as.character(refesp[is.element(refesp[ , selection[["facteur"]]],
                                                       selection[["selection"]]),
-                                           "code_espece"])
+                                           "species.code"])
 
         ## Réduction des tables de données (au espèces sélectionnées) :
         if (exists(".NombresSVR"))
         {
-            species <- dimnames(.NombresSVR)[["code_espece"]]
+            species <- dimnames(.NombresSVR)[["species.code"]]
 
             .NombresSVR <- extract(.NombresSVR,
                                    indices=list(species[is.element(species, keptEspeces)]),
-                                   dims=which(is.element(names(dimnames(.NombresSVR)), "code_espece")))
+                                   dims=which(is.element(names(dimnames(.NombresSVR)), "species.code")))
 
             .DensitesSVR <- extract(.DensitesSVR,
                                     indices=list(species[is.element(species, keptEspeces)]),
-                                    dims=which(is.element(names(dimnames(.DensitesSVR)), "code_espece")))
+                                    dims=which(is.element(names(dimnames(.DensitesSVR)), "species.code")))
         }else{}
 
         if (exists("unitSpSz") && ncol(unitSpSz)) # [!!!]  [yr: 4/1/2012]
         {
-            unitSpSz <- dropLevels.f(unitSpSz[is.element(unitSpSz[ , "code_espece"],
+            unitSpSz <- dropLevels.f(unitSpSz[is.element(unitSpSz[ , "species.code"],
                                                          keptEspeces), , drop=FALSE],
-                                     which="code_espece")
+                                     which="species.code")
 
         }else{
             if ( ! exists("unitSpSz")) unitSpSz <- NULL
         }
 
-        unitSp <- dropLevels.f(unitSp[is.element(unitSp[ , "code_espece"],
+        unitSp <- dropLevels.f(unitSp[is.element(unitSp[ , "species.code"],
                                                  keptEspeces), , drop=FALSE],
-                               which="code_espece")
+                               which="species.code")
 
         ## Recalcul des indices de biodiversité :
         unit <- calc.unit.f(unitSp=unitSp, obs=obs, refesp=refesp,
@@ -639,7 +639,7 @@ chooseUnitobsField.f <- function(unitobs, obs)
     tkgrid.configure(LI.fields, rowspan=4, sticky="ensw")
 
     ## Réduction aux facteurs contenant de l'information : [yr: 30/09/2010]
-    uobstmp <- unitobs[is.element(unitobs$unite_observation, obs$unite_observation), ] # sélection des lignes
+    uobstmp <- unitobs[is.element(unitobs$observation.unit, obs$observation.unit), ] # sélection des lignes
                                         # correspondant aux obs.
     uobstmp <- uobstmp[ , sapply(uobstmp, function(x){!all(is.na(x))})] # sélection des champs qui contiennent autre
                                         # chose qu'uniquement des NAs.
@@ -710,11 +710,11 @@ selectionUnitobs.f <- function(unitobs, obs)
     {
         selectfactunitobs <- NULL
     }else{
-        obs[, factunitobs] <- unitobs[match(obs[ , "unite_observation"],
-                                            unitobs[ , "unite_observation"]),
+        obs[, factunitobs] <- unitobs[match(obs[ , "observation.unit"],
+                                            unitobs[ , "observation.unit"]),
                                       factunitobs]
 
-        levelsTmp <- levels(obs[ , "unite_observation"])
+        levelsTmp <- levels(obs[ , "observation.unit"])
 
         selectfactunitobs <- selectModWindow.f(factunitobs, obs, selectmode="extended")
     }
@@ -724,15 +724,15 @@ selectionUnitobs.f <- function(unitobs, obs)
         obs <- dropLevels.f(subset(obs,
                                    is.element(obs[, factunitobs],
                                               selectfactunitobs)),
-                            which="unite_observation") # Vérifier si c'est correct [!!!]
+                            which="observation.unit") # Vérifier si c'est correct [!!!]
 
         ## Réintégration des niveaux sélectionnés mais plus présents dans les données :
         levelsTmp <- levelsTmp[is.element(levelsTmp,
                                           unitobs[is.element(unitobs[ , factunitobs],
                                                              selectfactunitobs),
-                                                  "unite_observation"])]
+                                                  "observation.unit"])]
 
-        obs[ , "unite_observation"] <- factor(obs[ , "unite_observation"],
+        obs[ , "observation.unit"] <- factor(obs[ , "observation.unit"],
                                               levels=levelsTmp)
 
         ## On définit globalement que l'on travaille sur une sélection :
@@ -797,39 +797,39 @@ selectionOnUnitobs.f <- function(dataEnv, baseEnv)
 
         keptUnitobs <- as.character(unitobs[is.element(unitobs[ , selection[["facteur"]]],
                                                        selection[["selection"]]),
-                                            "unite_observation"])
+                                            "observation.unit"])
 
         ## Réduction des tables de données (aux unitobs sélectionnées) :
         if (exists(".NombresSVR"))
         {
-            unitObs <- dimnames(.NombresSVR)[["unite_observation"]]
+            unitObs <- dimnames(.NombresSVR)[["observation.unit"]]
 
             .NombresSVR <- extract(.NombresSVR,
                                    indices=list(unitObs[is.element(unitObs, keptUnitobs)]),
-                                   dims=which(is.element(names(dimnames(.NombresSVR)), "unite_observation")))
+                                   dims=which(is.element(names(dimnames(.NombresSVR)), "observation.unit")))
 
             .DensitesSVR <- extract(.DensitesSVR,
                                     indices=list(unitObs[is.element(unitObs, keptUnitobs)]),
-                                    dims=which(is.element(names(dimnames(.DensitesSVR)), "unite_observation")))
+                                    dims=which(is.element(names(dimnames(.DensitesSVR)), "observation.unit")))
         }else{}
 
         if (exists("unitSpSz") && ncol(unitSpSz))
         {
-            unitSpSz <- dropLevels.f(unitSpSz[is.element(unitSpSz[ , "unite_observation"],
+            unitSpSz <- dropLevels.f(unitSpSz[is.element(unitSpSz[ , "observation.unit"],
                                                          keptUnitobs),
                                               , drop=FALSE],
-                                     which="unite_observation")
+                                     which="observation.unit")
         }else{}
 
-        unitSp <- dropLevels.f(unitSp[is.element(unitSp[ , "unite_observation"],
+        unitSp <- dropLevels.f(unitSp[is.element(unitSp[ , "observation.unit"],
                                                  keptUnitobs),
                                       , drop=FALSE],
-                               which="unite_observation")
+                               which="observation.unit")
 
-        unit <- dropLevels.f(unit[is.element(unit[ , "unite_observation"],
+        unit <- dropLevels.f(unit[is.element(unit[ , "observation.unit"],
                                              keptUnitobs),
                                   , drop=FALSE],
-                             which="unite_observation")
+                             which="observation.unit")
 
         ## Sauvegarde des données recalculées dans l'environnement adéquat :
         if (exists(".NombresSVR"))

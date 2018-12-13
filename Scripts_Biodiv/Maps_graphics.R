@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-12-09 16:58:22 yreecht>
+# Time-stamp: <2018-12-12 21:40:25 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
@@ -45,48 +45,48 @@ agregationSpatiale.f <- function(Data, metrique, facteur, dataEnv)
     WinInfo <- agregation.info.f()
 
     ## traitements selon le type de métrique :
-    casMetrique <- c("nombre"="mean",
-                     "taille_moyenne"="w.mean.n",
+    casMetrique <- c("number"="mean",
+                     "mean.length"="w.mean.n",
                      "taille_moy"="w.mean",
-                     "biomasse"="w.mean",
-                     "Biomasse"="w.mean",
-                     "poids"="mean",
-                     "poids_moyen"="w.mean",
-                     "densite"="w.mean",
-                     "Densite"="w.mean",
+                     "biomass"="w.mean",
+                     "Biomass"="w.mean",
+                     "weight"="mean",
+                     "mean.weight"="w.mean",
+                     "density"="w.mean",
+                     "Density"="w.mean",
                      "CPUE"="w.mean",
-                     "CPUEbiomasse"="w.mean",
-                     "pres_abs"="pres",
-                     "prop.abondance.CL"="w.mean",
-                     "prop.biomasse.CL"="w.mean",
+                     "CPUE.biomass"="w.mean",
+                     "pres.abs"="pres",
+                     "abundance.prop.SC"="w.mean",
+                     "biomass.prop.SC"="w.mean",
                      ## Benthos :
-                     "colonie"="mean",
-                     "recouvrement"="w.mean",
-                     "taille.moy.colonies"="w.mean",
+                     "colonies"="mean",
+                     "coverage"="w.mean",
+                     "mean.size.colonies"="w.mean",
                      ## SVR (expérimental) :
-                     "nombreMax"="max",
-                     "nombreSD"="mean",
-                     "densiteMax"="max",
-                     "densiteSD"="w.mean",
-                     "biomasseMax"="max",
-                     "reussite.ponte"="w.mean",
-                     "pontes"="mean",
-                     "traces.lisibles"="mean",
-                     "nombre.traces"="mean",
+                     "number.max"="max",
+                     "number.sd"="mean",
+                     "density.max"="max",
+                     "density.sd"="w.mean",
+                     "biomass.max"="max",
+                     "spawning.success"="w.mean",
+                     "spawnings"="mean",
+                     "readable.tracks"="mean",
+                     "tracks.number"="mean",
                      ## Biodiversité :
                      "Delta"="mean",
-                     "DeltaEtoile"="mean",
+                     "DeltaStar"="mean",
                      "DeltaPlus"="mean",
                      "hill"="mean",
                      "LambdaPlus"="mean",
-                     "l.simpson"="mean",
+                     "simpson.l"="mean",
                      "pielou"="mean",
-                     "richesse_specifique"="mean",
-                     "RS.relative.donnees"="mean",
-                     "RS.relative.region"="mean",
-                     "RS.relative.region.phylum"="mean",
-                     "RS.relative.site"="mean",
-                     "RS.relative.site.phylum"="mean",
+                     "species.richness"="mean",
+                     "relative.SR.data"="mean",
+                     "relative.SR.region"="mean",
+                     "relative.SR.region.phylum"="mean",
+                     "relative.SR.site"="mean",
+                     "relative.SR.site.phylum"="mean",
                      "SDeltaPlus"="mean",
                      "simpson"="mean")
 
@@ -98,8 +98,8 @@ agregationSpatiale.f <- function(Data, metrique, facteur, dataEnv)
 
         Data <- cbind(Data,
                       data.frame(dimobs=do.call("*",
-                                                unitobs[match(Data[ , "unite_observation"],
-                                                              unitobs[ , "unite_observation"]),
+                                                unitobs[match(Data[ , "observation.unit"],
+                                                              unitobs[ , "observation.unit"]),
                                                         c("DimObs1", "DimObs2")])))
 
         ## Les dimobs peuvent être des NAs (notamment dans les cas SVR) :
@@ -286,7 +286,7 @@ plot.fondCarte.f <- function(refspa, dataEnv, bbox=NULL, lwd=0.2, ...)
 }
 
 ########################################################################################################################
-subsetRefspaToData.f <- function(refspa, unitobs, Data, fact="unite_observation")
+subsetRefspaToData.f <- function(refspa, unitobs, Data, fact="observation.unit")
 {
     ## Purpose: réduire le référentiel spatial aux polygones présentant des
     ##          données.
@@ -299,11 +299,11 @@ subsetRefspaToData.f <- function(refspa, unitobs, Data, fact="unite_observation"
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 15 févr. 2013, 17:38
 
-    if (is.element("unite_observation", fact))
+    if (is.element("observation.unit", fact))
     {
         ## Réduire le référentiel spatial aux OBJECTID avec des données :
-        dataOBJECTID <- unitobs[is.element(unitobs[ , "unite_observation"],
-                                           Data[ , "unite_observation"]),
+        dataOBJECTID <- unitobs[is.element(unitobs[ , "observation.unit"],
+                                           Data[ , "observation.unit"]),
                                 "OBJECTID"]
 
         refspa <- subset(refspa,
@@ -888,12 +888,12 @@ subplotCarto.unitobs.f <- function(graphType,
         ## Pour les indices de biodiversité, il faut travailler sur les nombres... :
         tmpData <- subsetToutesTables.f(metrique=getOption("P.nbName"), facteurs=facteurs,
                                         selections=selections, dataEnv=dataEnv, tableMetrique="unitSp",
-                                        exclude = NULL, add=c("unite_observation", "code_espece"))
+                                        exclude = NULL, add=c("observation.unit", "species.code"))
     }else{
         ## ...sinon sur la métrique choisie :
         tmpData <- subsetToutesTables.f(metrique=metrique, facteurs=facteurs,
                                         selections=selections, dataEnv=dataEnv, tableMetrique=tableMetrique,
-                                        exclude = NULL, add=c("unite_observation", "code_espece"))
+                                        exclude = NULL, add=c("observation.unit", "species.code"))
     }
 
     ## Formule du boxplot
@@ -913,11 +913,11 @@ subplotCarto.unitobs.f <- function(graphType,
     }
 
     ## Agrégation des observations / unité d'observation :
-    if (tableMetrique == "unitSpSz" && factGraph != "classe_taille")
+    if (tableMetrique == "unitSpSz" && factGraph != "size.class")
     {
         tmpData <- na.omit(agregationTableParCritere.f(Data=tmpData,
                                                        metrique=metrique,
-                                                       facteurs=c("unite_observation", "classe_taille"),
+                                                       facteurs=c("observation.unit", "size.class"),
                                                        dataEnv=dataEnv,
                                                        listFact=c(listFact, factSpatial)))
     }else{
@@ -931,7 +931,7 @@ subplotCarto.unitobs.f <- function(graphType,
                                   calcBiodiv.f(Data=tmpData,
                                                refesp=get("refesp", envir=dataEnv),
                                                MPA=MPA,
-                                               unitobs = "unite_observation", code.especes = "code_espece",
+                                               unitobs = "observation.unit", code.especes = "species.code",
                                                nombres = getOption("P.nbName"),
                                                indices=metrique,
                                                dataEnv=dataEnv)
@@ -940,13 +940,13 @@ subplotCarto.unitobs.f <- function(graphType,
 
             ## On rajoute les anciennes colonnes :
             tmpData <- cbind(tmp[ , colnames(tmp) != getOption("P.nbName")], # Colonne "nombre" désormais inutile.
-                             tmpData[match(tmp$unite_observation, tmpData$unite_observation),
+                             tmpData[match(tmp$observation.unit, tmpData$observation.unit),
                                      !is.element(colnames(tmpData),
-                                                 c(colnames(tmp), getOption("P.nbName"), "code_espece")), drop=FALSE])
+                                                 c(colnames(tmp), getOption("P.nbName"), "species.code")), drop=FALSE])
         }else{
             tmpData <- na.omit(agregationTableParCritere.f(Data=tmpData,
                                                            metrique=metrique,
-                                                           facteurs=c("unite_observation"),
+                                                           facteurs=c("observation.unit"),
                                                            dataEnv=dataEnv,
                                                            listFact=c(listFact, factSpatial)))
         }
@@ -974,7 +974,7 @@ subplotCarto.unitobs.f <- function(graphType,
                                   modSel=iFactGraphSel,
                                   listFact=listFact,
                                   dataEnv=dataEnv,
-                                  type=ifelse(tableMetrique == "unitSpSz" && factGraph != "classe_taille",
+                                  type=ifelse(tableMetrique == "unitSpSz" && factGraph != "size.class",
                                               "CL_unitobs",
                                               "unitobs"),
                                   typeGraph=paste("carte_",ifelse(graphType == "boxplot", "boxplot", "barplot"), sep=""))
@@ -992,7 +992,7 @@ subplotCarto.unitobs.f <- function(graphType,
                                         factGraph=factGraph,
                                         listFact=listFact,
                                         factSpatial=factSpatial,
-                                        type=ifelse(tableMetrique == "unitSpSz" && factGraph != "classe_taille",
+                                        type=ifelse(tableMetrique == "unitSpSz" && factGraph != "size.class",
                                                     "CL_unitobs",
                                                     ifelse(tableMetrique == "unitSpSz",
                                                            "unitobs(CL)",
@@ -1559,12 +1559,12 @@ symbColCarto.unitobs.f <- function(graphType,
         ## Pour les indices de biodiversité, il faut travailler sur les nombres... :
         tmpData <- subsetToutesTables.f(metrique=getOption("P.nbName"), facteurs=facteurs,
                                         selections=selections, dataEnv=dataEnv, tableMetrique="unitSp",
-                                        exclude = NULL, add=c("unite_observation", "code_espece"))
+                                        exclude = NULL, add=c("observation.unit", "species.code"))
     }else{
         ## ...sinon sur la métrique choisie :
         tmpData <- subsetToutesTables.f(metrique=metrique, facteurs=facteurs,
                                         selections=selections, dataEnv=dataEnv, tableMetrique=tableMetrique,
-                                        exclude = NULL, add=c("unite_observation", "code_espece"))
+                                        exclude = NULL, add=c("observation.unit", "species.code"))
     }
 
     ## ## Formule du boxplot
@@ -1584,11 +1584,11 @@ symbColCarto.unitobs.f <- function(graphType,
     }
 
     ## Agrégation des observations / unité d'observation :
-    if (tableMetrique == "unitSpSz" && factGraph != "classe_taille")
+    if (tableMetrique == "unitSpSz" && factGraph != "size.class")
     {
         tmpData <- na.omit(agregationTableParCritere.f(Data=tmpData,
                                                        metrique=metrique,
-                                                       facteurs=c("unite_observation", "classe_taille"),
+                                                       facteurs=c("observation.unit", "size.class"),
                                                        dataEnv=dataEnv,
                                                        listFact=factSpatial))
     }else{
@@ -1602,7 +1602,7 @@ symbColCarto.unitobs.f <- function(graphType,
                                   calcBiodiv.f(Data=tmpData,
                                                refesp=get("refesp", envir=dataEnv),
                                                MPA=MPA,
-                                               unitobs = "unite_observation", code.especes = "code_espece",
+                                               unitobs = "observation.unit", code.especes = "species.code",
                                                nombres = getOption("P.nbName"),
                                                indices=metrique,
                                                dataEnv=dataEnv)
@@ -1611,13 +1611,13 @@ symbColCarto.unitobs.f <- function(graphType,
 
             ## On rajoute les anciennes colonnes :
             tmpData <- cbind(tmp[ , colnames(tmp) != getOption("P.nbName")], # Colonne "nombre" désormais inutile.
-                             tmpData[match(tmp$unite_observation, tmpData$unite_observation),
+                             tmpData[match(tmp$observation.unit, tmpData$observation.unit),
                                      !is.element(colnames(tmpData),
-                                                 c(colnames(tmp), getOption("P.nbName"), "code_espece")), drop=FALSE])
+                                                 c(colnames(tmp), getOption("P.nbName"), "species.code")), drop=FALSE])
         }else{
             tmpData <- na.omit(agregationTableParCritere.f(Data=tmpData,
                                                            metrique=metrique,
-                                                           facteurs=c("unite_observation"),
+                                                           facteurs=c("observation.unit"),
                                                            dataEnv=dataEnv,
                                                            listFact=factSpatial))
         }
@@ -1647,7 +1647,7 @@ symbColCarto.unitobs.f <- function(graphType,
                                   modSel=iFactGraphSel,
                                   listFact=factSpatial,
                                   dataEnv=dataEnv,
-                                  type=ifelse(tableMetrique == "unitSpSz" && factGraph != "classe_taille",
+                                  type=ifelse(tableMetrique == "unitSpSz" && factGraph != "size.class",
                                               "CL_unitobs",
                                               "unitobs"),
                                   typeGraph=paste("carte_",
@@ -1672,7 +1672,7 @@ symbColCarto.unitobs.f <- function(graphType,
                                         factGraph=factGraph,
                                         listFact=NULL,
                                         factSpatial=factSpatial,
-                                        type=ifelse(tableMetrique == "unitSpSz" && factGraph != "classe_taille",
+                                        type=ifelse(tableMetrique == "unitSpSz" && factGraph != "size.class",
                                                     "spCL_unitobs",
                                                     ifelse(tableMetrique == "unitSpSz",
                                                            "spUnitobs(CL)",
@@ -1735,7 +1735,7 @@ symbColCarto.unitobs.f <- function(graphType,
         if (getOption("P.saveStats"))
         {
             infoStats.f(filename=graphFile, Data=tmpData2,
-                        agregLevel=ifelse(tableMetrique == "unitSpSz" && factGraph != "classe_taille",
+                        agregLevel=ifelse(tableMetrique == "unitSpSz" && factGraph != "size.class",
                                           "spCL_unitobs",
                                           ifelse(tableMetrique == "unitSpSz",
                                                  "spUnitobs(CL)",

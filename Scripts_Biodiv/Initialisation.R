@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-12-09 18:55:36 yreecht>
+# Time-stamp: <2018-12-12 23:19:29 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
@@ -47,7 +47,7 @@ options(P.linkUnitobs="site",
         ## P.landCols=c(terre="saddlebrown", mer="steelblue"))
 
 ## Option de noms de champs :
-options(P.MPAfield="cas.etude")
+options(P.MPAfield="study.area")
 
 ## ##################### Initialisation des (rares) variables globales ####################
 
@@ -67,6 +67,8 @@ colnames(.translations) <- tolower(colnames(.translations))
 .translations[ , "mandatory"] <- as.logical(nchar(.translations[ , "mandatory"]))
 assign(".translations", .translations, envir=.GlobalEnv)
 
+.aliases <- read.csv("./Scripts_Biodiv/Field_aliases.csv", stringsAsFactor = FALSE, row.names = 1)
+colnames(.aliases) <- tolower(colnames(.aliases))
 
 
 ########################################################################################################################

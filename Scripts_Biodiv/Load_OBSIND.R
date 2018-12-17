@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-12-12 22:13:01 yreecht>
+# Time-stamp: <2018-12-17 15:33:42 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2018 Ifremer - Tous droits réservés.
@@ -63,12 +63,12 @@ unitobsNew.OBSIND.create.f <- function(unitobs, refspa, dataEnv)
     unitobsTmp <- unitobsTmp[ , c("study.area", "unitobsNew",
                                  "observation.type", "site", "station", "geogr.descriptor1",
                                   "geogr.descriptor2", "sampling.rate", "day", "month",
-                                  "year", "heure", "nebulosite", "direction_vent", "force_vent",
-                                  "etat_mer", "courant", "maree", "phase_lunaire", "latitude",
-                                  "longitude", "protection.status", "avant_apres", "biotope",
-                                  "biotope_2", "habitat1", "habitat2", "habitat3", "visibilite",
-                                  "prof_min", "prof_max", "DimObs1", "DimObs2", "nb_plong",
-                                  "plongeur", "OBJECTID")]
+                                  "year", "hour", "cloud.cover", "wind.direction", "wind.strength",
+                                  "sea.condition", "current", "tide", "moon.phase", "latitude",
+                                  "longitude", "protection.status", "before.after", "biotop",
+                                  "biotop.2", "habitat1", "habitat2", "habitat3", "visibility",
+                                  "min.depth", "max.depth", "obs.dim1", "obs.dim2", "nb.divers",
+                                  "diver", "OBJECTID")]
 
     colnames(unitobsTmp)[2] <- "observation.unit"
 
@@ -95,8 +95,8 @@ aggreg.unitobsNew.f <- function(x, refspa)
 
     ## Colonnes ne bénéficiant pas d'un traitement spécial :
     idx <- which(! is.element(colnames(x),
-                              c("latitude", "longitude", "visibilite", "prof_min", "prof_max",
-                                "DimObs1", "DimObs2", "plongeur")))
+                              c("latitude", "longitude", "visibility", "min.depth", "max.depth",
+                                "obs.dim1", "obs.dim2", "diver")))
 
     ## On conserve la valeur si c'est la même partout dans la colonne :
     x[ , idx] <- sapply(x[ , idx],
@@ -115,7 +115,7 @@ aggreg.unitobsNew.f <- function(x, refspa)
                                                     c("SITE.centrY", "SITE.centrX")]
 
     ## Colonnes pour lesquelles on prend le minimum :
-    x[ , c("visibilite", "prof_min")] <- sapply(x[ , c("visibilite", "prof_min")],
+    x[ , c("visibility", "min.depth")] <- sapply(x[ , c("visibility", "min.depth")],
                                                 function(x)
                                             {
                                                 if (all(is.na(x)))
@@ -128,22 +128,22 @@ aggreg.unitobsNew.f <- function(x, refspa)
                                                 simplify=FALSE)
 
     ## Colonne pour laquelle on prend le maximum :
-    x[ , "prof_max"] <- if (all(is.na(x[ , "prof_max"])))
+    x[ , "max.depth"] <- if (all(is.na(x[ , "max.depth"])))
       {
           NA
       }else{
-          max(x[ , "prof_max"], na.rm=TRUE)
+          max(x[ , "max.depth"], na.rm=TRUE)
       }
 
     ## Dimobs en km² :
-    x[ , "DimObs1"] <- refspa@data[x[ , "OBJECTID"],
+    x[ , "obs.dim1"] <- refspa@data[x[ , "OBJECTID"],
                                    c("SITE.SURFACE")]
 
-    x[ , "DimObs2"] <- 1
+    x[ , "obs.dim2"] <- 1
 
     ## Plusieurs observateurs possibles :
-    x[ , "nb_plong"] <- length(unique(x[ , "plongeur"]))
-    x[ , "plongeur"] <- paste(unique(x[ , "plongeur"]), collapse=", ")
+    x[ , "nb.divers"] <- length(unique(x[ , "diver"]))
+    x[ , "diver"] <- paste(unique(x[ , "diver"]), collapse=", ")
 
     return(x[1, !is.element(colnames(x), "OBJECTID"), drop=FALSE])
 }

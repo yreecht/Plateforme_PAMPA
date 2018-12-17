@@ -210,8 +210,8 @@ calc.density.f <- function(Data, unitobs)
            ## Surface/unité d'effort :
            (unitobs[(idx <- match(Data[ , "observation.unit"],
                                   unitobs[ , "observation.unit"])) ,
-                    "DimObs1"] *
-            unitobs[idx, "DimObs2"] *
+                    "obs.dim1"] *
+            unitobs[idx, "obs.dim2"] *
             ## ...qui tient compte de la fraction échantillonnée :
             ifelse(is.na(as.numeric(unitobs[idx , "sampling.rate"])),
                    1,
@@ -257,8 +257,8 @@ calc.biomass.f <- function(Data, unitobs)
                ## Surface/unité d'effort :
                (unitobs[(idx <- match(Data[ , "observation.unit"],
                                       unitobs[ , "observation.unit"])) ,
-                        "DimObs1"] *
-                unitobs[idx, "DimObs2"] *
+                        "obs.dim1"] *
+                unitobs[idx, "obs.dim2"] *
                 ## ...qui tient compte de la fraction échantillonnée :
                 ifelse(is.na(as.numeric(unitobs[idx , "sampling.rate"])),
                        1,
@@ -572,7 +572,7 @@ calc.unitSpSz.f <- function(obs, unitobs, refesp, dataEnv)
     }else{
         unitSpSz <- data.frame("observation.unit"=NULL, "species.code"=NULL, "number"=NULL,
                                "weight"=NULL, "mean.weight"=NULL, "density"=NULL,
-                               "pres.abs"=NULL, "site"=NULL, "biotope"=NULL,
+                               "pres.abs"=NULL, "site"=NULL, "biotop"=NULL,
                                "year"=NULL, "protection.status"=NULL)
     }
 

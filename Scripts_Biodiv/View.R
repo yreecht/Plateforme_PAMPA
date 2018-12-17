@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-12-12 20:15:12 yreecht>
+# Time-stamp: <2018-12-17 15:24:01 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2018 Ifremer - Tous droits réservés.
@@ -271,7 +271,7 @@ VoirInformationsDonneesUnitobs.f <- function(dataEnv, image)
 
         tclarrayID[[i, 2]] <- as.character(unitobs[(unitobs[ , "observation.unit"] ==
                                                     levels(obs[ , "observation.unit"])[i]),
-                                                   "biotope"])
+                                                   "biotop"])
         tclarrayID[[i, 3]] <-                                                                        #
             length(pacha[(pacha[ , "pres.abs"]==1 &
                           pacha[ , "observation.unit"] == levels(obs[ , "observation.unit"])[i]),

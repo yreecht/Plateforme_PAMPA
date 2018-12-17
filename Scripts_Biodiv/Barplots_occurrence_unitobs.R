@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-12-12 16:55:42 yreecht>
+# Time-stamp: <2018-12-17 14:52:26 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
@@ -46,7 +46,7 @@ barplotOccurrence.unitobs.f <- function(factGraph, factGraphSel, listFact, listF
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 14 oct. 2010, 10:51
 
-    metrique <- "freq.occurrence"
+    metrique <- "occurrence.frequency"
 
     ## Nettoyage des facteurs (l'interface de sélection produit des valeurs vides) :
     listFactSel <- listFactSel[unlist(listFact) != ""]

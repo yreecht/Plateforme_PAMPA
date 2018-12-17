@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-12-12 22:13:02 yreecht>
+# Time-stamp: <2018-12-17 15:37:00 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2018 Ifremer - Tous droits réservés.
@@ -111,15 +111,15 @@ dimobsPecRec.f <- function(refUnitobs)
     ## Author: Yves Reecht, Date:  5 déc. 2011, 11:46
 
     ## Calcul de l'heure d'enquête :
-    x.lt <- as.POSIXlt(as.character(refUnitobs$heure), format="%Hh%M")
+    x.lt <- as.POSIXlt(as.character(refUnitobs$hour), format="%Hh%M")
     refUnitobs$heureEnq <- x.lt$hour + x.lt$min/60 + x.lt$sec/3600
 
     ## Calcul de l'heure de début de pêche :
-    x.lt <- as.POSIXlt(as.character(refUnitobs$DimObs1), format="%Hh%M")
+    x.lt <- as.POSIXlt(as.character(refUnitobs$obs.dim1), format="%Hh%M")
     refUnitobs$heureDeb <- x.lt$hour + x.lt$min/60 + x.lt$sec/3600
 
     ## Calcul du temps de pêche :
-    refUnitobs$DimObs1 <- sapply(seq(length.out=nrow(refUnitobs)),
+    refUnitobs$obs.dim1 <- sapply(seq(length.out=nrow(refUnitobs)),
                               function(i)
                           {
                               switch(as.character(refUnitobs$heureEnq[i] < refUnitobs$heureDeb[i]),
@@ -132,7 +132,7 @@ dimobsPecRec.f <- function(refUnitobs)
                           })
 
     ## Temps calculé == 0 -> NA
-    refUnitobs$DimObs1[refUnitobs$DimObs1 == 0] <- NA
+    refUnitobs$obs.dim1[refUnitobs$obs.dim1 == 0] <- NA
 
     return(refUnitobs)
 }
@@ -163,7 +163,7 @@ PlanEchantillonnageBasic.f <- function(tabUnitobs, tabObs, filePathes)
 
 ########################################################################################################################
 scaleMetrics.f <- function(Data, unitobs, refesp,
-                           supl=c("year", "site", "protection.status", "biotope", "latitude", "longitude",
+                           supl=c("year", "site", "protection.status", "biotop", "latitude", "longitude",
                                   "annee.campagne", "habitat1", "habitat2", "habitat3",
                                   "scient.name", "family", "genus", "species"),
                            scale=TRUE)
@@ -609,7 +609,7 @@ loadRefEspece.old.f <- function(refesp)
     options(P.refesp.Coefs="old")
 
     ## Renommage des colonnes :
-    names(refesp) <- c("species.code", "GrSIH", "CodeSIH", "IssCaap", "taxo.code", "FAO.code", "FishBase.code", "phylum",
+    names(refesp) <- c("species.code", "SIH.group.code", "SIH.species.code", "ISSCAAP.group", "taxo.code", "FAO.code", "FishBase.code", "phylum",
                        "benthic.categ", "class", "order", "family", "genus", "species", "scient.name", "ObsNC",
                        "ObsRUN", "ObsMAY", "ObsSTM", "ObsCB", "ObsBA", "ObsBO", "ObsCR", "Lmax", "L50",
                        "cryptic", "mobility", "territorial", "day.night.act", "aggreg.behaviour", "seasonal.aggreg",
@@ -701,7 +701,7 @@ loadRefEspeces.new.f <- function(refesp, pathRefesp.local)
     options(P.refesp.Coefs="new")
 
     ## Renommage des colonnes :
-    names(refesp) <- c("species.code", "GrSIH", "CodeSIH", "IssCaap", "taxo.code", "FAO.code", "FishBase.code", "phylum",
+    names(refesp) <- c("species.code", "SIH.group.code", "SIH.species.code", "ISSCAAP.group", "taxo.code", "FAO.code", "FishBase.code", "phylum",
                        "benthic.categ", "class", "order", "family", "genus", "species", "scient.name", "Lmax",
                        "L50", "cryptic", "mobility", "territorial", "day.night.act", "aggreg.behaviour", "seasonal.aggreg",
                        "water.column.position", "demogr.strategy", "spawning.type", "preferred.habitat", "sex.change",
@@ -947,10 +947,10 @@ loadUnitobs.f <- function(pathUnitobs)
 
     ## Changement des noms de colonnes :
     colnames(unitobs) <- c(getOption("P.MPAfield"), "observation.unit", "observation.type", "site", "station", "geogr.descriptor1", "geogr.descriptor2",
-         "sampling.rate", "day", "month", "year", "heure", "nebulosite", "direction_vent", "force_vent",
-         "etat_mer", "courant", "maree", "phase_lunaire", "latitude", "longitude", "protection.status", "avant_apres",
-         "biotope", "biotope_2", "habitat1", "habitat2", "habitat3", "visibilite", "prof_min", "prof_max", "DimObs1",
-         "DimObs2", "nb_plong", "plongeur")
+         "sampling.rate", "day", "month", "year", "hour", "cloud.cover", "wind.direction", "wind.strength",
+         "sea.condition", "current", "tide", "moon.phase", "latitude", "longitude", "protection.status", "before.after",
+         "biotop", "biotop.2", "habitat1", "habitat2", "habitat3", "visibility", "min.depth", "max.depth", "obs.dim1",
+         "obs.dim2", "nb.divers", "diver")
 
 
 
@@ -988,7 +988,7 @@ loadUnitobs.f <- function(pathUnitobs)
 
     ## Reorganisation des niveaux de protection et autres facteurs :
     unitobs <- reorderFactors.f(Data=unitobs,
-                                which=c("protection.status", "geogr.descriptor1", "maree", "phase_lunaire"),
+                                which=c("protection.status", "geogr.descriptor1", "tide", "moon.phase"),
                                 type=c("protection", "protection", "tide", "moon"),
                                 warnings=FALSE)
 

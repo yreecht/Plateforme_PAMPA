@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-12-12 21:40:25 yreecht>
+# Time-stamp: <2018-12-17 15:31:51 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
@@ -100,7 +100,7 @@ agregationSpatiale.f <- function(Data, metrique, facteur, dataEnv)
                       data.frame(dimobs=do.call("*",
                                                 unitobs[match(Data[ , "observation.unit"],
                                                               unitobs[ , "observation.unit"]),
-                                                        c("DimObs1", "DimObs2")])))
+                                                        c("obs.dim1", "obs.dim2")])))
 
         ## Les dimobs peuvent être des NAs (notamment dans les cas SVR) :
         if (all(is.na(Data[ , "dimobs"])))

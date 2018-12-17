@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-12-17 14:52:24 yreecht>
+# Time-stamp: <2018-12-17 15:24:02 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
@@ -179,7 +179,7 @@ champsUnitobs.f <- function(dataEnv, ordered=FALSE, tableMetrique="")
     ## Champs principaux :
     cPrincip <- c(
                   ## table "unitobs" :
-                  "site", "year", "annee.campagne", "biotope", "protection.status", "geogr.descriptor1",
+                  "site", "year", "annee.campagne", "biotop", "protection.status", "geogr.descriptor1",
                   "geogr.descriptor2"
                   )
 
@@ -229,7 +229,7 @@ UnitobsFields.aliases <- function(dataEnv, ordered=FALSE, tableMetrique="")
     ## Champs principaux :
     cPrincip <- aliases(c(
                           ## table "unitobs" :
-                          "year", "protection.status", "annee.campagne", "site", "biotope",
+                          "year", "protection.status", "annee.campagne", "site", "biotop",
                           "geogr.descriptor1", "geogr.descriptor2"
                           ), reverse = TRUE)
 
@@ -452,7 +452,7 @@ champsReferentiels.f <- function(nomTable, dataEnv, nextStep=NA)
         ## Champs principaux :
         cPrincip <- c(
                       ## table "unitobs" :
-                      "year", "protection.status", "site", "annee.campagne", "biotope", "geogr.descriptor1",
+                      "year", "protection.status", "site", "annee.campagne", "biotop", "geogr.descriptor1",
                       "geogr.descriptor2",
                       ## table "especes" :
                       "species.code", "benthic.categ", "family", "genus", "scient.name",
@@ -522,7 +522,7 @@ refTablesFields.aliases <- function(nomTable, dataEnv, nextStep=NA)
         ## Champs principaux :
         cPrincip <- aliases(c(
                               ## table "unitobs" :
-                              "year", "protection.status", "site", "annee.campagne", "biotope",
+                              "year", "protection.status", "site", "annee.campagne", "biotop",
                               "geogr.descriptor1", "geogr.descriptor2",
                               ## table "especes" :
                               "species.code", "benthic.categ", "family", "genus", "scient.name",

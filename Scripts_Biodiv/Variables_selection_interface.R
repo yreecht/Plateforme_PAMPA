@@ -195,7 +195,10 @@ selectModalites.f <- function(factor, tableMetrique, env, nextStep, dataEnv, lev
     }
 
     ## Table réduite :
-    metrique <- tclvalue(get("MetriqueChoisie" , envir=env))
+    metricsAliases <- get("metricsAliases" , envir=env)
+    metrique <- ifelse(nchar(tclvalue(get("MetriqueChoisie" , envir=env))),
+                       metricsAliases[tclvalue(get("MetriqueChoisie" , envir=env))],
+                       "")
 
     ## Pour les indices de biodiversité recalculés, il faut utiliser "unitSp" et une métrique adaptée.
     if (is.element(nextStep, c("boxplot.unitobs", "modele_lineaire.unitobs",
@@ -980,12 +983,12 @@ selectionVariables.f <- function(nextStep, dataEnv, baseEnv)
     {
         switch(nextStep,
                "freq_occurrence"={
-                   metricsAliases <- aliases(aliases("occurrence.frequency", reverse = TRUE))
+                   metricsAliases <- aliases("occurrence.frequency", reverse = TRUE)
                    tclvalue(TableMetrique) <- "TableOccurrences"
                    tclvalue(MetriqueChoisie) <- names(metricsAliases)
                },
                "freq_occurrence.unitobs"={
-                   metricsAliases <- aliases(aliases("occurrence.frequency", reverse = TRUE))
+                   metricsAliases <- aliases("occurrence.frequency", reverse = TRUE)
                    tclvalue(TableMetrique) <- "TableOccurrences"
                    tclvalue(MetriqueChoisie) <- names(metricsAliases)
                })

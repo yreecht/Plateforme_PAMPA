@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2013-04-24 17:30:05 yves>
+# Time-stamp: <2018-12-17 14:52:26 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
@@ -46,7 +46,7 @@ barplotOccurrence.f <- function(factGraph, factGraphSel, listFact, listFactSel, 
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 14 oct. 2010, 10:51
 
-    metrique <- "freq.occurrence"
+    metrique <- "occurrence.frequency"
 
     ## Nettoyage des facteurs (l'interface de sélection produit des valeurs vides) :
     listFactSel <- listFactSel[unlist(listFact) != ""]
@@ -61,7 +61,7 @@ barplotOccurrence.f <- function(factGraph, factGraphSel, listFact, listFactSel, 
     selections <- c(list(factGraphSel), listFactSel) # Concaténation des leurs listes de modalités sélectionnées
 
     ## Données pour la série de boxplots :
-    tmpData <- subsetToutesTables.f(metrique="pres_abs", facteurs=facteurs, selections=selections,
+    tmpData <- subsetToutesTables.f(metrique="pres.abs", facteurs=facteurs, selections=selections,
                                     dataEnv=dataEnv, tableMetrique="TablePresAbs", exclude = NULL)
 
     ## Identification des différents graphiques à générer:
@@ -100,8 +100,8 @@ barplotOccurrence.f <- function(factGraph, factGraphSel, listFact, listFactSel, 
         ## Passage au graphique suivant si le nombre d'observations  < au minimum défini dans les options.
         if (dim(tmpDataMod)[1] < getOption("P.MinNbObs"))
         {
-            warning("Nombre d'observations pour ", modGraphSel, " < ", getOption("P.MinNbObs"),
-                    " : Graphique non créé !\n")
+            warning(mltext("WP2boxplot.W.n.1"), modGraphSel, " < ", getOption("P.MinNbObs"),
+                    mltext("WP2boxplot.W.n.2"))
             next()
         }else{}
 
@@ -143,7 +143,7 @@ barplotOccurrence.f <- function(factGraph, factGraphSel, listFact, listFactSel, 
 
         ## Calcul des fréquences :
         heights <- with(tmpDataMod,
-                        tapply(pres_abs, lapply(listFact, function(y)eval(parse(text=y))),
+                        tapply(pres.abs, lapply(listFact, function(y)eval(parse(text=y))),
                                function(x)
                            {
                                100 * sum(x, na.rm=TRUE) / length(na.omit(x))
@@ -184,7 +184,7 @@ barplotOccurrence.f <- function(factGraph, factGraphSel, listFact, listFactSel, 
 
         ## Label axe y :
         ylab <- ifelse(getOption("P.axesLabels"),
-                       parse(text=paste("'", Capitalize.f(varNames[metrique, "nom"]), "'",
+                       parse(text=paste("\"", Capitalize.f(varNames[metrique, "nom"]), "\"",
                              ifelse(varNames[metrique, "unite"] != "",
                                     paste("~~(", varNames[metrique, "unite"], ")", sep=""),
                                     ""),
@@ -215,7 +215,7 @@ barplotOccurrence.f <- function(factGraph, factGraphSel, listFact, listFactSel, 
         {
             ## Nombre d'"observations" :
             nbObs <- with(tmpDataMod,
-                          tapply(pres_abs,
+                          tapply(pres.abs,
                                  lapply(listFact, function(y)eval(parse(text=y))),
                                  function(x)
                              {
@@ -227,7 +227,11 @@ barplotOccurrence.f <- function(factGraph, factGraphSel, listFact, listFactSel, 
                   adj=-0.2)
 
             legend(x="topleft",
-                   legend=expression("Nombre d'observations ("=="nb unités d'observation x nb espèces)"),
+                   legend=substitute(expression(part1 == part2),
+                                     list(part1 = mltext("barplotOccurrence.leg.1",
+                                                         language = getOption("P.lang")),
+                                          part2 = mltext("barplotOccurrence.leg.2",
+                                                         language = getOption("P.lang")))),
                    cex =0.9, col=getOption("P.NbObsCol"), text.col=getOption("P.NbObsCol"), merge=FALSE)
 
         }else{}
@@ -253,7 +257,7 @@ barplotOccurrence.f <- function(factGraph, factGraphSel, listFact, listFactSel, 
                 if (getOption("P.saveStats"))
                 {
                     infoStats.f(filename=graphFile, Data=tmpData, agregLevel="species", type="graph",
-                                metrique="pres_abs", factGraph=factGraph, factGraphSel=modGraphSel,
+                                metrique="pres.abs", factGraph=factGraph, factGraphSel=modGraphSel,
                                 listFact=rev(listFact), listFactSel=rev(listFactSel), # On les remets dans un ordre
                                         # intuitif.
                                 dataEnv=dataEnv, baseEnv=baseEnv)
@@ -280,7 +284,7 @@ barplotOccurrence.f <- function(factGraph, factGraphSel, listFact, listFactSel, 
                 if (getOption("P.saveStats"))
                 {
                     infoStats.f(filename=graphFile, Data=tmpData, agregLevel="species", type="graph",
-                                metrique="pres_abs", factGraph=factGraph, factGraphSel=modGraphSel,
+                                metrique="pres.abs", factGraph=factGraph, factGraphSel=modGraphSel,
                                 listFact=rev(listFact), listFactSel=rev(listFactSel), # On les remets dans un ordre
                                         # intuitif.
                                 dataEnv=dataEnv, baseEnv=baseEnv)
@@ -308,7 +312,7 @@ barplotOccurrence.f <- function(factGraph, factGraphSel, listFact, listFactSel, 
         {
             infoStats.f(filename=sub("\\%03d", "00X", graphFile), Data=DataBackup,
                         agregLevel="species", type="graph",
-                        metrique="pres_abs", factGraph=factGraph, factGraphSel=factGraphSel,
+                        metrique="pres.abs", factGraph=factGraph, factGraphSel=factGraphSel,
                         listFact=rev(listFact), listFactSel=rev(listFactSel), # On les remets dans un ordre intuitif.
                         dataEnv=dataEnv, baseEnv=baseEnv)
         }else{}
@@ -327,7 +331,7 @@ barplotOccurrence.f <- function(factGraph, factGraphSel, listFact, listFactSel, 
                 tryCatch(embedFonts(file=tmpFile),
                          error=function(e)
                      {
-                         warning("Impossible d'inclure les fontes dans le PDF !")
+                         warning(mltext("WP2boxplot.W.pdfFonts"))
                      })
 
                 i <- i + 1
@@ -356,7 +360,7 @@ barplotOccurrence.f <- function(factGraph, factGraphSel, listFact, listFactSel, 
         {
             infoStats.f(filename=sub("\\%03d", "00X", graphFile), Data=DataBackup,
                         agregLevel="species", type="graph",
-                        metrique="pres_abs", factGraph=factGraph, factGraphSel=factGraphSel,
+                        metrique="pres.abs", factGraph=factGraph, factGraphSel=factGraphSel,
                         listFact=rev(listFact), listFactSel=rev(listFactSel), # On les remets dans un ordre intuitif.
                         dataEnv=dataEnv, baseEnv=baseEnv)
         }else{}

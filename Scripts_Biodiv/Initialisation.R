@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2013-04-24 17:31:06 yves>
+# Time-stamp: <2018-12-15 14:47:48 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
@@ -47,7 +47,7 @@ options(P.linkUnitobs="site",
         ## P.landCols=c(terre="saddlebrown", mer="steelblue"))
 
 ## Option de noms de champs :
-options(P.MPAfield="cas.etude")
+options(P.MPAfield="study.area")
 
 ## ##################### Initialisation des (rares) variables globales ####################
 
@@ -58,6 +58,18 @@ assign(".fileimage", .fileimage, envir=.GlobalEnv)
 #### Image de lien de tables :
 .fileimageLink <- "./Scripts_Biodiv/img/tableLink.GIF"
 assign(".fileimageLink", .fileimageLink, envir=.GlobalEnv)
+
+## ####################################################################################################
+## Load translation table:
+.translations <- read.csv("./Scripts_Biodiv/Translations.csv", stringsAsFactor = FALSE, row.names = 1)
+colnames(.translations) <- tolower(colnames(.translations))
+## Changing the "mandatory" field to logical:
+.translations[ , "mandatory"] <- as.logical(nchar(.translations[ , "mandatory"]))
+assign(".translations", .translations, envir=.GlobalEnv)
+
+.aliases <- read.csv("./Scripts_Biodiv/Field_aliases.csv", stringsAsFactor = FALSE, row.names = 1)
+colnames(.aliases) <- tolower(colnames(.aliases))
+assign(".aliases", .aliases, envir=.GlobalEnv)
 
 
 ########################################################################################################################
@@ -75,15 +87,15 @@ init.GraphLang.f <- function()
     ## Author: Yves Reecht, Date: 17 nov. 2011, 10:22
 
     assign("varNames",
-           read.csv2(paste(basePath, "/Scripts_Biodiv/NomsVariables_",
+           read.csv(paste(basePath, "/Scripts_Biodiv/VariableNames_",
                            tolower(getOption("P.lang")), ".csv",
                            sep=""),
                      header=TRUE, row.names=1, stringsAsFactors=FALSE,
-                     fileEncoding="latin1"),
+                     fileEncoding="latin1", quote = "\""),
            envir=.GlobalEnv)
 }
 
-## Remplacer "/Scripts_Biodiv/NomsVariables_fr.csv" par "/Scripts_Biodiv/NomsVariables_en.csv" pour des axes et noms de variables en
+## Remplacer "/Scripts_Biodiv/VariableNames_fr.csv" par "/Scripts_Biodiv/VariableNames_en.csv" pour des axes et noms de variables en
 ## anglais.
 ## Affecte uniquement les sorties !
 

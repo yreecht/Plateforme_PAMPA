@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2013-04-24 17:34:46 yves>
+# Time-stamp: <2018-12-17 14:52:26 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
@@ -46,7 +46,7 @@ barplotOccurrence.unitobs.f <- function(factGraph, factGraphSel, listFact, listF
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 14 oct. 2010, 10:51
 
-    metrique <- "freq.occurrence"
+    metrique <- "occurrence.frequency"
 
     ## Nettoyage des facteurs (l'interface de sélection produit des valeurs vides) :
     listFactSel <- listFactSel[unlist(listFact) != ""]
@@ -61,7 +61,7 @@ barplotOccurrence.unitobs.f <- function(factGraph, factGraphSel, listFact, listF
     selections <- c(list(factGraphSel), listFactSel) # Concaténation des leurs listes de modalités sélectionnées
 
     ## Données pour la série de boxplots :
-    tmpData <- subsetToutesTables.f(metrique="pres_abs", facteurs=facteurs, selections=selections,
+    tmpData <- subsetToutesTables.f(metrique="pres.abs", facteurs=facteurs, selections=selections,
                                     dataEnv=dataEnv, tableMetrique="TablePresAbs", exclude = NULL)
 
 
@@ -81,8 +81,8 @@ barplotOccurrence.unitobs.f <- function(factGraph, factGraphSel, listFact, listF
 
     ## Agrégation des observations / unité d'observation :
     tmpData <- na.omit(agregationTableParCritere.f(Data=tmpData,
-                                                   metrique="pres_abs",
-                                                   facteurs=c("unite_observation"),
+                                                   metrique="pres.abs",
+                                                   facteurs=c("observation.unit"),
                                                    dataEnv=dataEnv,
                                                    listFact=listFact))
 
@@ -94,8 +94,8 @@ barplotOccurrence.unitobs.f <- function(factGraph, factGraphSel, listFact, listF
     ## Création du graphique si le nombre d'observations  < au minimum défini dans les options :
     if (dim(tmpData)[1] < getOption("P.MinNbObs"))
     {
-        warning("Nombre d'observations pour (", paste(iFactGraphSel, collapse=", "), ") < ", getOption("P.MinNbObs"),
-                " : Graphique non créé !\n")
+        warning(mltext("WP2boxplot.W.n.1"), "(", paste(iFactGraphSel, collapse=", "), ") < ", getOption("P.MinNbObs"),
+                mltext("WP2boxplot.W.n.2"))
     }else{
         ## Option graphique :
         cex <- getOption("P.cex")
@@ -127,7 +127,7 @@ barplotOccurrence.unitobs.f <- function(factGraph, factGraphSel, listFact, listF
 
         ## Calcul des fréquences :
         heights <- with(tmpData,
-                        tapply(pres_abs, lapply(listFact, function(y)eval(parse(text=y))),
+                        tapply(pres.abs, lapply(listFact, function(y)eval(parse(text=y))),
                                function(x)
                            {
                                100 * sum(x, na.rm=TRUE) / length(na.omit(x))
@@ -169,7 +169,7 @@ barplotOccurrence.unitobs.f <- function(factGraph, factGraphSel, listFact, listF
 
         ## Label axe y :
         ylab <- ifelse(getOption("P.axesLabels"),
-                       parse(text=paste("'", Capitalize.f(varNames[metrique, "nom"]), "'",
+                       parse(text=paste("\"", Capitalize.f(varNames[metrique, "nom"]), "\"",
                              ifelse(varNames[metrique, "unite"] != "",
                                     paste("~~(", varNames[metrique, "unite"], ")", sep=""),
                                     ""),
@@ -200,7 +200,7 @@ barplotOccurrence.unitobs.f <- function(factGraph, factGraphSel, listFact, listF
         {
             ## Nombre d'"observations" :
             nbObs <- with(tmpData,
-                          tapply(pres_abs,
+                          tapply(pres.abs,
                                  lapply(listFact, function(y)eval(parse(text=y))),
                                  function(x)
                              {
@@ -212,7 +212,8 @@ barplotOccurrence.unitobs.f <- function(factGraph, factGraphSel, listFact, listF
                   adj=-0.2)
 
             legend(x="topleft",
-                   legend=expression("Nombre d'unités d'observation"),
+                   legend=expression(mltext("barplotOccurrence.unitobs.leg",
+                                            language = getOption("P.lang"))),
                    cex =0.9, col=getOption("P.NbObsCol"), text.col=getOption("P.NbObsCol"), merge=FALSE)
 
         }else{}
@@ -229,7 +230,7 @@ barplotOccurrence.unitobs.f <- function(factGraph, factGraphSel, listFact, listF
         if (getOption("P.saveStats"))
         {
             infoStats.f(filename=graphFile, Data=tmpData, agregLevel="unitobs", type="graph",
-                        metrique="pres_abs", factGraph=factGraph, factGraphSel=factGraphSel,
+                        metrique="pres.abs", factGraph=factGraph, factGraphSel=factGraphSel,
                         listFact=rev(listFact), listFactSel=rev(listFactSel), # On les remets dans un ordre intuitif.
                         dataEnv=dataEnv, baseEnv=baseEnv)
         }else{}
@@ -247,7 +248,7 @@ barplotOccurrence.unitobs.f <- function(factGraph, factGraphSel, listFact, listF
             tryCatch(embedFonts(file=graphFile),
                      error=function(e)
                  {
-                     warning("Impossible d'inclure les fontes dans le PDF !")
+                     warning(mltext("WP2boxplot.W.pdfFonts"))
                  })
         }else{}
     }else{

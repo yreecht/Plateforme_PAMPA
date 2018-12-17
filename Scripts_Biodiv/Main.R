@@ -1,8 +1,8 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-09-24 11:17:34 yreecht>
+# Time-stamp: <2018-12-17 17:31:18 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
-##   Copyright (C) 2008-2017 Ifremer - Tous droits réservés.
+##   Copyright (C) 2008-2018 Ifremer - Tous droits réservés.
 ##
 ##   Ce programme est un logiciel libre ; vous pouvez le redistribuer ou le
 ##   modifier suivant les termes de la "GNU General Public License" telle que
@@ -32,7 +32,8 @@
 ####################################################################################################
 
 ## ** Version **
-options(versionPAMPA = "2.8.1")
+options(versionPAMPA = "3.0-beta1",
+        defaultLang = "en")
 
 ## Platform-specific treatment:
 ## Identification du dossier parent (d'installation) :
@@ -50,93 +51,122 @@ if(basename(fileCall) == "Main.R")
     ## message("Dossier non-trouvé")
     if (.Platform$OS.type == "windows")
     {
-        setwd("C:/PAMPA/")
+        setwd("C:/PAMPA/"
     }else{}                             # Rien !
 }
 
 ## Récupéré dans une variable globale (beurk !) :
 basePath <- getwd()
 
-## Répertoire de travail par défaut (si pas configuré par ailleurs) :
-nameWorkspace <- basePath
+## Load configuration:
+.Config <- parse(file.path(basePath, "Scripts_Biodiv/Config.R"), encoding = "latin1")
 
-########################################################################################################################
+## Répertoire de travail:
+if (length(idxWD <- grep("^[[:blank:]]*nameWorkspace[[:blank:]]*(<-|=)", .Config)))
+{
+    eval(.Config[[idxWD]])
+}else{
+    ## ...par défaut (si pas configuré par ailleurs) :
+    nameWorkspace <- basePath
+}
+
+## #############################################################################################################
 ## Chargement des fonctions de la plateforme pour :
-                                                                                       # Mise en forme du code :
+                                                                                       # Code formating
+                                                                                       # [ML status]:
 ## ...les fonctions communes de base :                                                 # -----------------------
-source("./Scripts_Biodiv/Load_packages.R", encoding="latin1")                          # OK
-source("./Scripts_Biodiv/Fonctions_base.R", encoding="latin1")                         # OK
+source("./Scripts_Biodiv/Load_packages.R", encoding="latin1")                          # OK [mld]
+source("./Scripts_Biodiv/Functions_base.R", encoding="latin1")                         # OK [mld]
+source("./Scripts_Biodiv/Functions_Multilingual.R", encoding="latin1")                 # [mli]
 
 ## ...la création de l'interface :
-source("./Scripts_Biodiv/Interface_fonctions.R", encoding="latin1")                    # OK
-source("./Scripts_Biodiv/Interface_principale.R", encoding="latin1")                   # OK
+source("./Scripts_Biodiv/Interface_functions.R", encoding="latin1")                    # OK [mld]
+source("./Scripts_Biodiv/Interface_main.R", encoding="latin1")                         # OK [mld]
 
 ## anciennes fonctions annexes de visualisation des données (corrigées) :
-source("./Scripts_Biodiv/Gestionmessages.R", encoding="latin1")                        # faite
-source("./Scripts_Biodiv/Testfichier.R", encoding="latin1")                            # faite
-source("./Scripts_Biodiv/View.R", encoding="latin1")                                   # faite
+source("./Scripts_Biodiv/Messages_management.R", encoding="latin1")                    # done [mld]
+source("./Scripts_Biodiv/Test_files.R", encoding="latin1")                             # done [mld]
+source("./Scripts_Biodiv/View.R", encoding="latin1")                                   # done [mld]
 
 ## ...le chargement des données :
-source("./Scripts_Biodiv/Chargement_fichiers.R", encoding="latin1")                    # OK
-source("./Scripts_Biodiv/Chargement_manuel_fichiers.R", encoding="latin1")             # OK
-source("./Scripts_Biodiv/Calcul_poids.R", encoding="latin1")                           # OK
-source("./Scripts_Biodiv/Lien_unitobs-refspa.R", encoding="latin1")                    # OK
-source("./Scripts_Biodiv/Chargement_shapefile.R", encoding="latin1")                   # OK
-source("./Scripts_Biodiv/Chargement_OBSIND.R", encoding="latin1")                      # OK
+source("./Scripts_Biodiv/Load_files.R", encoding="latin1")                             # OK [mld]
+source("./Scripts_Biodiv/Load_files_manually.R", encoding="latin1")                    # OK [mld]
+source("./Scripts_Biodiv/Weight_calculation.R", encoding="latin1")                     # OK [mld]
+source("./Scripts_Biodiv/Link_unitobs-refspa.R", encoding="latin1")                    # OK [mld]
+source("./Scripts_Biodiv/Load_shapefile.R", encoding="latin1")                         # OK [mld]
+source("./Scripts_Biodiv/Load_OBSIND.R", encoding="latin1")                            # OK [mli]
 
 ## ...les calculs de tables de métriques :
-source("./Scripts_Biodiv/Agregations_generiques.R", encoding="latin1")                 # OK
-source("./Scripts_Biodiv/Calcul_tables_metriques.R", encoding="latin1")                # OK
-source("./Scripts_Biodiv/Calcul_tables_metriques_LIT.R", encoding="latin1")            # OK
-source("./Scripts_Biodiv/Calcul_tables_metriques_SVR.R", encoding="latin1")            # OK
-source("./Scripts_Biodiv/Traces_tortues.R", encoding="latin1")                         # OK
+source("./Scripts_Biodiv/Generic_aggregations.R", encoding="latin1")                   # OK [mld]
+source("./Scripts_Biodiv/Calculate_metrics_tables.R", encoding="latin1")               # OK [mld]
+source("./Scripts_Biodiv/Calculate_metrics_tables_LIT.R", encoding="latin1")           # OK [mli]
+source("./Scripts_Biodiv/Calculate_metrics_tables_SVR.R", encoding="latin1")           # OK [mld]
+source("./Scripts_Biodiv/Turtle_tracks.R", encoding="latin1")                          # OK [mld]
 
 ## ...la sélection des données :
-source("./Scripts_Biodiv/Selection_donnees.R", encoding="latin1")                      # OK
+source("./Scripts_Biodiv/Data_subsets.R", encoding="latin1")                           # OK [mld]
 
 ## ...options graphiques et générales :
-source("./Scripts_Biodiv/Options.R", encoding="latin1")                                # OK
+source("./Scripts_Biodiv/Options.R", encoding="latin1")                                # OK [mld]
 
 ##################################################
 ## Analyses et graphiques :
 
 ## ...l'interface de sélection des variables :
-source("./Scripts_Biodiv/Selection_variables_fonctions.R", encoding="latin1")          # OK
-source("./Scripts_Biodiv/Selection_variables_interface.R", encoding="latin1")          # OK
+source("./Scripts_Biodiv/Variables_selection_functions.R", encoding="latin1")          # OK [mld]
+source("./Scripts_Biodiv/Variables_selection_interface.R", encoding="latin1")          # OK [mld]
 
 ## ...la création de boxplots (...) :
-source("./Scripts_Biodiv/Fonctions_graphiques.R", encoding="latin1")                   # OK
-source("./Scripts_Biodiv/Boxplots_esp_generiques.R", encoding="latin1")                # OK
-source("./Scripts_Biodiv/Boxplots_unitobs_generiques.R", encoding="latin1")            # OK
+source("./Scripts_Biodiv/Functions_graphics.R", encoding="latin1")                     # OK [mld]
+source("./Scripts_Biodiv/Boxplots_generic_sp.R", encoding="latin1")                    # OK [mld]
+source("./Scripts_Biodiv/Boxplots_generic_unitobs.R", encoding="latin1")               # OK [mld]
 ## ...dont cartes :
-source("./Scripts_Biodiv/Graphiques_carto.R", encoding="latin1")                       #
-source("./Scripts_Biodiv/Variables_carto.R", encoding="latin1")                        #
+source("./Scripts_Biodiv/Maps_graphics.R", encoding="latin1")                          # [mld]
+source("./Scripts_Biodiv/Maps_variables.R", encoding="latin1")                         # [mld]
 
 ## ...les analyses statistiques :
-source("./Scripts_Biodiv/Modeles_lineaires_interface.R", encoding="latin1")            # OK
-source("./Scripts_Biodiv/Modeles_lineaires_esp_generiques.R", encoding="latin1")       # OK
-source("./Scripts_Biodiv/Modeles_lineaires_unitobs_generiques.R", encoding="latin1")   # OK
-source("./Scripts_Biodiv/Arbres_regression_unitobs_generiques.R", encoding="latin1")   # OK
-source("./Scripts_Biodiv/Arbres_regression_esp_generiques.R", encoding="latin1")       # OK
+source("./Scripts_Biodiv/Linear_models_interface.R", encoding="latin1")                # OK [mld]
+source("./Scripts_Biodiv/Linear_models_generic_sp.R", encoding="latin1")               # OK [mld]
+source("./Scripts_Biodiv/Linear_models_generic_unitobs.R", encoding="latin1")          # OK [mld]
+source("./Scripts_Biodiv/MRT_generic_unitobs.R", encoding="latin1")                    # OK [mld]
+source("./Scripts_Biodiv/MRT_generic_sp.R", encoding="latin1")                         # OK [mld]
 
 ## ...les barplots sur les fréquences d'occurrence :
-source("./Scripts_Biodiv/Barplots_occurrence.R", encoding="latin1")                    # OK
-source("./Scripts_Biodiv/Barplots_occurrence_unitobs.R", encoding="latin1")            # OK
+source("./Scripts_Biodiv/Barplots_occurrence.R", encoding="latin1")                    # OK [mld]
+source("./Scripts_Biodiv/Barplots_occurrence_unitobs.R", encoding="latin1")            # OK [mld]
 
 ## ...barplots génériques :
-source("./Scripts_Biodiv/Barplots_esp_generiques.R", encoding="latin1")                # OK
-source("./Scripts_Biodiv/Barplots_unitobs_generiques.R", encoding="latin1")            # OK
+source("./Scripts_Biodiv/Barplots_generic_sp.R", encoding="latin1")                    # OK [mld]
+source("./Scripts_Biodiv/Barplots_generic_unitobs.R", encoding="latin1")               # OK [mld]
 
 ########################################################################################################################
 ## Configuration :
 source("./Scripts_Biodiv/Initialisation.R", encoding="latin1")
 
-## Initialisation des options graphiques (nouveau système) :
-if (is.null(getOption("GraphPAMPA")))   # uniquement si pas déjà initialisées (cas de lancement multiple)
+## Initialization of options (new ~ persistent system):
+if (is.null(getOption("PAMPAdummy")))   # uniquement si pas déjà initialisées (cas de lancement multiple)
 {
+    ## Index of
+    idxOpt <- grep("^[[:blank:]]*options[[:blank:]]*\\(", .Config)
+
+    ## Evaluate the options a first time
+    ## (some - like the language options -
+    ##  are persistent during the initialization):
+    eval(.Config[idxOpt])
+
+    if (is.null(getOption("P.GUIlang")))
+    {
+        options("P.GUIlang" = getOption("defaultLang"))
+    }
     initialiseOptions.f()
+
+    ## Override the non-persistent options after initialization:
+    eval(.Config[idxOpt])
 }
 
+
+## options("P.GUIlang" = "fr")
+## options(error = recover)
 ## On lance l'interface :
 mainInterface.create.f()
 
@@ -149,6 +179,11 @@ mainInterface.create.f()
 ## [???] : comprend pas !
 ## [sup] : supprimé.
 ## [dep] : déplacé (menu).
+
+## Translation tags:
+## [mli]: irrelevant
+## [mlo]: ongoing
+## [mld]: Done
 
 
 ### Local Variables:

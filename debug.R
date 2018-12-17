@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: debug.R
-### Time-stamp: <2015-11-30 01:02:22 yreecht>
+### Time-stamp: <2018-12-09 10:01:47 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -24,43 +24,44 @@ init.debug.f <- function(loadMain=FALSE)
     if (.Platform$OS.type == "windows")
     {
         setwd("C:/PAMPA/")
-        devDir <- "y:/Ifremer/PAMPA/Scripts/packPAMPA-WP2/Exec/"
+        ## devDir <- "y:/Ifremer/PAMPA/Scripts/packPAMPA-WP2/Exec/"
+        devDir <- "y:/Other_projects/Ifremer/PAMPA/PAMPA_Platform_dev/"
     }else{
         devDir <- "/media/ifremer/PAMPA/PAMPA/Scripts/packPAMPA-WP2/Exec/"
     }
 
     if (loadMain) source("./Scripts_Biodiv/Main.R", encoding="latin1")
 
-    ## source(paste(devDir, "Scripts_Biodiv/Agregations_generiques.R", sep=""), encoding="latin1")
-    ## source(paste(devDir, "Scripts_Biodiv/Arbres_regression_esp_generiques.R", sep=""), encoding="latin1")
-    ## source(paste(devDir, "Scripts_Biodiv/Arbres_regression_unitobs_generiques.R", sep=""), encoding="latin1")
+    ## source(paste(devDir, "Scripts_Biodiv/Generic_aggregations.R", sep=""), encoding="latin1")
+    ## source(paste(devDir, "Scripts_Biodiv/MRT_generic_sp.R", sep=""), encoding="latin1")
+    ## source(paste(devDir, "Scripts_Biodiv/MRT_generic_unitobs.R", sep=""), encoding="latin1")
     ## source(paste(devDir, "Scripts_Biodiv/Barplots_occurrence.R", sep=""), encoding="latin1")
     ## source(paste(devDir, "Scripts_Biodiv/Barplots_occurrence_unitobs.R", sep=""), encoding="latin1")
-    ## source(paste(devDir, "Scripts_Biodiv/Boxplots_esp_generiques.R", sep=""), encoding="latin1")
-    source(paste(devDir, "Scripts_Biodiv/Boxplots_unitobs_generiques.R", sep=""), encoding="latin1")
-    ## source(paste(devDir, "Scripts_Biodiv/Calcul_poids.R", sep=""), encoding="latin1")
-    ## source(paste(devDir, "Scripts_Biodiv/Calcul_tables_metriques.R", sep=""), encoding="latin1")
-    ## source(paste(devDir, "Scripts_Biodiv/Calcul_tables_metriques_LIT.R", sep=""), encoding="latin1")
-    ## source(paste(devDir, "Scripts_Biodiv/Calcul_tables_metriques_SVR.R", sep=""), encoding="latin1")
-    ## source(paste(devDir, "Scripts_Biodiv/Chargement_fichiers.R", sep=""), encoding="latin1")
-    ## source(paste(devDir, "Scripts_Biodiv/Chargement_manuel_fichiers.R", sep=""), encoding="latin1")
-    ## source(paste(devDir, "Scripts_Biodiv/Fonctions_base.R", sep=""), encoding="latin1")
-    ## source(paste(devDir, "Scripts_Biodiv/Fonctions_graphiques.R", sep=""), encoding="latin1")
-    ## source(paste(devDir, "Scripts_Biodiv/Gestionmessages.R", sep=""), encoding="latin1")
-    ## source(paste(devDir, "Scripts_Biodiv/Graphiques_carto.R", sep=""), encoding="latin1")
+    ## source(paste(devDir, "Scripts_Biodiv/Boxplots_generic_sp.R", sep=""), encoding="latin1")
+    ## source(paste(devDir, "Scripts_Biodiv/Boxplots_generic_unitobs.R", sep=""), encoding="latin1")
+    ## source(paste(devDir, "Scripts_Biodiv/Weight_calculation.R", sep=""), encoding="latin1")
+    ## source(paste(devDir, "Scripts_Biodiv/Calculate_metrics_tables.R", sep=""), encoding="latin1")
+    ## source(paste(devDir, "Scripts_Biodiv/Calculate_metrics_tables_LIT.R", sep=""), encoding="latin1")
+    ## source(paste(devDir, "Scripts_Biodiv/Calculate_metrics_tables_SVR.R", sep=""), encoding="latin1")
+    ## source(paste(devDir, "Scripts_Biodiv/Load_files.R", sep=""), encoding="latin1")
+    ## source(paste(devDir, "Scripts_Biodiv/Load_files_manually.R", sep=""), encoding="latin1")
+    ## source(paste(devDir, "Scripts_Biodiv/Functions_base.R", sep=""), encoding="latin1")
+    ## source(paste(devDir, "Scripts_Biodiv/Functions_graphics.R", sep=""), encoding="latin1")
+    ## source(paste(devDir, "Scripts_Biodiv/Messages_management.R", sep=""), encoding="latin1")
+    ## source(paste(devDir, "Scripts_Biodiv/Maps_graphics.R", sep=""), encoding="latin1")
     ## source(paste(devDir, "Scripts_Biodiv/Initialisation.R", sep=""), encoding="latin1")
-    ## source(paste(devDir, "Scripts_Biodiv/Interface_fonctions.R", sep=""), encoding="latin1")
-    ## source(paste(devDir, "Scripts_Biodiv/Interface_principale.R", sep=""), encoding="latin1")
+    ## source(paste(devDir, "Scripts_Biodiv/Interface_functions.R", sep=""), encoding="latin1")
+    ## source(paste(devDir, "Scripts_Biodiv/Interface_main.R", sep=""), encoding="latin1")
     ## source(paste(devDir, "Scripts_Biodiv/Load_packages.R", sep=""), encoding="latin1")
-    ## source(paste(devDir, "Scripts_Biodiv/Modeles_lineaires_esp_generiques.R", sep=""), encoding="latin1")
-    ## source(paste(devDir, "Scripts_Biodiv/Modeles_lineaires_unitobs_generiques.R", sep=""), encoding="latin1")
+    ## source(paste(devDir, "Scripts_Biodiv/Linear_models_generic_sp.R", sep=""), encoding="latin1")
+    ## source(paste(devDir, "Scripts_Biodiv/Linear_models_generic_unitobs.R", sep=""), encoding="latin1")
     ## source(paste(devDir, "Scripts_Biodiv/Nombres_SVR.R", sep=""), encoding="latin1")
-    ## source(paste(devDir, "Scripts_Biodiv/Selection_donnees.R", sep=""), encoding="latin1")
-    source(paste(devDir, "Scripts_Biodiv/Selection_variables_fonctions.R", sep=""), encoding="latin1")
-    ## source(paste(devDir, "Scripts_Biodiv/Selection_variables_interface.R", sep=""), encoding="latin1")
-    ## source(paste(devDir, "Scripts_Biodiv/Variables_carto.R", sep=""), encoding="latin1")
+    ## source(paste(devDir, "Scripts_Biodiv/Data_subsets.R", sep=""), encoding="latin1")
+    ## source(paste(devDir, "Scripts_Biodiv/Variables_selection_functions.R", sep=""), encoding="latin1")
+    ## source(paste(devDir, "Scripts_Biodiv/Variables_selection_interface.R", sep=""), encoding="latin1")
+    ## source(paste(devDir, "Scripts_Biodiv/Maps_variables.R", sep=""), encoding="latin1")
     ## source(paste(devDir, "Scripts_Biodiv/View.R", sep=""), encoding="latin1")
-    ## source(paste(devDir, "Scripts_Biodiv/Agregations_generiques.R", sep=""), encoding="latin1")
+    ## source(paste(devDir, "Scripts_Biodiv/Generic_aggregations.R", sep=""), encoding="latin1")
 }
 
 

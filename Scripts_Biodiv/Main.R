@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-12-09 15:54:47 yreecht>
+# Time-stamp: <2018-12-17 17:19:19 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2018 Ifremer - Tous droits réservés.
@@ -32,7 +32,7 @@
 ####################################################################################################
 
 ## ** Version **
-options(versionPAMPA = "3.0-Intl-alpha2",
+options(versionPAMPA = "3.0-beta1",
         defaultLang = "en")
 
 ## Platform-specific treatment:
@@ -51,12 +51,7 @@ if(basename(fileCall) == "Main.R")
     ## message("Dossier non-trouvé")
     if (.Platform$OS.type == "windows")
     {
-        if (Sys.info()["user"] == "yreecht")## setwd("C:/PAMPA/")
-        {
-            setwd("y:/Other_projects/Ifremer/PAMPA/PAMPA_Platform_dev/")
-        }else{
-            setwd("c:/<path/to/Domi's/repository>'")
-        }
+        setwd("C:/PAMPA/"
     }else{}                             # Rien !
 }
 

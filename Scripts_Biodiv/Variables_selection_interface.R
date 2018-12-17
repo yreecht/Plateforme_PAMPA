@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-12-13 00:11:07 yreecht>
+# Time-stamp: <2018-12-17 14:52:23 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
@@ -174,8 +174,16 @@ selectModalites.f <- function(factor, tableMetrique, env, nextStep, dataEnv, lev
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date:  4 août 2010, 14:21
 
-    facts <- c(tclvalue(get("FacteurGraph", envir=env)),
-               sapply(get("listFacteurs", envir=env), tclvalue))
+    factGraphAliases <- get("factGraphAliases", envir=env) # to get the column name from the alias.
+    listFacteursAliases <- get("listFacteursAliases", envir=env)
+
+    facts <- c(factGraphAliases[tclvalue(get("FacteurGraph", envir=env))],
+               sapply(get("listFacteurs", envir=env),
+                      function(x)
+                      {
+                          ifelse(is.na(listFacteursAliases[tclvalue(x)]),
+                                 "", listFacteursAliases[tclvalue(x)])
+                      }))
 
     selections <- c(list(get("factGraphSel", envir=env)), # Liste des modalités déjà sélectionnées
                     get("listFactSel", envir=env))
@@ -489,12 +497,17 @@ updateMetrique.f <- function(nomTable, env)
 
            ## Si table unitSp (métriques d'observation) :
            unitSp={
-               evalq(tkconfigure(CB.metrique,
-                                 value=champsMetriques.f(nomTable="unitSp", nextStep=nextStep, dataEnv=dataEnv)),
-                     envir=env)
+
+               evalq(
+               { #[ml!]
+                   metricsAliases <- MetricsField.aliases(nomTable="unitSp", nextStep=nextStep, dataEnv=dataEnv)
+                   tkconfigure(CB.metrique,
+                               value=names(metricsAliases))
+               },
+               envir=env)
 
                evalq(if (!is.element(tclvalue(MetriqueChoisie),
-                                     champsMetriques.f(nomTable="unitSp", nextStep=nextStep, dataEnv=dataEnv)))
+                                     names(metricsAliases)))
                  {
                      tclvalue(MetriqueChoisie) <- ""                           # réinitialisation
                      tryCatch(tkconfigure(RB.factGraphRefesp, state="normal"), # réactivation du référentiel
@@ -504,12 +517,16 @@ updateMetrique.f <- function(nomTable, env)
            },
            ## Si table unitSpSz (métriques d'observation) :
            unitSpSz={
-               evalq(tkconfigure(CB.metrique,
-                                 value=champsMetriques.f(nomTable="unitSpSz", nextStep=nextStep, dataEnv=dataEnv)),
+               evalq(
+               { #[ml!]
+                   metricsAliases <- MetricsField.aliases(nomTable="unitSpSz", nextStep=nextStep, dataEnv=dataEnv)
+                   tkconfigure(CB.metrique,
+                               value=names(metricsAliases))
+               },
                      envir=env)
 
                evalq(if (!is.element(tclvalue(MetriqueChoisie),
-                                     champsMetriques.f(nomTable="unitSpSz", nextStep=nextStep, dataEnv=dataEnv)))
+                                     names(metricsAliases)))
                  {
                      tclvalue(MetriqueChoisie) <- ""                           # réinitialisation
                      tryCatch(tkconfigure(RB.factGraphRefesp, state="normal"), # réactivation du référentiel
@@ -518,12 +535,17 @@ updateMetrique.f <- function(nomTable, env)
            },
            ## Si table TabbleBiodiv (indices de biodiversité) :
            unit={
-               evalq(tkconfigure(CB.metrique,
-                                 value=champsMetriques.f(nomTable="unit", nextStep=nextStep, dataEnv=dataEnv)),
-                     envir=env)
+
+               evalq(
+               {
+                   metricsAliases <- MetricsField.aliases(nomTable="unit", nextStep=nextStep, dataEnv=dataEnv)
+                   tkconfigure(CB.metrique,
+                               value=names(metricsAliases))
+               },
+               envir=env)
 
                evalq(if (!is.element(tclvalue(MetriqueChoisie),
-                                     champsMetriques.f(nomTable="unit", nextStep=nextStep, dataEnv=dataEnv)))
+                                     names(metricsAliases)))
                  {
                      tclvalue(MetriqueChoisie) <- "" # réinitialisation
                  }, envir=env)
@@ -551,18 +573,19 @@ updateMetrique.f <- function(nomTable, env)
                                         # combobox de choix du facteur de séparation des graphiques.
 
         ## Mise à jour des facteurs de regroupements pertinents :
+        evalq(listFacteursAliases <- refTablesFields.aliases(nomTable=tclvalue(TableMetrique),
+                                                             dataEnv=dataEnv,
+                                                             nextStep=nextStep),
+              envir=env)
+
         eval(parse(text=
                    eval(substitute(paste("tkconfigure(CB.fact", level,
-                                         ", value=champsReferentiels.f(nomTable=tclvalue(TableMetrique),",
-                                         " dataEnv=dataEnv,",
-                                         " nextStep=nextStep))", sep=""),
+                                         ", value= names(listFacteursAliases))", sep=""),
                                    list(level=1:length(listFacteurs))))), envir=env)
 
         eval(parse(text=
                    eval(substitute(paste("if (!is.element(tclvalue(listFacteurs[[", level,
-                                         "]]), champsReferentiels.f(nomTable=tclvalue(TableMetrique),",
-                                         " dataEnv=dataEnv,",
-                                         " nextStep=nextStep)))",
+                                         "]]), names(listFacteursAliases)))",
                                          "{ tclvalue(listFacteurs[[", level, "]]) <- '' ; ",
                                          "updateFact.f(level=", level,", env=env)}", sep=""),
                                    list(level=1:length(listFacteurs))))), envir=env)
@@ -587,28 +610,35 @@ updateFactGraph.f <- function(nomTable, env)
     switch(nomTable,
            ## Si table "référentiel d'espèce" :
            refesp={
-               evalq(tkconfigure(CB.factGraph,
-                                 value=champsRefEspeces.f(site=getOption("P.MPA"),
-                                                          dataEnv=dataEnv, ordered=TRUE,
-                                                          tableMetrique=tclvalue(TableMetrique),
-                                                          nextStep=nextStep)),
+               evalq(
+               {
+                   factGraphAliases <- spRefFields.aliases(site=getOption("P.MPA"),
+                                                             dataEnv=dataEnv, ordered=TRUE,
+                                                             tableMetrique=tclvalue(TableMetrique),
+                                                             nextStep=nextStep)
+                   tkconfigure(CB.factGraph,
+                                 value=names(factGraphAliases))
+               },
                      envir=env)
                evalq(if (!is.element(tclvalue(FacteurGraph),
-                                     champsRefEspeces.f(site=getOption("P.MPA"),
-                                                        dataEnv=dataEnv, tableMetrique=tclvalue(TableMetrique),
-                                                        nextStep=nextStep)))
+                                     names(factGraphAliases)))
                  {
                      tclvalue(FacteurGraph) <- "" # réinitialisation de la sélection.
                  }, envir=env)
            },
            ## Si table des "unités d'observation" :
            unitobs={
-               evalq(tkconfigure(CB.factGraph,
-                                 value=champsUnitobs.f(dataEnv=dataEnv, ordered=TRUE, tableMetrique=tclvalue(TableMetrique))),
+               evalq(
+               {
+                   factGraphAliases <- UnitobsFields.aliases(dataEnv=dataEnv, ordered=TRUE,
+                                                             tableMetrique=tclvalue(TableMetrique))
+                   tkconfigure(CB.factGraph,
+                               value= names(factGraphAliases))
+               },
                      envir=env)
 
                evalq(if (!is.element(tclvalue(FacteurGraph),
-                                     champsUnitobs.f(dataEnv=dataEnv, tableMetrique=tclvalue(TableMetrique))))
+                                     names(factGraphAliases)))
                  {
                      tclvalue(FacteurGraph) <- "" # réinitialisation de la sélection.
                  }, envir=env)
@@ -642,8 +672,12 @@ updateFact.f <- function(level, env)
         ## Autres cas :
         if(length(get("listFacteurs.old", envir=env)) >= level) # pour éviter des erreurs
         {
-            if (get("listFacteurs.old", envir=env)[[level]] !=
-                tclvalue(get("listFacteurs", envir=env)[[level]]))
+            listFacteursAliases <- get("listFacteursAliases", envir=env)
+            ## if (tclvalue(get("listFacteurs", envir=env)[[level]]) != "") browser()
+
+            if (tclvalue(get("listFacteurs", envir=env)[[level]]) == "" ||
+                (get("listFacteurs.old", envir=env)[[level]] !=
+                 listFacteursAliases[tclvalue(get("listFacteurs", envir=env)[[level]])]))
             {
                 ## Réinitialisation des modalités sélectionnées :
                 expr <- paste("listFactSel[[", level, "]] <- NA", sep="")
@@ -651,10 +685,15 @@ updateFact.f <- function(level, env)
             }
         }
         ## Mise à jour de "listFacteurs.old" :
-        evalq(listFacteurs.old <- as.list(sapply(listFacteurs, tclvalue)), envir=env)
+        evalq(listFacteurs.old <- as.list(sapply(listFacteurs,
+                                                 function(x)
+                                                 {
+                                                     ifelse(is.na(listFacteursAliases[tclvalue(x)]),
+                                                            "", listFacteursAliases[tclvalue(x)])
+                                                 })),
+              envir=env)
     }
 }
-
 
 ########################################################################################################################
 nouvChoixFact.f <- function(level, env)
@@ -680,9 +719,7 @@ nouvChoixFact.f <- function(level, env)
 
         ## Création d'une combobox supplémentaire :
         exprCB <- paste("CB.fact", level + 1, " <- ttkcombobox(FrameFact,",
-                        " value=champsReferentiels.f(nomTable=tclvalue(TableMetrique),",
-                        " dataEnv=dataEnv,",
-                        " nextStep=nextStep),",
+                        " value=names(listFacteursAliases),",
                         " textvariable=listFacteurs[[", level + 1, "]], state='readonly')", sep="")
 
         ## Création d'un bouton de sélection des modalités supplémentaire :
@@ -690,7 +727,10 @@ nouvChoixFact.f <- function(level, env)
                          " <- tkbutton(FrameFact, text='",
                          mltext("selectionVariables.B.fSel"),
                          "', command=function()",
-                         " { selectModalites.f(tclvalue(listFacteurs[[", level + 1, "]]), ",
+                         " { selectModalites.f(ifelse(is.na(listFacteursAliases[tclvalue(listFacteurs[[", level + 1,
+                         "]])]), ",
+                         "                            \"\", listFacteursAliases[tclvalue(listFacteurs[[", level + 1,
+                         "]])]), ",
                          "tableMetrique=tclvalue(TableMetrique), env=env, level=",
                          level + 1, ", nextStep=nextStep, dataEnv=dataEnv) ; winRaise.f(WinSelection) })",
                          sep="")
@@ -911,7 +951,7 @@ selectionVariables.f <- function(nextStep, dataEnv, baseEnv)
                  "barplot.esp"="barplot.esp")
 
     ## Liste des métriques :
-    metriques <- champsMetriques.f(nomTable="unitSp", nextStep=nextStep, dataEnv=dataEnv)
+    metricsAliases <- MetricsField.aliases(nomTable="unitSp", nextStep=nextStep, dataEnv=dataEnv)
 
     TableMetrique <- tclVar("unitSp")   # Table des métriques.
     MetriqueChoisie <- tclVar("")       # Métrique choisie.
@@ -940,17 +980,19 @@ selectionVariables.f <- function(nextStep, dataEnv, baseEnv)
     {
         switch(nextStep,
                "freq_occurrence"={
+                   metricsAliases <- aliases(aliases("occurrence.frequency", reverse = TRUE))
                    tclvalue(TableMetrique) <- "TableOccurrences"
-                   tclvalue(MetriqueChoisie) <- "freq.occurrence"
+                   tclvalue(MetriqueChoisie) <- names(metricsAliases)
                },
                "freq_occurrence.unitobs"={
+                   metricsAliases <- aliases(aliases("occurrence.frequency", reverse = TRUE))
                    tclvalue(TableMetrique) <- "TableOccurrences"
-                   tclvalue(MetriqueChoisie) <- "freq.occurrence"
+                   tclvalue(MetriqueChoisie) <- names(metricsAliases)
                })
     }else{                              # Uniquement si choix de métrique possible.
         ## Choix de la métrique :
 
-        CB.metrique <- ttkcombobox(FrameMetrique, value=metriques, textvariable=MetriqueChoisie,
+        CB.metrique <- ttkcombobox(FrameMetrique, value=names(metricsAliases), textvariable=MetriqueChoisie,
                                    state="readonly")
         RB.unitSpSz <- tkradiobutton(FrameMetrique, variable=TableMetrique,
                                       value="unitSpSz", text=titreSelVar.f(type="tabListespCT", nextStep))
@@ -974,7 +1016,8 @@ selectionVariables.f <- function(nextStep, dataEnv, baseEnv)
                                text=mltext("selectionVariables.B.fSel"),
                                command=function()
                                {
-                                   selectModalites.f(factor=tclvalue(FacteurGraph),
+                                   selectModalites.f(factor=ifelse(is.na(factGraphAliases[tclvalue(FacteurGraph)]),
+                                                                   "", factGraphAliases[tclvalue(FacteurGraph)]),
                                                      tableMetrique=tclvalue(TableMetrique),
                                                      env=env, level=0,
                                                      nextStep=nextStep, dataEnv=dataEnv)
@@ -983,16 +1026,21 @@ selectionVariables.f <- function(nextStep, dataEnv, baseEnv)
 
     ## Choix des facteurs de regroupement + modalités :
     FrameFact <- tkframe(WinSelection, borderwidth=2, relief="groove")
+
+    ## Getting the aliases for the reference table(s) fields:
+    listFacteursAliases <- refTablesFields.aliases(nomTable=tclvalue(TableMetrique), dataEnv=dataEnv,
+                                                   nextStep=nextStep)
+
     CB.fact1 <- ttkcombobox(FrameFact,
-                            value=champsReferentiels.f(nomTable=tclvalue(TableMetrique), dataEnv=dataEnv,
-                                                       nextStep=nextStep),
+                            value= names(listFacteursAliases),
                             textvariable=listFacteurs[[1]], state="readonly")
 
     B.factSel1 <- tkbutton(FrameFact,
                            text=mltext("selectionVariables.B.fSel"),
                            command=function()
                            {
-                               selectModalites.f(tclvalue(listFacteurs[[1]]),
+                               selectModalites.f(ifelse(is.na(listFacteursAliases[tclvalue(listFacteurs[[1]])]),
+                                                        "", listFacteursAliases[tclvalue(listFacteurs[[1]])]),
                                                  tableMetrique=tclvalue(TableMetrique),
                                                  env=env, level=1,
                                                  nextStep=nextStep, dataEnv=dataEnv)
@@ -1087,10 +1135,11 @@ selectionVariables.f <- function(nextStep, dataEnv, baseEnv)
     tkgrid(RB.factGraphRefesp, sticky="w")
     tkgrid(tklabel(WinSelection), column=4)
 
+    factGraphAliases <- spRefFields.aliases(site=getOption("P.MPA"), dataEnv=dataEnv,
+                                            ordered=TRUE, tableMetrique=tclvalue(TableMetrique),
+                                            nextStep=nextStep)
     tkconfigure(CB.factGraph,
-                value=champsRefEspeces.f(site=getOption("P.MPA"), dataEnv=dataEnv,
-                                         ordered=TRUE, tableMetrique=tclvalue(TableMetrique),
-                                         nextStep=nextStep))
+                value= names(factGraphAliases))
     ## tkconfigure(CB.metrique, value=champsMetriques.f(tclvalue(TableMetrique), nextStep)) # inutile
 
     if (is.element(nextStep, nextStepUnitobs)) # Pas pertinent pour de l'agrégation /unitobs.
@@ -1129,10 +1178,20 @@ selectionVariables.f <- function(nextStep, dataEnv, baseEnv)
 
         if (tclvalue(Done) == "1")      # statut exécution OK.
         {
+            ## browser()
+
             ## Vérifications des variables (si bonnes, le statut reste 1) :
-            tclvalue(Done) <- verifVariables.f(metrique=tclvalue(MetriqueChoisie),
-                                               factGraph=tclvalue(FacteurGraph), factGraphSel=factGraphSel,
-                                               listFact=sapply(listFacteurs, tclvalue), listFactSel=listFactSel,
+            tclvalue(Done) <- verifVariables.f(metrique=metricsAliases[tclvalue(MetriqueChoisie)],
+                                               factGraph=ifelse(is.na(factGraphAliases[tclvalue(FacteurGraph)]),
+                                                                "", factGraphAliases[tclvalue(FacteurGraph)]),
+                                               factGraphSel=factGraphSel,
+                                               listFact=sapply(listFacteurs,
+                                                               function(x)
+                                                               {
+                                                                   ifelse(is.na(listFacteursAliases[tclvalue(x)]),
+                                                                          "", listFacteursAliases[tclvalue(x)])
+                                                               }),
+                                               listFactSel=listFactSel,
                                                tableMetrique=tclvalue(TableMetrique),
                                                nextStep=nextStep, dataEnv=dataEnv,
                                                ParentWin=WinSelection)
@@ -1145,71 +1204,151 @@ selectionVariables.f <- function(nextStep, dataEnv, baseEnv)
                    boxplot.esp={
 
                        ## tkmessageBox(message="BoxPlots")
-                       WP2boxplot.f(metrique=tclvalue(MetriqueChoisie),
-                                    factGraph=tclvalue(FacteurGraph), factGraphSel=factGraphSel,
-                                    listFact=sapply(listFacteurs, tclvalue), listFactSel=listFactSel,
+                       WP2boxplot.f(metrique=metricsAliases[tclvalue(MetriqueChoisie)],
+                                    factGraph=ifelse(is.na(factGraphAliases[tclvalue(FacteurGraph)]),
+                                                     "", factGraphAliases[tclvalue(FacteurGraph)]),
+                                    factGraphSel=factGraphSel,
+                                    listFact=sapply(listFacteurs,
+                                                    function(x)
+                                                    {
+                                                        ifelse(is.na(listFacteursAliases[tclvalue(x)]),
+                                                               "", listFacteursAliases[tclvalue(x)])
+                                                    }),
+                                    listFactSel=listFactSel,
                                     tableMetrique=tclvalue(TableMetrique), dataEnv=dataEnv, baseEnv=baseEnv) # OK
                    },
                    modele_lineaire={
 
                        ## tkmessageBox(message="Modèles linéaires")
-                       modeleLineaireWP2.esp.f(metrique=tclvalue(MetriqueChoisie),
-                                               factAna=tclvalue(FacteurGraph), factAnaSel=factGraphSel,
-                                               listFact=sapply(listFacteurs, tclvalue), listFactSel=listFactSel,
+                       modeleLineaireWP2.esp.f(metrique=metricsAliases[tclvalue(MetriqueChoisie)],
+                                               factAna=ifelse(is.na(factGraphAliases[tclvalue(FacteurGraph)]),
+                                                              "", factGraphAliases[tclvalue(FacteurGraph)]),
+                                               factAnaSel=factGraphSel,
+                                               listFact=sapply(listFacteurs,
+                                                               function(x)
+                                                               {
+                                                                   ifelse(is.na(listFacteursAliases[tclvalue(x)]),
+                                                                          "", listFacteursAliases[tclvalue(x)])
+                                                               }),
+                                               listFactSel=listFactSel,
                                                tableMetrique=tclvalue(TableMetrique),
                                                dataEnv=dataEnv, baseEnv=baseEnv) #
                    },
                    freq_occurrence={
-                       barplotOccurrence.f(factGraph=tclvalue(FacteurGraph), factGraphSel=factGraphSel,
-                                           listFact=sapply(listFacteurs, tclvalue), listFactSel=listFactSel,
+                       barplotOccurrence.f(factGraph=ifelse(is.na(factGraphAliases[tclvalue(FacteurGraph)]),
+                                                            "", factGraphAliases[tclvalue(FacteurGraph)]),
+                                           factGraphSel=factGraphSel,
+                                           listFact=sapply(listFacteurs,
+                                                           function(x)
+                                                           {
+                                                               ifelse(is.na(listFacteursAliases[tclvalue(x)]),
+                                                                      "", listFacteursAliases[tclvalue(x)])
+                                                           }),
+                                           listFactSel=listFactSel,
                                            dataEnv=dataEnv, baseEnv=baseEnv)
                    },
                    freq_occurrence.unitobs={
-                       barplotOccurrence.unitobs.f(factGraph=tclvalue(FacteurGraph), factGraphSel=factGraphSel,
-                                                   listFact=sapply(listFacteurs, tclvalue), listFactSel=listFactSel,
+                       barplotOccurrence.unitobs.f(factGraph=ifelse(is.na(factGraphAliases[tclvalue(FacteurGraph)]),
+                                                                    "", factGraphAliases[tclvalue(FacteurGraph)]),
+                                                   factGraphSel=factGraphSel,
+                                                   listFact=sapply(listFacteurs,
+                                                                   function(x)
+                                                                   {
+                                                                       ifelse(is.na(listFacteursAliases[tclvalue(x)]),
+                                                                              "", listFacteursAliases[tclvalue(x)])
+                                                                   }),
+                                                   listFactSel=listFactSel,
                                                    dataEnv=dataEnv, baseEnv=baseEnv) #
                    },
                    boxplot.unitobs={
-                       WP2boxplot.unitobs.f(metrique=tclvalue(MetriqueChoisie),
-                                            factGraph=tclvalue(FacteurGraph), factGraphSel=factGraphSel,
-                                            listFact=sapply(listFacteurs, tclvalue), listFactSel=listFactSel,
+                       WP2boxplot.unitobs.f(metrique=metricsAliases[tclvalue(MetriqueChoisie)],
+                                            factGraph=ifelse(is.na(factGraphAliases[tclvalue(FacteurGraph)]),
+                                                             "", factGraphAliases[tclvalue(FacteurGraph)]),
+                                            factGraphSel=factGraphSel,
+                                            listFact=sapply(listFacteurs,
+                                                            function(x)
+                                                            {
+                                                                ifelse(is.na(listFacteursAliases[tclvalue(x)]),
+                                                                       "", listFacteursAliases[tclvalue(x)])
+                                                            }),
+                                            listFactSel=listFactSel,
                                             tableMetrique=tclvalue(TableMetrique),
                                             dataEnv=dataEnv, baseEnv=baseEnv) # OK
                    },
                    modele_lineaire.unitobs={
-                        modeleLineaireWP2.unitobs.f(metrique=tclvalue(MetriqueChoisie),
-                                                    factAna=tclvalue(FacteurGraph), factAnaSel=factGraphSel,
-                                                    listFact=sapply(listFacteurs, tclvalue), listFactSel=listFactSel,
-                                                    tableMetrique=tclvalue(TableMetrique),
-                                                    dataEnv=dataEnv, baseEnv=baseEnv) #
+                       modeleLineaireWP2.unitobs.f(metrique=metricsAliases[tclvalue(MetriqueChoisie)],
+                                                   factAna=ifelse(is.na(factGraphAliases[tclvalue(FacteurGraph)]),
+                                                                  "", factGraphAliases[tclvalue(FacteurGraph)]),
+                                                   factAnaSel=factGraphSel,
+                                                   listFact=sapply(listFacteurs,
+                                                                   function(x)
+                                                                   {
+                                                                       ifelse(is.na(listFacteursAliases[tclvalue(x)]),
+                                                                              "", listFacteursAliases[tclvalue(x)])
+                                                                   }),
+                                                   listFactSel=listFactSel,
+                                                   tableMetrique=tclvalue(TableMetrique),
+                                                   dataEnv=dataEnv, baseEnv=baseEnv) #
                    },
                    MRT.unitobs={
-                       WP2MRT.unitobs.f(metrique=tclvalue(MetriqueChoisie),
-                                        factGraph=tclvalue(FacteurGraph), factGraphSel=factGraphSel,
-                                        listFact=sapply(listFacteurs, tclvalue), listFactSel=listFactSel,
+                       WP2MRT.unitobs.f(metrique=metricsAliases[tclvalue(MetriqueChoisie)],
+                                        factGraph=ifelse(is.na(factGraphAliases[tclvalue(FacteurGraph)]),
+                                                         "", factGraphAliases[tclvalue(FacteurGraph)]),
+                                        factGraphSel=factGraphSel,
+                                        listFact=sapply(listFacteurs,
+                                                        function(x)
+                                                        {
+                                                            ifelse(is.na(listFacteursAliases[tclvalue(x)]),
+                                                                   "", listFacteursAliases[tclvalue(x)])
+                                                        }),
+                                        listFactSel=listFactSel,
                                         tableMetrique=tclvalue(TableMetrique), dataEnv=dataEnv, baseEnv=baseEnv) #
                    },
                    MRT.esp={
 
                        ## tkmessageBox(message="BoxPlots")
-                       WP2MRT.esp.f(metrique=tclvalue(MetriqueChoisie),
-                                    factGraph=tclvalue(FacteurGraph), factGraphSel=factGraphSel,
-                                    listFact=sapply(listFacteurs, tclvalue), listFactSel=listFactSel,
+                       WP2MRT.esp.f(metrique=metricsAliases[tclvalue(MetriqueChoisie)],
+                                    factGraph=ifelse(is.na(factGraphAliases[tclvalue(FacteurGraph)]),
+                                                     "", factGraphAliases[tclvalue(FacteurGraph)]),
+                                    factGraphSel=factGraphSel,
+                                    listFact=sapply(listFacteurs,
+                                                    function(x)
+                                                    {
+                                                        ifelse(is.na(listFacteursAliases[tclvalue(x)]),
+                                                               "", listFacteursAliases[tclvalue(x)])
+                                                    }),
+                                    listFactSel=listFactSel,
                                     tableMetrique=tclvalue(TableMetrique), dataEnv=dataEnv, baseEnv=baseEnv) #
                    },
                    barplot.esp={
 
                        ## tkmessageBox(message="BarPlots")
-                       WP2barplot.esp.f(metrique=tclvalue(MetriqueChoisie),
-                                    factGraph=tclvalue(FacteurGraph), factGraphSel=factGraphSel,
-                                    listFact=sapply(listFacteurs, tclvalue), listFactSel=listFactSel,
-                                    tableMetrique=tclvalue(TableMetrique), dataEnv=dataEnv, baseEnv=baseEnv) #
+                       WP2barplot.esp.f(metrique=metricsAliases[tclvalue(MetriqueChoisie)],
+                                        factGraph=ifelse(is.na(factGraphAliases[tclvalue(FacteurGraph)]),
+                                                         "", factGraphAliases[tclvalue(FacteurGraph)]),
+                                        factGraphSel=factGraphSel,
+                                        listFact=sapply(listFacteurs,
+                                                        function(x)
+                                                        {
+                                                            ifelse(is.na(listFacteursAliases[tclvalue(x)]),
+                                                                   "", listFacteursAliases[tclvalue(x)])
+                                                        }),
+                                            listFactSel=listFactSel,
+                                            tableMetrique=tclvalue(TableMetrique), dataEnv=dataEnv, baseEnv=baseEnv) #
                    },
                    barplot.unitobs={
-                       WP2barplot.unitobs.f(metrique=tclvalue(MetriqueChoisie),
-                                            factGraph=tclvalue(FacteurGraph), factGraphSel=factGraphSel,
-                                            listFact=sapply(listFacteurs, tclvalue), listFactSel=listFactSel,
-                                            tableMetrique=tclvalue(TableMetrique), dataEnv=dataEnv, baseEnv=baseEnv) #
+                       WP2barplot.unitobs.f(metrique=metricsAliases[tclvalue(MetriqueChoisie)],
+                                            factGraph=ifelse(is.na(factGraphAliases[tclvalue(FacteurGraph)]),
+                                                             "", factGraphAliases[tclvalue(FacteurGraph)]),
+                                            factGraphSel=factGraphSel,
+                                            listFact=sapply(listFacteurs,
+                                                            function(x)
+                                                            {
+                                                                ifelse(is.na(listFacteursAliases[tclvalue(x)]),
+                                                                       "", listFacteursAliases[tclvalue(x)])
+                                                            }),
+                                            listFactSel=listFactSel,
+                                            tableMetrique=tclvalue(TableMetrique), dataEnv=dataEnv, baseEnv=baseEnv)
                    },
                    tkmessageBox(message=paste("Nothing to do (option '", nextStep, "' not implemented).", sep=""),
                                 icon="warning"))

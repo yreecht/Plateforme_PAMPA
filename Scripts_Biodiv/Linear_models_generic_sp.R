@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-12-12 22:13:03 yreecht>
+# Time-stamp: <2018-12-17 13:34:34 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
@@ -751,8 +751,11 @@ print.summary.glht.red <- function (x, digits = max(3, getOption("digits") - 3),
         cat(mltext("print.summary.glht.red.KW.multComp"), x$observation.type,
             mltext("print.summary.glht.red.KW.contrast"), "\n\n\n")
     call <- if (isS4(x$model))
-        x$model@call
-    else x$model$call
+            {
+                x$model@call
+            }else{
+                x$model$call
+            }
     ## if (!is.null(call)) {
     ##     cat("Fit: ")
     ##     print(call)
@@ -768,12 +771,12 @@ print.summary.glht.red <- function (x, digits = max(3, getOption("digits") - 3),
         ifelse(x$df == 0, "z", "t"), "|)", sep = ""))
     colnames(mtests) <- c("Estimate", "Std. Error", ifelse(x$df ==
         0, "z value", "t value"), pname)
-    type <- pq$observation.type
-    if (!is.null(error) && error > .Machine$double.eps) {
+    type <- ifelse(is.null(pq$observation.type) & ! is.null(pq$type), pq$type, pq$observation.type)
+    if (!is.null(error) && error > .Machine$double.eps)
+    {
         sig <- which.min(abs(1/error - (10^(1:10))))
         sig <- 1/(10^sig)
-    }
-    else {
+    }else{
         sig <- .Machine$double.eps
     }
     cat(mltext("print.summary.glht.red.KW.linH"), "\n")
@@ -781,7 +784,7 @@ print.summary.glht.red <- function (x, digits = max(3, getOption("digits") - 3),
         greater = "<=")
     rownames(mtests) <- paste(rownames(mtests), alt, x$rhs)
     printCoefmat(mtests, digits = digits, has.Pvalue = TRUE,
-        P.values = TRUE, eps.Pvalue = sig)
+                 P.values = TRUE, eps.Pvalue = sig)
     switch(type, univariate = cat(mltext("print.summary.glht.red.KW.pValU")),
         `single-step` = cat(mltext("print.summary.glht.red.KW.pValST")),
         Shaffer = cat(mltext("print.summary.glht.red.KW.pValS")),
@@ -1491,7 +1494,7 @@ compMultiplesLM.f <- function(objLM, Data, fact1, fact2, resFile, exclude, Log=F
         capture.output(print.summary.glht.red(summary(glht(objLM,
                                                            linfct=get(paste("diff", i, sep="")),
                                                            alternative="two.sided"))),
-                   file=resFile)
+                       file=resFile)
     }
 }
 

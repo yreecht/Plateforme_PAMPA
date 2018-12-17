@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-12-12 18:58:34 yreecht>
+# Time-stamp: <2018-12-14 10:33:58 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
@@ -508,7 +508,7 @@ selectionVariables.carto.f <- function(nextStep, dataEnv, baseEnv)
                           foreground="darkred",
                           background=.BGcolor)
     CB.fact1 <- ttkcombobox(FrameFact,
-                            value=champsReferentiels.f(nomTable=tclvalue(TableMetrique), dataEnv=dataEnv,
+                            value=refTablesFields.aliases(nomTable=tclvalue(TableMetrique), dataEnv=dataEnv,
                                                        nextStep=nextStep),
                             textvariable=listFacteurs[[1]], state="readonly")
 
@@ -778,7 +778,7 @@ selectionVariables.carto.f <- function(nextStep, dataEnv, baseEnv)
     tkgrid(RB.factGraphRefesp, sticky="w")
 
     tkconfigure(CB.factGraph,
-                value=champsRefEspeces.f(site=getOption("P.MPA"), dataEnv=dataEnv,
+                value=spRefFields.aliases(site=getOption("P.MPA"), dataEnv=dataEnv,
                                          ordered=TRUE, tableMetrique=tclvalue(TableMetrique),
                                          nextStep=nextStep))
     ## tkconfigure(CB.metrique, value=champsMetriques.f(tclvalue(TableMetrique), nextStep)) # inutile

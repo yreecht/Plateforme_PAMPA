@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-12-12 23:19:29 yreecht>
+# Time-stamp: <2018-12-15 14:47:48 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
@@ -69,6 +69,7 @@ assign(".translations", .translations, envir=.GlobalEnv)
 
 .aliases <- read.csv("./Scripts_Biodiv/Field_aliases.csv", stringsAsFactor = FALSE, row.names = 1)
 colnames(.aliases) <- tolower(colnames(.aliases))
+assign(".aliases", .aliases, envir=.GlobalEnv)
 
 
 ########################################################################################################################

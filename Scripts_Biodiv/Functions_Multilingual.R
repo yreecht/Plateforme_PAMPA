@@ -1,7 +1,7 @@
 #-*- coding: latin-9 -*-
 
 ### File: Functions_Multilingual.R
-### Time-stamp: <2018-12-09 18:54:08 yreecht>
+### Time-stamp: <2018-12-15 14:45:53 yreecht>
 ###
 ### Created: 09/07/2018	15:37:32
 ### Author: Yves Reecht
@@ -57,6 +57,45 @@ mltext <- function(msgid, language = tolower(getOption("P.GUIlang")))
     return(unname(msg))
 }
 
+aliases <- function(fieldID, language = tolower(getOption("P.GUIlang")), reverse = FALSE)
+{
+    ## Purpose:
+    ## ----------------------------------------------------------------------
+    ## Arguments:
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date: 12 Dec 2018, 23:19
+
+    aliases <- get(".aliases", envir = .GlobalEnv)
+
+    lang <- ifelse(language %in% colnames(aliases),
+                   language,
+                   "en")
+
+    als <- sapply(fieldID,
+                  function(i)
+                  {
+                      res <- if (! i %in% row.names(aliases))
+                             {
+                                 i
+                             }else{
+                                 ifelse(test = nchar(aliases[i, lang]),
+                                        yes = aliases[i, lang],
+                                        no = ifelse(test = nchar(aliases[i, "en"]),
+                                                    yes = aliases[i, "en"],
+                                                    no = i))
+                             }
+                      return(res)
+                  })
+
+    if (isTRUE(reverse))
+    {
+        alsTmp <- als
+        als <- names(alsTmp)
+        names(als) <- alsTmp
+    }
+
+    return(als)
+}
 
 
 

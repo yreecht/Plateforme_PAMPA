@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-12-12 22:42:34 yreecht>
+# Time-stamp: <2018-12-17 14:52:24 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
@@ -70,7 +70,7 @@ has.no.pres.abs <- function(nextStep, tableMetrique, dataEnv)
 
 
 ########################################################################################################################
-champsMetriques.f <- function(nomTable, nextStep, dataEnv)
+MetricsField.aliases <- function(nomTable, nextStep, dataEnv)
 {
     ## Purpose: Retourne la liste des champs pouvant être utilisés comme
     ##          métriques en fonction du nom de table
@@ -97,23 +97,31 @@ champsMetriques.f <- function(nomTable, nextStep, dataEnv)
         switch(nomTable,
                ## Table unitSp (métriques d'observation) :
                unitSp={
-                   res <- sort(colnames(unitSp)[sapply(unitSp,
-                                                       function(x){is.numeric(x) & !all(is.na(x))}) &
-                                                !is.element(colnames(unitSp),
-                                                            c("year",
-                                                              has.no.pres.abs(nextStep, nomTable, dataEnv=dataEnv),
-                                                              ifelse(is.benthos.f(),
-                                                                     "number",
-                                                                     "")))])
+                   res <- aliases(colnames(unitSp)[sapply(unitSp,
+                                                          function(x){is.numeric(x) & !all(is.na(x))}) &
+                                                   !is.element(colnames(unitSp),
+                                                               c("year",
+                                                                 has.no.pres.abs(nextStep,
+                                                                                 nomTable,
+                                                                                 dataEnv=dataEnv),
+                                                                 ifelse(is.benthos.f(),
+                                                                        "number",
+                                                                        "")))],
+                                  reverse = TRUE)
+
+                   res <- res[order(names(res))]
                },
                ## Table unitSpSz (métriques d'observation par classes de taille) :
                unitSpSz={
-                   res <- sort(colnames(unitSpSz)[sapply(unitSpSz,
-                                                         function(x){is.numeric(x) & !all(is.na(x))}) &
-                                                  !is.element(colnames(unitSpSz),
-                                                              c("year",
-                                                                has.no.pres.abs(nextStep, nomTable, dataEnv=dataEnv),
-                                                                "longitude", "latitude"))])
+                   res <- aliases(colnames(unitSpSz)[sapply(unitSpSz,
+                                                            function(x){is.numeric(x) & !all(is.na(x))}) &
+                                                     !is.element(colnames(unitSpSz),
+                                                                 c("year",
+                                                                   has.no.pres.abs(nextStep, nomTable, dataEnv=dataEnv),
+                                                                   "longitude", "latitude"))],
+                                  reverse = TRUE)
+
+                   res <- res[order(names(res))]
                },
                ## Table unit (indices de biodiversité) :
                unit={
@@ -122,14 +130,27 @@ champsMetriques.f <- function(nomTable, nextStep, dataEnv)
                                 "SDeltaPlus",
                                 grep("relative.SR", colnames(eval(parse(text=nomTable))), value=TRUE))
 
-                   res <- sort(colnames(unit)[sapply(unit,
-                                                     function(x){is.numeric(x) & !all(is.na(x))}) &
-                                              is.element(colnames(unit), columns)])
+                   columnsAls <- aliases(columns, reverse = TRUE) # with aliases as names
+
+                   validCols <- colnames(unit)[sapply(unit,
+                                                      function(x){is.numeric(x) & !all(is.na(x))}) &
+                                               is.element(colnames(unit), columns)]
+
+                   res <- columnsAls[columnsAls %in% validCols]
+
                },
                ## Autres cas :
-               res <- sort(colnames(eval(parse(text=nomTable)))[sapply(eval(parse(text=nomTable)),
-                                                                       function(x){is.numeric(x) & !all(is.na(x))}) &
-                                                                colnames(unitSp)!="year"])
+               {
+                   res <- aliases(colnames(eval(parse(text=nomTable)))[sapply(eval(parse(text=nomTable)),
+                                                                              function(x)
+                                                                              {
+                                                                                  is.numeric(x) & !all(is.na(x))
+                                                                              }) &
+                                                                       colnames(unitSp)!="year"],
+                                  reverse = TRUE)
+
+                   res <- res[order(names(res))]
+               }
                )
 
         return(res[!is.element(res, c(colnames(refesp), colnames(unitobs)))])
@@ -180,6 +201,63 @@ champsUnitobs.f <- function(dataEnv, ordered=FALSE, tableMetrique="")
         res <- c(if (tableMetrique == "unitSpSz")
                  {
                      c("size.class", "")
+                 }else{
+                     ""
+                 },
+                 res)}
+
+    return(res)
+}
+
+UnitobsFields.aliases <- function(dataEnv, ordered=FALSE, tableMetrique="")
+{
+    ## Purpose: Retourne la liste des champs du référentiel d'unités
+    ##          d'observations après avoir supprimé les champs vides.
+    ## ----------------------------------------------------------------------
+    ## Arguments: ordered : faire apparaître les champs principaux en
+    ##                      premiers ? (booléen, optionnel)
+    ##            tableMetrique : nom de la table de métriques (pour pouvoir
+    ##                            ajouter le champ classe de taille, même
+    ##                            si ne fait pas partie de cette table).
+    ##            dataEnv : l'environnement des données.
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date:  3 août 2010, 11:12
+
+    ## Récupération des données :
+    unitobs <- get("unitobs", envir=dataEnv)
+
+    ## Champs principaux :
+    cPrincip <- aliases(c(
+                          ## table "unitobs" :
+                          "year", "protection.status", "annee.campagne", "site", "biotope",
+                          "geogr.descriptor1", "geogr.descriptor2"
+                          ), reverse = TRUE)
+
+    ## Champs non-vides de la table 'unitobs' :
+    res <- aliases(names(unitobs)[sapply(names(unitobs),
+                                         function(i)
+                                         {
+                                             !all(is.na(unitobs[ , i]))
+                                         })],
+                   reverse = TRUE)
+
+    res <- res[order(names(res))]       # in alphabetical order anyway.
+
+    ## Champs principaux en premiers :
+    if (ordered)
+    {
+        res <- c(if (tableMetrique == "unitSpSz")
+                 {
+                     aliases(c("size.class", ""), reverse = TRUE)
+                 }else{
+                     ""
+                 },
+                 cPrincip[is.element(cPrincip, res)],
+                 "", res[!is.element(res, cPrincip)])
+    }else{
+        res <- c(if (tableMetrique == "unitSpSz")
+                 {
+                     aliases(c("size.class", ""), reverse = TRUE)
                  }else{
                      ""
                  },
@@ -268,6 +346,91 @@ champsRefEspeces.f <- function(site, dataEnv, ordered=FALSE, tableMetrique="", n
     return(res)
 }
 
+spRefFields.aliases <- function(site, dataEnv, ordered=FALSE, tableMetrique="", nextStep=NA)
+{
+    ## Purpose: Retourne la liste des champs du référentiel espèces après
+    ##          avoir supprimé ceux ne correspondant pas au site étudié ainsi
+    ##          que les champs vides.
+    ## ----------------------------------------------------------------------
+    ## Arguments: site : le site étudié (chaîne de caractères).
+    ##            ordered : faire apparaître les champs principaux en
+    ##                      premiers ? (booléen, optionnel)
+    ##            tableMetrique : nom de la table de métriques (pour pouvoir
+    ##                            ajouter le champ classe de taille, même
+    ##                            si ne fait pas partie de cette table).
+    ##            nextStep : étape suivante.
+    ##            dataEnv : l'environnement des données.
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date:  3 août 2010, 11:16
+
+    ## Récupération des données (référentiel espèce et observations) :
+    refesp <- get("refesp", envir=dataEnv)
+    obs <- get("obs", envir=dataEnv)
+
+    ## Champs principaux (externaliser par la suite) :
+    if (is.element(tableMetrique, c("unitSp", "TableOccurrences", "unitSpSz")) &&
+        is.element(nextStep,
+                   c("boxplot.esp", "modele_lineaire", "freq_occurrence",
+                     "MRT.esp", "barplot.esp")))
+    {
+        cPrincip <- aliases(c("species.code", "species", "scient.name"), reverse = TRUE)
+    }else{
+        cPrincip <- aliases(c(
+                              ## table "refesp" :
+                              "species.code", "benthic.categ", "family", "genus", "scient.name",
+                              "CategB_general", "CategB_groupe"
+                              ), reverse = TRUE)
+    }
+
+    ## Externaliser la définition des sites par la suite...
+    listeSite <- c("RUN" , "MAY" , "BA" , "BO" , "CB" , "CR" , "STM" , "NC")
+
+    ## Noms des sites dont on doit exclure les colonnes :
+    sitesExclus <- listeSite[ ! grepl(pattern=paste("^(",
+                                                    paste(site, collapse="|"),
+                                                    ")$", sep=""),
+                                      x=listeSite)]
+
+    ## champs ne correspondant pas au motif "(Site1|Site2|...)$" :
+    champs <- sort(colnames(refesp))[! grepl(paste("(", paste(sitesExclus, collapse="|"), ")$", sep=""),
+                                             sort(colnames(refesp)))]
+
+    ## Champs non-vides de la table 'espèces' :
+    res <- aliases(champs[sapply(champs,
+                                 function(i)
+                                 {
+                                     !all(is.na(refesp[is.element(refesp$species.code,
+                                                                  obs$species.code) , i]))
+                                 })],
+                   reverse = TRUE)
+
+    res <- res[order(names(res))]
+
+    ## Champs principaux en premiers :
+    if (ordered)
+    {
+        res <- c(if (tableMetrique == "unitSpSz")
+                 {
+                     aliases(c("size.class", ""), reverse = TRUE)
+                 }else{
+                     ""
+                 },
+                 cPrincip[is.element(cPrincip, res)],
+                 "", res[!is.element(res, cPrincip)])
+    }else{
+        res <- c(if (tableMetrique == "unitSpSz")
+                 {
+                     aliases(c("size.class", ""), reverse = TRUE)
+                 }else{
+                     ""
+                 },
+                 res)
+    }
+
+    return(res)
+}
+
+
 
 ########################################################################################################################
 champsReferentiels.f <- function(nomTable, dataEnv, nextStep=NA)
@@ -289,7 +452,7 @@ champsReferentiels.f <- function(nomTable, dataEnv, nextStep=NA)
         ## Champs principaux :
         cPrincip <- c(
                       ## table "unitobs" :
-                      "site", "year", "annee.campagne", "biotope", "protection.status", "geogr.descriptor1",
+                      "year", "protection.status", "site", "annee.campagne", "biotope", "geogr.descriptor1",
                       "geogr.descriptor2",
                       ## table "especes" :
                       "species.code", "benthic.categ", "family", "genus", "scient.name",
@@ -297,7 +460,7 @@ champsReferentiels.f <- function(nomTable, dataEnv, nextStep=NA)
                       )
 
         ## Champs des unités d'observation :
-        cUnitobs <- champsUnitobs.f(dataEnv=dataEnv)
+        cUnitobs <- UnitobsFields.aliases(dataEnv=dataEnv)
 
         ## Champs du référentiel espèces :
         if (length(grep("\\.unitobs$", nextStep)) > 0) # [!!!] Dangereux  [yr: 18/1/2012]
@@ -305,7 +468,7 @@ champsReferentiels.f <- function(nomTable, dataEnv, nextStep=NA)
             cEspeces <- NA              # les champs du ref espèce n'ont pas de raison d'apparaitre dans les cas de
                                         # tables agrégées par unitobs.
         }else{
-            cEspeces <- champsRefEspeces.f(site=getOption("P.MPA"), dataEnv=dataEnv)
+            cEspeces <- spRefFields.aliases(site=getOption("P.MPA"), dataEnv=dataEnv)
         }
 
         casTables <- c("unitSp"="unitSp",
@@ -340,7 +503,81 @@ champsReferentiels.f <- function(nomTable, dataEnv, nextStep=NA)
     }
 }
 
+refTablesFields.aliases <- function(nomTable, dataEnv, nextStep=NA)
+{
+    ## Purpose: Retourne la liste des facteurs pertinents en fonction de la
+    ##          table de métriques retenue.
+    ## ----------------------------------------------------------------------
+    ## Arguments: nomTable : nom de la table de métriques (chaîne de
+    ##                       charactère)
+    ##            nextStep : étape suivante, pas obligatoire.
+    ##            dataEnv : l'environnement des données.
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date: 12 août 2010, 10:18
 
+    if (!is.character(nomTable))
+    {
+        stop("'nomTable' must be a character string!")
+    }else{
+        ## Champs principaux :
+        cPrincip <- aliases(c(
+                              ## table "unitobs" :
+                              "year", "protection.status", "site", "annee.campagne", "biotope",
+                              "geogr.descriptor1", "geogr.descriptor2",
+                              ## table "especes" :
+                              "species.code", "benthic.categ", "family", "genus", "scient.name",
+                              "CategB_general", "CategB_groupe" # [ml?]
+                              ),
+                            reverse = TRUE)
+
+        ## Champs des unités d'observation :
+        cUnitobs <- UnitobsFields.aliases(dataEnv=dataEnv)
+        cUnitobs <- cUnitobs[as.logical(nchar(cUnitobs))] # remove empty field
+
+        ## Champs du référentiel espèces :
+        if (length(grep("\\.unitobs$", nextStep)) > 0) # [!!!] Dangereux  [yr: 18/1/2012]
+        {
+            cEspeces <- NA              # les champs du ref espèce n'ont pas de raison d'apparaitre dans les cas de
+                                        # tables agrégées par unitobs.
+        }else{
+            cEspeces <- spRefFields.aliases(site=getOption("P.MPA"), dataEnv=dataEnv)
+            cEspeces <- cEspeces[as.logical(nchar(cEspeces))] # remove empty field
+        }
+
+        casTables <- c("unitSp"="unitSp",
+                       "TablePresAbs"="unitSp",
+                       "TableOccurrences"="unitSp",
+                       "unitSpSz"="unitSpSz",
+                       "unit"="unit")
+
+        switch(casTables[nomTable],
+               unit={
+                   res <- cUnitobs[order(names(cUnitobs))]
+               },
+               unitSp=,
+               unitSpSz={
+                   res <- c(cUnitobs, cEspeces)
+                   res <- res[order(names(res))]
+               },
+               {
+                   warning("Table de métrique '", nomTable, "' inconnu")
+
+
+                   res <- c(cUnitobs, cEspeces)
+                   res <- res[order(names(res))]
+               })
+
+        return(c(if (casTables[nomTable] == "unitSpSz")
+                 {
+                     aliases(c("", "size.class", ""), reverse = TRUE)
+                 }else{
+                     ""
+                 },
+                 cPrincip[is.element(cPrincip, res)],   # champs principaux...
+                 "", res[!is.element(res, cPrincip)])) # autres.
+
+    }
+}
 
 ########################################################################################################################
 subsetToutesTables.f <- function(metrique, facteurs, selections,
@@ -383,7 +620,7 @@ subsetToutesTables.f <- function(metrique, facteurs, selections,
     dataMetrique <- get(tableMetrique, envir=dataEnv)
 
     ## Si pas de métrique disponible ou déjà calculée ("freq.occurrence" est calculée à partir de la sélection) :
-    if (is.element(metrique, c("", "freq.occurrence")))
+    if (is.element(metrique, c("", "occurrence.frequency")))
     {
         metrique <- "tmp"
         dataMetrique$tmp <- 0

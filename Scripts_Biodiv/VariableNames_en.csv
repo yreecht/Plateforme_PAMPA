@@ -87,7 +87,7 @@ etat.pop.localSTM,,etat.pop.localSTM,,
 family,the ,family,,
 force_vent,the ,wind force,,
 sampling.rate,the ,sampled fraction,,
-freq.occurrence,the ,occurrence frequency,,'%'
+occurrence.frequency,the ,occurrence frequency,,'%'
 genus,the ,genus,,
 GrSIH,the ,Groupe SIH,,
 preferred.habitat,the ,preferred habitat,,

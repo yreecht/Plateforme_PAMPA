@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-12-17 14:52:23 yreecht>
+# Time-stamp: <2018-12-17 16:25:20 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
@@ -64,7 +64,7 @@ selectModWindow.f <- function(champ, data, selectmode="multiple", sort=TRUE, pre
 
     if (is.null(title))
     {
-        tkwm.title(winfac, paste(mltext("selectModWindow.f.title"), champ, sep=""))
+        tkwm.title(winfac, paste(mltext("selectModWindow.f.title"), aliases(champ), sep=""))
     }else{
         tkwm.title(winfac, title)
     }
@@ -94,7 +94,7 @@ selectModWindow.f <- function(champ, data, selectmode="multiple", sort=TRUE, pre
     ## Explications :
     if (is.null(label))
     {
-        tkgrid(tklabel(winfac, text=paste(mltext("selectModWindow.f.CB.1"), champ,
+        tkgrid(tklabel(winfac, text=paste(mltext("selectModWindow.f.CB.1"), aliases(champ),
                                mltext("selectModWindow.f.CB.2"),
                                sep="")), columnspan=2)
     }else{

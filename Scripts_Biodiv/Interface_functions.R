@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-12-12 14:01:47 yreecht>
+# Time-stamp: <2019-02-03 18:34:52 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2018 Ifremer - Tous droits réservés.
@@ -296,7 +296,7 @@ infoGeneral.f <- function(msg, waitCursor=FALSE,...)
                envir=.InfoLoading)
 
         ## Titre de fenêtre :
-        tkwm.title(WinInfoLoading, "Infos de chargement")
+        tkwm.title(WinInfoLoading, mltext("WinInfoLoading.title.load"))
 
         ## Il faudra refaire le cadre principal d'info de chargement :
         assign("makeGlobalFrame", TRUE, envir=.InfoLoading)
@@ -1001,11 +1001,11 @@ ColAutoWidth.f <- function(TK.table)
                      tmp <- sapply(0:dim.array[1],
                                    function(i, j)
                                {
-                                   max(sapply(strsplit(tclvalue(tcl(TK.table,
-                                                                    "get",
-                                                                    paste(i, ",", j, sep=""))),
-                                                       split="\n|\r", perl=TRUE),
-                                              nchar))
+                                   suppressWarnings(max(unlist(sapply(strsplit(tclvalue(tcl(TK.table,
+                                                                                            "get",
+                                                                                            paste(i, ",", j, sep=""))),
+                                                                               split="\n|\r", perl=TRUE),
+                                                                      nchar))))
                                }, j)
 
                      ## Définition de la largeur de colonne :

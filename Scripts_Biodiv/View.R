@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-12-17 15:24:01 yreecht>
+# Time-stamp: <2019-02-03 21:15:20 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2018 Ifremer - Tous droits réservés.
@@ -47,7 +47,7 @@ Voirentableau <- function(Montclarray, title="", height=-1, width=-1, nrow=-1, n
         message(FichierCSV)
         write.csv(dataframetb, file=FichierCSV, row.names = FALSE)
 
-        add.logFrame.f(msgID="InfoRefSpeEnregistre", env = .GlobalEnv, file=FichierCSV)
+        add.logFrame.f(msgID="TableSavedCSV", env = .baseEnv, file=FichierCSV)
     }
 
     ## Déclaration des objets bouton
@@ -55,14 +55,21 @@ Voirentableau <- function(Montclarray, title="", height=-1, width=-1, nrow=-1, n
     Enregistrer.but <- tkbutton(tb, text = mltext("filetest.B.save.csv"), command=EnregistrerWintb)
 
     ## ICI CONTINUER LA MISE EN FORME
-    dataframetb <- data.frame(1:nrow)
+    dataframetb <- as.data.frame(matrix("", nrow = nrow, ncol = ncol),
+                                 stringsAsFactors = FALSE)
 
-    for (nbChamps in (1:nrow))          # Vectoriser ??? [yr: 27/07/2010]
+
+    for (nbRow in (0:(nrow - 1)))          # Vectoriser ??? [yr: 27/07/2010]
     {
         for (nbCol in (1:ncol))
         {
-            dataframetb[nbChamps, nbCol] <- mltext("table.incomplete") # tclvalue(Montclarray[[nbCol, nbChamps]])
-            ## A FINIR!!!
+
+            if (nbRow == 0)
+            {
+                colnames(dataframetb)[nbCol] <- tclvalue(Montclarray[[nbRow, nbCol - 1]])
+            }else{
+                 dataframetb[nbRow, nbCol] <- tclvalue(Montclarray[[nbRow, nbCol - 1]])
+             }
         }
     }
 
@@ -166,6 +173,12 @@ VoirPlanEchantillonnage.f <- function(dataEnv)
     RowAutoEight.f(tablePlanEch)
     ColAutoWidth.f(tablePlanEch)
 
+    as.numeric(unlist(strsplit(tclvalue(tcl(.Tk.ID(tablePlanEch),
+                                                         "index", "end")),
+                               ",")))
+
+    TK.table <- tablePlanEch
+
     tcl("update")
     winSmartPlace.f(pe)
 }
@@ -204,8 +217,8 @@ VoirInformationsDonneesEspeces.f <- function(dataEnv, image)
     for (i in (1:Nbesp))
     {
         tclarrayID[[i, 0]] <- unique(as.character(unitSp[ , "species.code"]))[i]
-        tclarrayID[[i, 1]] <- mini[i]
-        tclarrayID[[i, 2]] <- maxi[i]
+        tclarrayID[[i, 1]] <- round(mini[i], 2)
+        tclarrayID[[i, 2]] <- round(maxi[i], 2)
         tclarrayID[[i, 3]] <-
             paste(round(length(pacha[(pacha[ , "pres.abs"] == 1 &
                                       pacha[ , "species.code"] == unique(unitSp[ , "species.code"])[i]),
@@ -227,7 +240,8 @@ VoirInformationsDonneesEspeces.f <- function(dataEnv, image)
                                                   mltext("infoSpecies.info.tax"),
                                                   sum(!is.na(tmp[ , "phylum"])),
                                                   mltext("infoSpecies.info.sp"),
-                                                  sum(!is.na(tmp[ , "species"]) & tmp[ , "species"] != "sp."),
+                                                  sum(!is.na(tmp[ , "species"]) &
+                                                      ! (tmp[ , "species"] %in% c("sp.", "spp.", "sp", "spp"))),
                                                   mltext("infoSpecies.info.subset"), sep=""),
                                       height=Nbesp, width=4, nrow=Nbesp + 1, ncol=4,
                                       image=image)
@@ -259,7 +273,7 @@ VoirInformationsDonneesUnitobs.f <- function(dataEnv, image)
 
     ## mini <- tapply(unitSp[ , nombres], unitSp[ , "observation.unit"], min, na.rm=TRUE) # [!!!]
 
-    maxi <- tapply(unitSp[ , nombres], unitSp[ , "observation.unit"], max, na.rm=TRUE) # [!!!]
+    maxi <- round(tapply(unitSp[ , nombres], unitSp[ , "observation.unit"], max, na.rm=TRUE), 2) # [!!!]
 
     for (i in (1:Nbunitobs))
     {

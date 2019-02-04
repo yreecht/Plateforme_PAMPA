@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-12-12 13:59:40 yreecht>
+# Time-stamp: <2019-02-03 18:05:17 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2018 Ifremer - Tous droits réservés.
@@ -45,7 +45,11 @@ testfileref.f <- function (dataEnv, baseEnv)
 
     EnregistrerWinTest <- function ()
     {
-        FichierCSV <- paste(filePathes["results"], "Info_", fileNames["refesp"], ".csv", sep="")
+        FichierCSV <- paste(filePathes["results"], "Info_",
+                            sub(pattern = "\\.[^.]{1,4}$",
+                                replacement = "",
+                                fileNames["refesp"]),
+                            ".csv", sep="")
         write.csv(dataframeRefEsp, file=FichierCSV, row.names = FALSE)
 
         add.logFrame.f(msgID="InfoRefSpeEnregistre", env = baseEnv, file=FichierCSV)
@@ -109,7 +113,7 @@ testfileref.f <- function (dataEnv, baseEnv)
     }
 
     ## construction de la fenêtre
-    tkwm.title(W.test, paste(mltext("filetest.info"), fileNames["refesp"]))
+    tkwm.title(W.test, paste(mltext("filetest.info"))) ## fileNames["refesp"]))
     frameOverwintest <- tkframe(W.test)
     imgAsLabelwintest <- tklabel(frameOverwintest, image=imageAMP, bg="white")
 
@@ -118,8 +122,12 @@ testfileref.f <- function (dataEnv, baseEnv)
 
     tkgrid(imgAsLabelwintest,
            tklabel(frameOverwintest,
-                   text=paste(mltext("filetest.frameOverwintest.1"), fileNames["refesp"],
-                              mltext("filetest.frameOverwintest.2"), fileNames["obs"]),
+                   text=paste(mltext("filetest.frameOverwintest.1"), ## fileNames["refesp"],
+                              mltext("filetest.frameOverwintest.2"), ## fileNames["obs"]),
+                              fileNames["refesp"],
+                              ifelse(! is.na(fileNames["locrefesp"]),
+                                     paste0(" ", mltext("KW.and"), "\n ", fileNames["locrefesp"]),
+                                     "")),
                    relief="groove", borderwidth=2,
                    bg="yellow", justify="left"),
            padx=5, sticky="e")
@@ -136,9 +144,17 @@ testfileref.f <- function (dataEnv, baseEnv)
                    text=paste(mltext("filetest.W.test.2"),
                               paste(sites, collapse=", "),
                               mltext("colon"),
-                   nrow(subset(refesp,
-                               apply(refesp[, espSite, drop=FALSE], 1,
-                                     function(x) any(x == "oui")))))))
+                              tryCatch(nrow(subset(refesp,
+                                                   apply(refesp[, espSite, drop=FALSE], 1,
+                                                         function(x) any(tolower(x) %in%
+                                                                         tolower(c("oui", "yes",
+                                                                                   mltext("KW.yes"))))))),
+                                       error = function(e)
+                                       {
+                                           warning("No filed ('", paste(espSite, collapse = "', '"),
+                                                   "') in the reference table")
+                                           return(NA)
+                            }))))
 
     tkgrid(tklabel(W.test,
                    text=paste(mltext("filetest.W.test.3"), fileNames["obs"], " : ",

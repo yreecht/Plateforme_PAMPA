@@ -1,7 +1,7 @@
 #-*- coding: latin-1 -*-
 
 ### File: debug.R
-### Time-stamp: <2018-12-09 10:01:47 yreecht>
+### Time-stamp: <2019-02-04 01:01:34 yreecht>
 ###
 ### Author: Yves Reecht
 ###
@@ -62,6 +62,7 @@ init.debug.f <- function(loadMain=FALSE)
     ## source(paste(devDir, "Scripts_Biodiv/Maps_variables.R", sep=""), encoding="latin1")
     ## source(paste(devDir, "Scripts_Biodiv/View.R", sep=""), encoding="latin1")
     ## source(paste(devDir, "Scripts_Biodiv/Generic_aggregations.R", sep=""), encoding="latin1")
+    ## source(paste(devDir, "Scripts_Biodiv/Test_files.R", sep=""), encoding="latin1")
 }
 
 

@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-12-09 17:04:03 yreecht>
+# Time-stamp: <2019-02-03 16:22:44 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
@@ -125,6 +125,7 @@ legendBoxplot.f <- function(terms, data, pch = 15, pt.cex=1.2, cex=0.9)
 
 ########################################################################################################################
 graphTitle.f <- function(metrique, modGraphSel, factGraph, listFact, model=NULL, type="espece",
+                         graphType = c("generic", "boxplot", "barplot", "occFrequency"),
                          lang = getOption("P.lang"))
 {
     ## Purpose:
@@ -132,25 +133,62 @@ graphTitle.f <- function(metrique, modGraphSel, factGraph, listFact, model=NULL,
     ## Arguments:
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date: 14 oct. 2010, 15:44
+    graphType <- match.arg(arg = graphType,
+                           choices = c("generic", "boxplot", "barplot", "occFrequency"),
+                           several.ok = FALSE)
+
+    ## Factors names in the chosen language:
+    factNames <- sapply(listFact[length(listFact):1],
+                        function(x)paste(c(## varNames.f(x, "article"),
+                                           "",
+                                           varNames.f(x, "nom")), collapse=""))
+
     return(paste(ifelse(is.null(model),
-                        mltext("graphTitle.vals",
-                               language = lang),
+                        switch(graphType,
+                               "generic" = {
+                                   mltext("graphTitle.vals",
+                                          language = lang)
+                               },
+                               "boxplot" = {
+                                   mltext("graphTitle.boxplots",
+                                          language = lang)
+                               },
+                               "barplot" = {
+                                   paste0(switch(getOption("P.barplotStat"),
+                                                 "mean"=,
+                                                 "moyenne" = {
+                                                     Capitalize.f(mltext("stat.mean",
+                                                                         language = lang))
+                                                 },
+                                                 "median"=,
+                                                 "médianne" = {
+                                                     Capitalize.f(mltext("stat.median",
+                                                                         language = lang))
+                                                 }),
+                                          "(")
+                               },
+                               "occFrequency" = {""}),
                         paste(model,
                               mltext("graphTitle.for",
                                      language = lang),
                               varNames[metrique, "article"], sep="")),
-                 varNames[metrique, "nom"],
-                 ifelse(is.element(type, c("espece", "unitobs", "CL_espece", "unitobs(CL)")),
-                        paste(mltext("graphTitle.agg",
-                                     language = lang),
-                              switch(varNames[metrique, "genre"], # for languages with genre concordence.
-                                     f=mltext("graphTitle.f",
-                                              language = lang),
-                                     fp=mltext("graphTitle.fp",
-                                               language = lang),
-                                     mp=mltext("graphTitle.mp",
-                                               language = lang), ""), sep=""),
-                        ""),
+                 ifelse(graphType == "occFrequency",
+                        Capitalize.f(varNames[metrique, "nom"]),
+                        varNames[metrique, "nom"]),
+                 ifelse(test = graphType == "barplot",
+                        yes = ")",
+                        no = ""),
+                 ## ifelse(is.element(type, c("espece", "unitobs", "CL_espece", "unitobs(CL)")),
+                 ##        paste(mltext("graphTitle.agg",
+                 ##                     language = lang),
+                 ##              switch(varNames[metrique, "genre"], # for languages with genre concordence.
+                 ##                     f=mltext("graphTitle.f",
+                 ##                              language = lang),
+                 ##                     fp=mltext("graphTitle.fp",
+                 ##                               language = lang),
+                 ##                     mp=mltext("graphTitle.mp",
+                 ##                               language = lang), ""), sep=""),
+                 ##        ""),
                  switch(type,
                         "espece"=mltext("graphTitle.bySpSt",
                                         language = lang),
@@ -218,12 +256,15 @@ graphTitle.f <- function(metrique, modGraphSel, factGraph, listFact, model=NULL,
                         ""),
                  mltext("graphTitle.by",
                         language = lang),
-                 paste(sapply(listFact[length(listFact):1],
-                              function(x)paste(c(## varNames.f(x, "article"),
-                                                 "",
-                                                 varNames.f(x, "nom")), collapse="")),
-                       collapse=mltext("graphTitle.and",
-                                       language = lang)),
+                 if (length(factNames) > 1)
+                 {
+                     paste(paste(head(factNames, -1), collapse = ", "),
+                       tail(factNames, 1),
+                       sep = mltext("graphTitle.and",
+                                    language = lang))
+                 }else{
+                     factNames
+                 },
                  "\n", sep=""))
 }
 
@@ -514,7 +555,8 @@ WP2boxplot.f <- function(metrique, factGraph, factGraphSel, listFact, listFactSe
                                         # données.
                                               "unitSp"={"espece"},
                                               "unitSpSz"={"CL_espece"},
-                                              "espece"))
+                                              "espece"),
+                                  graphType = "boxplot")
 
         ## Label axe y :
         ylab <- ifelse(getOption("P.axesLabels"),

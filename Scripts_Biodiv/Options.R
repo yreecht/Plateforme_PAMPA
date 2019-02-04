@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-12-09 15:51:14 yreecht>
+# Time-stamp: <2019-01-20 12:04:59 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2018 Ifremer - Tous droits réservés.
@@ -109,10 +109,10 @@ initialiseOptions.f <- function()
                                   is.null(getOption("P.GUIlang"))),
                                 tolower(getOption("defaultLang")),
                                 "en"),          # Language for the GUI.
-            P.barplotStat="moyenne",            # Statistique des barplots ("mean", "moyenne", "médiane" ou "median").
-            P.barplotErrorBar=TRUE,             # Doit-on afficher les barres d'erreur (sd/quantiles) sur les barplots ?
+            P.barplotStat=mltext("stat.mean"),  # Statistique des barplots ("mean", "moyenne", "médiane" ou "median").
+            P.barplotErrorBar=TRUE,             # Doit-on afficher les barres d'erreur (sd/quantiles) sur les barplots?
             P.saveData=TRUE,                    # Sauvegarde des données de graphiques et analyses ?
-            P.saveStats=TRUE,                   # Sauvegarde des informations sur les données (stats incluses) ?
+            P.saveStats=TRUE,                   # Sauvegarde des informations sur les données (stats incluses)?
             P.axesLabels=TRUE,                  # Affichage des noms d'axes ?
             P.title=TRUE,                       # Affichage des titres ?
             ## Carto :

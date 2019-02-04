@@ -1,6 +1,8 @@
 msgid,mandatory,fr,en
 KW.yes,X,oui,yes
 KW.no,X,non,no
+KW.and,X,et,and
+KW.or,X,ou,or
 KW.up,X,monter,up
 KW.down,X,descendre,down
 KW.cancel,X,annuler,cancel
@@ -17,8 +19,8 @@ Cancel.button,X,   Annuler   ,   Cancel
 Reset.button,X, Réinitialiser ,     Reset     
 Run.button,X,  Lancer  ,    Run    
 Quit.button,X, Quitter ,   Exit   
-GraphOpt.button,X, Options graphiques... ,  Graphics options...  
-W.main.title,X,Indicateurs relatifs à la biodiversité et aux ressources,Biodiversity and fished resource indicators
+GraphOpt.button,X, Options graphiques... ,  Plot options...  
+W.main.title,X,Indicateurs relatifs à la biodiversité et aux ressources,Biodiversity and fished resources indicators
 MB.import,X,Données,Data
 MB.selection,X,Sélection et recalcul,Subsetting
 MB.traitement,X,Graphiques,Graphics
@@ -26,7 +28,7 @@ MB.analyse,X,Statistiques,Analysis
 MB.outils,X,Outils,Tools
 MB.pampainfos,X,Aide,Help
 B.quit.main,X, Quitter... ,   Exit...   
-B.graphicsOFF,X,Fermer les graphiques,Close all graphics
+B.graphicsOFF,X,Fermer les graphiques,Close all graphics windows
 menu.import.manual,X,Choix des dossiers et fichiers de données...,Manual selection of directory and files...
 menu.import.default,X,Dossiers et fichiers par défaut,Default directory and files
 menu.import.test.refesp,X,Test du référentiel (espèces concernées),Check of the species reference table
@@ -38,16 +40,16 @@ menu.select.unitobs,X,Selon un champ des unités d'observation...,Based on the st
 menu.select.sp.list,X,Par liste d'espèces (fichier),For a list of species (file)
 msg.ongoing.dev,X,En développement !,Implementation in progress!
 menu.select.restore,X,Restaurer les données originales,Restore original data
-menu.sub.szsp,X,Par espèce ou classe de taille d'espèce :,Per species or species size class:
-menu.sub.aggr.szsp,X,"Plusieurs espèces ou classes de taille, agrégées par unité d'observation :","Several species or species-size class, aggregated per station:"
+menu.sub.szsp,X,Par espèce ou classe de taille d'espèce :,Per species (including per size class):
+menu.sub.aggr.szsp,X,"Par groupe d’espèces ou classes de taille, agrégées par unité d'observation :",Species groups (including per or over size classes):
 menu.graphs.boxplots,X,"Graphiques en ""boîtes à moustaches"" (boxplots)...",Boxplots...
 menu.graphs.barplots,X,Graphiques en barres (barplots)...,Barplots...
-menu.graphs.occ.freq,X,Fréquences d'occurrence (/espèce sur des unité d'observation)...,"Occurrence frequency (/species, over observation units)..."
+menu.graphs.occ.freq,X,Fréquences d'occurrence (/espèce sur des unité d'observation)...,Frequencies...
 menu.graphs.maps,X,Cartes,Maps
 menu.graphs.maps.barplots,X,"Graphiques en barres ou boîtes à moustaches, par zone...",Barplots or boxplots per zone...
 menu.graphs.maps.symbols,X,"Symboles de taille variable ou échelle de couleur, par zone...",Variable size symbols or colour scale per zone...
 menu.graphs.aggr.szsp,X,"Plusieurs espèces ou classes de taille, agrégées par unité d'observation :","Several species or size classes, aggregated per station:"
-menu.graphs.occ.freq.unitobs,X,Fréquences d'occurrence (/facteurs d'unité d'observation)...,Occurrence frequency (/observation units factor)...
+menu.graphs.occ.freq.unitobs,X,Fréquences d'occurrence (/facteurs d'unité d'observation)...,Frequencies (/station factor)...
 menu.graphs.boxplots.zone,X,"Graphiques en barres ou boîtes à moustaches, par zone...",Barplots or boxplots per zone...
 menu.graphs.maps.symbols.zone,X,"Symboles de taille variable ou échelle de couleur, par zone...",Variable size symbols or colour scale per zone...
 menu.stats.sp.unitobs,X,"Modèles linéaires, métrique /espèce/unité d'observation...","Linear model, metrics /species/observation unit..."
@@ -55,7 +57,7 @@ menu.stats.MRT.esp,X,"Arbres de régression multivariée, métrique / espèces / uni
 menu.stats.unitobs,X,"Modèles linéaires, métrique /unité d'observation (dont biodiversité)...","Linear model, metrics / observation unit (incl. biodiversity)..."
 menu.stats.MRT.unitobs,X,"Arbres de régression multivariée, métrique /unité d'observation (dont biodiversité)...","Multivariate Regression Trees, metrics / observation unit (incl. biodiversity)..."
 menu.tools.export.opt,X,Options d'export...,Export options...
-menu.tools.graph.opt,X,Options graphiques...,Graphics options...
+menu.tools.graph.opt,X,Options graphiques...,Plot options...
 menu.tools.link.unitobs.refspa,X,Lier les unités d'observations et le référentiel spatial...,Linking observation units and spatial data...
 menu.tools.reorder.fact.unitobs,X,Réorganiser des facteurs des unités d'observation...,Reorder the observation units factors...
 menu.tools.reorder.fact.refesp,X,Réorganiser des facteurs du référentiel espèces...,Reorder the species reference table factors...
@@ -66,10 +68,10 @@ menu.help.online.doc,X,Documentation en ligne,Online documentation
 menu.help.local.doc,X,Documentation (locale),Local documentation
 menu.help.forum,X,Forum d'entraide,Forum
 menu.help.about,X,À propos de la plateforme...,About PAMPA...
-helpframe.Ucan,X,Vous pouvez...,You can...
+helpframe.Ucan,X,Vous pouvez...,You may...
 workspace.none,X,Espace de travail : non sélectionné.,Working directory: not selected.
 datainfo.none,X,Aucun jeu de données chargé pour l'instant !,No dataset selected yet!
-B.DataRestore,X,Restaurer les données,Restore data
+B.DataRestore,X,Restaurer les données,Restore imported data
 L.criteres,X,       Critère(s) de sélection :,       Selection criteria:
 criterion.all,X,Tout,All
 array.datafiles.type,X,Type de fichier,File type
@@ -82,8 +84,8 @@ array.datafiles.obs,X, Fichier d'observations , Observations file
 array.datafiles.refesp,X, Référentiel espèce général , Species ref. table 
 array.datafiles.refesp.local,X, Référentiel espèce local (optionnel) , Local species ref. table (optional) 
 array.datafiles.refespa,X, Référentiel spatial (optionnel) , Spatial ref. table (optional) 
-sum.nb.sp.obs,X,-> Nombre de codes espèce dans le fichier d'observation : ,-> Number of species codes in the observations file: 
-sum.nb.unitobs.obs,X,-> Nombre d'unités d'observation dans le fichier d'observation : ,-> Number of observation units in the observations file: 
+sum.nb.sp.obs,X,-> Nombre de codes espèce dans le fichier d'observation : ,-> Number of species codes in the imported observations: 
+sum.nb.unitobs.obs,X,-> Nombre d'unités d'observation dans le fichier d'observation : ,-> Number of observation units in the imported observations: 
 F.log.title,X,Rapport de chargement/sélection/export :,Report on loading/selections/export:
 logmsg.loadingGUI,X,Chargement de l'interface :,Loading the GUI:
 warn.move.not.window,X,Non mais c'est quoi ce programmeur qui essaye de déplacer des non-fenêtres ?!,Attempt to move an non-window!
@@ -119,14 +121,14 @@ tclarray.5.3,X,les unités d'obs.,the obs. units
 logmsg.modif.menu.load,X,Modification des menus suite au chargement des données :,Menu update after loading the data:
 sum.nb.sp.obs.1,X,-> Nombre de codes espèce,-> Number of species code
 sum.nb.left,X, restants, left
-sum.nb.in.obs,X, dans le fichier d'observation, in the observation file
+sum.nb.in.obs,X, dans le fichier d'observation, in the imported observations
 sum.nb.diff,X, (peut différer du nombre retenu !) : , (might vary from selected!): 
 colon,X, :,:
 semicolon,X, ;,;
 sum.nb.unitobs.obs.1,X,-> Nombre d'unités d'observations,-> Number of observation units
 tclarray.0.4,X,Sélection,Selection
 sum.nb.sp.obs.2,X,-> Nombre d'espèces,-> Number of species
-error.recouvrementsansLIT.1,X,"Le champ obs$observation.type n'est pas 'LIT', vous ne pouvez pas calculer","The observation type is not 'LIT', % overlap with"
+error.recouvrementsansLIT.1,X,"Le champ obs$type n'est pas 'LIT', vous ne pouvez pas calculer","The observation type is not 'LIT', % overlap with"
 error.recouvrementsansLIT.2,, un % de recouvrement avec des espèces non benthiques\n, non-benthic species cannot be evaluated\n
 error.noWorkspace,X,Aucun espace de travail n'est choisi ou opérationnel\n,No valid working directory selected\n
 error.nbChampUnitobs.1,X,Votre fichier 'Unités d'observation' ne comporte pas le bon nombre de champs!,The 'Observation unit' file has the wrong number of fields!
@@ -155,11 +157,11 @@ helpmsg.etapeImport.1,X,"  * charger les ""Dossiers et fichiers par défaut"" (CT
 helpmsg.etapeImport.2,X,\n  * choisir les dossier/fichiers un à un (CTRL + n).,\n  * select manually the directory/files (CTRL + n).
 helpmsg.etapeImport.3,X,"\n\t(actions également accessibles par le menu ""Données"")","\n\t(actions also available in the menu ""Data"")"
 helpmsg.SelectionOuTraitement.1,X,"  * restreindre votre sélection de données (menu ""Sélection et recalcul"").\n","  * narrow the data selection (menu ""Subsetting"").\n"
-helpmsg.SelectionOuTraitement.2,X,  * commencer les traitements standards (graphiques & analyses statistiques).,  * start with standard treatments (graphics & statistical analyses).
+helpmsg.SelectionOuTraitement.2,X,  * commencer les traitements standards (graphiques & analyses statistiques).,  * get started with graphics & statistical analyses.
 helpmsg.etapeselected.1,X,  * restaurer les données originales (sans sélection) :,  * restore original data (without selection) :
 helpmsg.etapeselected.2,X," menu ""Sélection et recalcul"" ou bouton ci-dessous à droite."," menu ""Subsetting"" or top-right button."
 helpmsg.etapeselected.3,X,\n  * faire d'autres sélections (imbriquées avec les sélections courantes).,\n  * apply further selections (embedded within the current ones).
-helpmsg.etapeselected.4,X,\n  * commencer les traitements standards (graphiques & analyses statistiques).,\n  * start with standard treatments (graphics & statistical analyses).
+helpmsg.etapeselected.4,X,\n  * commencer les traitements standards (graphiques & analyses statistiques).,\n  * get started with graphics & statistical analyses.
 logFmsg.loading,X,\nChargement de données  (,\nLoading data  (
 logFmsg.obsFile,X,\n   Fichier d'observation :,\n   Observations file:
 logFmsg.unitobsFile,X,\n   Fichier d'unités d'observation :,\n   Observation units file:
@@ -183,6 +185,7 @@ logFmsg.files.3,X,\n   - métriques par unité d'observation / esp. :,\n   - metri
 logFmsg.files.4,X,\n   - métriques par unité d'observation :,\n   - metrics per station:
 logFmsg.files.5,X,\n   - plan d'échantillonnage basique (année - statut de protection) :,\n   - basic sampling design (year – protection status) :
 logFmsg.saveInfoRefspe.1,X,Enregistrement des informations sur le référentiel espèce dans le fichier :,Saving species reference information within the file:
+logFmsg.saveTableCSV,,Enregistrement du tableau dans le fichier :,Table saved within the file:
 installPack.f.1,X,Le(s) package(s) : \n\n    * ',The package(s) : \n\n    * '
 installPack.f.2,X,'\n\nn'est (ne sont) pas disponible(s) !,'\n\nis (are) not available!
 WinInstall.title,X,Packages manquants,Missing packages
@@ -244,9 +247,9 @@ filetest.arr.0.0,X,Champ #,Field #
 filetest.arr.0.1,X,Nom,Name
 filetest.arr.0.2,X,Nb de valeurs,Values #
 filetest.arr.0.3,X,% renseigné,% filled
-filetest.info,X,Informations sur ,Information on 
-filetest.frameOverwintest.1,X,Taux de renseignement des champs de ,Filling rate of fields from 
-filetest.frameOverwintest.2,X,\npour le jeu de données (tient compte des sélections)\n,\n(current dataset with subsetting)\n
+filetest.info,X,Informations sur le référentiel espèces,Information on the species reference table
+filetest.frameOverwintest.1,X,Taux de renseignement des champs du référentiel espèces ,Documentation rate per field of the species reference table
+filetest.frameOverwintest.2,X,\npour le jeu de données (tient compte des sélections)\n,\nfor observed species (current subset of dataset if applying)\n
 filetest.W.test.1,X,Nombre de champs de ,Number of fields in 
 filetest.W.test.2,X,Nombre d'espèces référencées pour ,Number of species documented for 
 filetest.W.test.3,X,Nombre d'espèces du jeux de données ,Number of species in the data set 
@@ -265,15 +268,15 @@ infoSpecies.arr.0.0,X,Espèce,Species
 info.arr.Nb,X,Nb ,# 
 info.arr.col,X,colonies,colonies
 info.arr.ind,X,indiv,indiv
-infoSpecies.arr.0.1,X, min/unitobs, min/unitobs
-infoSpecies.arr.0.2,X, max/unitobs, max/unitobs
+infoSpecies.arr.0.1,X, min/unitobs, min/station
+infoSpecies.arr.0.2,X, max/unitobs, max/station
 infoSpecies.arr.0.3,X,Fréquence d'occurrence,Occurrence frequency
 infoSpecies.title,X,Informations par espèce,Information per species
 infoSpecies.info.title,X,Informations par espèce :,Information per species:
-infoSpecies.info.cat,X, \n\n\t* nombre de catégories observées = , \n\n\t* number of observed categories = 
-infoSpecies.info.tax,X, \n\t* nombre de catégories taxinomiques (biotiques) observées = , \n\t* number of taxonomic (biotic) observed categories = 
+infoSpecies.info.cat,X, \n\n\t* nombre de catégories observées = , \n\n\t* number of observed categories (biotic and abiotic) = 
+infoSpecies.info.tax,X, \n\t* nombre de catégories taxinomiques (biotiques) observées = , \n\t* number of taxa observed (biotic categories) = 
 infoSpecies.info.sp,X, \n\t* nombre d'espèces observées = , \n\t* number of observed species = 
-infoSpecies.info.subset,X, \n\nCes informations tiennent compte des sélections en cours., \n\These information account for current subset criteria.
+infoSpecies.info.subset,X, \n\nCes informations tiennent compte des sélections en cours., \n\nThese information accounts for current subset criteria.
 infoUnitobs.arr.0.0,X,Unité d'observation,observation units
 infoUnitobs.arr.0.1,X,Site,Site
 infoUnitobs.arr.0.2,X,Biotope,Biotop
@@ -292,7 +295,7 @@ infoExport.5,X,"\n\t* DataObs, DataUnitobs, DataRefesp : tables de données.","\n
 infoExport.6,X,Impossible d'écrire le fichier ,Cannot write the file 
 infoExport.7,X,.\nIl est possible qu'il soit ouvert par une autre application,.\nIt might be open in another program.
 selectionObs.SVR.title,X,Sélection des observations,Selection of observations
-selectionObs.SVR.Dmin,X,  Ne conserver que les observations pour lesquelles Min.Distance =< ,  Only keep observations with Min.Distance =< 
+selectionObs.SVR.Dmin,X,  Ne conserver que les observations pour lesquelles Dmin =< ,  Only keep observations with Dmin =< 
 selectionObs.SVR.Dmin.war,X,Vous devez choisir un seuil numérique (séparateur '.'),The threshold must be numerical (decimal separator '.')
 testFiles.1p,X,Les fichiers suivants n'existent pas ou ne sont pas accessibles :,The following files do not exist or cannot be accessed:
 testFiles.1s,X,Le fichier suivant n'existe pas ou n'est pas accessible :,The following file does not exist or cannot be accessed:
@@ -439,7 +442,7 @@ change.levelsOrder.Lab.2,X,2) Ré-ordonnez les modalités du facteur :,2) Re-order
 change.levelsOrder.Lab.3,X,Finalisez ou revenez à l'étape 1 pour ré-ordonner un autre facteur :,Confirm or go back to step 1 to re-order another factor:
 logmsg.chooseRefespField,X,Choix d'un Facteur dans le référentiel espèces :,Selection of a factor in the species reference table:
 chooseRefespField.title,X,Selection du facteur du référentiel des espèces,Selection of a species reference factor
-chooseRefespField.LB.1,X,Liste des facteurs du référentiel des espèces,List of species reference factors
+chooseRefespField.LB.1,X,Liste des facteurs du référentiel des espèces,List of species-related factors
 logmsg.selectionEsp,X,Sélection sur un critère du référentiel espèces :,Subset based on a field of the species reference table:
 logmsg.selectionOnRefesp,X,Sélection des enregistrement selon un critère du référentiel espèces :,Subset of records based upon a field of the species reference table:
 selectionOnRefesp.info.1,X,Sélection et recalcul selon un critère du référentiel espèces :,Subset and metrics calculation based on a field of the species reference table:
@@ -447,7 +450,7 @@ selectionOnRef.info.2,X,Les métriques ont été recalculées,Metrics have been reca
 selectionOnRefesp.info.3,X, pour la sélection d'espèces., for the species-based subset.
 selectionOnRef.info.4,X,Abandon !,Cancelled!
 chooseUnitobsField.title,X,Sélection du facteur de groupement des unités d'observation,Selection of a factor in the station characteristics:
-chooseUnitobsField.LB.1,X,Liste des facteurs de groupement,List of grouping factors
+chooseUnitobsField.LB.1,X,Liste des facteurs de groupement,List of station-related factors
 logmsg.selectionUnitobs,X,Sélection sur un critère du référentiel des unités d'observation :,Subset on a field of the station characteristics:
 logmsg.selectionOnUnitobs,X,Sélection des enregistrement selon un critère du référentiel des unités d'observation :,Subset of records based upon a field of the station characteristics:
 selectionOnUnitobs.info.1,X,Sélection et recalcul selon un critère du référentiel d'unités d'observation :,Subset and metrics calculation based on a field of the station characteristics:
@@ -457,8 +460,8 @@ changeColor.title,X,Choisir une couleur,Choose a colour
 addBarplotOccOptFrame.LB.1,X,"Options des ""graphiques en barres"" sur les occurrences",Options for occurrence barplots
 addBarplotOccOptFrame.Lbopt.1,X, Afficher les nombres d'unités d'observation par barre ?, Display the number of stations per bar?
 addBarplotOccOptFrame.Lbopt.2,X, Couleur des nombres d'unités d'observations : , Colours for station numbers: 
-addBarplotOccOptFrame.smallN.1,X, Afficher les avertissements ?\n, Display warnings?\n
-addBarplotOccOptFrame.smallN.2,,    (faibles effectifs),    (low numbers)
+addBarplotOccOptFrame.smallN.1,X, Afficher les avertissements ?\n, Display warnings
+addBarplotOccOptFrame.smallN.2,,    (faibles effectifs), for low numbers?
 addCartoSubplotFrame.LB.1,X,"Options des ""graphiques en barres""",Barplot options
 addCartoSubplotFrame.colPal,X,Palette de couleurs des zones : ,Colour pallet for zones: 
 addCartoSubplotFrame.colLeg,X, Afficher la légende des couleurs (facteur de second niveau) ?, Display the colour legend (2nd level factor) ?
@@ -488,12 +491,12 @@ addBoxplotOptFrame.MeanPpch,X, Type de point : , Point type:
 addBoxplotOptFrame.MeanV,X, Afficher les valeurs des moyennes sur les boxplot ?, Display the mean values on the boxplots?
 addBoxplotOptFrame.MeanVcol,X, Couleur de caractères des valeurs : , Colour for mean values: 
 addBoxplotOptFrame.MeanVdec,X, Nombre de chiffres décimaux : , Number of decimals: 
-tuneGraphOptions.Title,X,Choix des options graphiques,Graphics options
+tuneGraphOptions.Title,X,Choix des options graphiques,Plot options
 tuneGraphOptions.commOpt.title,X,Options graphiques générales,Common graphical options
 tuneGraphOptions.TT.dec,X,"Attention ! \nséparateur décimal : ""."" ","!!! \ndecimal separator: ""."" "
 tuneGraphOptions.TT.titleLang.1,X,Langage pour tous les graphiques,Language for all the graphics
 tuneGraphOptions.TT.titleLang.2,,\nN'affecte pas les sorties texte.,\nDoes not affect the text outputs (analysis summaries)
-tuneGraphOptions.TT.embChar.1,X,Évite les erreurs d'affichage de caractères \nsur d'autres ordinateurs...,Avoid mis-displayed characters\n on other machines…
+tuneGraphOptions.TT.embChar.1,X,Évite les erreurs d'affichage de caractères \nsur d'autres ordinateurs...,Avoid mis-displayed characters\n on other machines...
 tuneGraphOptions.TT.embChar.2,,\nNécessite que Ghostscript soit installé pour fonctionner.,\nRequires Ghostscript installed to work properly.
 tuneGraphOptions.colPal,X,Palette de couleurs : ,Colour palette: 
 tuneGraphOptions.langAxes,X,Langue des noms d'axes et variables : ,Language for axis labels: 
@@ -501,7 +504,7 @@ tuneGraphOptions.simplGraph.1,X, Graphique pour publication ?\n,Simplified graph
 tuneGraphOptions.simplGraph.2,X,"    (plus petit, sans titre).","    (smaller, no title)."
 tuneGraphOptions.graphTitle,X, Afficher le titre de graphique ?, Graphics with titles?
 tuneGraphOptions.axesLab,X, Afficher le nom des axes ?, Display axes labels?
-tuneGraphOptions.cex,X,Facteur multiplicatif des tailles de texte : ,Text size (multiple) : 
+tuneGraphOptions.cex,X,Facteur multiplicatif des tailles de texte : ,Text size multiplier: 
 tuneGraphOptions.minNobs.1,X,Supprimer les graphiques ayant moins de ,Do not produce graphics with less than 
 tuneGraphOptions.minNobs.2,X, observations, observations
 tuneGraphOptions.pdfOut,X, Fichiers PDF ?, PDF files?
@@ -527,8 +530,8 @@ calcBiodiv.f.info.1,X,Calculs de biodiversité impossibles !,Biodiversity metrics
 calcBiodiv.f.info.2.s,X,non identifié,not identified
 calcBiodiv.f.info.2.p,X,non identifiés,not identified
 calcBiodiv.f.info.3,X," au niveau de l'espèce (""sp."")\n   "," at the species (""sp."") level\n   "
-calcBiodiv.f.info.4.s,X,a été supprimé,has been suppressed
-calcBiodiv.f.info.4.p,X,ont été supprimés,have been suppressed
+calcBiodiv.f.info.4.s,X,a été supprimé,has been deleted
+calcBiodiv.f.info.4.p,X,ont été supprimés,have been deleted
 calcBiodiv.f.info.5,X, pour le calcul des indices de biodiversité., for calculation of the biodiversity metrics.
 calcBiodivTaxo.f.info.1,X,Indices de diversité taxinomique non-calculables !,Taxonomic diversity indices not calculable!
 calcBiodivTaxo.f.msg.1,X,La valeur théorique de Delta est :,The theoretical value for Delta is:
@@ -542,6 +545,7 @@ agregation.info.f.info.2,,(cette fenêtre se fermera automatiquement)\n,(this win
 selectModWindow.f.title,X,Sélection des valeurs de ,Selection of levels within 
 selectModWindow.f.CB.1,X,Liste des valeurs de ',Values of the field '
 selectModWindow.f.CB.2,X,' présentes.\n ,'.\n 
+selectModWindow.f.CB.3,X,Plusieurs sélections POSSIBLES.\n,Multiple selection allowed.\n
 selectModWindow.f.info.1,X,!!Nouveau!! mode de sélection étendu : \n,Extended selection mode: \n
 selectModWindow.f.info.2,X,*  utilisez Ctrl et Maj pour les sélections multiples.\n,*  use Ctrl and Shift for multiple selections.\n
 selectModWindow.f.info.3,X,*  Ctrl+a pour tout sélectionner\n,*  Ctrl+a to select all\n
@@ -551,10 +555,10 @@ verifVariables.f.info.3,X,Pas de facteur de regroupement sélectionné !,No groupi
 verifVariables.f.info.4,X,Champ ',Field '
 verifVariables.f.info.5,X,' vide,' empty
 verifVariables.f.info.6,X,Attention : représentation d'une métrique par classes de taille\n,Metrics aggregated by size class\n
-verifVariables.f.info.7,,mais 'size.class' n'est pas utilisée comme facteur,but 'size.class' not used as a factor.
+verifVariables.f.info.7,,mais 'classe_taille' n'est pas utilisée comme facteur,but 'classe_taille' not used as a factor.
 verifVariables.f.info.8,X,Utilisez 2 facteurs de regroupement au plus,Use not more than 2 grouping factors.
 verifVariables.f.info.9,X,Attention : représentation d'une métrique par espèce\n,Metrics aggregated by species\n
-verifVariables.f.info.10,,mais 'espece' ou 'species.code' n'est pas utilisé comme facteur,but 'espece' ou 'species.code' not used as factor.
+verifVariables.f.info.10,,mais 'espece' ou 'code_espece' n'est pas utilisé comme facteur,but 'espece' ou 'code_espece' not used as factor.
 verifVariables.f.info.11,X,Un des facteurs de regroupement est une sous-catégorie,A grouping factor is a sub-category of
 verifVariables.f.info.12,,\nd'un des facteurs d'agrégation (e.g. espèce -> Famille).,\nan aggregation factor (e.g. species -> Family).
 verifVariables.f.info.13,,\n\nLes données ne peuvent être agrégées !,\n\nThe data cannot be aggregated!
@@ -566,42 +570,44 @@ verifVariables.f.info.18,,\n\nVeuillez sélectionner *au plus* trois facteurs de 
 verifVariables.f.info.19,X,Attention :,Warning:
 verifVariables.f.info.20,,"\n\nÀ partir de trois facteurs de regroupement, les résultats deviennent ","\n\nFrom three grouping factors, results become difficult to interpret. "
 verifVariables.f.info.21,,\ndifficiles à interpréter. Préférez des analyses à un ou deux facteur(s).,\nPrefer analyses with one or two factor(s).
-titreSelVar.f.WT.boxplot.esp,X,boxplots (métrique/espèce/unité d'observation),boxplots (metrics/species/station)
-titreSelVar.f.WT.modele_lineaire,X,modèles linéaires (métrique/espèce/unité d'observation),linear models (metrics/species/station)
-titreSelVar.f.WT.freq_occurrence,X,fréquences d'occurrences,occurrence frequencies
-titreSelVar.f.WT.freq_occurrence.unitobs,X,fréquences d'occurrences,occurrence frequencies
-titreSelVar.f.WT.boxplot.unitobs,X,boxplots (métrique agrégée/unité d'observation),boxplots (metrics aggregated/station)
-titreSelVar.f.WT.modele_lineaire.unitobs,X,modèles linéaires (métrique/unité d'observation),linear models (metrics aggregated/station)
-titreSelVar.f.WT.MRT.unitobs,X,Arbres de régression (métrique/unité d'observation),multivariate regression trees (metrics aggregated/station)
-titreSelVar.f.WT.MRT.esp,X,Arbres de régression (métrique/espèce/unité d'observation),multivariate regression trees (metrics/species/station)
-titreSelVar.f.WT.barplot.unitobs,X,barplots (métrique agrégée/unité d'observation),barplots (metrics aggregated/station)
-titreSelVar.f.WT.barplot.esp,X,barplots (métrique/espèce/unité d'observation),barplots (metrics/species/station)
-titreSelVar.f.WT.spBarBoxplot.unitobs,X,barplots/boxplots (métrique agrégée/unité d'observation),barplots/boxplots (metrics aggregated/station)
-titreSelVar.f.WT.spBarBoxplot.esp,X,barplots/boxplots (métrique/espèce/unité d'observation),barplots/boxplots (metrics/species/station)
-titreSelVar.f.WT.spSymbols.unitobs,X,symboles/couleurs (métrique agrégée/unité d'observation),symbols/colour scale (metrics aggregated/station)
-titreSelVar.f.WT.spSymbols.esp,X,symboles/couleurs (métrique/espèce/unité d'observation),symbols/colour scale (metrics/species/station)
-titreSelVar.f.M.repesented,X,Métrique à représenter : ,Represented metrics: 
-titreSelVar.f.M.explained,X,Métrique expliquée : ,Explained metrics: 
-titreSelVar.f.M.freq_occurrence,X,"Métrique calculée : ""fréquence d'occurrence"" (/espèce ; sur unités d'observations)","Calculated metrics: “occurrence frequency” (/species, over stations)"
-titreSelVar.f.M.freq_occurrence.unitobs,X,"Métrique calculée : ""fréquence d'occurrence"" (/groupe d'espèce ; sur unités d'observations)","Calculated metrics: “occurrence frequency” (/species group, over stations)"
-titreSelVar.f.FS.graphFact,X,"Créer un graphique par facteur...  (optionnel, 'species.code' ou 'identifiant' conseillé)","Generate a plot per factor level (optional, 'species.code' or 'identifiant' recommended)"
-titreSelVar.f.FS.modele_lineaire,X,"Séparer les analyses par facteur...  (optionnel, 'species.code' ou 'identifiant' conseillé)","Split the analyses per factor level (optional, 'species.code' or 'identifiant' recommended)"
-titreSelVar.f.FS.freq_occurrence,X,"Séparer les graphiques par facteur...  (optionnel, 'species.code' ou 'identifiant' conseillé)","Split the plots per factor level (optional, 'species.code' or 'identifiant' recommended)"
-titreSelVar.f.FS.selectSp,X,"Sélection d'espèce(s) selon un critère...  (optionnel, toutes par défaut)","Subset species... (optional, all by default)"
-titreSelVar.f.FS.MRT.esp,X,"Séparer les graphiques/analyses par facteur...  (optionnel, 'species.code' ou 'identifiant' conseillé)","Split the analyses/plots per factor level (optional, 'species.code' or 'identifiant' recommended)"
-titreSelVar.f.F.graph,X,Choix du (des) facteur(s) de regroupement (sur un même graphique),Selection of the grouping factor(s) (same plot)
-titreSelVar.f.F.modele_lineaire,X,Choix du(des) facteur(s) explicatif(s),Selection of the explaining factor(s)
-titreSelVar.f.F.freq_occurrence,X,Choix du(des) facteur(s) explicatif(s)/de regroupement,Selection of the grouping/explaining factor(s)
-titreSelVar.f.F.MRT,X,Choix du(des) facteur(s) explicatif(s) (l'ordre n'a pas d'influence),Selection of the explaining factor(s) (the order does not matter)
+titreSelVar.f.WT.boxplot.esp,X,boxplots (métrique/espèce/unité d'observation),boxplots (metric /species/station)
+titreSelVar.f.WT.modele_lineaire,X,modèles linéaires (métrique/espèce/unité d'observation),linear models (metric /species/station)
+titreSelVar.f.WT.freq_occurrence,X,fréquences d'occurrences,frequencies
+titreSelVar.f.WT.freq_occurrence.unitobs,X,fréquences d'occurrences,frequencies
+titreSelVar.f.WT.boxplot.unitobs,X,boxplots (métrique agrégée/unité d'observation),boxplots (metric /station)
+titreSelVar.f.WT.modele_lineaire.unitobs,X,modèles linéaires (métrique/unité d'observation),linear models (metric /station)
+titreSelVar.f.WT.MRT.unitobs,X,Arbres de régression (métrique/unité d'observation),multivariate regression trees (metric /station)
+titreSelVar.f.WT.MRT.esp,X,Arbres de régression (métrique/espèce/unité d'observation),multivariate regression trees (metric /species/station)
+titreSelVar.f.WT.barplot.unitobs,X,barplots (métrique agrégée/unité d'observation),barplots (metric /station)
+titreSelVar.f.WT.barplot.esp,X,barplots (métrique/espèce/unité d'observation),barplots (metric /species/station)
+titreSelVar.f.WT.spBarBoxplot.unitobs,X,barplots/boxplots (métrique agrégée/unité d'observation),barplots/boxplots (metric /station)
+titreSelVar.f.WT.spBarBoxplot.esp,X,barplots/boxplots (métrique/espèce/unité d'observation),barplots/boxplots (metric /species/station)
+titreSelVar.f.WT.spSymbols.unitobs,X,symboles/couleurs (métrique agrégée/unité d'observation),symbols/colour scale (metric /station)
+titreSelVar.f.WT.spSymbols.esp,X,symboles/couleurs (métrique/espèce/unité d'observation),symbols/colour scale (metric /species/station)
+titreSelVar.f.M.repesented,X,Métrique à représenter : ,Metric selection: 
+titreSelVar.f.M.explained,X,Métrique expliquée : ,Explained metric: 
+titreSelVar.f.M.freq_occurrence,X,"Métrique calculée : ""fréquence d'occurrence"" (/espèce ; sur unités d'observations)",Plotted metric: frequency per species and explanatory factor(s)
+titreSelVar.f.M.freq_occurrence.unitobs,X,"Métrique calculée : ""fréquence d'occurrence"" (/groupe d'espèce ; sur unités d'observations)",Plotted metric: frequency per species group and explanatory factor(s)
+titreSelVar.f.FS.graphFact,X,"Créer un graphique par facteur...  (optionnel, '","Generate one plot per... \n (optional; NB if species characteristic, '"
+titreSelVar.f.FS.spRecommended,X,' conseillé),' recommended)
+titreSelVar.f.FS.modele_lineaire,X,"Séparer les analyses par facteur...\n  (optionnel ; si référentiel espèces, '","Split the analyses per... \n (optional; NB if species characteristic, '"
+titreSelVar.f.FS.freq_occurrence,X,"Séparer les graphiques par facteur...\n  (optionnel ; si référentiel espèces, '","Split the plots per... \n (optional; NB if species characteristic, '"
+titreSelVar.f.FS.selectSp,X,"Sélection d'espèce(s) selon un critère...  (optionnel, toutes par défaut)","Subset species per... (optional, all by default)"
+titreSelVar.f.FS.MRT.esp,X,"Séparer les graphiques/analyses par facteur...\n  (optionnel ; si référentiel espèces, '","Split the analyses/plots per... \n (optional; NB if species characteristic, '"
+titreSelVar.f.F.graph,X,Choix du (des) facteur(s) de regroupement (sur un même graphique),Selection of explanatory factor(s) for plotting
+titreSelVar.f.F.modele_lineaire,X,Choix du(des) facteur(s) explicatif(s),Selection of explanatory factor(s)
+titreSelVar.f.F.freq_occurrence,X,Choix du(des) facteur(s) explicatif(s)/de regroupement,Selection of explanatory factor(s) for plotting
+titreSelVar.f.F.MRT,X,Choix du(des) facteur(s) explicatif(s) (l'ordre n'a pas d'influence),Selection of explanatory factor(s) (the order does not matter)
 titreSelVar.f.tLsp.UnitobsSp,X,.../ unité d'observation / espèce,.../ station / species
 titreSelVar.f.tLsp.Unitobs,X,.../ unité d'observation,.../ station
 titreSelVar.f.tLspCT.UnitobsSpCT,X,.../ unité d'observation / espèce / classes de taille,.../ station / species / size class
 titreSelVar.f.tLspCT.UnitobsCT,X,.../ unité d'observation / classes de taille,.../ station / size class
 titreSelVar.f.factSpatial,X,Facteur de regroupement spatial,Spatial grouping factor
-selectionVariables.WT,X,Sélection des variables pour les ,Selection of variables for the 
+selectionVariables.WT,X,"Sélection des métrique, facteurs et sélections pour les ","Selection of metrics, factors and subsets for the "
+selectionVariables.Occ.WT,X,Sélection des facteurs explicatifs et sélections pour les ,Selection of explanatory factors and subsets for 
 selectionVariables.RB.unit,X,...de biodiversité ( / unité d'observation),...of biodiversity ( / station)
-selectionVariables.RB.fGraphRefesp,X,du référentiel espèces,from the species reference table
-selectionVariables.RB.fGraphUnitobs,X,d'unité d'observation,from the station characteristics
+selectionVariables.RB.fGraphRefesp,X,...du référentiel espèces,...species characteristic
+selectionVariables.RB.fGraphUnitobs,X,...d'unité d'observation,...station characteristics
 selectionVariables.B.fSel,X, Sélection... , Subset... 
 selectionVariables.Levels,X,    Modalités (toutes par défaut)  ,        Levels (all by defaults)      
 selectionVariables.Factor,X,Facteur,Factor
@@ -624,6 +630,7 @@ resFileGraph.all.SCSt,X,toutes,all
 resFileGraph.allSp.SCSt,X,(toutes_espèces)_,(all_species)_
 resFileGraph.aggreg.abv,X,Agr-,Agreg-
 graphTitle.vals,X,Valeurs de ,Values of 
+graphTitle.boxplots,X,Distribution de ,Distribution of 
 graphTitle.for,X, pour , for 
 graphTitle.agg,X, agrégé, aggregated
 graphTitle.f,,e,

@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-07-23 16:45:38 yreecht>
+# Time-stamp: <2019-02-03 20:58:38 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2018 Ifremer - Tous droits réservés.
@@ -239,6 +239,19 @@ add.logFrame.f <- function(msgID, env=dataEnv,...)
                           paste("",
                                 paste(rep("-", 100), collapse=""),
                                 mltext("logFmsg.saveInfoRefspe.1"),
+                                paste("   ", argsSup$file, format(Sys.time(), "  (%d/%m/%Y\t%H:%M:%S)"), sep=""),
+                                "\n", sep="\n")
+                      }
+                  },
+                  "TableSavedCSV"={
+                      if (any(!is.element(c("file"),
+                                          names(argsSup))))
+                      {
+                          stop("Wrong argument(s)!")
+                      }else{
+                          paste("",
+                                paste(rep("-", 100), collapse=""),
+                                mltext("logFmsg.saveTableCSV"),
                                 paste("   ", argsSup$file, format(Sys.time(), "  (%d/%m/%Y\t%H:%M:%S)"), sep=""),
                                 "\n", sep="\n")
                       }

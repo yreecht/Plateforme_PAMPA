@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-12-12 22:54:15 yreecht>
+# Time-stamp: <2019-02-03 15:16:45 yreecht>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2013 Ifremer - Tous droits réservés.
@@ -169,7 +169,8 @@ WP2boxplot.unitobs.f <- function(metrique, factGraph, factGraphSel, listFact, li
                                               "CL_unitobs",
                                               ifelse(tableMetrique == "unitSpSz",
                                                      "unitobs(CL)",
-                                                     "unitobs")))
+                                                     "unitobs")),
+                                  graphType = "boxplot")
 
         ## Label axe y :
         ylab <- ifelse(getOption("P.axesLabels"),

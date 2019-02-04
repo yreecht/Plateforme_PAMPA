@@ -497,7 +497,8 @@ WP2barplot.esp.f <- function(metrique,
                                         # données.
                                               "unitSp"={"espece"},
                                               "unitSpSz"={"CL_espece"},
-                                              "espece"))
+                                              "espece"),
+                                  graphType = "barplot")
 
         ## Label axe y :
         ylab <- ifelse(getOption("P.axesLabels"),

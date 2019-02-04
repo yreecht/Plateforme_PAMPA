@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "PAMPA Ressources & Biodiversité"
-#define MyAppVersion "3.0-beta1"
+#define MyAppVersion "3.0-beta2"
 #define MyAppPublisher "Ifremer"
 #define MyAppURL "https://github.com/yreecht/Plateforme_PAMPA/releases"
 #define MyAppExeName "PAMPA WP2.bat"
@@ -26,7 +26,7 @@ DefaultGroupName={#MyAppName}
 AllowNoIcons=yes
 OutputDir=.
 OutputBaseFilename=setup_PAMPA_Ressources-Biodiv-{#MyAppVersion}
-LicenseFile=.\Scripts_Biodiv\LICENCE-GPL-3.0.fr.txt
+LicenseFile=.\Scripts_Biodiv\LICENCE-GPL-3.0.txt
 ;; InfoBeforeFile=.\modele_copyright.txt
 ; SetupIconFile=Y:\tmp\1284538187_bluefish-icon.ico
 Compression=lzma
@@ -35,7 +35,8 @@ WizardImageFile=.\Img\pampa2L.bmp
 WizardSmallImageFile=.\Img\pampa2.bmp
 
 [Languages]
-Name: "french"; MessagesFile: "compiler:Languages\French.isl"
+Name: "french"; MessagesFile: "compiler:Languages\French.isl"; LicenseFile: ".\Scripts_Biodiv\LICENCE-GPL-3.0.fr.txt"
+Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"
@@ -71,6 +72,7 @@ Source: "Scripts_Biodiv\Functions_base.R"; DestDir: "{app}"
 Source: "Scripts_Biodiv\Functions_graphics.R"; DestDir: "{app}"
 Source: "Scripts_Biodiv\Messages_management.R"; DestDir: "{app}"
 Source: "Scripts_Biodiv\Maps_graphics.R"; DestDir: "{app}"
+Source: "Scripts_Biodiv/Functions_Multilingual.R"; DestDir: "{app}"
 Source: "Scripts_Biodiv\Initialisation.R"; DestDir: "{app}"
 Source: "Scripts_Biodiv\Interface_functions.R"; DestDir: "{app}"
 Source: "Scripts_Biodiv\Interface_main.R"; DestDir: "{app}"
@@ -90,7 +92,9 @@ Source: "Scripts_Biodiv\Maps_variables.R"; DestDir: "{app}"
 Source: "Scripts_Biodiv\View.R"; DestDir: "{app}"
 
 ;; Autres fichiers de la plateforme :
-Source: "Scripts_Biodiv\corresp-cat-benth.csv"; DestDir: "{app}"
+Source: "Scripts_Biodiv\corresp-cat-benth.csv"; DestDir: "{app}"      
+Source: "Scripts_Biodiv\Field_aliases.csv"; DestDir: "{app}"  
+Source: "Scripts_Biodiv\Translations.csv"; DestDir: "{app}"
 Source: "Scripts_Biodiv\VariableNames_fr.csv"; DestDir: "{app}"
 Source: "Scripts_Biodiv\VariableNames_en.csv"; DestDir: "{app}"
 Source: "Scripts_Biodiv\Rprofile.site"; DestDir: "{app}"

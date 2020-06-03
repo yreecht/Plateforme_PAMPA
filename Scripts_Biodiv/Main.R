@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2019-01-23 18:15:35 yreecht>
+# Time-stamp: <2020-06-03 14:49:30 a23579>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2018 Ifremer - Tous droits réservés.
@@ -75,9 +75,34 @@ if (length(idxWD <- grep("^[[:blank:]]*nameWorkspace[[:blank:]]*(<-|=)", .Config
                                                                                        # Code formating
                                                                                        # [ML status]:
 ## ...les fonctions communes de base :                                                 # -----------------------
-source("./Scripts_Biodiv/Load_packages.R", encoding="latin1")                          # OK [mld]
-source("./Scripts_Biodiv/Functions_base.R", encoding="latin1")                         # OK [mld]
 source("./Scripts_Biodiv/Functions_Multilingual.R", encoding="latin1")                 # [mli]
+source("./Scripts_Biodiv/Functions_base.R", encoding="latin1")                         # OK [mld]
+
+
+########################################################################################################################
+## Configuration :
+source("./Scripts_Biodiv/Initialisation.R", encoding="latin1")
+
+## Load user-defined options - Run 1 (language option):
+if (is.null(getOption("PAMPAdummy")))   # uniquement si pas déjà initialisées (cas de lancement multiple)
+{
+    ## Index of
+    idxOpt <- grep("^[[:blank:]]*options[[:blank:]]*\\(", .Config)
+
+    ## Evaluate the options a first time
+    ## (some - like the language options -
+    ##  are persistent during the initialization):
+    eval(.Config[idxOpt])
+
+    if (is.null(getOption("P.GUIlang")))
+    {
+        options("P.GUIlang" = getOption("defaultLang"))
+    }
+}
+
+## Loading and - if needed - installing packages:
+source("./Scripts_Biodiv/Load_packages.R", encoding="latin1")                          # OK [mld]
+
 
 ## ...la création de l'interface :
 source("./Scripts_Biodiv/Interface_functions.R", encoding="latin1")                    # OK [mld]
@@ -139,11 +164,7 @@ source("./Scripts_Biodiv/Barplots_occurrence_unitobs.R", encoding="latin1")     
 source("./Scripts_Biodiv/Barplots_generic_sp.R", encoding="latin1")                    # OK [mld]
 source("./Scripts_Biodiv/Barplots_generic_unitobs.R", encoding="latin1")               # OK [mld]
 
-########################################################################################################################
-## Configuration :
-source("./Scripts_Biodiv/Initialisation.R", encoding="latin1")
-
-## Initialization of options (new ~ persistent system):
+## Initialization of options (new ~ persistent system) - Run 2 (all other options):
 if (is.null(getOption("PAMPAdummy")))   # uniquement si pas déjà initialisées (cas de lancement multiple)
 {
     ## Index of
@@ -154,16 +175,11 @@ if (is.null(getOption("PAMPAdummy")))   # uniquement si pas déjà initialisées (c
     ##  are persistent during the initialization):
     eval(.Config[idxOpt])
 
-    if (is.null(getOption("P.GUIlang")))
-    {
-        options("P.GUIlang" = getOption("defaultLang"))
-    }
     initialiseOptions.f()
 
     ## Override the non-persistent options after initialization:
     eval(.Config[idxOpt])
 }
-
 
 ## options("P.GUIlang" = "fr")
 ## options(error = recover)

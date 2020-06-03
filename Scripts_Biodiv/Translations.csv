@@ -191,7 +191,7 @@ installPack.f.2,X,'\n\nn'est (ne sont) pas disponible(s) !,'\n\nis (are) not ava
 WinInstall.title,X,Packages manquants,Missing packages
 WinInstall.B.Install,X,   Installer   ,    Install    
 WinInstall.B.Cancel,X,   Annuler   ,   Cancel    
-WinInstall.list.1,X,Le(s) package(s) suivant(s) est (sont) manquant(s) :\n\    * ',The following packages are missing:\n\    * '
+WinInstall.list.1,X,Le(s) package(s) suivant(s) est (sont) manquant(s) :\n\n    * ',The following packages are missing:\n\    * '
 WinInstall.list.2,X,'\n\n Vous pouvez lancer leur installation \n,'\n\n You can install them now \n
 WinInstall.list.3,X,(connexion internet active et droits d'administration requis).,(live connection required).
 WinInstall.list.4,X,Vous devez installer manuellement le(s) package(s) :\n\n    * ',Manual installation required for the following package(s):\n\n    * '

@@ -1,7 +1,7 @@
 #-*- coding: latin-9 -*-
 
 ### File: Functions_Multilingual.R
-### Time-stamp: <2018-12-15 14:45:53 yreecht>
+### Time-stamp: <2020-06-03 14:43:24 a23579>
 ###
 ### Created: 09/07/2018	15:37:32
 ### Author: Yves Reecht
@@ -23,7 +23,7 @@ mltext <- function(msgid, language = tolower(getOption("P.GUIlang")))
 
     transl <- get(".translations", envir = .GlobalEnv)
 
-    lang <- ifelse(language %in% colnames(transl),
+    lang <- ifelse(isTRUE(language %in% colnames(transl)),
                    language,
                    "en")
 

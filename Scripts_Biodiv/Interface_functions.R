@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2019-02-03 18:34:52 yreecht>
+# Time-stamp: <2020-06-03 17:48:23 a23579>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2018 Ifremer - Tous droits réservés.
@@ -586,7 +586,7 @@ apropos.f <- function()
     tkinsert(TX.develop, "end", mltext("WinApropos.TX.dev.4"))
     tktag.add(TX.develop, "title2", "end -1 lines linestart", "end")
 
-    email <- "Yves.Reecht@marine.ie"
+    email <- "Yves.Reecht@hi.no"
     tkinsert(TX.develop, "end", email)
     tktag.add(TX.develop, "email",
               paste("end -", nchar(email) + 1, " chars", sep=""), "end -1 chars")

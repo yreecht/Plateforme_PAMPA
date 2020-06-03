@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-08-07 09:57:28 yreecht>
+# Time-stamp: <2020-06-03 17:50:42 a23579>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2018 Ifremer - Tous droits réservés.
@@ -465,7 +465,7 @@ mainInterface.create.f <- function()
           background=.MenuBackground,
           command = function()
       {
-          shell.exec(paste(basePath, "/Scripts_Biodiv/Doc/Rapport_bug_PAMPA-WP2.dot", sep=""))
+          browseURL("https://github.com/yreecht/Plateforme_PAMPA/issues")
       })
     tkadd(outils, "separator", background=.MenuBackground)
 

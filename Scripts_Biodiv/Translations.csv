@@ -41,7 +41,7 @@ menu.select.sp.list,X,Par liste d'espèces (fichier),For a list of species (file)
 msg.ongoing.dev,X,En développement !,Implementation in progress!
 menu.select.restore,X,Restaurer les données originales,Restore original data
 menu.sub.szsp,X,Par espèce ou classe de taille d'espèce :,Per species (including per size class):
-menu.sub.aggr.szsp,X,"Par groupe d’espèces ou classes de taille, agrégées par unité d'observation :",Species groups (including per or over size classes):
+menu.sub.aggr.szsp,X,"Par groupe d'espèces ou classes de taille, agrégées par unité d'observation :",Species groups (including per or over size classes):
 menu.graphs.boxplots,X,"Graphiques en ""boîtes à moustaches"" (boxplots)...",Boxplots...
 menu.graphs.barplots,X,Graphiques en barres (barplots)...,Barplots...
 menu.graphs.occ.freq,X,Fréquences d'occurrence (/espèce sur des unité d'observation)...,Frequencies...
@@ -141,9 +141,9 @@ error.UnitobsDsObsUnitobs.1,X,Votre fichier 'observations' ne comporte pas les m
 error.UnitobsDsObsUnitobs.2,X, 'Unites d'observation'. Corrigez les et recommencez l'importation.\n, file. Please correct and restart the importation.\n
 error.CaractereInterditDsObs,X,"Votre fichier observations contient des ""&"". Corrigez les et recommencez l'importation.\n","The 'Observations' file contains some ""&"". Please correct and restart the importation.\n"
 error.CaractereInterditDsUnitObs,X,"Votre fichier unités d'observations contient des ""."" Corrigez les et recommencez l'importation.\n","The 'Observation unit' file contains some ""."". Please correct and restart the importation.\n"
-error.ZeroEnregistrement,X,Graphique impossible - pas d'enregistrements dans votre sélection.\n,Graphics not produced – no record in the subset.\n
-error.UneSeuleValeurRegroupement,X,Graphique sans intérêt - votre critère de regroupement n'a qu'une seule valeur.\n,Trivial graphics – grouping factor has only one level.\n
-error.CritereMalRenseigne50.1,X,Graphique sans intérêt - le critère de regroupement sélectionné,Irrelevant graphics – the grouping factor is filled
+error.ZeroEnregistrement,X,Graphique impossible - pas d'enregistrements dans votre sélection.\n,Graphics not produced - no record in the subset.\n
+error.UneSeuleValeurRegroupement,X,Graphique sans intérêt - votre critère de regroupement n'a qu'une seule valeur.\n,Trivial graphics - grouping factor has only one level.\n
+error.CritereMalRenseigne50.1,X,Graphique sans intérêt - le critère de regroupement sélectionné,Irrelevant graphics - the grouping factor is filled
 error.CritereMalRenseigne50.2,, est renseigné pour moins de 50% des observations.\n, for less than 50% of observations.\n
 error.CaractereInterdit.1,X,Votre table ,Your table 
 error.CaractereInterdit.2,X," contient des caractères déconseillés par le référentiel des données ('espaces',',',';' "," contains characters no recommended in the data specifications ('<spaces>',',',';' "
@@ -178,12 +178,12 @@ logFmsg.selection.6,X,\n\nFichiers exportés dans ,\n\nFile exported to
 logFmsg.selection.7,X,\n   - métriques par unité d'observation / esp. / cl. de taille :,\n   - metrics per station / sp. / size cl.:
 logFmsg.selection.8,X,\n   - métriques par unité d'observation / esp. :,\n   - metrics per station / sp.:
 logFmsg.selection.9,X,\n   - métriques par unité d'observation :,\n   - metrics per station:
-logFmsg.selection.10,X,\n   - plan d'échantillonnage basique (année - statut de protection) :,\n   - basic sampling design (year – protection status) :
+logFmsg.selection.10,X,\n   - plan d'échantillonnage basique (année - statut de protection) :,\n   - basic sampling design (year - protection status) :
 logFmsg.files.1,X,\nFichiers exportés dans ,\nFile exported to 
 logFmsg.files.2,X,\n   - métriques par unité d'observation / esp. / cl. de taille :,\n   - metrics per station / sp. / size cl.:
 logFmsg.files.3,X,\n   - métriques par unité d'observation / esp. :,\n   - metrics per station / sp.:
 logFmsg.files.4,X,\n   - métriques par unité d'observation :,\n   - metrics per station:
-logFmsg.files.5,X,\n   - plan d'échantillonnage basique (année - statut de protection) :,\n   - basic sampling design (year – protection status) :
+logFmsg.files.5,X,\n   - plan d'échantillonnage basique (année - statut de protection) :,\n   - basic sampling design (year - protection status) :
 logFmsg.saveInfoRefspe.1,X,Enregistrement des informations sur le référentiel espèce dans le fichier :,Saving species reference information within the file:
 logFmsg.saveTableCSV,,Enregistrement du tableau dans le fichier :,Table saved within the file:
 installPack.f.1,X,Le(s) package(s) : \n\n    * ',The package(s) : \n\n    * '
@@ -370,7 +370,7 @@ chooseFiles.BT.4,X,Référentiel spatial (OPTIONNEL),Spatial reference file (OPTIO
 chooseFiles.BT.OK,X, Valider ,  Load  
 chooseFiles.BT.Cancel,X,  Annuler  ,  Cancel  
 chooseFiles.info.none,X,RIEN !!!,NONE!!!
-chooseFiles.info.default,X,non sélectionné - par défaut :,not selected – default:
+chooseFiles.info.default,X,non sélectionné - par défaut :,not selected - default:
 chooseFiles.info.WD,X,Espace de travail,Working directory
 logmsg.sizeclass,X,Attribution des individus à des classes de taille :,Attributing individuals to size classes:
 logmsg.meansize.szcl,X,Calcul des tailles moyennes d'après les classes de taille :,Calculation of mean sizes based on the size classes:
@@ -389,7 +389,7 @@ logmsg.weightMPA.calc,X,Calcul des poids :,Calculation of weights:
 calcWeight.info.1,X,Calcul des poids,Calculation of weights
 calcWeight.info.2,X,Calcul des poids pour l'AMP :,Estimation of weights for the MPA:
 logmsg.link.unitobs.refspa,X,Interface de choix du lien unités d'observation et référentiel spatial.,Interface for selecting the link between observation units and spatial referential.
-selectLink.interface.title,X,Lien unités d'observation -- référentiel spatial,Link observation units – spatial reference table
+selectLink.interface.title,X,Lien unités d'observation -- référentiel spatial,Link observation units - spatial reference table
 selectLink.interface.H1.1,X,Veuillez choisir les colonnes correspondantes dans les données d'unités,Please select the the corresponding field in the observation units
 selectLink.interface.H1.2,, d'observation et le référentiel spatial., and spatial reference table data.
 selectLink.interface.H2.1,X,"Dans la colonne du référentiel spatial, la valeur de chaque ligne doit",Values must be unique in the spatial field selected
@@ -434,7 +434,7 @@ change.levelsOrder.title,X,Choisissez l'ordre des modalités d'un facteur,Selecti
 change.levelsOrder.orderAlpha,X,Tri alphabétique,Alphabetical order
 change.levelsOrder.orderNum,X,Tri numérique,Numerical order
 change.levelsOrder.orderInv,X,Inverser l'ordre,Reverse order
-change.levelsOrder.orderReset,X,Réinitialiser l’ordre,Reset order
+change.levelsOrder.orderReset,X,Réinitialiser l'ordre,Reset order
 change.levelsOrder.TT.1,X,"Réinitialise l'ordre des modalités, du facteur courant uniquement, ",Reset the original order of levels for the current factor.
 change.levelsOrder.TT.2,,aux valeurs d'origine.,
 change.levelsOrder.Lab.1,X,1) Choisissez un facteur à ré-ordonner :,1) Select a factor to re-order:
@@ -777,7 +777,7 @@ compMultiplesLM.Info.1,X,Comparaisons pour les différences de,Comparisons for di
 compSimplesLM.header,X,Comparaisons des modalités :,Comparisons of levels:
 compSimplesLM.KW.factor,X,Facteur,Factor
 infoStatLM.Info.model,X,Modèle ajusté :,Fitted model:
-infoStatLM.Info.Fheader,X,Statistique de Fisher Globale et R^2 :,Global Fisher’s statistics and R^2:
+infoStatLM.Info.Fheader,X,Statistique de Fisher Globale et R^2 :,Global Fisher's statistics and R^2:
 infoStatLM.Info.R2mult,X,R^2 multiple :,Multiple R^2:
 infoStatLM.Info.R2adj,X,R^2 ajusté :,Adjusted R^2
 infoStatLM.Info.Fstat,X,F-statistique : ,F-statistics:
@@ -791,7 +791,7 @@ sortiesLM.Wminfo.Title,X,Information,Information
 sortiesLM.Wminfo.Info.1,X,Comparaisons multiples en cours...,Ongoing multiple-comparisons...
 sortiesLM.Wminfo.Info.2,,"Veuillez patienter, ceci peut prendre","Please be patient, this can take a while"
 sortiesLM.Wminfo.Info.3,, un peu de temps (cette fenêtre se fermera automatiquement), (this window will close automatically)
-sortiesLM.Graph.Title,X,Graphique d’interactions,Interaction graphics
+sortiesLM.Graph.Title,X,Graphique d'interactions,Interaction graphics
 sortiesLM.Graph.ylab.pfx,,,Mean 
 sortiesLM.Graph.ylab.sfx,,,
 sortiesLM.Graph.ylab.sfxDblCons,,n,

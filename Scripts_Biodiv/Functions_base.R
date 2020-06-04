@@ -701,6 +701,28 @@ infoStats.f <- function(filename, Data, agregLevel=c("species", "unitobs"), type
 
 }
 
+########################################################################################################################
+shell.exec  <- function(x, wait = FALSE, ...)
+{
+    ## Purpose: Replacement for shell.exe (doesn't exist on Linux or MAC)
+    ## ----------------------------------------------------------------------
+    ## Arguments: x: document path to be opened
+    ##            wait: whether to hold the R console
+    ##            ...: optional arguments to system()
+    ## ----------------------------------------------------------------------
+    ## Author: Yves Reecht, Date:  4 Jun 2020, 21:16
+
+    if (exists("shell.exec",where = "package:base"))
+        return(base::shell.exec(x))
+
+    if (.Platform$OS.type == "unix")
+    {
+        comm  <- paste0("xdg-open \"", x, "\"")
+    }else{
+        comm <- paste0("open ", x)
+    }
+    return(system(comm, wait = wait, ...))
+}
 
 
 

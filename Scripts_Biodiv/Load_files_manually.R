@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-11-28 14:57:41 yreecht>
+# Time-stamp: <2020-06-04 19:05:04 a23579>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2018 Ifremer - Tous droits réservés.
@@ -378,7 +378,7 @@ chooseFiles.f <- function(dataEnv)
                        refesp=NA,
                        locrefesp=NA,
                        refspa=NA,
-                       ws=getwd())
+                       ws=get("PAMPAhome", envir = .GlobalEnv))
     }
 
     workSpaceTmp <- fileNames["ws"]

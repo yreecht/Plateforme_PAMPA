@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2020-06-04 13:40:20 a23579>
+# Time-stamp: <2020-06-04 17:29:18 a23579>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2018 Ifremer - Tous droits réservés.
@@ -56,14 +56,17 @@ if(basename(fileCall) == "Main.R")
     if (.Platform$OS.type == "windows")
     {
         ## setwd("C:/PAMPA/")   # source of problems if anything else
-    }else{}                             # Rien !
+    }else{} # Rien !
 }
 
 ## Récupéré dans une variable globale (beurk !) :
 basePath <- getwd()
 
+## Initialisation of user specific paths:
+source(file.path(basePath, "Scripts_Biodiv/Initialisation_user.R"), encoding = "latin1")
+
 ## Load configuration:
-.Config <- parse(file.path(basePath, "Scripts_Biodiv/Config.R"), encoding = "latin1")
+.Config <- parse(file.path(ConfigDir, "Config.R"), encoding = "latin1")
 
 ## Répertoire de travail:
 if (length(idxWD <- grep("^[[:blank:]]*nameWorkspace[[:blank:]]*(<-|=)", .Config)))
@@ -71,7 +74,7 @@ if (length(idxWD <- grep("^[[:blank:]]*nameWorkspace[[:blank:]]*(<-|=)", .Config
     eval(.Config[[idxWD]])
 }else{
     ## ...par défaut (si pas configuré par ailleurs) :
-    nameWorkspace <- basePath
+    nameWorkspace <- PAMPAhome
 }
 
 ## #############################################################################################################

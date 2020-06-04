@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2018-12-17 15:37:00 yreecht>
+# Time-stamp: <2020-06-04 19:49:24 a23579>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2018 Ifremer - Tous droits réservés.
@@ -559,7 +559,7 @@ testConfig.f <- function(requiredVar, fileNames=NULL, dataEnv=NULL)
                                                       mltext("testConfig.error.3p"),
                                                       mltext("testConfig.error.3s")),
                                                mltext("testConfig.error.4"),
-                                               basePath, "/Scripts_Biodiv/Config.R\" :\n\n\t*  ",
+                                               ConfigDir, "/Config.R\" :\n\n\t*  ",
                                                paste(requiredVar[! existVar], collapse="\n\t*  "),
                                                mltext("testConfig.error.5"),
                                                mltext("testConfig.error.6"),
@@ -569,16 +569,16 @@ testConfig.f <- function(requiredVar, fileNames=NULL, dataEnv=NULL)
         {
             if (exists("shell.exec", mode="function"))
             {
-                shell.exec(paste(basePath, "/Scripts_Biodiv/Config.R", sep=""))
+                shell.exec(paste(ConfigDir, "/Config.R", sep=""))
 
-                if (file.exists(fileTmp <- paste(basePath, "/Scripts_Biodiv/Config.bak.R", sep="")))
+                if (file.exists(fileTmp <- paste(ConfigDir, "/Config.bak.R", sep="")))
                 {
                     shell.exec(fileTmp)
                 }else{}
             }else{
-                file.edit(paste(basePath, "/Scripts_Biodiv/Config.R", sep=""))
+                file.edit(paste(ConfigDir, "/Config.R", sep=""))
 
-                if (file.exists(fileTmp <- paste(basePath, "/Scripts_Biodiv/Config.bak.R", sep="")))
+                if (file.exists(fileTmp <- paste(ConfigDir, "/Config.bak.R", sep="")))
                 {
                     file.edit(fileTmp)
                 }else{}
@@ -1163,7 +1163,7 @@ loadConfig.f <- function(dataEnv=NULL)
     ## ----------------------------------------------------------------------
     ## Author: Yves Reecht, Date:  5 déc. 2011, 14:39
 
-    source("./Scripts_Biodiv/Config.R", encoding="latin1", local=TRUE)
+    source(file.path(ConfigDir, "/Config.R"), encoding="latin1", local=TRUE)
 
     confNames <- c(unitobs=ifelse(exists("fileNameUnitobs"), fileNameUnitobs, NA),
                    obs=ifelse(exists("fileNameObs"), fileNameObs, NA),

@@ -2,11 +2,11 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "PAMPA Ressources & Biodiversité"
-#define MyAppVersion "3.0-beta3"
+#define MyAppVersion "3.0-beta4"
 #define MyAppPublisher "Ifremer"
 #define MyAppURL "https://github.com/yreecht/Plateforme_PAMPA/releases"
 #define MyAppExeName "PAMPA WP2.bat"
-#define InstallDir "C:\PAMPA"
+#define InstallDir "C:\Program Files\PAMPA"
 #define ExecDir "Scripts_Biodiv"
 
 [Setup]
@@ -120,5 +120,5 @@ Name: "{group}\Créer un rapport de bug"; Filename: "{app}\Doc\Rapport_bug_PAMPA-
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, "&", "&&")}}"; Flags: shellexec postinstall skipifsilent; WorkingDir: {#InstallDir}
 
 [Dirs]
-Name: "{#InstallDir}\Data"; Flags: uninsneveruninstall; Tasks: ; Languages:
-
+Name: "{#InstallDir}\Data"; Flags: uninsneveruninstall; Permissions: users-modify; Tasks: ; Languages:
+Name: "{#InstallDir}\logs"; Flags: uninsneveruninstall; Permissions: users-modify; Tasks: ; Languages:

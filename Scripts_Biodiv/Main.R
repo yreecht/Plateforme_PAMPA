@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2020-06-03 17:51:14 a23579>
+# Time-stamp: <2020-06-04 13:40:20 a23579>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2018 Ifremer - Tous droits réservés.
@@ -32,7 +32,7 @@
 ####################################################################################################
 
 ## ** Version **
-options(versionPAMPA = "3.0-beta3",
+options(versionPAMPA = "3.0-beta4",
         defaultLang = "en")
 
 ## Platform-specific treatment:
@@ -48,10 +48,14 @@ if(basename(fileCall) == "Main.R")
 {
     setwd(paste(dirname(fileCall), "/../", sep=""))
 }else{
+    if (grepl("[\\/]Scripts_Biodiv$", normalizePath(getwd())))
+    {
+        setwd("..")
+    }
     ## message("Dossier non-trouvé")
     if (.Platform$OS.type == "windows")
     {
-        setwd("C:/PAMPA/")
+        ## setwd("C:/PAMPA/")   # source of problems if anything else
     }else{}                             # Rien !
 }
 

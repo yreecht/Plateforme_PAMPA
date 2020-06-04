@@ -47,7 +47,7 @@ Source: ".\Scripts_Biodiv\PAMPA WP2.bat"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\Scripts_Biodiv\R.bat"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\Scripts_Biodiv\img\*"; DestDir: "{app}\img"; Flags: ignoreversion
 Source: ".\Scripts_Biodiv\Doc\*"; DestDir: "{app}\Doc"; Flags: ignoreversion
-Source: ".\Scripts_Biodiv\Config.R"; DestDir: "{app}"; Flags: uninsneveruninstall
+Source: ".\Scripts_Biodiv\Config.R"; DestDir: "{app}"; Flags: uninsneveruninstall; Permissions: users-modify
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 ;; Scripts R :
@@ -114,7 +114,7 @@ Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\{#MyAppName}"; Fil
 
 Name: "{group}\Documentation\Guide Utilisateur"; Filename: "{app}\Doc\Guide_plateforme_WP2_Meth4.pdf";
 ;; Name: "{group}\Documentation\Nouveautés de la plateforme PAMPA WP2"; Filename: "{app}\Doc\Annexe_GuideCalculsIndicateurs-WP2-Meth4-092010.pdf";
-Name: "{group}\Créer un rapport de bug"; Filename: "{app}\Doc\Rapport_bug_PAMPA-WP2.dot";
+;; Name: "{group}\Créer un rapport de bug"; Filename: "{app}\Doc\Rapport_bug_PAMPA-WP2.dot";
 
 [Run]
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, "&", "&&")}}"; Flags: shellexec postinstall skipifsilent; WorkingDir: {#InstallDir}

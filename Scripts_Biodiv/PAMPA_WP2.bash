@@ -4,6 +4,7 @@ pwd | egrep -q "Scripts_Biodiv$" && cd ..
 
 echo `pwd`
 
+export R_PROFILE="Scripts_Biodiv/Rprofile.site"
 
 ## (R --no-restore --no-save)
 
@@ -12,7 +13,7 @@ echo `pwd`
 ## R R_PROFILE=./Scripts_Biodiv/Rprofile.site --interactive --no-restore --no-save
 
 exec R --interactive --no-restore --no-save
-source("./Scripts_Biodiv/Main.R", encoding="latin1")
+## source("./Scripts_Biodiv/Main.R", encoding="latin1")
 
 ## (R --no-restore --no-save < ./Scripts_Biodiv/Main_Unix.R)
 

@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2020-06-04 17:27:30 a23579>
+# Time-stamp: <2020-06-05 13:45:40 a23579>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2020 Ifremer - Tous droits réservés.
@@ -44,8 +44,13 @@ ConfigDir <- file.path(PAMPAhome, "config")
 ## Create directory and copy files if does not exist yet:
 if (! dir.exists(ConfigDir))
 {
-    dir.create(path = , recursive = TRUE)
+    ## ##################################################
+    ## Apply for new user or new PAMPA_HOME directory
+    ## (transition).
 
+    dir.create(path = ConfigDir, recursive = TRUE)
+
+    ## Copy pre-existing or template config file to the new home (transition):
     file.copy(from = file.path(basePath, "Scripts_Biodiv/Config.R"),
               to = file.path(ConfigDir, "Config.R"))
 
@@ -56,9 +61,13 @@ if (! dir.exists(ConfigDir))
     copiedDirs <- basename(list.dirs(basePath, recursive = FALSE))
     copiedDirs <- copiedDirs[! copiedDirs %in% ignoredDirs]
 
+    ## Copy existing directories (alledgedly WDs) to the new home (transition):
     file.copy(from = file.path(basePath, copiedDirs),
               to = paste0(PAMPAhome, "/"),
               recursive = TRUE, copy.date = TRUE)
+
+    ## Create the WD template structure (as named in the default Config.R)
+    dir.create(file.path(PAMPAhome, "Dummy_WD/Data"), recursive = TRUE)
 }
 
 

@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2020-06-05 13:45:40 a23579>
+# Time-stamp: <2020-06-05 14:43:48 a23579>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2020 Ifremer - Tous droits réservés.
@@ -47,6 +47,9 @@ if (! dir.exists(ConfigDir))
     ## ##################################################
     ## Apply for new user or new PAMPA_HOME directory
     ## (transition).
+
+    runLog.f(msg = paste0("Initialisation of users PAMPA_HOME (",
+                          PAMPAhome, ")"))
 
     dir.create(path = ConfigDir, recursive = TRUE)
 

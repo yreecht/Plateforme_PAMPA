@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2020-06-05 12:26:36 a23579>
+# Time-stamp: <2020-06-05 14:50:01 a23579>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2018 Ifremer - Tous droits réservés.
@@ -72,9 +72,10 @@ source(file.path(basePath, "Scripts_Biodiv/Initialisation_user.R"), encoding = "
 if (length(idxWD <- grep("^[[:blank:]]*nameWorkspace[[:blank:]]*(<-|=)", .Config)))
 {
     eval(.Config[[idxWD]])
+    nameWorkspace <- normalizePath(nameWorkspace)
 }else{
     ## ...par défaut (si pas configuré par ailleurs) :
-    nameWorkspace <- PAMPAhome
+    nameWorkspace <- normalizePath(PAMPAhome)
 }
 
 ## #############################################################################################################

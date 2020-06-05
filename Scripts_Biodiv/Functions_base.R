@@ -222,25 +222,27 @@ runLog.f <- function(msg, niv=-1)
 
     on.exit(if (exists("logFile") &&
                 tryCatch(isOpen(logFile),
-                         error=function(e)return(FALSE))) close(logFile))
+                         error = function(e)return(FALSE))) close(logFile))
 
-    ## Test d'existance et éventuelle création du dossier de logs :
-    if (!isTRUE(file.info("./logs")$isdir))
-      {
-          dir.create("./logs")
-      }
+    logDir <- file.path(PAMPAhome, "logs")
+
+    ## Test d'existance et éventuelle création du dossier de logs:
+    if (! dir.exists(logDir))
+    {
+        dir.create(logDir)
+    }
 
     ## Test d'existance et éventuelle création du fichier de log du jour :
     logFileName <- paste("Runs_", format(Sys.Date(), "%d-%m-%Y"), ".log", sep="")
 
-    if (!file.exists(paste("./logs/", logFileName, sep="")) ||
-        isTRUE(file.info(paste("./logs/", logFileName, sep=""))$isdir))
-      {
-          file.create(paste("./logs/", logFileName, sep=""))
-      }
+    if (!file.exists(file.path(logDir, logFileName)) ||
+        isTRUE(file.info(file.path(logDir, logFileName))$isdir))
+    {
+        file.create(file.path(logDir, logFileName))
+    }
 
-    logFile <- file(description=paste("./logs/", logFileName, sep=""),
-                    open="a", encoding="latin1")
+    logFile <- file(description = file.path(logDir, logFileName),
+                    open = "a", encoding = "latin1")
 
     ## on.exit(close(logFile))
 
@@ -273,22 +275,24 @@ errorLog.f <- function(error, niv=-3)
                 tryCatch(isOpen(logFile),
                          error=function(e)return(FALSE))) close(logFile))
 
+    logDir <- file.path(PAMPAhome, "logs")
+
     ## Test d'existance et éventuelle création du dossier de logs :
-    if (!isTRUE(file.info("./logs")$isdir))
+    if (! dir.exists(logDir))
       {
-          dir.create("./logs")
+          dir.create(logDir)
       }
 
     ## Test d'existance et éventuelle création du fichier de log du jour :
     logFileName <- paste("Errors_", format(Sys.Date(), "%d-%m-%Y"), ".log", sep="")
 
-    if (!file.exists(paste("./logs/", logFileName, sep="")) ||
-        isTRUE(file.info(paste("./logs/", logFileName, sep=""))$isdir))
+    if (!file.exists(file.path(logDir, logFileName)) ||
+        isTRUE(file.info(file.path(logDir, logFileName))$isdir))
       {
-          file.create(paste("./logs/", logFileName, sep=""))
+          file.create(file.path(logDir, logFileName))
       }
 
-    logFile <- file(description=paste("./logs/", logFileName, sep=""),
+    logFile <- file(description=file.path(logDir, logFileName),
                     open="a", encoding="latin1")
 
 

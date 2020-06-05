@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2020-06-04 19:49:24 a23579>
+# Time-stamp: <2020-06-05 15:00:42 a23579>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2018 Ifremer - Tous droits réservés.
@@ -1170,7 +1170,9 @@ loadConfig.f <- function(dataEnv=NULL)
                    refesp=ifelse(exists("fileNameRefesp"), fileNameRefesp, NA),
                    locrefesp=ifelse(exists("fileNameRefespLocal"), fileNameRefespLocal, NA),
                    refspa=ifelse(exists("fileNameRefspa"), fileNameRefspa, NA),
-                   ws=ifelse(exists("nameWorkspace"), nameWorkspace, NA))
+                   ws=ifelse(exists("nameWorkspace"),
+                             normalizePath(nameWorkspace, winslash = "/"),
+                             NA))
 
     ## Si un environnement indiqué, les données y sont exportées
     if (!is.null(dataEnv))

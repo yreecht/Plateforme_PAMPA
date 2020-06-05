@@ -72,10 +72,10 @@ source(file.path(basePath, "Scripts_Biodiv/Initialisation_user.R"), encoding = "
 if (length(idxWD <- grep("^[[:blank:]]*nameWorkspace[[:blank:]]*(<-|=)", .Config)))
 {
     eval(.Config[[idxWD]])
-    nameWorkspace <- normalizePath(nameWorkspace)
+    nameWorkspace <- normalizePath(nameWorkspace, winslash = "/")
 }else{
     ## ...par défaut (si pas configuré par ailleurs) :
-    nameWorkspace <- normalizePath(PAMPAhome)
+    nameWorkspace <- normalizePath(PAMPAhome, winslash = "/")
 }
 
 ## #############################################################################################################

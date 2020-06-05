@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "PAMPA Ressources & Biodiversité"
-#define MyAppVersion "3.0-beta4"
+#define MyAppVersion "3.1-beta3"
 #define MyAppPublisher "Ifremer"
 #define MyAppURL "https://github.com/yreecht/Plateforme_PAMPA/releases"
 #define MyAppExeName "PAMPA WP2.bat"
@@ -73,7 +73,8 @@ Source: "Scripts_Biodiv\Functions_graphics.R"; DestDir: "{app}"
 Source: "Scripts_Biodiv\Messages_management.R"; DestDir: "{app}"
 Source: "Scripts_Biodiv\Maps_graphics.R"; DestDir: "{app}"
 Source: "Scripts_Biodiv/Functions_Multilingual.R"; DestDir: "{app}"
-Source: "Scripts_Biodiv\Initialisation.R"; DestDir: "{app}"
+Source: "Scripts_Biodiv\Initialisation.R"; DestDir: "{app}"  
+Source: "Scripts_Biodiv\Initialisation_user.R"; DestDir: "{app}"
 Source: "Scripts_Biodiv\Interface_functions.R"; DestDir: "{app}"
 Source: "Scripts_Biodiv\Interface_main.R"; DestDir: "{app}"
 Source: "Scripts_Biodiv\Link_unitobs-refspa.R"; DestDir: "{app}"
@@ -120,5 +121,3 @@ Name: "{group}\Documentation\Guide Utilisateur"; Filename: "{app}\Doc\Guide_plat
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, "&", "&&")}}"; Flags: shellexec postinstall skipifsilent; WorkingDir: {#InstallDir}
 
 [Dirs]
-Name: "{#InstallDir}\Data"; Flags: uninsneveruninstall; Permissions: users-modify; Tasks: ; Languages:
-Name: "{#InstallDir}\logs"; Flags: uninsneveruninstall; Permissions: users-modify; Tasks: ; Languages:

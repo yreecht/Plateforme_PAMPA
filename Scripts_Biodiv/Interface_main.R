@@ -1,5 +1,5 @@
 #-*- coding: latin-1 -*-
-# Time-stamp: <2020-06-03 17:50:42 a23579>
+# Time-stamp: <2020-06-04 19:45:28 a23579>
 
 ## Plateforme PAMPA de calcul d'indicateurs de ressources & biodiversité
 ##   Copyright (C) 2008-2018 Ifremer - Tous droits réservés.
@@ -457,7 +457,7 @@ mainInterface.create.f <- function()
           background=.MenuBackground,
           command=function()
       {
-          shell.exec(paste(basePath, "/Scripts_Biodiv/Config.R", sep=""))
+          shell.exec(paste(ConfigDir, "/Config.R", sep=""))
       })
     tkadd(outils, "separator", background=.MenuBackground)
 

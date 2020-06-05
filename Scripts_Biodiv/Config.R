@@ -14,7 +14,7 @@ options(P.GUIlang="en")                 # en/fr implemented so far
 ## fileNameRefesp <- "<global_species_reference_table.txt>"
 ## fileNameRefespLocal <- "<local_species_reference_table.txt>"
 ## fileNameRefspa <- "<spatial_reference_(table.txt|shapefile.shp)>"
-## nameWorkspace <- "C:/PAMPA"
+## nameWorkspace <- "~/PAMPA/Dummy_WD"
 
 
 

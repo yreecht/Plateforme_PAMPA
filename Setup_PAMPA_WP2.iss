@@ -73,7 +73,8 @@ Source: "Scripts_Biodiv\Functions_graphics.R"; DestDir: "{app}"
 Source: "Scripts_Biodiv\Messages_management.R"; DestDir: "{app}"
 Source: "Scripts_Biodiv\Maps_graphics.R"; DestDir: "{app}"
 Source: "Scripts_Biodiv/Functions_Multilingual.R"; DestDir: "{app}"
-Source: "Scripts_Biodiv\Initialisation.R"; DestDir: "{app}"
+Source: "Scripts_Biodiv\Initialisation.R"; DestDir: "{app}"   
+Source: "Scripts_Biodiv\Initialisation_user.R"; DestDir: "{app}"
 Source: "Scripts_Biodiv\Interface_functions.R"; DestDir: "{app}"
 Source: "Scripts_Biodiv\Interface_main.R"; DestDir: "{app}"
 Source: "Scripts_Biodiv\Link_unitobs-refspa.R"; DestDir: "{app}"
@@ -120,8 +121,6 @@ Name: "{group}\Créer un rapport de bug"; Filename: "{app}\Doc\Rapport_bug_PAMPA-
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, "&", "&&")}}"; Flags: shellexec postinstall skipifsilent; WorkingDir: {#InstallDir}
 
 [Dirs]
-Name: "{#InstallDir}\Data"; Flags: uninsneveruninstall; Permissions: users-modify; Tasks: ; Languages:
-Name: "{#InstallDir}\logs"; Flags: uninsneveruninstall; Permissions: users-modify; Tasks: ; Languages:
 
 [code]
 // Sauvegarde de l'ancien config.r -> config.bak.R

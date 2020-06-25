@@ -118,6 +118,6 @@ Name: "{group}\Documentation\Guide Utilisateur"; Filename: "{app}\Doc\Guide_plat
 ;; Name: "{group}\Créer un rapport de bug"; Filename: "{app}\Doc\Rapport_bug_PAMPA-WP2.dot";
 
 [Run]
-Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, "&", "&&")}}"; Flags: shellexec postinstall skipifsilent; WorkingDir: {#InstallDir}
+Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, "&", "&&")}}"; Flags: shellexec postinstall skipifsilent unchecked; WorkingDir: {#InstallDir}
 
 [Dirs]

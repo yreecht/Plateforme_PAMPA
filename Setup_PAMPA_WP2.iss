@@ -2,12 +2,13 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "PAMPA Ressources & Biodiversité"
-#define MyAppVersion "3.0-beta3"
+#define MyAppVersion "3.1-beta1"
 #define MyAppPublisher "Ifremer"
 #define MyAppURL "https://github.com/yreecht/Plateforme_PAMPA/releases"
 #define MyAppExeName "PAMPA WP2.bat"
 #define InstallDir "C:\Program Files\PAMPA"
 #define ExecDir "Scripts_Biodiv"
+#define MyDateTimeString GetDateTimeString('yyyy-mm-dd_hh-nn-ss', '-', '-');
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application.
@@ -118,7 +119,7 @@ Name: "{group}\Documentation\Guide Utilisateur"; Filename: "{app}\Doc\Guide_plat
 ;; Name: "{group}\Créer un rapport de bug"; Filename: "{app}\Doc\Rapport_bug_PAMPA-WP2.dot";
 
 [Run]
-Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, "&", "&&")}}"; Flags: shellexec postinstall skipifsilent; WorkingDir: {#InstallDir}
+Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, "&", "&&")}}"; Flags: shellexec postinstall skipifsilent unchecked; WorkingDir: {#InstallDir}
 
 [Dirs]
 
@@ -133,7 +134,7 @@ begin
       begin
         OldFile := ExpandConstant('{app}\Config.R');
         if FileExists(OldFile) then
-          RenameFile(OldFile, ExpandConstant('{app}\Config.bak.R'));
+          RenameFile(OldFile, ExpandConstant('{app}\Config_{#MyDateTimeString}.bak.R'));
       end;
   end;
 end;
